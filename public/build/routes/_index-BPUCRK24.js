@@ -1,0 +1,1 @@
+import{i as t,l as o}from"/_static/build/_shared/chunk-HTIHDIN4.js";import{d as e}from"/_static/build/_shared/chunk-NPMEYKEH.js";var a=e(o(),1);var p=()=>[{title:"New Remix App"},{name:"description",content:"Welcome to Remix!"}];function n(){let r=t();return(0,a.jsx)("div",{dangerouslySetInnerHTML:{__html:r.content.rendered}})}export{n as default,p as meta};
