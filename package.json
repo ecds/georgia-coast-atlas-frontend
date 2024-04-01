@@ -23,7 +23,9 @@
   },
   "devDependencies": {
     "@architect/architect": "^11.0.5",
+    "@performant-software/core-data": "^2.0.0",
     "@performant-software/geospatial": "^2.0.0",
+    "@peripleo/peripleo": "^0.5.0",
     "@remix-run/dev": "^2.8.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
@@ -39,7 +41,9 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vite": "^5.2.7",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "engines": {
     "node": ">=18.0.0"
