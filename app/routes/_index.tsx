@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import MyModal from "./MyModal.tsx";
 
 export const loader = async () => {
   const response = await fetch(
@@ -11,7 +12,7 @@ export const loader = async () => {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
+    { title: "Georgia Coast Atlas" },
     { name: "description", content: "Welcome to Remix!" },
   ];
 };
@@ -20,10 +21,13 @@ export default function Index() {
   const wpContent = useLoaderData<typeof loader>();
 
   return (
+    <div>
     <div
       dangerouslySetInnerHTML={{
         __html: wpContent.content.rendered,
       }}
     />
+    <MyModal />{ }
+    </div>
   );
 }

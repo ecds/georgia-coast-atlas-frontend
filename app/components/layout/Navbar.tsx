@@ -1,41 +1,24 @@
 import { NavLink } from "@remix-run/react";
-import { islands } from "~/config.ts";
+import gcaLogo from 'app/images/gca-logo.png';
 
 const Navbar = () => {
   return (
-    <nav className="bg-gray-800 fixed top-0 w-screen z-50 px-6 pt-6 h-20">
+    <nav className="bg-[#4D4D4D] fixed top-0 w-screen z-50 px-6 pt-6 h-20">
       <ul className="flex flex-row space-x-6 uppercase">
-        <li className="text-gray-300">
+        <li>
           <NavLink
             className={({ isActive, isPending }) =>
-              isActive ? "bg-white text-black" : isPending ? "pending" : ""
+              isPending ? "pending" : "no-underline"
             }
             to="/"
           >
-            home
+            <img
+              src={gcaLogo}
+              alt="Georgia Coast Atlas Logo"
+              className="w-auto h-12 absolute left-6 top-4"
+            />
           </NavLink>
         </li>
-        {islands.map((island) => {
-          return (
-            <li key={island.slug} className="text-gray-300">
-              <NavLink
-                className={({ isActive, isPending }) =>
-                  `hover:underline underline-offset-4
-                ${
-                  isActive
-                    ? "underline underline-offset-4 font-bold"
-                    : isPending
-                    ? "pending"
-                    : ""
-                }`
-                }
-                to={`${island.slug}-island`}
-              >
-                {island.label} Island
-              </NavLink>
-            </li>
-          );
-        })}
       </ul>
     </nav>
   );

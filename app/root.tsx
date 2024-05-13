@@ -9,6 +9,7 @@ import {
 import styles from "./tailwind.css";
 import type { LinksFunction } from "@remix-run/node";
 import Navbar from "./components/layout/Navbar";
+import Sidebar from "./components/layout/Sidebar";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -26,6 +27,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           skip to main content
         </a>
         <Navbar />
+        <Sidebar />
         <main className="mx-auto relative mt-20 bg-white" id="main">
           {children}
         </main>
