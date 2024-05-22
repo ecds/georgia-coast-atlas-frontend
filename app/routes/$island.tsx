@@ -46,7 +46,7 @@ const IslandPage = () => {
           }}
         />
 
-        <div className="flex flex-wrap justify-center space-y-8 space-x-8 m-8">
+        <div className="flex flex-wrap justify-around">
           {related.media_contents?.photographs && (
             <>
               {related.media_contents.photographs.map((photo) => {
@@ -55,6 +55,7 @@ const IslandPage = () => {
                     key={photo.name}
                     src={photo.content_thumbnail_url}
                     alt=""
+                    className="p-8"
                   />
                 );
               })}
