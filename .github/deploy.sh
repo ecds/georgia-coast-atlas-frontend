@@ -1,24 +1,23 @@
 #!/bin/bash
 echo "Running deploy script"
-echo "Building and hydrating"
-npm run build
-npx arc hydrate
+TAG=$([ "$BRANCH" == "main" ] && echo "latest" || echo "dev")
 
-echo "Zipping up Lambda function"
-cd server
-zip -r $DEPLOY_PACKAGE ./* > /dev/null
+echo "Logging in to AWS"
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin "${AWS_ECR}"
+echo "Logged in successfully"
 
-echo "Uploading Lambda code to S3"
-aws s3api put-object --bucket $DEPLOY_BUCKET --key $DEPLOY_PACKAGE --body "${PWD}/${DEPLOY_PACKAGE}" > /dev/null
+echo "Building Docker image for ${BRANCH}"
+if [ "$BRANCH" == "main" ]; then
+  docker build -t georgia-coast-atlas --no-cache .
+else
+  docker build -t georgia-coast-atlas --no-cache --file Dockerfile-dev .
+fi
 
-echo "Uploading Static files to S3"
-cd ../public
-aws s3 rm s3://$STATIC_BUCKET --recursive
-aws s3 cp . s3://$STATIC_BUCKET/ --recursive
+echo "Tagging image with ${TAG}"
+docker tag georgia-coast-atlas "${AWS_ECR}/georgia-coast-atlas:${TAG}"
 
-echo "Updating Lambda function"
-aws lambda update-function-code --function-name $LAMBDA_FUNCTION --s3-bucket $DEPLOY_BUCKET --s3-key $DEPLOY_PACKAGE > /dev/null
+echo "Pushing image"
+docker push "${AWS_ECR}/georgia-coast-atlas:${TAG}"
 
-echo "Updated Lambda function succesfully"
-
-echo "All done!"
+echo "Pushed succesfully"
