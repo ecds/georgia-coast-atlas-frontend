@@ -5,7 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import SiteMap from "vite-plugin-sitemap";
 import { islands } from "./app/config";
 
-const ISLANDS = islands.map((island) => `/${island}-island`);
+const ISLANDS = islands.map((island) => `/${island.slug}-island`);
 
 const robotOption = {
   userAgent: "*",
