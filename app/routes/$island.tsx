@@ -63,7 +63,7 @@ const IslandPage = () => {
         </div>
       </div>
       <div className="w-1/2">
-        {/* <ClientOnly>{() => <MapPane record={place} />}</ClientOnly> */}
+        <ClientOnly>{() => <MapPane record={place} />}</ClientOnly>
       </div>
     </div>
   );

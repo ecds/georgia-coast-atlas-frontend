@@ -5,11 +5,13 @@ interface Props {
 }
 
 const MapPane = ({ record }: Props) => {
+  console.log("🚀 ~ MapPane ~ record:", record);
 
   return (
     <MapDraw
       data={record.place_geometry.geometry_json}
-      mapStyle={`https://api.maptiler.com/maps/dataviz/style.json?key=uXfXuebPlkoPXiY3TPcv`}
+      mapStyle={`https://api.maptiler.com/maps/dataviz/style.json`}
+      apiKey="uXfXuebPlkoPXiY3TPcv"
       onChange={() => {}}
       style={{ height: "100vh" }}
     />
