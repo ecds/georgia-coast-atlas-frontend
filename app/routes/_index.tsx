@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import MyModal from "./MyModal.tsx";
+import IntroModal from "app/components/layout/IntroModal"
 
 export const loader = async () => {
   const response = await fetch(
@@ -27,7 +27,7 @@ export default function Index() {
         __html: wpContent.content.rendered,
       }}
     />
-    <MyModal />{ }
+    <IntroModal />{ }
     </div>
   );
 }
