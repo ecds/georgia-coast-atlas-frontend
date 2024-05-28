@@ -3,7 +3,8 @@ import { ClientOnly } from "remix-utils/client-only";
 import MapPane from "~/components/MapPane.client";
 import { islands, dataHosts } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
-import type { TCoreDataPlace, WordPressData } from "~/types";
+import IIIFPhoto from "~/components/IIIFPhoto.client";
+import type { TCoreDataPlace, WordPressData, TCoreDataImage } from "~/types";
 
 export const loader = async ({ params }) => {
   const island = islands.find((i) => params.island == `${i.slug}-island`);
@@ -49,15 +50,20 @@ const IslandPage = () => {
         <div className="flex flex-wrap justify-around">
           {related.media_contents?.photographs && (
             <>
-              {related.media_contents.photographs.map((photo) => {
+              {related.media_contents.photographs.map((photo: TCoreDataImage) => {
                 return (
                   <img
                     key={photo.name}
                     src={photo.content_thumbnail_url}
                     alt=""
-                    className="p-8"
+                    className="p-8 drop-shadow-md"
                   />
                 );
+                // return (
+                //   <ClientOnly key={photo.name}>
+                //     {() => <IIIFPhoto manifestURL={photo.manifest_url} />}
+                //   </ClientOnly>
+                // );
               })}
             </>
           )}

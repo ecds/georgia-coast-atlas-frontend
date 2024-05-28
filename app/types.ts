@@ -3,7 +3,7 @@ import type {
   PlaceFeatureProperties,
 } from "@peripleo/peripleo";
 import type { Geometry } from "@types/geojson";
-import type { v4 as uuid4 } from "@types/uuid";
+import { v4 as uuid4 } from "@types/uuid";
 
 export interface CoreDataProperties extends PlaceFeatureProperties {
   record_id: string;
@@ -39,6 +39,22 @@ export type TCoreDataPlace = {
     };
     user_defined: TUserDefinedField;
   };
+};
+
+export type TCoreDataImage = {
+  content_type: "image/jpeg";
+  content_url: string;
+  content_download_url: string;
+  content_iiif_url: string;
+  content_inline_url: string;
+  content_preview_url: string;
+  content_thumbnail_url: string;
+  manifest_url: string;
+  project_model_relationship_uuid: uuid4;
+  project_model_relationship_inverse: boolean;
+  user_defined: TUserDefinedField;
+  uuid: uuid4;
+  name: string;
 };
 
 export interface IIIFCollection {

@@ -5,8 +5,6 @@ interface Props {
 }
 
 const MapPane = ({ record }: Props) => {
-  console.log("🚀 ~ MapPane ~ record:", record);
-
   return (
     <MapDraw
       data={record.place_geometry.geometry_json}
