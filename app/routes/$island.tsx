@@ -1,44 +1,38 @@
 import { useLoaderData } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import MapPane from "~/components/MapPane.client";
-import { islands, coreDataRelatedEndpoints, dataHosts } from "~/config.ts";
-import type { CoreDataPlace, WordPressData } from "~/types";
+import { islands, dataHosts } from "~/config.ts";
+import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
+import type { TCoreDataPlace, WordPressData } from "~/types";
 
 export const loader = async ({ params }) => {
   const island = islands.find((i) => params.island == `${i.slug}-island`);
 
-  if (!island) return { wpData: null, cdData: null };
+  if (!island) return { wpData: null, place: null };
 
+  const cdData: TCoreDataPlace = await fetchPlaceRecord(island?.coreDataId);
+
+  return { place: cdData.place, island } || null;
+};
+
+export const clientLoader = async ({ params, serverLoader }) => {
+  const serverData = await serverLoader();
+  const relatedRecords = await fetchRelatedRecords(
+    serverData.island.coreDataId,
+  );
   const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.island}`
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.island}`,
   );
 
   const wpData: WordPressData = await wpResponse.json();
 
-  const cdResponse = await fetch(
-    `https://${dataHosts.coreData}/core_data/public/places/${island?.coreDataId}?project_ids=10`
-  );
-  const cdData: CoreDataPlace = await cdResponse.json();
-
-  return { wpData: wpData[0], cdData, island } || null;
-};
-
-export const clientLoader = async ({ serverLoader }) => {
-  const serverData = await serverLoader();
-  for (const related of coreDataRelatedEndpoints) {
-    const relatedResponse = await fetch(
-      `https://${dataHosts.coreData}/core_data/public/places/${serverData.island.coreDataId}/${related.endpoint}?project_ids=10`
-    );
-    serverData[related.endpoint] = await relatedResponse.json();
-  }
-  return serverData;
+  return { ...serverData, ...relatedRecords, wpData: wpData[0] };
 };
 
 clientLoader.hydrate = true;
 
 const IslandPage = () => {
-  const { wpData, cdData, ...related } = useLoaderData<typeof loader>();
-  console.log("🚀 ~ IslandPage ~ related:", wpData, cdData, related);
+  const { wpData, place, ...related } = useLoaderData<typeof loader>();
   return (
     <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
       <div className="w-1/2 overflow-scroll">
@@ -51,23 +45,26 @@ const IslandPage = () => {
             __html: wpData?.content.rendered,
           }}
         />
-        {cdData?.user_defined && (
-          <table className="border-collapse table-fixed w-auto text-sm m-6">
-            <tbody>
-              {Object.keys(cdData.user_defined).map((ud) => {
+
+        <div className="flex flex-wrap justify-around">
+          {related.media_contents?.photographs && (
+            <>
+              {related.media_contents.photographs.map((photo) => {
                 return (
-                  <tr key={ud}>
-                    <td className="px-2">{cdData.user_defined[ud].label}</td>
-                    <td className="px-2">{cdData.user_defined[ud].value}</td>
-                  </tr>
+                  <img
+                    key={photo.name}
+                    src={photo.content_thumbnail_url}
+                    alt=""
+                    className="p-8"
+                  />
                 );
               })}
-            </tbody>
-          </table>
-        )}
+            </>
+          )}
+        </div>
       </div>
       <div className="w-1/2">
-        <ClientOnly>{() => <MapPane place={cdData} />}</ClientOnly>
+        <ClientOnly>{() => <MapPane record={place} />}</ClientOnly>
       </div>
     </div>
   );

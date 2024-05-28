@@ -1,122 +1,36 @@
-name: 🚀 Deploy
+name: Deploy
 
 on:
   push:
     branches:
       - main
       - dev
-  pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
-  id-token: write
-  actions: write
-  contents: read
-
-defaults:
-  run:
-    shell: bash
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
 
 jobs:
-  lint:
-    name: ⬣ ESLint
-    runs-on: ubuntu-latest
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: npm
-          cache-dependency-path: ./package.json
-          node-version: 18
-
-      - name: 📥 Install deps
-        run: npm install
-
-      - name: 🔬 Lint
-        run: npm run lint
-
-  typecheck:
-    name: ʦ TypeScript
-    runs-on: ubuntu-latest
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: npm
-          cache-dependency-path: ./package.json
-          node-version: 18
-
-      - name: 📥 Install deps
-        run: npm install
-
-      - name: 🔎 Type check
-        run: npm run typecheck --if-present
-
   deploy:
-    # needs: [lint, typecheck]
     runs-on: ubuntu-latest
-
     steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: npm
-          cache-dependency-path: ./package.json
-          node-version: 20
-
-      - name: 👀 Env
+      - name: Checkout Docker configs
         run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "Git ref:    ${{ github.ref }}"
-          echo "GH actor:   ${{ github.actor }}"
-          echo "SHA:        ${{ github.sha }}"
-          VER=`node --version`; echo "Node ver:   $VER"
-          VER=`npm --version`; echo "npm ver:    $VER"
-
-      - name: 📥 Install deps
-        run: |
-          npm install
-
-      - name: 🏗 Build
-        run: npm run build
+          mv ./.github/workflows/deploy.sh .
+          chmod +x deploy.sh
 
       - name: Configure AWS credentials from AWS account
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
           role-session-name: GitHub-OIDC-frontend
 
-      - name: 🚀 Dev Deploy
-        if: github.ref == 'refs/heads/dev'
-        run: |
-          chmod +x ./.github/deploy.sh
-          ./.github/deploy.sh
+      - name: Run Deploy
         env:
-          AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ROLE: ${{ secrets.AWS_ROLE }}
-          DEPLOY_PACKAGE: ${{ secrets.DEPLOY_PACKAGE }}
-          DEPLOY_BUCKET: ${{ secrets.DEV_DEPLOY_BUCKET }}
-          STATIC_BUCKET: ${{ secrets.DEV_STATIC_BUCKET }}
-          LAMBDA_FUNCTION: ${{ secrets.DEV_LAMBDA_FUNCTION }}
-
-      - name: 🚀 Production Deploy
-        if: github.ref == 'refs/heads/main'
-        run: ./.github/deploy.sh
-        env:
-          CI: true
-          DEPLOY_PACKAGE: ${{ secrets.DEPLOY_PACKAGE }}
-          DEV_DEPLOY_BUCKET: ${{ secrets.DEV_DEPLOY_BUCKET }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          AWS_ECR: ${{ secrets.AWS_ECR }}
+        run: ./deploy.sh
