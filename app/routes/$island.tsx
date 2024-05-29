@@ -1,39 +1,59 @@
 import { useLoaderData } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import MapPane from "~/components/MapPane.client";
 import { islands, dataHosts } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
-import IIIFPhoto from "~/components/IIIFPhoto.client";
-import type { TCoreDataPlace, WordPressData, TCoreDataImage } from "~/types";
+// import IIIFPhoto from "~/components/IIIFPhoto.client";
+import Map from "~/components/Map.client";
+import { toFeatureCollection } from "~/utils/toFeatureCollection";
+import type {
+  TCoreDataPlace,
+  TWordPressData,
+  TIslandServerData,
+  TIslandClientData,
+  TRelatedCoreDataRecords,
+} from "~/types";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 
-export const loader = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.island == `${i.slug}-island`);
 
   if (!island) return { wpData: null, place: null };
 
   const cdData: TCoreDataPlace = await fetchPlaceRecord(island?.coreDataId);
 
-  return { place: cdData.place, island } || null;
+  return { place: cdData?.place, island } || null;
 };
 
-export const clientLoader = async ({ params, serverLoader }) => {
-  const serverData = await serverLoader();
-  const relatedRecords = await fetchRelatedRecords(
+export const clientLoader = async ({
+  params,
+  serverLoader,
+}: ClientLoaderFunctionArgs) => {
+  const serverData = await serverLoader<TIslandServerData>();
+  const relatedRecords: TRelatedCoreDataRecords = await fetchRelatedRecords(
     serverData.island.coreDataId,
   );
   const wpResponse = await fetch(
     `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.island}`,
   );
 
-  const wpData: WordPressData = await wpResponse.json();
+  const wpData: TWordPressData[] = await wpResponse.json();
 
-  return { ...serverData, ...relatedRecords, wpData: wpData[0] };
+  const geoJSON = relatedRecords.places.relatedPlaces
+    ? toFeatureCollection([
+        serverData.place,
+        ...relatedRecords.places.relatedPlaces,
+      ])
+    : toFeatureCollection([serverData.place]);
+
+  return { ...serverData, ...relatedRecords, wpData: wpData[0], geoJSON };
 };
 
 clientLoader.hydrate = true;
 
 const IslandPage = () => {
-  const { wpData, place, ...related } = useLoaderData<typeof loader>();
+  const { island, wpData, place, geoJSON, ...related } =
+    useLoaderData<TIslandClientData>();
   return (
     <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
       <div className="w-1/2 overflow-scroll">
@@ -50,7 +70,7 @@ const IslandPage = () => {
         <div className="flex flex-wrap justify-around">
           {related.media_contents?.photographs && (
             <>
-              {related.media_contents.photographs.map((photo: TCoreDataImage) => {
+              {related.media_contents.photographs.map((photo) => {
                 return (
                   <img
                     key={photo.name}
@@ -70,7 +90,7 @@ const IslandPage = () => {
         </div>
       </div>
       <div className="w-1/2">
-        <ClientOnly>{() => <MapPane record={place} />}</ClientOnly>
+        <ClientOnly>{() => <Map geoJSON={geoJSON} />}</ClientOnly>
       </div>
     </div>
   );

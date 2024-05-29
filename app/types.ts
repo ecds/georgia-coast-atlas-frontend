@@ -1,19 +1,4 @@
-import type {
-  AnnotationPage,
-  PlaceFeatureProperties,
-} from "@peripleo/peripleo";
-import type { Geometry } from "@types/geojson";
-import { v4 as uuid4 } from "@types/uuid";
-
-export interface CoreDataProperties extends PlaceFeatureProperties {
-  record_id: string;
-  uuid: string;
-}
-
-export interface CoreDataPlaceProperties extends Place<CoreDataProperties> {
-  ccode: [];
-  title: string;
-}
+import type { Geometry, FeatureCollection } from "geojson";
 
 type TNames = {
   name: string;
@@ -21,25 +6,27 @@ type TNames = {
 };
 
 type TUserDefinedField = {
-  [key: uuid4]: {
+  [key: string]: {
     label: string;
     value: string;
   };
+} | null;
+
+export type TCoreDataPlaceRecord = {
+  uuid: string;
+  name: string;
+  place_names: TNames[];
+  place_layers: [];
+  web_identifiers: [];
+  place_geometry: {
+    geometry_json: Geometry;
+  };
+  user_defined: TUserDefinedField;
 };
 
 export type TCoreDataPlace = {
-  place: {
-    uuid: uuid4;
-    name: string;
-    place_names: TNames[];
-    place_layers: [];
-    web_identifiers: [];
-    place_geometry: {
-      geometry_json: Geometry;
-    };
-    user_defined: TUserDefinedField;
-  };
-};
+  place: TCoreDataPlaceRecord;
+} | null;
 
 export type TCoreDataImage = {
   content_type: "image/jpeg";
@@ -50,11 +37,56 @@ export type TCoreDataImage = {
   content_preview_url: string;
   content_thumbnail_url: string;
   manifest_url: string;
-  project_model_relationship_uuid: uuid4;
+  project_model_relationship_uuid: string;
   project_model_relationship_inverse: boolean;
   user_defined: TUserDefinedField;
-  uuid: uuid4;
+  uuid: string;
   name: string;
+};
+
+type TMediaContents = {
+  photographs: TCoreDataImage[];
+};
+
+type TCoreDataTaxonomies = {
+  project_model_relationship_uuid: string;
+  project_model_relationship_inverse: boolean;
+  user_defined: TUserDefinedField;
+  uuid: string;
+  name: string;
+};
+
+type TCoreDataItem = {
+  project_model_relationship_uuid: string;
+  project_model_relationship_inverse: boolean;
+  user_defined: TUserDefinedField;
+  uuid: string;
+  primary_name: {
+    id: number;
+    primary: boolean;
+    name: {
+      id: number;
+      name: string;
+    };
+  };
+  source_titles: [
+    {
+      id: number;
+      primary: boolean;
+      name: {
+        id: number;
+        name: string;
+      };
+    },
+  ];
+};
+
+type TThumbnail = {
+  format: string;
+  height: number;
+  id: string;
+  type: string;
+  width: number;
 };
 
 export interface IIIFCollection {
@@ -63,21 +95,11 @@ export interface IIIFCollection {
   label: {
     [lang: string]: string[];
   };
-  thumbnail: Thumbnail[];
+  thumbnail: TThumbnail[];
   type: string;
 }
 
-export interface Thumbnail {
-  format: string;
-  height: number;
-  id: string;
-  type: string;
-  width: number;
-}
-
-export interface RelatedMedia extends AnnotationPage {}
-
-export interface WordPressData {
+export type TWordPressData = {
   title: {
     rendered: string;
   };
@@ -87,27 +109,65 @@ export interface WordPressData {
   excerpt: {
     rendered: string;
   };
-}
+};
 
-interface RelatedRecord {
-  id: uuid4;
+type TRelatedRecord = {
+  id: string;
   name: string;
   names: string[];
   names_facet: string[];
   record_id: string;
-  uuid: uuid4;
+  uuid: string;
   geometry?: Geometry;
   coordinates: number[];
-}
+};
 
-export interface Document extends RelatedRecord {
-  [key: "005cba1d-1d0e-4ab0-855d-57884d9db2b0"]: TRelatedRecord[];
-  [key: "2eaaf83f-98f0-4402-b3bc-92b185fcbaa4"]: TRelatedRecord[];
-  [key: "dc00ae2f-e12f-4bc8-934e-97bad18e5237"]: TRelatedRecord[];
-  [key: "378d2b43-dcc0-4b64-8ef9-ecd7d743e2fb"]: string;
-  [key: "dec90162-73fd-4a02-8079-a215c9a8300b"]: string;
+export interface Document extends TRelatedRecord {
+  "005cba1d-1d0e-4ab0-855d-57884d9db2b0": TRelatedRecord[];
+  "2eaaf83f-98f0-4402-b3bc-92b185fcbaa4": TRelatedRecord[];
+  "dc00ae2f-e12f-4bc8-934e-97bad18e5237": TRelatedRecord[];
+  "378d2b43-dcc0-4b64-8ef9-ecd7d743e2fb": string;
+  "dec90162-73fd-4a02-8079-a215c9a8300b": string;
 }
 
 export interface SearchResult {
   results: Document[];
 }
+
+type TIslandSlug = "ossabaw" | "sapelo" | "st-catherines" | "wassaw" | "wolf";
+type TIslandLabel =
+  | "Ossabaw"
+  | "Sapelo"
+  | "St. Catherine's"
+  | "Wassaw"
+  | "Wolf";
+
+export type TIslandConfig = {
+  slug: TIslandSlug;
+  label: TIslandLabel;
+  coreDataId: string;
+};
+
+export type TIslandServerData = {
+  island: TIslandConfig;
+  place: TCoreDataPlaceRecord;
+};
+
+export type TRelatedCoreDataRecords = {
+  media_contents: TMediaContents;
+  places: {
+    county: TCoreDataPlaceRecord;
+    relatedPlaces: TCoreDataPlaceRecord[];
+  };
+  taxonomies: TCoreDataTaxonomies[];
+  items: {
+    topo: TCoreDataItem;
+    videos: TCoreDataItem[];
+  };
+};
+
+export type TIslandClientData = TIslandServerData &
+  TRelatedCoreDataRecords & {
+    wpData: TWordPressData;
+    geoJSON: FeatureCollection;
+  };

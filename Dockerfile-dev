@@ -1,5 +1,5 @@
 FROM node:20.12.1-slim
-WORKDIR /dxd
+WORKDIR /gca
 COPY . .
 RUN npm install
 RUN npm run build_dev
