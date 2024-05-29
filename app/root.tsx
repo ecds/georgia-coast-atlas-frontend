@@ -1,5 +1,12 @@
-import { Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError, } from "@remix-run/react";
-import styles from "./tailwind.css";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useRouteError,
+} from "@remix-run/react";
+import styles from "./index.css?url";
 import type { LinksFunction } from "@remix-run/node";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";

@@ -1,10 +1,11 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import IntroModal from "app/components/layout/IntroModal"
+import { dataHosts } from "~/config";
 
 export const loader = async () => {
   const response = await fetch(
-    "https://wp.georgiacoastatlas.org/wp-json/wp/v2/pages/?slug=homepage"
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=homepage`
   );
   const data = await response.json();
   return data[0] || null;
@@ -22,7 +23,7 @@ export default function Index() {
 
   return (
     <div>
-    <div
+      <div
       dangerouslySetInnerHTML={{
         __html: wpContent.content.rendered,
       }}
