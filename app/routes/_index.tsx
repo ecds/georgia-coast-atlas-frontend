@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import IntroModal from "app/components/layout/IntroModal"
 import { dataHosts } from "~/config";
 
 export const loader = async () => {
@@ -12,7 +13,7 @@ export const loader = async () => {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
+    { title: "Georgia Coast Atlas" },
     { name: "description", content: "Welcome to Remix!" },
   ];
 };
@@ -21,10 +22,13 @@ export default function Index() {
   const wpContent = useLoaderData<typeof loader>();
 
   return (
+    <div>
       <div
       dangerouslySetInnerHTML={{
         __html: wpContent.content.rendered,
       }}
     />
+    <IntroModal />{ }
+    </div>
   );
 }

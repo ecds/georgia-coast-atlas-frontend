@@ -9,10 +9,15 @@ import {
 import styles from "./index.css?url";
 import type { LinksFunction } from "@remix-run/node";
 import Navbar from "./components/layout/Navbar";
+import Sidebar from "./components/layout/Sidebar";
+import { useLocation } from "react-router-dom";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const isHomepage = location.pathname === "/";
+
   return (
     <html lang="en">
       <head>
@@ -26,7 +31,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           skip to main content
         </a>
         <Navbar />
-        <main className="mx-auto relative mt-20 bg-white" id="main">
+        <Sidebar />
+        <main
+          className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white`}
+          id="main"
+        >
           {children}
         </main>
         <ScrollRestoration />
