@@ -32,11 +32,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </a>
         <Navbar />
         <Sidebar />
-        {!isHomepage && (
-          <main className="mx-auto relative mt-20 bg-white" id="main">
-            {children}
-          </main>
-        )}
+        <main
+          className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white`}
+          id="main"
+        >
+          {children}
+        </main>
         <ScrollRestoration />
         <Scripts />
       </body>
