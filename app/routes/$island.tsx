@@ -39,7 +39,7 @@ export const clientLoader = async ({
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  const geoJSON = relatedRecords.places.relatedPlaces
+  const geoJSON = relatedRecords.places?.relatedPlaces
     ? toFeatureCollection([
         serverData.place,
         ...relatedRecords.places.relatedPlaces,

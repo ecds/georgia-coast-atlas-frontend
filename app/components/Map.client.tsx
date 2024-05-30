@@ -2,6 +2,7 @@ import maplibregl from "maplibre-gl";
 import { useEffect, useState } from "react";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
+import style from "~/data/style.json";
 import type { FeatureCollection } from "geojson";
 
 interface Props {
@@ -15,8 +16,8 @@ const Map = ({ geoJSON }: Props) => {
   useEffect(() => {
     const _map = new maplibregl.Map({
       container: "mapContainer",
-      style:
-        "https://api.maptiler.com/maps/streets/style.json?key=uXfXuebPlkoPXiY3TPcv",
+      // @ts-ignore We are loading the style as JSON.
+      style,
       center: [-81.1067, 31.8375],
       zoom: 10,
     });
@@ -44,6 +45,16 @@ const Map = ({ geoJSON }: Props) => {
 
     map.fitBounds(bounds, { padding: 100 });
 
+    const layers = map.getStyle().layers;
+    // Find the index of the first symbol layer in the map style
+    let firstSymbolId;
+    for (let i = 0; i < layers.length; i++) {
+      if (layers[i].type === "symbol") {
+        firstSymbolId = layers[i].id;
+        break;
+      }
+    }
+
     if (!map.getImage("pulsing-dot"))
       map.addImage("pulsing-dot", pulsingDot(map), { pixelRatio: 2 });
 
@@ -52,17 +63,20 @@ const Map = ({ geoJSON }: Props) => {
       data: geoJSON,
     });
 
-    map.addLayer({
-      id: "place",
-      type: "fill",
-      source: "places",
-      layout: {},
-      paint: {
-        "fill-color": "blue",
-        "fill-opacity": 0.25,
+    map.addLayer(
+      {
+        id: "place",
+        type: "fill",
+        source: "places",
+        layout: {},
+        paint: {
+          "fill-color": "blue",
+          "fill-opacity": 0.25,
+        },
+        filter: ["==", "$type", "Polygon"],
       },
-      filter: ["==", "$type", "Polygon"],
-    });
+      firstSymbolId,
+    );
 
     map.addLayer({
       id: "outline",

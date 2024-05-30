@@ -154,13 +154,13 @@ export type TIslandServerData = {
 };
 
 export type TRelatedCoreDataRecords = {
-  media_contents: TMediaContents;
-  places: {
+  media_contents?: TMediaContents;
+  places?: {
     county: TCoreDataPlaceRecord;
     relatedPlaces: TCoreDataPlaceRecord[];
   };
-  taxonomies: TCoreDataTaxonomies[];
-  items: {
+  taxonomies?: TCoreDataTaxonomies[];
+  items?: {
     topo: TCoreDataItem;
     videos: TCoreDataItem[];
   };
@@ -171,3 +171,15 @@ export type TIslandClientData = TIslandServerData &
     wpData: TWordPressData;
     geoJSON: FeatureCollection;
   };
+
+type TRelatedType = {
+  uuid: string;
+  type: string;
+  uiLabel: string;
+};
+
+export type TCoreDataRelatedEndpoints = {
+  endpoint: string;
+  uiLabel: string;
+  types: TRelatedType[];
+};

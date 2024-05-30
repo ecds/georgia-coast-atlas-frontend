@@ -1,3 +1,5 @@
+import type { TCoreDataRelatedEndpoints } from "./types";
+
 export const islands = [
   {
     slug: "ossabaw",
@@ -26,7 +28,7 @@ export const islands = [
   },
 ];
 
-export const coreDataRelatedEndpoints = [
+export const coreDataRelatedEndpoints: TCoreDataRelatedEndpoints[] = [
   {
     endpoint: "media_contents",
     uiLabel: "Related Media & Documents",
@@ -38,8 +40,6 @@ export const coreDataRelatedEndpoints = [
       },
     ],
   },
-  // { endpoint: "organizations", uiLabel: "Organizations", types: [] },
-  // { endpoint: "people", uiLabel: "Related People", types: [] },
   {
     endpoint: "places",
     uiLabel: "Related Places",

@@ -9,9 +9,12 @@ export const fetchRelatedRecords = async (id: string) => {
     );
     const relatedData = await relatedResponse.json();
     const items = relatedData[related.endpoint];
+    // @ts-ignore
     relatedRecords[related.endpoint] = Object.groupBy(
       items,
+      // @ts-ignore
       ({ project_model_relationship_uuid }) =>
+        // @ts-ignore
         related.types.find((t) => t.uuid == project_model_relationship_uuid)
           .type,
     );
@@ -26,9 +29,13 @@ export const fetchPlaceRecord = async (id: string) => {
     `https://${dataHosts.coreData}/core_data/public/v1/places/${id}?project_ids=1`,
   );
   const data: TCoreDataPlace = await response.json();
+  // @ts-ignore
   if (data.place.user_defined) {
+    // @ts-ignore
     for await (const userDefined of Object.keys(data.place.user_defined)) {
+      // @ts-ignore
       data.place[data.place.user_defined[userDefined].label] =
+        // @ts-ignore
         data.place.user_defined[userDefined].value;
     }
   }
