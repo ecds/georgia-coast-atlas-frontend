@@ -12,7 +12,10 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix ./app/"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.19",
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@headlessui/react": "^2.0.0",
     "@remix-run/node": "^2.9.2",
     "@remix-run/react": "^2.9.2",
     "@remix-run/serve": "^2.9.2",

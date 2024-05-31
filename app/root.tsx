@@ -11,6 +11,7 @@ import type { LinksFunction } from "@remix-run/node";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import { useLocation } from "react-router-dom";
+import Loading from "./components/layout/Loading";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -38,6 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         >
           {children}
         </main>
+        <Loading />
         <ScrollRestoration />
         <Scripts />
       </body>
