@@ -22,6 +22,10 @@ export type TCoreDataPlaceRecord = {
     geometry_json: Geometry;
   };
   user_defined: TUserDefinedField;
+  description?: string;
+  identifier?: string;
+  [key: string]: any;
+  iiif_manifest: string;
 };
 
 export type TCoreDataPlace = {

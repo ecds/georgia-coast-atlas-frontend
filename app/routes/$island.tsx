@@ -54,6 +54,7 @@ clientLoader.hydrate = true;
 const IslandPage = () => {
   const { island, wpData, place, geoJSON, ...related } =
     useLoaderData<TIslandClientData>();
+
   return (
     <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
       <div className="w-1/2 overflow-scroll">
@@ -79,14 +80,12 @@ const IslandPage = () => {
                     className="p-8 drop-shadow-md"
                   />
                 );
-                // return (
-                //   <ClientOnly key={photo.name}>
-                //     {() => <IIIFPhoto manifestURL={photo.manifest_url} />}
-                //   </ClientOnly>
-                // );
               })}
             </>
           )}
+          {/* <ClientOnly>
+            {() => <IIIFPhoto manifestURL={place.iiif_manifest} />}
+          </ClientOnly> */}
         </div>
       </div>
       <div className="w-1/2">
