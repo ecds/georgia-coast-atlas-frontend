@@ -32,7 +32,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           skip to main content
         </a>
         <Navbar />
-        <Sidebar />
+        {isHomepage && <Sidebar />}
         <main
           className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white`}
           id="main"

@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import IntroModal from "app/components/layout/IntroModal";
+import Sidebar from "~/components/layout/Sidebar";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,6 +13,7 @@ export default function Index() {
   return (
     <div>
       <IntroModal />
+      <Sidebar />
       {}
     </div>
   );

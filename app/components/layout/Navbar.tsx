@@ -32,19 +32,34 @@ const Navbar = () => {
       </ul>
       {/* Add the dropdown component here */}
       <div className="relative inline-block mr-6">
-        <button onClick={toggleDropdown} className="flex justify-center">
+        <button
+          onClick={toggleDropdown}
+          className="flex justify-center"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              toggleDropdown();
+            }
+          }}
+        >
           <img src={islandsButtonImage} alt="Islands Button" />
         </button>
         {isDropdownOpen && (
           <div className="absolute right-1 transform translate-x-1/3 top-full mt-2 bg-white rounded-md shadow-lg">
             <ul className="font-serif text-lg text-center">
               {islands.map((island) => (
-                <li
-                  key={island.slug}
-                  className="px-6 py-3 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => navigate(`/${island.slug}-island`)}
-                >
-                  {island.label} Island
+                <li key={island.slug}>
+                  <button
+                    className="px-6 py-3 hover:bg-gray-200 w-full text-left"
+                    onClick={() => navigate(`/${island.slug}-island`)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        navigate(`/${island.slug}-island`);
+                      }
+                    }}
+                  >
+                    {island.label} Island
+                  </button>
                 </li>
               ))}
             </ul>
