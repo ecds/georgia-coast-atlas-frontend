@@ -26,6 +26,12 @@ export default defineConfig({
     }),
   ],
   ssr: {
-    noExternal: ["remix-utils", "maplibre-gl", "@turf_turf"],
+    target: "node",
+    noExternal: [
+      "remix-utils",
+      "maplibre-gl",
+      "@turf_turf",
+      "@samvera_clover-iiif",
+    ],
   },
 });

@@ -21,6 +21,7 @@
     "@remix-run/serve": "^2.9.2",
     "@types/geojson": "^7946.0.14",
     "@types/uuid": "^9.0.8",
+    "cross-env": "^7.0.3",
     "isbot": "^5.1.8",
     "maplibre-gl": "^4.3.2",
     "react": "^18.3.1",
