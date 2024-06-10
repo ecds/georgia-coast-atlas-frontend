@@ -25,4 +25,12 @@ export default defineConfig({
       robots: [robotOption],
     }),
   ],
+  ssr: {
+    noExternal: [
+      "remix-utils",
+      "maplibre-gl",
+      "@turf/turf",
+      "@samvera/clover-iiif",
+    ],
+  },
 });
