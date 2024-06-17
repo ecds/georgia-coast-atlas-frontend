@@ -1,6 +1,7 @@
 import type { TVideoItem } from "~/types";
 import RelatedSection from "./RelatedSection";
 import VideoThumbnail from "./VideoThumbnail";
+import VideoModal from "./VideoModal";
 
 interface Props {
   videos: TVideoItem[];
@@ -12,12 +13,13 @@ const RelatedVideos = ({ videos }: Props) => {
       <div className="flex flex-wrap justify-around">
         {videos.map((video) => {
           return (
-            <VideoThumbnail
-              key={video.uuid}
-              video={video}
-              figClassName="md:m-8 max-w-xs"
-              imgClassName="drop-shadow-md border rounded-lg"
-            />
+            <VideoModal key={video.uuid} video={video}>
+              <VideoThumbnail
+                video={video}
+                figClassName="md:m-8 max-w-xs"
+                imgClassName="drop-shadow-md border rounded-lg"
+              />
+            </VideoModal>
           );
         })}
       </div>

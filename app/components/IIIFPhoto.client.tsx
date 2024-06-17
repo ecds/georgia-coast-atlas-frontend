@@ -2,8 +2,18 @@
 import Viewer from "@samvera/clover-iiif/viewer";
 
 const viewerOptions = {
+  canvasBackgroundColor: "#1a1d1e",
   informationPanel: {
     open: false,
+    renderToggle: false,
+    renderContentSearch: false,
+  },
+  openSeadragon: {
+    showNavigator: false,
+    showRotationControl: false,
+    gestureSettingsMouse: {
+      scrollToZoom: true,
+    },
   },
 };
 
