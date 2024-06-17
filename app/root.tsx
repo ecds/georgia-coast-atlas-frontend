@@ -7,11 +7,11 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import styles from "./index.css?url";
-import type { LinksFunction } from "@remix-run/node";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import { useLocation } from "react-router-dom";
 import Loading from "./components/layout/Loading";
+import type { LinksFunction } from "@remix-run/node";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
