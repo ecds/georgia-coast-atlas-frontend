@@ -9,7 +9,7 @@ const ISLANDS = islands.map((island) => `/${island.slug}-island`);
 
 const robotOption = {
   userAgent: "*",
-  [process.env.NODE_ENV === "production" ? "allow" : "disallow"]: "/",
+  [process.env.ROBOTS ?? "allow"]: "/",
 };
 
 installGlobals();
