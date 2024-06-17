@@ -1,8 +1,8 @@
 import { NavLink, useNavigate } from "@remix-run/react";
-import gcaLogo from 'app/images/gca-logo.png';
+import gcaLogo from "app/images/gca-logo.png";
 import { islands } from "~/config.ts";
 import { useState } from "react";
-import islandsButtonImage from 'app/images/islandsButton.png';
+import islandsButtonImage from "app/images/islandsButton.png";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -37,7 +37,7 @@ const Navbar = () => {
           className="flex justify-center"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               toggleDropdown();
             }
           }}
@@ -45,16 +45,20 @@ const Navbar = () => {
           <img src={islandsButtonImage} alt="Islands Button" />
         </button>
         {isDropdownOpen && (
-          <div className="absolute right-1 transform translate-x-1/3 top-full mt-2 bg-white rounded-md shadow-lg">
+          <div className="absolute right-1 transform translate-x-1/3 top-full mt-2 bg-white rounded-md shadow-lg w-64">
             <ul className="font-serif text-lg text-center">
               {islands.map((island) => (
                 <li key={island.slug}>
                   <button
                     className="px-6 py-3 hover:bg-gray-200 w-full text-left"
-                    onClick={() => navigate(`/${island.slug}-island`)}
+                    onClick={() => {
+                      navigate(`/${island.slug}-island`);
+                      setIsDropdownOpen(false);
+                    }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         navigate(`/${island.slug}-island`);
+                        setIsDropdownOpen(false);
                       }
                     }}
                   >
