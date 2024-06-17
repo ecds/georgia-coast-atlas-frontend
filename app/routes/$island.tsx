@@ -1,10 +1,14 @@
-import { useLoaderData } from "@remix-run/react";
+import { useEffect, useRef } from "react";
+import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { islands, dataHosts } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import IIIFPhoto from "~/components/IIIFPhoto.client";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
+import RelatedPlaces from "~/components/RelatedPlaces";
+import FeaturedMedium from "~/components/FeaturedMedium";
+import RelatedVideos from "~/components/RelatedVideos";
 import type {
   TCoreDataPlace,
   TWordPressData,
@@ -55,19 +59,40 @@ const IslandPage = () => {
   const { island, wpData, place, geoJSON, ...related } =
     useLoaderData<TIslandClientData>();
 
-    return (
-      <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
-        <div className="w-1/2 overflow-scroll">
-          <h1 className="text-2xl my-2 p-4 sticky top-0 bg-white z-10">
-            {wpData?.title.rendered}
+  const topRef = useRef<HTMLDivElement>(null);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (navigation.state === "idle") topRef.current?.scrollIntoView();
+  }, [navigation]);
+
+  return (
+    <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
+      <div className="w-1/2 overflow-scroll pb-32">
+        <div className="flex flex-col">
+          <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
+            {island.label} Island
           </h1>
+          <div ref={topRef} className="relative -top-12 z-50 bg-black">
+            <FeaturedMedium record={related} />
+          </div>
           <div
-            className="relative p-4"
+            className="relative px-4 -mt-12"
             dangerouslySetInnerHTML={{
               __html: wpData?.content.rendered,
             }}
           />
-  
+        </div>
+
+        {related.places?.relatedPlaces && (
+          <RelatedPlaces places={related.places.relatedPlaces} />
+        )}
+
+        {related.items?.videos && (
+          <RelatedVideos videos={related.items.videos} />
+        )}
+
+        {related.media_contents?.photographs && (
           <div className="flex flex-wrap justify-around">
             {related.media_contents?.photographs && (
               <>
@@ -87,12 +112,13 @@ const IslandPage = () => {
               {() => <IIIFPhoto manifestURL={place.iiif_manifest} />}
             </ClientOnly>
           </div>
-        </div>
-        <div className="w-1/2">
-          <ClientOnly>{() => <Map geoJSON={geoJSON} />}</ClientOnly>
-        </div>
+        )}
       </div>
-    );
-  };
+      <div className="w-1/2">
+        <ClientOnly>{() => <Map geoJSON={geoJSON} />}</ClientOnly>
+      </div>
+    </div>
+  );
+};
 
 export default IslandPage;

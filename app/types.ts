@@ -5,6 +5,15 @@ type TNames = {
   primary: boolean;
 };
 
+type TCoreDataSourceName = {
+  id: number;
+  primary: boolean;
+  name: {
+    id: number;
+    name: string;
+  };
+};
+
 type TUserDefinedField = {
   [key: string]: {
     label: string;
@@ -73,16 +82,12 @@ type TCoreDataItem = {
       name: string;
     };
   };
-  source_titles: [
-    {
-      id: number;
-      primary: boolean;
-      name: {
-        id: number;
-        name: string;
-      };
-    },
-  ];
+  source_titles: TCoreDataSourceName[];
+};
+
+export type TVideoItem = TCoreDataItem & {
+  embed_id: string;
+  provider: "Vimeo" | "YouTube";
 };
 
 type TThumbnail = {
@@ -166,7 +171,7 @@ export type TRelatedCoreDataRecords = {
   taxonomies?: TCoreDataTaxonomies[];
   items?: {
     topo: TCoreDataItem;
-    videos: TCoreDataItem[];
+    videos: TVideoItem[];
   };
 };
 
