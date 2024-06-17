@@ -27,14 +27,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-slate-600">
+      <body className="bg-slate-600 font-inter">
         <a href="#main" className="sr-only">
           skip to main content
         </a>
         <Navbar />
         {isHomepage && <Sidebar />}
         <main
-          className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white`}
+          className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white overflow-hidden`}
           id="main"
         >
           {children}
