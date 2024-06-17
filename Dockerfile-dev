@@ -4,4 +4,4 @@ COPY . .
 RUN npm install
 RUN npm run build_dev
 EXPOSE 3000
-ENTRYPOINT ["npm", "run", "dev"]
+ENTRYPOINT ["npm", "start"]
