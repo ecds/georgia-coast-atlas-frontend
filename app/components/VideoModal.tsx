@@ -19,7 +19,6 @@ interface Props {
 }
 
 const VideoModal = ({ children, video }: Props) => {
-  console.log("🚀 ~ VideoModal ~ video:", video);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const open = () => setIsOpen(true);
