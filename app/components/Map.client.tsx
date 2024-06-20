@@ -1,19 +1,18 @@
 import maplibregl from "maplibre-gl";
-import { useEffect, useState } from "react";
-import { bbox } from "@turf/turf";
-import { pulsingDot } from "~/utils/pulsingDot";
+import { useEffect } from "react";
 import style from "~/data/style.json";
-import type { FeatureCollection } from "geojson";
+import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  geoJSON: FeatureCollection;
+  map: maplibregl.Map | undefined;
+  setMap: Dispatch<SetStateAction<maplibregl.Map | undefined>>;
+  setMapLoaded: Dispatch<SetStateAction<boolean>>;
 }
 
-const Map = ({ geoJSON }: Props) => {
-  const [map, setMap] = useState<maplibregl.Map | undefined>(undefined);
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-
+const Map = ({ map, setMap, setMapLoaded }: Props) => {
   useEffect(() => {
+    if (!setMap) return;
+
     const _map = new maplibregl.Map({
       container: "mapContainer",
       // @ts-ignore We are loading the style as JSON.
@@ -26,95 +25,16 @@ const Map = ({ geoJSON }: Props) => {
 
     return () => {
       if (_map) _map.remove();
+      setMap(undefined);
     };
-  }, []);
+  }, [setMap]);
 
   useEffect(() => {
     if (!map) return;
     map.on("load", async () => {
       setMapLoaded(true);
     });
-  }, [map, geoJSON]);
-
-  useEffect(() => {
-    if (!mapLoaded || !map || !geoJSON) return;
-
-    const bounds = new maplibregl.LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number],
-    );
-
-    map.fitBounds(bounds, { padding: 100 });
-
-    const layers = map.getStyle().layers;
-    // Find the index of the first symbol layer in the map style
-    let firstSymbolId;
-    for (let i = 0; i < layers.length; i++) {
-      if (layers[i].type === "symbol") {
-        firstSymbolId = layers[i].id;
-        break;
-      }
-    }
-
-    if (!map.getImage("pulsing-dot"))
-      map.addImage("pulsing-dot", pulsingDot(map), { pixelRatio: 2 });
-
-    map.addSource("places", {
-      type: "geojson",
-      data: geoJSON,
-    });
-
-    map.addLayer(
-      {
-        id: "place",
-        type: "fill",
-        source: "places",
-        layout: {},
-        paint: {
-          "fill-color": "blue",
-          "fill-opacity": 0.25,
-        },
-        filter: ["==", "$type", "Polygon"],
-      },
-      firstSymbolId,
-    );
-
-    map.addLayer({
-      id: "outline",
-      type: "line",
-      source: "places",
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "blue",
-        "line-width": 2,
-        "line-opacity": 0.5,
-      },
-      filter: ["==", "$type", "Polygon"],
-    });
-
-    map.addLayer({
-      id: "related-places",
-      type: "symbol",
-      source: "places",
-      layout: {
-        "icon-image": "pulsing-dot",
-      },
-      filter: ["==", "$type", "Point"],
-    });
-
-    return () => {
-      try {
-        if (!map) return;
-        if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
-        if (map.getLayer("place")) map.removeLayer("place");
-        if (map.getLayer("outline")) map.removeLayer("outline");
-        if (map.getLayer("related-places")) map.removeLayer("related-places");
-        if (map.getSource("places")) map.removeSource("places");
-      } catch {}
-    };
-  }, [map, mapLoaded, geoJSON]);
+  }, [map, setMapLoaded]);
 
   return <div id="mapContainer" className="h-[calc(100vh-5rem)]"></div>;
 };

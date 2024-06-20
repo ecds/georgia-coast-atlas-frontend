@@ -1,11 +1,12 @@
 import type maplibregl from "maplibre-gl";
 
-const size = 75;
-const canvas = document.createElement("canvas");
-
 // implementation of StyleImageInterface to draw a pulsing dot icon on the map
 // Search for StyleImageInterface in https://maplibre.org/maplibre-gl-js/docs/API/
 export const pulsingDot = (map: maplibregl.Map) => {
+  if (!document) return;
+
+  const size = 75;
+  const canvas = document.createElement("canvas");
   const icon = {
     width: size,
     height: size,

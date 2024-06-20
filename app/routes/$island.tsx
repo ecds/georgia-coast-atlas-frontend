@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { islands, dataHosts } from "~/config.ts";
@@ -9,6 +9,7 @@ import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import RelatedPlaces from "~/components/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/RelatedVideos";
+import { IslandContext } from "~/contexts";
 import type {
   TCoreDataPlace,
   TWordPressData,
@@ -18,6 +19,7 @@ import type {
 } from "~/types";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
+import type { Map as TMap } from "maplibre-gl";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.island == `${i.slug}-island`);
@@ -43,12 +45,7 @@ export const clientLoader = async ({
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  const geoJSON = relatedRecords.places?.relatedPlaces
-    ? toFeatureCollection([
-        serverData.place,
-        ...relatedRecords.places.relatedPlaces,
-      ])
-    : toFeatureCollection([serverData.place]);
+  const geoJSON = toFeatureCollection([serverData.place]);
 
   return { ...serverData, ...relatedRecords, wpData: wpData[0], geoJSON };
 };
@@ -58,7 +55,8 @@ clientLoader.hydrate = true;
 const IslandPage = () => {
   const { island, wpData, place, geoJSON, ...related } =
     useLoaderData<TIslandClientData>();
-
+  const [map, setMap] = useState<TMap | undefined>(undefined);
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
 
@@ -66,58 +64,130 @@ const IslandPage = () => {
     if (navigation.state === "idle") topRef.current?.scrollIntoView();
   }, [navigation]);
 
+  useEffect(() => {
+    if (!mapLoaded || !map) return;
+
+    const layers = map.getStyle().layers;
+    // Find the index of the first symbol layer in the map style
+    let firstSymbolId;
+    for (let i = 0; i < layers.length; i++) {
+      if (layers[i].type === "symbol") {
+        firstSymbolId = layers[i].id;
+        break;
+      }
+    }
+
+    map.addSource("island", {
+      type: "geojson",
+      data: geoJSON,
+    });
+
+    map.addLayer(
+      {
+        id: "fill",
+        type: "fill",
+        source: "island",
+        layout: {},
+        paint: {
+          "fill-color": "blue",
+          "fill-opacity": 0.25,
+        },
+        filter: ["==", "$type", "Polygon"],
+      },
+      firstSymbolId,
+    );
+
+    map.addLayer({
+      id: "outline",
+      type: "line",
+      source: "island",
+      layout: {
+        "line-join": "round",
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": "blue",
+        "line-width": 2,
+        "line-opacity": 0.5,
+      },
+      filter: ["==", "$type", "Polygon"],
+    });
+
+    return () => {
+      try {
+        if (!map) return;
+        if (map.getLayer("fill")) map.removeLayer("fill");
+        if (map.getLayer("outline")) map.removeLayer("outline");
+        if (map.getSource("island")) map.removeSource("island");
+      } catch {}
+    };
+  }, [map, mapLoaded, geoJSON]);
+
   return (
-    <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
-      <div className="w-1/2 overflow-scroll pb-32">
-        <div className="flex flex-col">
-          <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
-            {island.label} Island
-          </h1>
-          <div ref={topRef} className="relative -top-12 z-50 bg-black">
-            <FeaturedMedium record={related} />
+    <IslandContext.Provider
+      value={{
+        map,
+        setMap,
+        mapLoaded,
+        setMapLoaded,
+      }}
+    >
+      <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
+        <div className="w-1/2 overflow-scroll pb-32">
+          <div className="flex flex-col">
+            <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
+              {island.label} Island
+            </h1>
+            <div ref={topRef} className="relative -top-12 z-50 bg-black">
+              <FeaturedMedium record={related} />
+            </div>
+            <div
+              className="relative px-4 -mt-12"
+              dangerouslySetInnerHTML={{
+                __html: wpData?.content.rendered,
+              }}
+            />
           </div>
-          <div
-            className="relative px-4 -mt-12"
-            dangerouslySetInnerHTML={{
-              __html: wpData?.content.rendered,
-            }}
-          />
+
+          {related.places?.relatedPlaces && (
+            <RelatedPlaces places={related.places.relatedPlaces} />
+          )}
+
+          {related.items?.videos && (
+            <RelatedVideos videos={related.items.videos} />
+          )}
+
+          {related.media_contents?.photographs && (
+            <div className="flex flex-wrap justify-around">
+              {related.media_contents?.photographs && (
+                <>
+                  {related.media_contents.photographs.map((photo) => {
+                    return (
+                      <img
+                        key={photo.name}
+                        src={photo.content_thumbnail_url}
+                        alt=""
+                        className="p-8 drop-shadow-md"
+                      />
+                    );
+                  })}
+                </>
+              )}
+              <ClientOnly>
+                {() => <IIIFPhoto manifestURL={place.iiif_manifest} />}
+              </ClientOnly>
+            </div>
+          )}
         </div>
-
-        {related.places?.relatedPlaces && (
-          <RelatedPlaces places={related.places.relatedPlaces} />
-        )}
-
-        {related.items?.videos && (
-          <RelatedVideos videos={related.items.videos} />
-        )}
-
-        {related.media_contents?.photographs && (
-          <div className="flex flex-wrap justify-around">
-            {related.media_contents?.photographs && (
-              <>
-                {related.media_contents.photographs.map((photo) => {
-                  return (
-                    <img
-                      key={photo.name}
-                      src={photo.content_thumbnail_url}
-                      alt=""
-                      className="p-8 drop-shadow-md"
-                    />
-                  );
-                })}
-              </>
+        <div className="w-1/2">
+          <ClientOnly>
+            {() => (
+              <Map map={map} setMap={setMap} setMapLoaded={setMapLoaded} />
             )}
-            <ClientOnly>
-              {() => <IIIFPhoto manifestURL={place.iiif_manifest} />}
-            </ClientOnly>
-          </div>
-        )}
+          </ClientOnly>
+        </div>
       </div>
-      <div className="w-1/2">
-        <ClientOnly>{() => <Map geoJSON={geoJSON} />}</ClientOnly>
-      </div>
-    </div>
+    </IslandContext.Provider>
   );
 };
 
