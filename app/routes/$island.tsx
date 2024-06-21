@@ -1,9 +1,10 @@
+import { LngLatBounds } from "maplibre-gl";
+import { bbox } from "@turf/turf";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { islands, dataHosts } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
-import IIIFPhoto from "~/components/IIIFPhoto.client";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import RelatedPlaces from "~/components/RelatedPlaces";
@@ -20,6 +21,7 @@ import type {
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import type { Map as TMap } from "maplibre-gl";
+import RelatedPhotographs from "~/components/RelatedPhotographs";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.island == `${i.slug}-island`);
@@ -65,7 +67,7 @@ const IslandPage = () => {
   }, [navigation]);
 
   useEffect(() => {
-    if (!mapLoaded || !map) return;
+    if (!mapLoaded || !map || !geoJSON) return;
 
     const layers = map.getStyle().layers;
     // Find the index of the first symbol layer in the map style
@@ -113,6 +115,12 @@ const IslandPage = () => {
       filter: ["==", "$type", "Polygon"],
     });
 
+    const bounds = new LngLatBounds(
+      bbox(geoJSON) as [number, number, number, number],
+    );
+
+    map.fitBounds(bounds, { padding: 100 });
+
     return () => {
       try {
         if (!map) return;
@@ -158,25 +166,7 @@ const IslandPage = () => {
           )}
 
           {related.media_contents?.photographs && (
-            <div className="flex flex-wrap justify-around">
-              {related.media_contents?.photographs && (
-                <>
-                  {related.media_contents.photographs.map((photo) => {
-                    return (
-                      <img
-                        key={photo.name}
-                        src={photo.content_thumbnail_url}
-                        alt=""
-                        className="p-8 drop-shadow-md"
-                      />
-                    );
-                  })}
-                </>
-              )}
-              <ClientOnly>
-                {() => <IIIFPhoto manifestURL={place.iiif_manifest} />}
-              </ClientOnly>
-            </div>
+            <RelatedPhotographs manifest={place.iiif_manifest} />
           )}
         </div>
         <div className="w-1/2">

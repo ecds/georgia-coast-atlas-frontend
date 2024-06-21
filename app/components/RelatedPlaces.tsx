@@ -70,17 +70,19 @@ const RelatedPlaces = ({ places }: Props) => {
 
   return (
     <RelatedSection title="Related Places">
-      {places.map((place) => {
-        return (
-          <button
-            key={place.uuid}
-            className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace == place ? "some classes for active" : ""}`}
-            onClick={() => setActivePlace(place)}
-          >
-            {place.name}
-          </button>
-        );
-      })}
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        {places.map((place) => {
+          return (
+            <button
+              key={place.uuid}
+              className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace == place ? "some classes for active" : ""}`}
+              onClick={() => setActivePlace(place)}
+            >
+              {place.name}
+            </button>
+          );
+        })}
+      </div>
     </RelatedSection>
   );
 };

@@ -1,4 +1,6 @@
 import type { Geometry, FeatureCollection } from "geojson";
+import type { LabeledIIIFExternalWebResource } from "@samvera/clover-iiif/image";
+import type { ImageService } from "@iiif/presentation-3";
 
 type TNames = {
   name: string;
@@ -20,6 +22,50 @@ type TUserDefinedField = {
     value: string;
   };
 } | null;
+
+type TIIIFLabel = {
+  [key: string]: string[];
+};
+
+// type TIIIFService = {
+//   id: string;
+//   type: string;
+//   profile: string;
+// };
+
+export type TIIIFBody = LabeledIIIFExternalWebResource & {
+  service: ImageService[];
+};
+
+type TAnnotation = {
+  id: string;
+  type: "Annotation";
+  motivation: string;
+  body: TIIIFBody;
+};
+
+type TAnnotationPage = {
+  id: string;
+  type: "AnnotationPage";
+  items: TAnnotation[];
+};
+
+type TCanvas = {
+  id: string;
+  type: "Canvas";
+  width: number;
+  height: number;
+  label: TIIIFLabel;
+  items: TAnnotationPage[];
+};
+
+export type TIIIFManifest = {
+  "@context": string[];
+  id: string;
+  type: "Manifest";
+  items: TCanvas[];
+  label: TIIIFLabel;
+};
 
 export type TCoreDataPlaceRecord = {
   uuid: string;
