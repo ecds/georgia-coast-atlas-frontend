@@ -31,7 +31,6 @@ const RelatedPhotographs = ({ manifest }: Props) => {
 
   useEffect(() => {
     if (!photographs) return;
-    console.log("🚀 ~ RelatedPhotographs ~ iiifItems:", photographs);
     setActivePhotograph(photographs[0].body);
   }, [photographs]);
 

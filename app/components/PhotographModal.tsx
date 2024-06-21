@@ -53,7 +53,7 @@ const PhotographModal = ({
                 leaveFrom="opacity-100 transform-[scale(100%)]"
                 leaveTo="opacity-0 transform-[scale(95%)]"
               >
-                <DialogPanel className="space-y-4 max-w-[66vw] border bg-white p-12 rounded-xl">
+                <DialogPanel className="space-y-4 min-w-[66vw] border bg-white p-12 rounded-xl">
                   <DialogTitle as="div" className="flex justify-between">
                     <h3 className="text-base/7 font-medium text-black">{""}</h3>
 
@@ -70,40 +70,42 @@ const PhotographModal = ({
                           )}
                         </ClientOnly>
                       </div>
-                      <Carousel
-                        showArrows
-                        showDots
-                        scrollDistance="slide"
-                        wrapMode="wrap"
-                      >
-                        {photographs.map((photograph) => {
-                          return (
-                            <button
-                              key={photograph.thumb}
-                              onClick={() =>
-                                setActivePhotograph(photograph.body)
-                              }
-                              onKeyDown={({ key }) => {
-                                if (key === "Enter")
-                                  setActivePhotograph(photograph.body);
-                              }}
-                            >
-                              <figure className="p-8 min-w-48 text-wrap">
-                                <img
-                                  className="drop-shadow-md"
-                                  src={photograph.thumb}
-                                  alt=""
-                                />
-                                <figcaption className="text-wrap text-left text-sm pt-4">
-                                  Photograph about some place on some island off
-                                  the Georgia Coast.
-                                </figcaption>
-                              </figure>
-                              <span className="sr-only">Select image</span>
-                            </button>
-                          );
-                        })}
-                      </Carousel>
+                      {photographs.length > 1 && (
+                        <Carousel
+                          showArrows
+                          showDots
+                          scrollDistance="slide"
+                          wrapMode="wrap"
+                        >
+                          {photographs.map((photograph) => {
+                            return (
+                              <button
+                                key={photograph.thumb}
+                                onClick={() =>
+                                  setActivePhotograph(photograph.body)
+                                }
+                                onKeyDown={({ key }) => {
+                                  if (key === "Enter")
+                                    setActivePhotograph(photograph.body);
+                                }}
+                              >
+                                <figure className="p-8 min-w-48 text-wrap">
+                                  <img
+                                    className="drop-shadow-md"
+                                    src={photograph.thumb}
+                                    alt=""
+                                  />
+                                  <figcaption className="text-wrap text-left text-sm pt-4 max-w-48">
+                                    Photograph about some place on some island
+                                    off the Georgia Coast.
+                                  </figcaption>
+                                </figure>
+                                <span className="sr-only">Select image</span>
+                              </button>
+                            );
+                          })}
+                        </Carousel>
+                      )}
                     </div>
                   )}
                   {/* </ClientOnly> */}
