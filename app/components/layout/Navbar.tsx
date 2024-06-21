@@ -1,12 +1,17 @@
-import { NavLink, useNavigate } from "@remix-run/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { Link, NavLink, useLocation } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
 import { islands } from "~/config.ts";
-import { useState } from "react";
-import islandsButtonImage from "app/images/islandsButton.png";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsDropdownOpen(false);
+  }, [location]);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -34,36 +39,24 @@ const Navbar = () => {
       <div className="relative inline-block mr-6">
         <button
           onClick={toggleDropdown}
-          className="flex justify-center"
+          className="flex justify-center text-3xl text-white"
           tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
+          onKeyDown={({ key }) => {
+            if (key === "Enter") {
               toggleDropdown();
             }
           }}
         >
-          <img src={islandsButtonImage} alt="Islands Button" />
+          <FontAwesomeIcon icon={faBars} />
         </button>
         {isDropdownOpen && (
-          <div className="absolute right-1 transform translate-x-1/3 top-full mt-2 bg-white rounded-md shadow-lg w-64">
-            <ul className="font-serif text-lg text-center">
+          <div className="absolute right-8 transform translate-x-1/3 top-full mt-4 bg-white rounded-md shadow-lg w-max">
+            <ul className="text-lg text-center">
               {islands.map((island) => (
-                <li key={island.slug}>
-                  <button
-                    className="px-6 py-3 hover:bg-gray-200 w-full text-left"
-                    onClick={() => {
-                      navigate(`/${island.slug}-island`);
-                      setIsDropdownOpen(false);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        navigate(`/${island.slug}-island`);
-                        setIsDropdownOpen(false);
-                      }
-                    }}
-                  >
+                <li key={island.slug} className="text-left p-2">
+                  <Link to={`/${island.slug}-island`}>
                     {island.label} Island
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
