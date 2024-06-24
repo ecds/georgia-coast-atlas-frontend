@@ -21,11 +21,16 @@ const RelatedPlaces = ({ places }: Props) => {
     if (!map || !mapLoaded) return;
     // This will give you the GeoJSON to add to the map.
     const geoJSON = toFeatureCollection(places);
+    // Bounds of all related places.
     const bounds = new LngLatBounds(
       bbox(geoJSON) as [number, number, number, number],
     );
+    // Extend the island bounds if related places are beyond the island bounds.
+    // TODO: This can probably be removed. Sapelo is the only island with a related
+    // place off the island. This is probably an error in the data.
+    const newBounds = map.getBounds().extend(bounds);
 
-    map.fitBounds(bounds, { padding: 100 });
+    map.fitBounds(newBounds, { padding: 100 });
 
     if (!map.getImage("pulsing-dot")) {
       const dot = pulsingDot(map);
