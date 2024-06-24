@@ -18,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#4D4D4D] fixed top-0 w-screen z-50 px-6 pt-6 h-20 flex justify-between">
+    <nav className="bg-[#4D4D4D] fixed top-0 w-screen px-6 pt-6 h-20 flex justify-between z-10">
       <ul className="flex flex-row space-x-6 uppercase">
         <li>
           <NavLink
