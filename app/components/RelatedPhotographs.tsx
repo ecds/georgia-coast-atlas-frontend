@@ -36,7 +36,7 @@ const RelatedPhotographs = ({ manifest }: Props) => {
 
   return (
     <RelatedSection title="Photographs">
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap justify-around md:justify-start">
         {photographs && (
           <>
             {photographs.map((photo) => {
@@ -46,20 +46,16 @@ const RelatedPhotographs = ({ manifest }: Props) => {
                   activePhotograph={activePhotograph}
                   photographs={photographs}
                   setActivePhotograph={setActivePhotograph}
+                  photograph={photo}
                 >
-                  <button
-                    onClick={() => setActivePhotograph(photo.body)}
-                    onKeyDown={({ key }) => {
-                      if (key === "Enter") setActivePhotograph(photo.body);
-                    }}
-                  >
+                  <figure>
                     <img
                       src={photo.thumb}
                       alt=""
-                      className="p-8 drop-shadow-md h-48"
+                      className="p-8 drop-shadow-md h-auto md:h-48 w-full md:w-auto"
                     />
                     <span className="sr-only">Select image</span>
-                  </button>
+                  </figure>
                 </PhotographModal>
               );
             })}

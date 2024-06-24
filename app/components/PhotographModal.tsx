@@ -20,27 +20,36 @@ interface Props {
   photographs: { full: string; thumb: string; body: TIIIFBody }[];
   activePhotograph: TIIIFBody | undefined;
   setActivePhotograph: any;
+  photograph: { full: string; thumb: string; body: TIIIFBody };
 }
 
 const PhotographModal = ({
   children,
-  activePhotograph,
   photographs,
   setActivePhotograph,
+  activePhotograph,
+  photograph,
 }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const handleClick = () => {
+    setActivePhotograph(photograph.body);
+    setIsOpen(true);
+    console.log("🚀 ~ handleClick ~ photograph:", photograph);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   return (
     <>
-      <button onClick={open}>{children}</button>
+      <button onClick={handleClick}>{children}</button>
       <Transition appear show={isOpen}>
         <Dialog
           as="div"
           className="relative z-10 focus:outline-none"
-          onClose={close}
+          onClose={handleClose}
         >
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -53,11 +62,11 @@ const PhotographModal = ({
                 leaveFrom="opacity-100 transform-[scale(100%)]"
                 leaveTo="opacity-0 transform-[scale(95%)]"
               >
-                <DialogPanel className="space-y-4 min-w-[66vw] border bg-white p-12 rounded-xl">
+                <DialogPanel className="space-y-4 w-screen md:w-1/2 lg:w-[66vw] border bg-white p-6 rounded-xl">
                   <DialogTitle as="div" className="flex justify-between">
                     <h3 className="text-base/7 font-medium text-black">{""}</h3>
 
-                    <Button onClick={close}>
+                    <Button onClick={handleClose}>
                       <FontAwesomeIcon icon={faCircleXmark} /> Close
                     </Button>
                   </DialogTitle>
@@ -71,12 +80,7 @@ const PhotographModal = ({
                         </ClientOnly>
                       </div>
                       {photographs.length > 1 && (
-                        <Carousel
-                          showArrows
-                          showDots
-                          scrollDistance="slide"
-                          wrapMode="wrap"
-                        >
+                        <Carousel showArrows scrollDistance="slide">
                           {photographs.map((photograph) => {
                             return (
                               <button
@@ -89,16 +93,16 @@ const PhotographModal = ({
                                     setActivePhotograph(photograph.body);
                                 }}
                               >
-                                <figure className="p-8 min-w-48 text-wrap">
+                                <figure className="p-8 w-48 text-wrap">
                                   <img
                                     className="drop-shadow-md"
                                     src={photograph.thumb}
                                     alt=""
                                   />
-                                  <figcaption className="text-wrap text-left text-sm pt-4 max-w-48">
+                                  {/* <figcaption className="text-wrap text-left text-sm pt-4 max-w-24">
                                     Photograph about some place on some island
                                     off the Georgia Coast.
-                                  </figcaption>
+                                  </figcaption> */}
                                 </figure>
                                 <span className="sr-only">Select image</span>
                               </button>

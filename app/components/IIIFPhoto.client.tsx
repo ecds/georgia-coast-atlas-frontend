@@ -1,22 +1,13 @@
 import CloverImage from "@samvera/clover-iiif/image";
 import type { TIIIFBody } from "~/types";
 
-const viewerOptions = {
-  canvasBackgroundColor: "#1a1d1e",
-  showTitle: false,
-  showIIIFBadge: false,
-  informationPanel: {
-    open: false,
-    renderToggle: false,
-    renderContentSearch: false,
+const openSeadragonConfig = {
+  showNavigator: false,
+  showRotationControl: false,
+  gestureSettingsMouse: {
+    scrollToZoom: true,
   },
-  openSeadragon: {
-    showNavigator: false,
-    showRotationControl: false,
-    gestureSettingsMouse: {
-      scrollToZoom: true,
-    },
-  },
+  navigatorPosition: "TOP_LEFT",
 };
 
 interface Props {
@@ -27,7 +18,7 @@ const IIIFPhoto = ({ activePhotograph }: Props) => {
   return (
     <CloverImage
       body={activePhotograph}
-      openSeadragonConfig={viewerOptions.openSeadragon}
+      openSeadragonConfig={openSeadragonConfig}
     />
   );
 };

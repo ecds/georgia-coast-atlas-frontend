@@ -141,7 +141,7 @@ const IslandPage = () => {
       }}
     >
       <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
-        <div className="w-1/2 overflow-scroll pb-32">
+        <div className="w-full md:w-1/2 overflow-scroll pb-32">
           <div className="flex flex-col">
             <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
               {island.label} Island
@@ -169,7 +169,7 @@ const IslandPage = () => {
             <RelatedPhotographs manifest={place.iiif_manifest} />
           )}
         </div>
-        <div className="w-1/2">
+        <div className="hidden md:block w-1/2">
           <ClientOnly>
             {() => (
               <Map map={map} setMap={setMap} setMapLoaded={setMapLoaded} />
