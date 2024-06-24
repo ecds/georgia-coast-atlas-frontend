@@ -238,3 +238,10 @@ export type TCoreDataRelatedEndpoints = {
   uiLabel: string;
   types: TRelatedType[];
 };
+
+export type TPhotograph = {
+  full: string;
+  thumb: string;
+  body: TIIIFBody;
+  name: string;
+};

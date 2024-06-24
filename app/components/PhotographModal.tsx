@@ -13,14 +13,14 @@ import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { ClientOnly } from "remix-utils/client-only";
 import IIIFPhoto from "./IIIFPhoto.client";
 import type { ReactNode } from "react";
-import type { TIIIFBody } from "~/types";
+import type { TIIIFBody, TPhotograph } from "~/types";
 
 interface Props {
   children: ReactNode;
-  photographs: { full: string; thumb: string; body: TIIIFBody }[];
+  photographs: TPhotograph[];
   activePhotograph: TIIIFBody | undefined;
   setActivePhotograph: any;
-  photograph: { full: string; thumb: string; body: TIIIFBody };
+  photograph: TPhotograph;
 }
 
 const PhotographModal = ({
@@ -35,7 +35,6 @@ const PhotographModal = ({
   const handleClick = () => {
     setActivePhotograph(photograph.body);
     setIsOpen(true);
-    console.log("🚀 ~ handleClick ~ photograph:", photograph);
   };
 
   const handleClose = () => {
@@ -99,10 +98,9 @@ const PhotographModal = ({
                                     src={photograph.thumb}
                                     alt=""
                                   />
-                                  {/* <figcaption className="text-wrap text-left text-sm pt-4 max-w-24">
-                                    Photograph about some place on some island
-                                    off the Georgia Coast.
-                                  </figcaption> */}
+                                  <figcaption className="text-left text-sm pt-1 max-w-24 break-words">
+                                    {photograph.name}
+                                  </figcaption>
                                 </figure>
                                 <span className="sr-only">Select image</span>
                               </button>

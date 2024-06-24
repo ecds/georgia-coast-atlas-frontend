@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import RelatedSection from "./RelatedSection";
 import PhotographModal from "./PhotographModal";
-import type { TIIIFManifest, TIIIFBody } from "~/types";
+import type { TIIIFManifest, TIIIFBody, TPhotograph } from "~/types";
 
 interface Props {
   manifest: string;
 }
 
 const RelatedPhotographs = ({ manifest }: Props) => {
-  const [photographs, setPhotographs] =
-    useState<{ full: string; thumb: string; body: TIIIFBody }[]>();
+  const [photographs, setPhotographs] = useState<TPhotograph[]>();
   const [activePhotograph, setActivePhotograph] = useState<TIIIFBody>();
 
   useEffect(() => {
@@ -22,6 +21,7 @@ const RelatedPhotographs = ({ manifest }: Props) => {
             full: `${item.items[0].items[0].body.service[0].id}/full/max/0/default.jpg`,
             thumb: `${item.items[0].items[0].body.service[0].id}/square/150,/0/default.jpg`,
             body: item.items[0].items[0].body,
+            name: item.label.en[0],
           };
         }),
       );
@@ -48,13 +48,16 @@ const RelatedPhotographs = ({ manifest }: Props) => {
                   setActivePhotograph={setActivePhotograph}
                   photograph={photo}
                 >
-                  <figure>
+                  <figure className="md:m-8 max-w-xs">
                     <img
                       src={photo.thumb}
                       alt=""
-                      className="p-8 drop-shadow-md h-auto md:h-48 w-full md:w-auto"
+                      className="drop-shadow-md h-auto md:h-32 w-full md:w-auto"
                     />
                     <span className="sr-only">Select image</span>
+                    <figcaption className="md:w-32 text-left break-words text-sm pt-1">
+                      {photo.name}
+                    </figcaption>
                   </figure>
                 </PhotographModal>
               );
