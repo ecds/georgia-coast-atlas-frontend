@@ -9,7 +9,6 @@ const VideoEmbed = ({ video }: Props) => {
   const [embedSrc, setEmbedSrc] = useState<string | undefined>(undefined);
 
   useMemo(() => {
-    console.log("🚀 ~ useMemo ~ video.provider:", video.provider);
     switch (video.provider) {
       case "Vimeo":
         setEmbedSrc(`https://player.vimeo.com/video/${video.embed_id}`);
