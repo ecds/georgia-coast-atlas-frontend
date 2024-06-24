@@ -10,14 +10,14 @@ interface Props {
 const RelatedVideos = ({ videos }: Props) => {
   return (
     <RelatedSection title="Videos">
-      <div className="flex flex-wrap justify-around">
+      <div className="flex flex-wrap justify-around md:justify-start">
         {videos.map((video) => {
           return (
             <VideoModal key={video.uuid} video={video}>
               <VideoThumbnail
                 video={video}
                 figClassName="md:m-8 max-w-xs"
-                imgClassName="drop-shadow-md border rounded-lg"
+                imgClassName="drop-shadow-md md:h-32  md:w-32"
               />
             </VideoModal>
           );
