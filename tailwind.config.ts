@@ -34,6 +34,10 @@ export default {
             },
           },
         },
+        "[maplibregl-popup-close-button], button.maplibregl-popup-close-button":
+          {
+            paddingRight: ".5rem !important",
+          },
       });
     }),
   ],

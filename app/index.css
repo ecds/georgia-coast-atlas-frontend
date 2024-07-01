@@ -3,21 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.maplibregl-popup {
-    max-width: 300px;
-    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    padding: 10px;
-    border-radius: 8px;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .maplibregl-popup-content {
-    padding: 0;
-  }
-  
-  .maplibregl-popup-tip {
-    display: none;
-  }
-  
-  
+/* button.maplibregl-popup-close-button {
+  padding-right: .5rem;
+} */
