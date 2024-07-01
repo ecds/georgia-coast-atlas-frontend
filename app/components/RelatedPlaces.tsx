@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { LngLatBounds } from "maplibre-gl";
+import maplibregl, { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
@@ -13,21 +13,12 @@ interface Props {
 
 const RelatedPlaces = ({ places }: Props) => {
   const { map, mapLoaded } = useContext(IslandContext);
-  const [activePlace, setActivePlace] = useState<
-    TCoreDataPlaceRecord | undefined
-  >(undefined);
+  const [activePlace, setActivePlace] = useState<TCoreDataPlaceRecord | undefined>(undefined);
 
   useEffect(() => {
     if (!map || !mapLoaded) return;
-    // This will give you the GeoJSON to add to the map.
     const geoJSON = toFeatureCollection(places);
-    // Bounds of all related places.
-    const bounds = new LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number],
-    );
-    // Extend the island bounds if related places are beyond the island bounds.
-    // TODO: This can probably be removed. Sapelo is the only island with a related
-    // place off the island. This is probably an error in the data.
+    const bounds = new LngLatBounds(bbox(geoJSON) as [number, number, number, number]);
     const newBounds = map.getBounds().extend(bounds);
 
     map.fitBounds(newBounds, { padding: 100 });
@@ -54,8 +45,36 @@ const RelatedPlaces = ({ places }: Props) => {
       filter: ["==", "$type", "Point"],
     });
 
-    // TODO: Add interaction here:
-    // https://maplibre.org/maplibre-gl-js/docs/examples/popup-on-click/
+    map.on('click', 'places', (e) => {
+      if (!e.features || !e.features.length) return;
+
+      const feature = e.features[0];
+      if (feature.geometry.type !== "Point") return;
+
+      const coordinates = feature.geometry.coordinates as [number, number];
+      const description = feature.properties?.description || "No description available";
+
+      console.log("Feature clicked:", feature);
+      console.log("Coordinates:", coordinates);
+      console.log("Description:", description);
+
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      new maplibregl.Popup({ offset: [10, 0], anchor: 'bottom' }) 
+        .setLngLat(coordinates)
+        .setHTML(`<div class="maplibregl-popup-content">${description}</div>`)
+        .addTo(map);
+    });
+
+    map.on('mouseenter', 'places', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'places', () => {
+      map.getCanvas().style.cursor = '';
+    });
 
     return () => {
       try {
@@ -63,13 +82,15 @@ const RelatedPlaces = ({ places }: Props) => {
         if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
         if (map.getLayer("places")) map.removeLayer("places");
         if (map.getSource("places")) map.removeSource("places");
-      } catch {}
+      } catch (error) {
+        console.error("Cleanup error:", error);
+      }
     };
   }, [map, places, activePlace, mapLoaded]);
 
   useEffect(() => {
     // TODO: zoom to/highlight/show popup when some clicks a
-    // replated place from the list - doing so sets the value
+    // related place from the list - doing so sets the value
     // for activePlace.
   }, [activePlace]);
 
@@ -80,7 +101,7 @@ const RelatedPlaces = ({ places }: Props) => {
           return (
             <button
               key={place.uuid}
-              className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace == place ? "some classes for active" : ""}`}
+              className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === place ? "some classes for active" : ""}`}
               onClick={() => setActivePlace(place)}
             >
               {place.name}
