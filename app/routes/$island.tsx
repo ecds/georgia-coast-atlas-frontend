@@ -67,7 +67,15 @@ const IslandPage = () => {
   }, [navigation]);
 
   useEffect(() => {
-    if (!mapLoaded || !map || !geoJSON) return;
+    console.log(
+      "🚀 ~ IslandPage ~ map, mapLoaded, geoJSON, island:",
+      map,
+      mapLoaded,
+      geoJSON,
+      island,
+    );
+    if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.slug}-fill`))
+      return;
 
     const layers = map.getStyle().layers;
     // Find the index of the first symbol layer in the map style
@@ -79,16 +87,16 @@ const IslandPage = () => {
       }
     }
 
-    map.addSource("island", {
+    map.addSource(island.slug, {
       type: "geojson",
       data: geoJSON,
     });
 
     map.addLayer(
       {
-        id: "fill",
+        id: `${island.slug}-fill`,
         type: "fill",
-        source: "island",
+        source: island.slug,
         layout: {},
         paint: {
           "fill-color": "blue",
@@ -100,9 +108,9 @@ const IslandPage = () => {
     );
 
     map.addLayer({
-      id: "outline",
+      id: `${island.slug}-outline`,
       type: "line",
-      source: "island",
+      source: island.slug,
       layout: {
         "line-join": "round",
         "line-cap": "round",
@@ -122,14 +130,17 @@ const IslandPage = () => {
     map.fitBounds(bounds, { padding: 100 });
 
     return () => {
+      console.log("clear island");
       try {
         if (!map) return;
-        if (map.getLayer("fill")) map.removeLayer("fill");
-        if (map.getLayer("outline")) map.removeLayer("outline");
-        if (map.getSource("island")) map.removeSource("island");
+        if (map.getLayer(`${island.slug}-fill`))
+          map.removeLayer(`${island.slug}-fill`);
+        if (map.getLayer(`${island.slug}-outline`))
+          map.removeLayer(`${island.slug}-outline`);
+        if (map.getSource(island.slug)) map.removeSource(island.slug);
       } catch {}
     };
-  }, [map, mapLoaded, geoJSON]);
+  }, [map, mapLoaded, geoJSON, island]);
 
   return (
     <IslandContext.Provider

@@ -28,6 +28,7 @@ const RelatedPlaces = ({ places }: Props) => {
     // Extend the island bounds if related places are beyond the island bounds.
     // TODO: This can probably be removed. Sapelo is the only island with a related
     // place off the island. This is probably an error in the data.
+    // FIXME: This doesn't even work. The island fit bounds gets called after this.
     const newBounds = map.getBounds().extend(bounds);
 
     map.fitBounds(newBounds, { padding: 100 });
