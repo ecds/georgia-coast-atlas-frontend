@@ -18,13 +18,13 @@ export default {
     plugin(function ({ addBase }) {
       addBase({
         html: {
-          p: {
+          ".primary-content > p": {
             lineHeight: "1.75rem",
             marginTop: "1.25rem",
             marginBottom: "1.25rem",
           },
           main: {
-            "p:first-of-type:first-letter": {
+            ".primary-content > p:first-of-type:first-letter": {
               float: "left",
               fontFeatureSettings: '"ss06" !important',
               fontSize: "6rem",
@@ -43,4 +43,5 @@ export default {
       });
     }),
   ],
+  safelist: ["bg-blue-500"],
 } satisfies Config;

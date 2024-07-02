@@ -161,7 +161,7 @@ const IslandPage = () => {
               <FeaturedMedium record={related} />
             </div>
             <div
-              className="relative px-4 -mt-12"
+              className="relative px-4 -mt-12 primary-content"
               dangerouslySetInnerHTML={{
                 __html: wpData?.content.rendered,
               }}
