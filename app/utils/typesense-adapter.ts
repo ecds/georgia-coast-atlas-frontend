@@ -1,5 +1,6 @@
 // FIXME: This is a known issue: https://github.com/typesense/typesense-instantsearch-adapter/issues/199
 import TypesenseInstantSearchAdapterExport from "typesense-instantsearch-adapter";
+import { keys } from "~/config";
 
 export const TypesenseInstantSearchAdapter =
   // @ts-ignore
@@ -8,7 +9,7 @@ export const TypesenseInstantSearchAdapter =
 
 export const typesenseInstantSearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
-    apiKey: "a97debbe278d", // Be sure to use an API key that only allows search operations
+    apiKey: keys.typesense, // Be sure to use an API key that only allows search operations
     nodes: [
       {
         host: "coredata.ecdsdev.org",

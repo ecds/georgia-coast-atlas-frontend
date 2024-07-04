@@ -1,11 +1,8 @@
 import { SearchBox } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSpinner,
-  faSearch,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faClose } from "@fortawesome/free-solid-svg-icons";
 import type { ReactNode } from "react";
+import FacetMenu from "./FacetMenu";
 
 const ButtonComponent = ({
   children,
@@ -24,7 +21,7 @@ const ButtonComponent = ({
 };
 const SubmitComponent = () => {
   return (
-    <ButtonComponent className="end-2.5">
+    <ButtonComponent className="start-0">
       <FontAwesomeIcon icon={faSearch} />
     </ButtonComponent>
   );
@@ -32,7 +29,7 @@ const SubmitComponent = () => {
 
 const ResetComponent = () => {
   return (
-    <ButtonComponent className="end-8">
+    <ButtonComponent className="end-0">
       <FontAwesomeIcon icon={faClose} />
     </ButtonComponent>
   );
@@ -40,27 +37,36 @@ const ResetComponent = () => {
 
 const LoadingComponent = () => {
   return (
-    <ButtonComponent className="end-8">
-      <FontAwesomeIcon icon={faSpinner} spin className="text-xl" />
-    </ButtonComponent>
+    <div className="absolute z-10 h-screen bg-white/50 w-full top-0">
+      {/* <FontAwesomeIcon
+        icon={faSpinner}
+        spin
+        className="text-xl relative top-[50%] left-[50%]"
+      /> */}
+    </div>
   );
 };
 
 const SearchForm = () => {
   return (
-    <SearchBox
-      resetIconComponent={ResetComponent}
-      submitIconComponent={SubmitComponent}
-      loadingIconComponent={LoadingComponent}
-      placeholder="Search Places"
-      classNames={{
-        root: "px-8 sticky top-0",
-        form: "max-w-md relative h-16",
-        input:
-          "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none",
-        resetIcon: "hidden",
-      }}
-    />
+    <div className="flex">
+      <SearchBox
+        resetIconComponent={ResetComponent}
+        submitIconComponent={SubmitComponent}
+        loadingIconComponent={LoadingComponent}
+        placeholder="Search Places"
+        classNames={{
+          root: "ps-8 pe-4 sticky top-0 grow",
+          form: "max-w-md relative h-16",
+          input:
+            "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none",
+          resetIcon: "hidden",
+        }}
+      />
+      <div className="py-4 pe-8">
+        <FacetMenu />
+      </div>
+    </div>
   );
 };
 

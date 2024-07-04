@@ -36,16 +36,24 @@ const Search = () => {
             className="mt-4"
             classNames={{
               list: "flex flex-row items-stretch w-full py-1 px-4",
-              item: "grow bg-blue-500 text-white m-2 text-center rounded",
+              item: "grow bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded text-center",
             }}
           />
           <HitsPerPage
-            className="px-4 mb-4"
+            className="p-4 mb-4"
             items={[
               { label: "25 results per page", value: 25, default: true },
               { label: "50 results per page", value: 50 },
+              { label: "100 results per page", value: 100 },
+              { label: "150 results per page", value: 150 },
+              { label: "200 results per page", value: 200 },
+              { label: "250 results per page", value: 250 },
             ]}
             title="Results per page"
+            classNames={{
+              select:
+                "bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded",
+            }}
           />
         </div>
         <div className="col-span-2">

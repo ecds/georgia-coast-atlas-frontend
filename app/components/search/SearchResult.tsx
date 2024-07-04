@@ -1,16 +1,17 @@
+import { modelFieldUUIDs } from "~/config";
 import type { Hit } from "instantsearch.js";
+import type { TTypeHit } from "~/types";
 
 const SearchResult = ({ hit }: { hit: Hit }) => {
-  console.log("🚀 ~ SearchResult ~ hit:", hit);
   return (
     <div className="flex border-b-2 py-2 w-full">
       <h4 className="text-lg grow max-w-[75%]">{hit.name}</h4>
       <div className="justify-self-end">
-        {hit["dc00ae2f-e12f-4bc8-934e-97bad18e5237"]?.map((t: any) => {
+        {hit[modelFieldUUIDs.types]?.map((t: TTypeHit) => {
           return (
             <span
               key={t.record_id}
-              className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10"
+              className="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded"
             >
               {t.name}
             </span>

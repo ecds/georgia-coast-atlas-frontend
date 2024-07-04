@@ -245,3 +245,12 @@ export type TPhotograph = {
   body: TIIIFBody;
   name: string;
 };
+
+export type TTypeHit = {
+  id: string;
+  inverse: boolean;
+  name: string;
+  name_facet: string;
+  record_id: string | number;
+  uuid: string;
+};
