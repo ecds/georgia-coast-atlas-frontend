@@ -1,56 +1,57 @@
-import { useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import { renderToString } from 'react-dom/server';
-import type { TCoreDataPlaceRecord } from '~/types';
+import { useEffect, useRef } from "react";
+import { renderToString } from "react-dom/server";
+import maplibregl, { Popup } from "maplibre-gl";
+import type { TCoreDataPlaceRecord } from "~/types";
 
-interface PlacePopupProps {
-  place: TCoreDataPlaceRecord;
-  map: maplibregl.Map;
+interface PopupProps {
+  map: maplibregl.Map | undefined;
+  activePlace: TCoreDataPlaceRecord | undefined;
   onClose: () => void;
 }
 
-const PlacePopup = ({ place, map, onClose }: PlacePopupProps) => {
-  const popupRef = useRef<maplibregl.Popup | null>(null);
+const PlacePopup = ({ map, activePlace, onClose }: PopupProps) => {
+  const popupRef = useRef<Popup | undefined>(undefined);
 
   useEffect(() => {
-    console.log("PlacePopup effect triggered", place, map);
-    if (!place || !map) return;
+    if (!map || !activePlace) return;
 
-    const coordinates: [number, number] = place.place_geometry.geometry_json.coordinates;
-    console.log("Coordinates", coordinates);
+    if (!activePlace.place_geometry || !activePlace.place_geometry.geometry_json) return;
 
-    const popupContent = renderToString(
-      <>
-        <h4 className="text-xl">{place.name}</h4>
-        <div
-          className="text-sm"
-          dangerouslySetInnerHTML={{
-            __html: place.description || 'No description available',
-          }}
-        />
-      </>
-    );
-    console.log("Popup content", popupContent);
+    const coordinates = activePlace.place_geometry.geometry_json.coordinates as [number, number];
+    if (!coordinates || coordinates.length !== 2) return;
+
+    const description = activePlace.description || "No description available";
+
+    if (popupRef.current) {
+      popupRef.current.remove();
+    }
 
     popupRef.current = new maplibregl.Popup()
       .setLngLat(coordinates)
-      .setHTML(popupContent)
+      .setHTML(
+        renderToString(
+          <>
+            <h4 className="text-xl">{activePlace.name}</h4>
+            <div
+              className="text-sm"
+              dangerouslySetInnerHTML={{
+                __html: description,
+              }}
+            />
+          </>,
+        ),
+      )
       .addTo(map)
-      .on('close', onClose);
+      .on("close", onClose);
 
-    console.log("Popup added to map");
-
-    map.flyTo({
-      center: coordinates,
-      zoom: 14,
-      essential: true,
-    });
+    map.flyTo({ center: coordinates, zoom: 15 });
 
     return () => {
-      console.log("Cleanup: removing popup");
-      popupRef.current?.remove();
+      if (popupRef.current) {
+        popupRef.current.remove();
+      }
     };
-  }, [place, map, onClose]);
+  }, [map, activePlace, onClose]);
 
   return null;
 };
