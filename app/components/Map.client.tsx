@@ -1,6 +1,7 @@
 import maplibregl from "maplibre-gl";
 import { useEffect } from "react";
 import style from "~/data/style.json";
+import { topBarHeight } from "~/config";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -44,7 +45,9 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
     });
   }, [map, setMapLoaded]);
 
-  return <div id="mapContainer" className="h-[calc(100vh-5rem)]"></div>;
+  return (
+    <div id="mapContainer" className={`h-[calc(100vh-${topBarHeight})]`}></div>
+  );
 };
 
 export default Map;
