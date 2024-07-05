@@ -25,6 +25,7 @@ const FacetDisclosure = ({ title, children }: Props) => {
         />
       </DisclosureButton>
       <DisclosurePanel
+        unmount={false}
         transition
         className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
       >

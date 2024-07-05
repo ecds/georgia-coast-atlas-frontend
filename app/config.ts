@@ -29,14 +29,15 @@ export const islands = [
 ];
 
 export const modelFieldUUIDs = {
-  photographs: "0fbeaac4-45a3-4767-b9bc-7674632a8be1",
   county: "005cba1d-1d0e-4ab0-855d-57884d9db2b0",
-  relatedPlaces: "2a9bcd0d-36a1-4c1a-b9af-55db56c243e1",
-  types: "dc00ae2f-e12f-4bc8-934e-97bad18e5237",
-  topo: "2eaaf83f-98f0-4402-b3bc-92b185fcbaa4",
-  videos: "d23eb32a-4157-48f9-bfe8-fc981600a4f8",
+  description: "159c8717-703e-40c5-a813-425578f9a8a7",
   identifier: "378d2b43-dcc0-4b64-8ef9-ecd7d743e2fb",
   kml: "dec90162-73fd-4a02-8079-a215c9a8300b",
+  photographs: "0fbeaac4-45a3-4767-b9bc-7674632a8be1",
+  relatedPlaces: "2a9bcd0d-36a1-4c1a-b9af-55db56c243e1",
+  topo: "2eaaf83f-98f0-4402-b3bc-92b185fcbaa4",
+  types: "dc00ae2f-e12f-4bc8-934e-97bad18e5237",
+  videos: "d23eb32a-4157-48f9-bfe8-fc981600a4f8",
 };
 
 export const coreDataRelatedEndpoints: TCoreDataRelatedEndpoints[] = [
@@ -105,3 +106,5 @@ export const keys = {
   typesense: "67d9b8d2810cc3a174eb949067",
   coreDataProject: 1,
 };
+
+export const topBarHeight = "5rem";

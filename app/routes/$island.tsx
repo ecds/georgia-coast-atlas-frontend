@@ -3,7 +3,7 @@ import { bbox } from "@turf/turf";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { islands, dataHosts } from "~/config.ts";
+import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
@@ -67,13 +67,6 @@ const IslandPage = () => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ IslandPage ~ map, mapLoaded, geoJSON, island:",
-      map,
-      mapLoaded,
-      geoJSON,
-      island,
-    );
     if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.slug}-fill`))
       return;
 
@@ -151,7 +144,9 @@ const IslandPage = () => {
         setMapLoaded,
       }}
     >
-      <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
+      <div
+        className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
+      >
         <div className="w-full md:w-1/2 overflow-scroll pb-32">
           <div className="flex flex-col">
             <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">

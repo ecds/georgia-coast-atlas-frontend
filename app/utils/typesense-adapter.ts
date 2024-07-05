@@ -9,7 +9,8 @@ export const TypesenseInstantSearchAdapter =
 
 export const typesenseInstantSearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
-    apiKey: keys.typesense, // Be sure to use an API key that only allows search operations
+    apiKey: keys.typesense,
+    connectionTimeoutSeconds: 10000,
     nodes: [
       {
         host: "coredata.ecdsdev.org",

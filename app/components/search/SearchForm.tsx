@@ -1,8 +1,13 @@
 import { SearchBox } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faClose } from "@fortawesome/free-solid-svg-icons";
-import type { ReactNode } from "react";
+import {
+  faSearch,
+  faClose,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import FacetMenu from "./FacetMenu";
+import { topBarHeight } from "~/config";
+import type { ReactNode } from "react";
 
 const ButtonComponent = ({
   children,
@@ -37,12 +42,10 @@ const ResetComponent = () => {
 
 const LoadingComponent = () => {
   return (
-    <div className="absolute z-10 h-screen bg-white/50 w-full top-0">
-      {/* <FontAwesomeIcon
-        icon={faSpinner}
-        spin
-        className="text-xl relative top-[50%] left-[50%]"
-      /> */}
+    <div
+      className={`absolute z-10 h-screen w-[33vw] bg-white/70 -top-[${topBarHeight}] -left-5 flex items-center justify-center`}
+    >
+      <FontAwesomeIcon icon={faSpinner} spin className="text-6xl relative" />
     </div>
   );
 };
