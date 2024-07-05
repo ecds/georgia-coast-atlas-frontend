@@ -1,47 +1,58 @@
-import { useEffect, useRef } from "react";
-import { renderToString } from "react-dom/server";
-import maplibregl, { Popup } from "maplibre-gl";
-import type { TCoreDataPlaceRecord } from "~/types";
+import { useEffect, useRef } from 'react';
+import maplibregl from 'maplibre-gl';
+import { renderToString } from 'react-dom/server';
+import type { TCoreDataPlaceRecord } from '~/types';
 
-interface PopupComponentProps {
-  map: maplibregl.Map | undefined;
-  activePlace: TCoreDataPlaceRecord | undefined;
+interface PlacePopupProps {
+  place: TCoreDataPlaceRecord;
+  map: maplibregl.Map;
   onClose: () => void;
 }
 
-const PopupComponent = ({ map, activePlace, onClose }: PopupComponentProps) => {
-  const popupRef = useRef<Popup | undefined>(undefined);
+const PlacePopup = ({ place, map, onClose }: PlacePopupProps) => {
+  const popupRef = useRef<maplibregl.Popup | null>(null);
 
   useEffect(() => {
-    if (!map || !activePlace || !activePlace.location?.coordinates) return;
+    console.log("PlacePopup effect triggered", place, map);
+    if (!place || !map) return;
 
-    const coordinates = activePlace.location.coordinates as [number, number];
-    const description = activePlace.description || "No description available";
+    const coordinates: [number, number] = place.place_geometry.geometry_json.coordinates;
+    console.log("Coordinates", coordinates);
+
+    const popupContent = renderToString(
+      <>
+        <h4 className="text-xl">{place.name}</h4>
+        <div
+          className="text-sm"
+          dangerouslySetInnerHTML={{
+            __html: place.description || 'No description available',
+          }}
+        />
+      </>
+    );
+    console.log("Popup content", popupContent);
 
     popupRef.current = new maplibregl.Popup()
       .setLngLat(coordinates)
-      .setHTML(
-        renderToString(
-          <>
-            <h4 className="text-xl">{activePlace.name}</h4>
-            <div
-              className="text-sm"
-              dangerouslySetInnerHTML={{
-                __html: description,
-              }}
-            />
-          </>,
-        )
-      )
+      .setHTML(popupContent)
       .addTo(map)
-      .on("close", onClose);
+      .on('close', onClose);
+
+    console.log("Popup added to map");
+
+    map.flyTo({
+      center: coordinates,
+      zoom: 14,
+      essential: true,
+    });
 
     return () => {
+      console.log("Cleanup: removing popup");
       popupRef.current?.remove();
     };
-  }, [map, activePlace, onClose]);
+  }, [place, map, onClose]);
 
   return null;
 };
 
-export default PopupComponent;
+export default PlacePopup;
