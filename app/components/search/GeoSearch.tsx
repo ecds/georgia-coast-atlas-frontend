@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useGeoSearch, useInstantSearch } from "react-instantsearch";
 import { pulsingDot } from "~/utils/pulsingDot";
-import { modelFieldUUIDs } from "~/config";
+import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 
 import type { Map as TMap } from "maplibre-gl";
 
@@ -12,7 +12,7 @@ interface Props {
 
 const GeoSearch = ({ map, mapLoaded }: Props) => {
   const { refine } = useGeoSearch();
-  const { renderState } = useInstantSearch();
+  const { renderState, status, ...rest } = useInstantSearch();
 
   const handleBoundsChange = useCallback(() => {
     if (!mapLoaded || !map) return;
@@ -30,30 +30,38 @@ const GeoSearch = ({ map, mapLoaded }: Props) => {
 
   useEffect(() => {
     if (!mapLoaded || !map || !renderState.gca.hits) return;
+
     if (!map.getImage("pulsing-dot")) {
       const dot = pulsingDot(map);
       if (dot) {
         map.addImage("pulsing-dot", dot, { pixelRatio: 2 });
       }
     }
-    for (const hit of renderState.gca.hits.items) {
-      map?.addSource(hit.record_id, {
+
+    if (status === "idle") {
+      if (map?.getLayer("hits")) map.removeLayer("hits");
+      if (map?.getSource("hits")) map.removeSource("hits");
+
+      map?.addSource("hits", {
         type: "geojson",
-        data: hit.geometry,
+        data: hitsToFeatureCollection(renderState.gca.hits.items),
       });
+
       map?.addLayer({
-        id: hit.record_id,
+        id: "hits",
         type: "symbol",
-        source: hit.record_id,
+        source: "hits",
         layout: {
           "icon-image": "pulsing-dot",
         },
         filter: ["==", "$type", "Point"],
       });
     }
-  }, []);
 
-  return <></>;
+    return () => {};
+  }, [renderState, map, mapLoaded, status]);
+
+  return null;
 };
 
 export default GeoSearch;

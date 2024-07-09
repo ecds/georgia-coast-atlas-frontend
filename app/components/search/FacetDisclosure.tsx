@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+import { useInstantSearch } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -13,9 +15,26 @@ interface Props {
 }
 
 const FacetDisclosure = ({ title, children }: Props) => {
+  const { uiState, setUiState } = useInstantSearch();
+  const uiStateRef = useRef(uiState);
+
+  // useEffect(() => {
+  //   uiStateRef.current = uiState;
+  //   console.log("🚀 ~ FacetDisclosure ~ uiState:", uiState);
+  // }, [uiState]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     console.log("🚀 ~ return ~ uiStateRef.current:", uiStateRef.current);
+  //     setTimeout(() => setUiState(uiStateRef.current));
+  //   };
+  // }, [setUiState]);
   return (
-    <Disclosure>
-      <DisclosureButton className="group flex w-full items-center justify-between">
+    <Disclosure as="details">
+      <DisclosureButton
+        as="summary"
+        className="group flex w-full items-center justify-between"
+      >
         <span className="font-medium text-black group-data-[hover]:text-black/80">
           {title}
         </span>
@@ -25,9 +44,9 @@ const FacetDisclosure = ({ title, children }: Props) => {
         />
       </DisclosureButton>
       <DisclosurePanel
-        unmount={false}
         transition
         className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+        unmount={false}
       >
         {children}
       </DisclosurePanel>

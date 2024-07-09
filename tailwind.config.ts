@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { topBarHeight } from "./app/config";
 import plugin from "tailwindcss/plugin";
 
 export default {
@@ -43,5 +44,10 @@ export default {
       });
     }),
   ],
-  safelist: ["bg-blue-500"],
+  safelist: [
+    `-top-[${topBarHeight}]`,
+    `h-[calc(100vh-${topBarHeight})]`,
+    "bg-blue-500",
+    "text-6xl",
+  ],
 } satisfies Config;

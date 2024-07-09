@@ -3,7 +3,6 @@ import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItems, MenuSection } from "@headlessui/react";
 import { ClearRefinements, RefinementList } from "react-instantsearch";
 import { modelFieldUUIDs } from "~/config";
-import FacetDisclosure from "./FacetDisclosure";
 import type { RefinementListClassNames } from "node_modules/react-instantsearch/dist/es/ui/RefinementList";
 
 const RefinementListClassNames: Partial<RefinementListClassNames> = {
@@ -40,26 +39,22 @@ const FacetMenu = () => {
           />
         </MenuSection>
         <MenuSection className="mb-4 pb-4 border-b-2">
-          <FacetDisclosure title="Type">
-            <RefinementList
-              attribute={`${modelFieldUUIDs.types}.name_facet`}
-              classNames={RefinementListClassNames}
-              sortBy={["count:desc"]}
-              showMore
-              showMoreLimit={200}
-              operator="and"
-            />
-          </FacetDisclosure>
+          <RefinementList
+            attribute={`${modelFieldUUIDs.types}.name_facet`}
+            classNames={RefinementListClassNames}
+            sortBy={["count:desc"]}
+            showMore
+            showMoreLimit={200}
+            operator="and"
+          />
         </MenuSection>
         <MenuSection>
-          <FacetDisclosure title="County">
-            <RefinementList
-              attribute={`${modelFieldUUIDs.county}.names_facet`}
-              classNames={RefinementListClassNames}
-              sortBy={["name:asc"]}
-              operator="and"
-            />
-          </FacetDisclosure>
+          <RefinementList
+            attribute={`${modelFieldUUIDs.county}.names_facet`}
+            classNames={RefinementListClassNames}
+            sortBy={["name:asc"]}
+            operator="and"
+          />
         </MenuSection>
       </MenuItems>
     </Menu>
