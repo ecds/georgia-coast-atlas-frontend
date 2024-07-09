@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { topBarHeight } from "./app/config";
 import plugin from "tailwindcss/plugin";
 
 export default {
@@ -18,13 +19,13 @@ export default {
     plugin(function ({ addBase }) {
       addBase({
         html: {
-          p: {
+          ".primary-content > p": {
             lineHeight: "1.75rem",
             marginTop: "1.25rem",
             marginBottom: "1.25rem",
           },
           main: {
-            "p:first-of-type:first-letter": {
+            ".primary-content > p:first-of-type:first-letter": {
               float: "left",
               fontFeatureSettings: '"ss06" !important',
               fontSize: "6rem",
@@ -33,6 +34,12 @@ export default {
               padding: "1rem 0.75rem 0rem 0rem",
             },
           },
+          '[type="search"]::-webkit-search-decoration': { display: "none" },
+          '[type="search"]::-webkit-search-cancel-button': { display: "none" },
+          '[type="search"]::-webkit-search-results-button': { display: "none" },
+          '[type="search"]::-webkit-search-results-decoration': {
+            display: "none",
+          },
         },
         "[maplibregl-popup-close-button], button.maplibregl-popup-close-button":
           {
@@ -40,5 +47,11 @@ export default {
           },
       });
     }),
+  ],
+  safelist: [
+    `-top-[${topBarHeight}]`,
+    `h-[calc(100vh-${topBarHeight})]`,
+    "bg-blue-500",
+    "text-6xl",
   ],
 } satisfies Config;

@@ -1,6 +1,8 @@
 import maplibregl from "maplibre-gl";
 import { useEffect } from "react";
 import style from "~/data/style.json";
+import { topBarHeight } from "~/config";
+import "maplibre-gl/dist/maplibre-gl.css";
 import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
@@ -13,13 +15,20 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
   useEffect(() => {
     if (!setMap) return;
 
+    const bounds = new maplibregl.LngLatBounds(
+      new maplibregl.LngLat(-82.01409567385569, 30.679059125170696),
+      new maplibregl.LngLat(-80.92207334522604, 32.11595891326837),
+    );
+
     const _map = new maplibregl.Map({
       container: "mapContainer",
       // @ts-ignore We are loading the style as JSON.
       style,
-      center: [-81.1067, 31.8375],
-      zoom: 10,
+      center: [-81.40348956381558, 31.41113196761974],
+      zoom: 9,
     });
+
+    _map.fitBounds(bounds);
 
     setMap(_map);
 
@@ -36,7 +45,9 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
     });
   }, [map, setMapLoaded]);
 
-  return <div id="mapContainer" className="h-[calc(100vh-5rem)]"></div>;
+  return (
+    <div id="mapContainer" className={`h-[calc(100vh-${topBarHeight})]`}></div>
+  );
 };
 
 export default Map;

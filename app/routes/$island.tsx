@@ -3,7 +3,7 @@ import { bbox } from "@turf/turf";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { islands, dataHosts } from "~/config.ts";
+import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
@@ -67,7 +67,8 @@ const IslandPage = () => {
   }, [navigation]);
 
   useEffect(() => {
-    if (!mapLoaded || !map || !geoJSON) return;
+    if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.slug}-fill`))
+      return;
 
     const layers = map.getStyle().layers;
     // Find the index of the first symbol layer in the map style
@@ -79,16 +80,16 @@ const IslandPage = () => {
       }
     }
 
-    map.addSource("island", {
+    map.addSource(island.slug, {
       type: "geojson",
       data: geoJSON,
     });
 
     map.addLayer(
       {
-        id: "fill",
+        id: `${island.slug}-fill`,
         type: "fill",
-        source: "island",
+        source: island.slug,
         layout: {},
         paint: {
           "fill-color": "blue",
@@ -100,9 +101,9 @@ const IslandPage = () => {
     );
 
     map.addLayer({
-      id: "outline",
+      id: `${island.slug}-outline`,
       type: "line",
-      source: "island",
+      source: island.slug,
       layout: {
         "line-join": "round",
         "line-cap": "round",
@@ -122,14 +123,17 @@ const IslandPage = () => {
     map.fitBounds(bounds, { padding: 100 });
 
     return () => {
+      console.log("clear island");
       try {
         if (!map) return;
-        if (map.getLayer("fill")) map.removeLayer("fill");
-        if (map.getLayer("outline")) map.removeLayer("outline");
-        if (map.getSource("island")) map.removeSource("island");
+        if (map.getLayer(`${island.slug}-fill`))
+          map.removeLayer(`${island.slug}-fill`);
+        if (map.getLayer(`${island.slug}-outline`))
+          map.removeLayer(`${island.slug}-outline`);
+        if (map.getSource(island.slug)) map.removeSource(island.slug);
       } catch {}
     };
-  }, [map, mapLoaded, geoJSON]);
+  }, [map, mapLoaded, geoJSON, island]);
 
   return (
     <IslandContext.Provider
@@ -140,7 +144,9 @@ const IslandPage = () => {
         setMapLoaded,
       }}
     >
-      <div className="flex flex-row overflow-hidden h-[calc(100vh-5rem)]">
+      <div
+        className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
+      >
         <div className="w-full md:w-1/2 overflow-scroll pb-32">
           <div className="flex flex-col">
             <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
@@ -150,7 +156,7 @@ const IslandPage = () => {
               <FeaturedMedium record={related} />
             </div>
             <div
-              className="relative px-4 -mt-12"
+              className="relative px-4 -mt-12 primary-content"
               dangerouslySetInnerHTML={{
                 __html: wpData?.content.rendered,
               }}
