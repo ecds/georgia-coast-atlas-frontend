@@ -3,7 +3,7 @@ echo "Running deploy script"
 TAG=$([ "$BRANCH" == "main" ] && echo "latest" || echo "dev")
 
 echo "Logging in to AWS"
-aws ecr get-login-password --region us-east-1 | \
+aws ecr get-login-password --region ${AWS_REGION} | \
 docker login --username AWS --password-stdin "${AWS_ECR}"
 echo "Logged in successfully"
 
@@ -20,4 +20,5 @@ docker tag georgia-coast-atlas "${AWS_ECR}/georgia-coast-atlas:${TAG}"
 echo "Pushing image"
 docker push "${AWS_ECR}/georgia-coast-atlas:${TAG}"
 
-echo "Pushed succesfully"
+echo "Forcing new deployment"
+aws ecs update-service --cluster ${AWS_ECS_CLUSTER} --service ${AWS_ECS_SERVICE} --force-new-deployment --region ${AWS_REGION}

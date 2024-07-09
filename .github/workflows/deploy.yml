@@ -33,4 +33,7 @@ jobs:
         env:
           BRANCH: ${{ github.head_ref || github.ref_name }}
           AWS_ECR: ${{ secrets.AWS_ECR }}
+          AWS_ECS_CLUSTER: ${{ secrets.AWS_ECS_CLUSTER }}
+          AWS_ECS_SERVICE: ${{ secrets.AWS_ECS_SERVICE }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: ./deploy.sh
