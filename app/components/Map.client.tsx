@@ -35,6 +35,7 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
     return () => {
       if (_map) _map.remove();
       setMap(undefined);
+      setMapLoaded(false);
     };
   }, [setMap]);
 
