@@ -123,7 +123,6 @@ const IslandPage = () => {
     map.fitBounds(bounds, { padding: 100 });
 
     return () => {
-      console.log("clear island");
       try {
         if (!map) return;
         if (map.getLayer(`${island.slug}-fill`))
