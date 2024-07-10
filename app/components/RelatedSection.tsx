@@ -23,10 +23,13 @@ const RelatedSection = ({ children, title }: Props) => {
             </span>
             <FontAwesomeIcon
               icon={faChevronDown}
-              className="size-5 fill-black/60 group-data-[hover]:fill-black/50 group-data-[open]:rotate-180"
+              className="size-5 fill-black/60 group-data-[hover]:fill-black/50 transition-transform duration-700 group-data-[open]:rotate-180"
             />
           </DisclosureButton>
-          <DisclosurePanel className="mt-2 text-sm/5">
+          <DisclosurePanel
+            transition
+            className="mt-2 text-sm/5 origin-top transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+          >
             {children}
           </DisclosurePanel>
         </Disclosure>
