@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import maplibregl, { LngLatBounds, MapLayerMouseEvent } from "maplibre-gl";
+import type { MapLayerMouseEvent } from "maplibre-gl";
+import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
 import { IslandContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
+import PlacePopup from "./PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { TCoreDataPlaceRecord } from "~/types";
-import PlacePopup from "./PlacePopup";
 
 interface Props {
   places: TCoreDataPlaceRecord[];
@@ -15,11 +16,12 @@ interface Props {
 
 const RelatedPlaces = ({ places }: Props) => {
   const { map, mapLoaded } = useContext(IslandContext);
-  const [activePlace, setActivePlace] = useState<TCoreDataPlaceRecord | undefined>(undefined);
+  const [activePlace, setActivePlace] = useState<
+    TCoreDataPlaceRecord | undefined
+  >(undefined);
 
   useEffect(() => {
     if (!map || !mapLoaded) return;
-    console.log("Map loaded and adding places");
     const geoJSON = toFeatureCollection(places);
     const bounds = new LngLatBounds(
       bbox(geoJSON) as [number, number, number, number],
@@ -55,22 +57,23 @@ const RelatedPlaces = ({ places }: Props) => {
       filter: ["==", "$type", "Point"],
     });
 
-    const handleClick = (e: MapLayerMouseEvent) => {
-      if (!e.features || !e.features.length) return;
+    const handleClick = ({ features }: MapLayerMouseEvent) => {
+      if (!features || !features.length) return;
 
-      const feature = e.features[0];
-
+      const feature = features[0];
 
       const clickedPlace = places.find(
         (place) => place.identifier === feature.properties.identifier,
       );
 
-      if (!clickedPlace) {
-        return;
-      }
-
       setActivePlace(clickedPlace);
     };
+
+    // FIXME: This probably isn't best as it assumes this event will
+    // always fire before the MapLayerMouseEvent.
+    map.on("click", () => {
+      setActivePlace(undefined);
+    });
 
     map.on("click", "places", handleClick);
 
@@ -87,6 +90,7 @@ const RelatedPlaces = ({ places }: Props) => {
         if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
         if (map.getLayer("places")) map.removeLayer("places");
         if (map.getSource("places")) map.removeSource("places");
+        map.off("click", "places", handleClick);
       } catch (error) {
         console.error("Cleanup error:", error);
       }
@@ -98,24 +102,26 @@ const RelatedPlaces = ({ places }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2">
         {places.map((place) => {
           return (
-            <button
-              key={place.uuid}
-              className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === place ? "some classes for active" : ""}`}
-              onClick={() => {
-                setActivePlace(place);
-              }}
-            >
-              {place.name}
-            </button>
+            <>
+              <button
+                key={place.uuid}
+                className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === place ? "underline font-bold" : ""}`}
+                onClick={() => {
+                  setActivePlace(place);
+                }}
+              >
+                {place.name}
+              </button>
+              <PlacePopup
+                map={map}
+                place={place}
+                show={activePlace === place}
+                onClose={() => setActivePlace(undefined)}
+              />
+            </>
           );
         })}
       </div>
-
-      <PlacePopup 
-        map={map} 
-        activePlace={activePlace} 
-        onClose={() => setActivePlace(undefined)} 
-      />
     </RelatedSection>
   );
 };

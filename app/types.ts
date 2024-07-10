@@ -1,6 +1,22 @@
-import type { Geometry, FeatureCollection } from "geojson";
+import type {
+  FeatureCollection,
+  Point,
+  MultiPoint,
+  LineString,
+  MultiLineString,
+  Polygon,
+  MultiPolygon,
+} from "geojson";
 import type { LabeledIIIFExternalWebResource } from "@samvera/clover-iiif/image";
 import type { ImageService } from "@iiif/presentation-3";
+
+export type Geometry =
+  | Point
+  | MultiPoint
+  | LineString
+  | MultiLineString
+  | Polygon
+  | MultiPolygon;
 
 type TNames = {
   name: string;
