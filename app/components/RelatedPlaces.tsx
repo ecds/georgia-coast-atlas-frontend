@@ -102,7 +102,7 @@ const RelatedPlaces = ({ places }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2">
         {places.map((place) => {
           return (
-            <>
+            <div key={place.uuid}>
               <button
                 key={place.uuid}
                 className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === place ? "underline font-bold" : ""}`}
@@ -118,7 +118,7 @@ const RelatedPlaces = ({ places }: Props) => {
                 show={activePlace === place}
                 onClose={() => setActivePlace(undefined)}
               />
-            </>
+            </div>
           );
         })}
       </div>
