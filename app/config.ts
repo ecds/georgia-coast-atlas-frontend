@@ -2,6 +2,26 @@ import type { TCoreDataRelatedEndpoints } from "./types";
 
 export const islands = [
   {
+    slug: "blackbeard",
+    label: "Blackbeard",
+    coreDataId: "c4e43063-179b-5807-a191-6e1438170486",
+  },
+  {
+    slug: "cumberland",
+    label: "Cumberland",
+    coreDataId: "ab536bff-55c5-50d5-b06f-2be190dd88a4",
+  },
+  {
+    slug: "jekyll",
+    label: "Jekyll",
+    coreDataId: "aa8a4b3b-febb-52fd-acaf-7e5f73ba1426",
+  },
+  {
+    slug: "little-saint-simons",
+    label: "Little Saint Simons",
+    coreDataId: "e0a98bec-543b-47c7-a00b-b3f509dde77f",
+  },
+  {
     slug: "ossabaw",
     label: "Ossabaw",
     coreDataId: "79b2c613-a9f7-4e1e-b795-0faeed53c827",
@@ -12,9 +32,19 @@ export const islands = [
     coreDataId: "75fc9ef3-7a0b-4856-83dd-ea8c574eef5f",
   },
   {
-    slug: "st-catherines",
-    label: "St. Catherine's",
+    slug: "saint-catherines",
+    label: "Saint. Catherine's",
     coreDataId: "643bf294-badc-486b-8644-84209c49735b",
+  },
+  {
+    slug: "saint-simons",
+    label: "Saint Simons",
+    coreDataId: "8c113813-f475-42b9-bcfa-4915d24009a9",
+  },
+  {
+    slug: "tybee",
+    label: "Tybee Island",
+    coreDataId: "532b46db-0bf7-486b-b055-3b852ee6d21f",
   },
   {
     slug: "wassaw",
