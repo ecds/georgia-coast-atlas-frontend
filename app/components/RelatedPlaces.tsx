@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import type { MapLayerMouseEvent } from "maplibre-gl";
+import type { MapLayerMouseEvent, Point, GeoJSONSource } from "maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
@@ -28,9 +28,6 @@ const RelatedPlaces = ({ places }: Props) => {
     );
 
     // Extend the island bounds if related places are beyond the island bounds.
-    // TODO: This can probably be removed. Sapelo is the only island with a related
-    // place off the island. This is probably an error in the data.
-    // FIXME: This doesn't even work. The island fit bounds gets called after this.
     const newBounds = map.getBounds().extend(bounds);
 
     map.fitBounds(newBounds, { padding: 100 });
@@ -45,52 +42,126 @@ const RelatedPlaces = ({ places }: Props) => {
     map.addSource("places", {
       type: "geojson",
       data: geoJSON,
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50
     });
 
     map.addLayer({
-      id: "places",
-      type: "symbol",
+      id: "clusters",
+      type: "circle",
       source: "places",
-      layout: {
-        "icon-image": "pulsing-dot",
-      },
-      filter: ["==", "$type", "Point"],
+      filter: ["has", "point_count"],
+      paint: {
+        "circle-color": [
+          "step",
+          ["get", "point_count"],
+          "#51bbd6",
+          100,
+          "#f1f075",
+          750,
+          "#f28cb1"
+        ],
+        "circle-radius": [
+          "step",
+          ["get", "point_count"],
+          20,
+          100,
+          30,
+          750,
+          40
+        ]
+      }
     });
 
-    const handleClick = ({ features }: MapLayerMouseEvent) => {
-      if (!features || !features.length) return;
+    map.addLayer({
+      id: "cluster-count",
+      type: "symbol",
+      source: "places",
+      filter: ["has", "point_count"],
+      layout: {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+        "text-size": 12
+      }
+    });
 
-      const feature = features[0];
+    map.addLayer({
+      id: "unclustered-point",
+      type: "symbol",
+      source: "places",
+      filter: ["!", ["has", "point_count"]],
+      layout: {
+        "icon-image": "pulsing-dot",
+      }
+    });
 
+    const handleClusterClick = async (e: MapLayerMouseEvent) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["clusters"]
+      });
+      if (features.length > 0 && features[0].properties && features[0].geometry) {
+        const clusterId = features[0].properties.cluster_id;
+        const source = map.getSource("places") as GeoJSONSource;
+        if (source) {
+          try {
+            const zoom = await source.getClusterExpansionZoom(clusterId);
+            const geometry = features[0].geometry;
+            if (geometry.type === "Point") {
+              map.easeTo({
+                center: geometry.coordinates as [number, number],
+                zoom: zoom
+              });
+            }
+          } catch (err) {
+            console.error("Error expanding cluster:", err);
+          }
+        }
+      }
+    };
+
+    const handleUnclusteredPointClick = (e: MapLayerMouseEvent) => {
+      if (!e.features || !e.features.length) return;
+
+      const feature = e.features[0];
       const clickedPlace = places.find(
-        (place) => place.identifier === feature.properties.identifier,
+        (place) => place.identifier === feature.properties.identifier
       );
 
       setActivePlace(clickedPlace);
     };
 
-    // FIXME: This probably isn't best as it assumes this event will
-    // always fire before the MapLayerMouseEvent.
+    // Clear active place when clicking outside of a point
     map.on("click", () => {
       setActivePlace(undefined);
     });
 
-    map.on("click", "places", handleClick);
+    map.on("click", "clusters", handleClusterClick);
+    map.on("click", "unclustered-point", handleUnclusteredPointClick);
 
-    map.on("mouseenter", "places", () => {
+    map.on("mouseenter", "clusters", () => {
       map.getCanvas().style.cursor = "pointer";
     });
+    map.on("mouseleave", "clusters", () => {
+      map.getCanvas().style.cursor = "";
+    });
 
-    map.on("mouseleave", "places", () => {
+    map.on("mouseenter", "unclustered-point", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", "unclustered-point", () => {
       map.getCanvas().style.cursor = "";
     });
 
     return () => {
       try {
         if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
-        if (map.getLayer("places")) map.removeLayer("places");
+        if (map.getLayer("clusters")) map.removeLayer("clusters");
+        if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
+        if (map.getLayer("unclustered-point")) map.removeLayer("unclustered-point");
         if (map.getSource("places")) map.removeSource("places");
-        map.off("click", "places", handleClick);
+        map.off("click", "clusters", handleClusterClick);
+        map.off("click", "unclustered-point", handleUnclusteredPointClick);
       } catch (error) {
         console.error("Cleanup error:", error);
       }
