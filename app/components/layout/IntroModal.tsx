@@ -1,17 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 
-export default function IntroModal() {
-  const [isOpen, setIsOpen] = useState(true)
+interface IntroModalProps {
+  setIsOpen: (isOpen: boolean) => void;
+}
 
+export default function IntroModal({ setIsOpen }: IntroModalProps) {
   function closeModal() {
-    setIsOpen(false)
+    setIsOpen(false);
   }
-
 
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={true} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-10 h-screen w-screen"
@@ -96,4 +97,3 @@ export default function IntroModal() {
     </>
   )
 }
-

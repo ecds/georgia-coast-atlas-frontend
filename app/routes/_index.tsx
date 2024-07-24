@@ -10,6 +10,7 @@ import type { TCoreDataPlaceRecord } from "~/types";
 import type { LoaderFunction } from "@remix-run/node";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import IntroModal from "~/components/layout/IntroModal"; 
 
 export const loader: LoaderFunction = async () => {
   const islandDataPromises = islands.map(island => 
@@ -28,6 +29,7 @@ export const loader: LoaderFunction = async () => {
 export default function Index() {
   const [map, setMap] = useState<maplibregl.Map | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
   const { geoJSON } = useLoaderData<{ geoJSON: FeatureCollection }>();
 
   const handleMouseEnter = useCallback(() => {
@@ -107,6 +109,7 @@ export default function Index() {
 
   return (
     <div className="w-full h-full">
+      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />} {/* Render the modal */}
       <ClientOnly>
         {() => (
           <Map 
