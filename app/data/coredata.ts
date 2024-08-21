@@ -13,6 +13,7 @@ export const fetchRelatedRecords = async (id: string) => {
       for (const value of Object.values(item.user_defined)) {
         // @ts-ignore
         item[(value.label as string).toLowerCase()] = value.value;
+        console.log("🚀 ~ fetchRelatedRecords ~ item:", item);
       }
     }
     // @ts-ignore

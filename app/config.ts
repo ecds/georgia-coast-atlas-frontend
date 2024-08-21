@@ -68,6 +68,7 @@ export const modelFieldUUIDs = {
   topo: "2eaaf83f-98f0-4402-b3bc-92b185fcbaa4",
   types: "dc00ae2f-e12f-4bc8-934e-97bad18e5237",
   videos: "d23eb32a-4157-48f9-bfe8-fc981600a4f8",
+  topoQuads: "87ad2c7a-cf8f-4be7-af0c-4e63baab6eb3",
 };
 
 export const coreDataRelatedEndpoints: TCoreDataRelatedEndpoints[] = [
@@ -95,6 +96,11 @@ export const coreDataRelatedEndpoints: TCoreDataRelatedEndpoints[] = [
         uuid: modelFieldUUIDs.relatedPlaces,
         type: "relatedPlaces",
         uiLabel: "Related Places",
+      },
+      {
+        uuid: modelFieldUUIDs.topoQuads,
+        type: "topoQuad",
+        uiLabel: "Topo Quad",
       },
     ],
   },
