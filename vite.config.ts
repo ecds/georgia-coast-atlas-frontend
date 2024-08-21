@@ -34,4 +34,9 @@ export default defineConfig({
       "@samvera_clover-iiif",
     ],
   },
+  server: {
+    cors: {
+      origin: "*",
+    },
+  },
 });

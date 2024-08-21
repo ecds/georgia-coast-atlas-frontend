@@ -1,5 +1,4 @@
 import { json } from "@remix-run/node";
-import { cors } from "remix-utils/cors";
 import {
   annotationPainting,
   annotationGeo,
@@ -15,8 +14,6 @@ import type {
   TTopoNames,
   TTopoYears,
 } from "~/types";
-
-interface Props {}
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id, year } = params;
@@ -53,5 +50,5 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   }
 
   const response = json(responseData);
-  return await cors(request, response, { origin: true });
+  return await response;
 };
