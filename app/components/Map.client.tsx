@@ -1,4 +1,5 @@
 import maplibregl from "maplibre-gl";
+import { WarpedMapLayer } from "@allmaps/maplibre";
 import { useEffect, useRef } from "react";
 import style from "~/data/style.json";
 import { topBarHeight, mapLayers } from "~/config";
@@ -21,7 +22,7 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
 
     const bounds = new maplibregl.LngLatBounds(
       new maplibregl.LngLat(-82.01409567385569, 30.679059125170696),
-      new maplibregl.LngLat(-80.92207334522604, 32.11595891326837)
+      new maplibregl.LngLat(-80.92207334522604, 32.11595891326837),
     );
 
     const _map = new maplibregl.Map({
@@ -29,6 +30,8 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
       style: style as StyleSpecification,
       center: [-81.40348956381558, 31.41113196761974],
       zoom: 9,
+      maxPitch: 0,
+      preserveDrawingBuffer: true,
     });
 
     _map.fitBounds(bounds);
@@ -40,32 +43,46 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
     });
 
     return () => {
-      if (_map) _map.remove();
+      if (_map) {
+        if (_map.getLayer("fernandina")) _map.removeLayer("fernandina");
+        if (_map.getLayer("tybee")) _map.removeLayer("tybee");
+        _map.remove();
+      }
       setMap(undefined);
       setMapLoaded(false);
     };
-  }, [setMap, setMapLoaded]);
+  }, [setMap]);
 
-  const addMapLayers = (_map: maplibregl.Map) => {
-    mapLayers.forEach((layer) => {
-      _map.addSource(layer.id, {
-        type: 'raster',
-        tiles: layer.tiles,
-        tileSize: 256,
-        attribution: layer.attribution,
-      });
-      _map.addLayer({
-        id: `${layer.id}-layer`,
-        type: 'raster',
-        source: layer.id,
-        layout: { visibility: 'none' },
-      });
+  useEffect(() => {
+    if (!map) return;
+    map.on("load", async () => {
+      setMapLoaded(true);
+      const warpedMapLayer = new WarpedMapLayer("fernandina");
+      map.addLayer(warpedMapLayer);
+      warpedMapLayer.addGeoreferenceAnnotationByUrl(
+        "/iiif/annotation-page/2011/Fernandina_Beach",
+      );
+
+      const warpedMapLayer2 = new WarpedMapLayer("tybee");
+      map.addLayer(warpedMapLayer2);
+      warpedMapLayer2.addGeoreferenceAnnotationByUrl(
+        "/iiif/annotation-page/2024/Wassaw_Sound",
+      );
+      console.log(
+        "🚀 ~ map.on ~ warpedMapLayer2:",
+        map,
+        warpedMapLayer,
+        warpedMapLayer2,
+      );
     });
-  };
+  }, [map, setMapLoaded]);
 
   return (
     <div className="relative">
-      <div ref={mapContainerRef} className={`h-[calc(100vh-${topBarHeight})]`}></div>
+      <div
+        ref={mapContainerRef}
+        className={`h-[calc(100vh-${topBarHeight})]`}
+      ></div>
       <MapSwitcher map={map} />
     </div>
   );
