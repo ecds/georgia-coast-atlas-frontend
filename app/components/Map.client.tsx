@@ -1,7 +1,7 @@
 import maplibregl from "maplibre-gl";
 import { useEffect, useRef } from "react";
 import style from "~/data/style.json";
-import { topBarHeight } from "~/config";
+import { topBarHeight, mapLayers } from "~/config";
 import "maplibre-gl/dist/maplibre-gl.css";
 import MapSwitcher from "./MapSwitcher";
 import type { Dispatch, SetStateAction } from "react";
@@ -47,47 +47,19 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
   }, [setMap, setMapLoaded]);
 
   const addMapLayers = (_map: maplibregl.Map) => {
-    // Add all the layers here
-    // Google Satellite
-    _map.addSource('google-satellite', {
-      type: 'raster',
-      tiles: ['https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'],
-      tileSize: 256,
-      attribution: '© Google',
-    });
-    _map.addLayer({
-      id: 'google-satellite-layer',
-      type: 'raster',
-      source: 'google-satellite',
-      layout: { visibility: 'none' }
-    });
-
-    // USGS Topo
-    _map.addSource('usgs-topo', {
-      type: 'raster',
-      tiles: ['https://basemap.nationalmap.gov/arcgis/services/USGSTopo/MapServer/WMSServer?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=0&styles=default'],
-      tileSize: 256,
-      attribution: '© USGS',
-    });
-    _map.addLayer({
-      id: 'usgs-topo-layer',
-      type: 'raster',
-      source: 'usgs-topo',
-      layout: { visibility: 'none' }
-    });
-
-    // ATLMaps
-    _map.addSource('atlmaps', {
-      type: 'raster',
-      tiles: ['https://geoserver.ecds.emory.edu/ATLMaps/gwc/service/wms?layers=ATLMaps:r9jps&service=WMS&request=GetMap&styles=&format=image/png&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}'],
-      tileSize: 256,
-      attribution: '© ATLMaps',
-    });
-    _map.addLayer({
-      id: 'atlmaps-layer',
-      type: 'raster',
-      source: 'atlmaps',
-      layout: { visibility: 'none' }
+    mapLayers.forEach((layer) => {
+      _map.addSource(layer.id, {
+        type: 'raster',
+        tiles: layer.tiles,
+        tileSize: 256,
+        attribution: layer.attribution,
+      });
+      _map.addLayer({
+        id: `${layer.id}-layer`,
+        type: 'raster',
+        source: layer.id,
+        layout: { visibility: 'none' },
+      });
     });
   };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import { mapLayers } from "~/config";
 import type { Map } from "maplibre-gl";
 
 interface Props {
@@ -14,9 +15,9 @@ const MapSwitcher = ({ map }: Props) => {
   const toggleLayer = (layerName: string) => {
     if (!map) return;
 
-    const layers = ['google-satellite-layer', 'usgs-topo-layer', 'atlmaps-layer'];
+    const layerIds = mapLayers.map((layer) => `${layer.id}-layer`);
 
-    layers.forEach((layer) => {
+    layerIds.forEach((layer) => {
       map.setLayoutProperty(layer, 'visibility', 'none');
     });
 
@@ -40,34 +41,16 @@ const MapSwitcher = ({ map }: Props) => {
       {isDropdownOpen && (
         <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            <button
-              onClick={() => toggleLayer('custom')}
-              className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeLayer === 'custom' ? 'bg-gray-200' : ''}`}
-              role="menuitem"
-            >
-              Default Layer
-            </button>
-            <button
-              onClick={() => toggleLayer('google-satellite')}
-              className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeLayer === 'google-satellite' ? 'bg-gray-200' : ''}`}
-              role="menuitem"
-            >
-              Satellite Layer
-            </button>
-            <button
-              onClick={() => toggleLayer('usgs-topo')}
-              className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeLayer === 'usgs-topo' ? 'bg-gray-200' : ''}`}
-              role="menuitem"
-            >
-              USGS Topo Layer
-            </button>
-            <button
-              onClick={() => toggleLayer('atlmaps')}
-              className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeLayer === 'atlmaps' ? 'bg-gray-200' : ''}`}
-              role="menuitem"
-            >
-              ATLMaps Layer
-            </button>
+            {mapLayers.map((layer) => (
+              <button
+                key={layer.id}
+                onClick={() => toggleLayer(layer.id)}
+                className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeLayer === layer.id ? 'bg-gray-200' : ''}`}
+                role="menuitem"
+              >
+                {layer.label}
+              </button>
+            ))}
           </div>
         </div>
       )}
