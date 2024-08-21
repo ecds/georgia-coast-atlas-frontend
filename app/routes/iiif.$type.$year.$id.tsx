@@ -1,4 +1,5 @@
 import { json } from "@remix-run/node";
+import { cors } from "remix-utils/cors";
 import {
   annotationPainting,
   annotationGeo,
@@ -30,26 +31,27 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { url } = request;
   const { protocol, host } = new URL(request.url);
   const options = { imageData, id, year, protocol, host, url, data };
-  let response = {};
+  let responseData = {};
   switch (params.type) {
     case "manifest":
-      response = manifest(options);
+      responseData = manifest(options);
       break;
     case "annotation-page":
-      response = annotationPage(options);
+      responseData = annotationPage(options);
       break;
     case "annotation-painting":
-      response = annotationPainting(options);
+      responseData = annotationPainting(options);
       break;
     case "annotation-geo":
-      response = annotationGeo(options);
+      responseData = annotationGeo(options);
       break;
     case "canvas":
-      response = canvas(options);
+      responseData = canvas(options);
       break;
     default:
       break;
   }
 
-  return json(response);
+  const response = json(responseData);
+  return await cors(request, response, { origin: true });
 };
