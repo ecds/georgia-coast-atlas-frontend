@@ -3,6 +3,7 @@ import { installGlobals } from "@remix-run/node";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 
 installGlobals();
 
@@ -10,10 +11,12 @@ const viteDevServer =
   process.env.NODE_ENV === "production"
     ? undefined
     : await import("vite").then((vite) =>
-      vite.createServer({
-        server: { middlewareMode: true },
-      })
-    );
+        vite.createServer({
+          server: {
+            middlewareMode: true,
+          },
+        })
+      );
 
 const remixHandler = createRequestHandler({
   build: viteDevServer
@@ -38,6 +41,8 @@ if (viteDevServer) {
     express.static("build/client/assets", { immutable: true, maxAge: "1y" })
   );
 }
+
+app.use(cors({ origin: "*", methods: ["GET"] }));
 
 // Everything else (like favicon.ico) is cached for an hour. You may want to be
 // more aggressive with this caching.
