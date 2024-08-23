@@ -11,15 +11,15 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import type {
   TTopoCoords,
   TTopoCoordsRecord,
-  TTopoNames,
-  TTopoYears,
+  TTopoName,
+  TTopoYear,
 } from "~/types";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { id, year } = params;
   if (!id || !year) return {};
-  const data: TTopoCoords = (topoCoords as TTopoCoordsRecord)[id as TTopoNames][
-    year as TTopoYears
+  const data: TTopoCoords = (topoCoords as TTopoCoordsRecord)[id as TTopoName][
+    year as TTopoYear
   ];
   const imageService = await fetch(
     `https://iip.readux.io/iiif/3/topos/${year}/${id}.tiff/info.json`,

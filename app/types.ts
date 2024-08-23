@@ -32,7 +32,7 @@ type TCoreDataSourceName = {
   };
 };
 
-type TUserDefinedField = {
+export type TUserDefinedField = {
   [key: string]: {
     label: string;
     value: string;
@@ -83,11 +83,29 @@ export type TIIIFManifest = {
   label: TIIIFLabel;
 };
 
-export type TCoreDataPlaceRecord = {
+export type TCoreDataLayer = {
+  id: string;
+  name: TTopoYear | string;
+  url: string;
+};
+
+export type TCoreDataPlace = {
   uuid: string;
   name: string;
   place_names: TNames[];
-  place_layers: [];
+  place_layers: TCoreDataLayer[];
+  web_identifiers: [];
+  place_geometry: {
+    geometry_json: Geometry;
+  };
+  user_defined: TUserDefinedField;
+};
+
+export type TPlaceRecord = TCoreDataPlace & {
+  uuid: string;
+  name: string;
+  place_names: TNames[];
+  place_layers: TCoreDataLayer[];
   web_identifiers: [];
   place_geometry: {
     geometry_json: Geometry;
@@ -98,10 +116,6 @@ export type TCoreDataPlaceRecord = {
   [key: string]: any;
   iiif_manifest: string;
 };
-
-export type TCoreDataPlace = {
-  place: TCoreDataPlaceRecord;
-} | null;
 
 export type TCoreDataImage = {
   content_type: "image/jpeg";
@@ -221,14 +235,15 @@ export type TIslandConfig = {
 
 export type TIslandServerData = {
   island: TIslandConfig;
-  place: TCoreDataPlaceRecord;
+  place: TPlaceRecord;
 };
 
 export type TRelatedCoreDataRecords = {
   media_contents?: TMediaContents;
   places?: {
-    county: TCoreDataPlaceRecord;
-    relatedPlaces: TCoreDataPlaceRecord[];
+    county: TPlaceRecord;
+    relatedPlaces: TPlaceRecord[];
+    topoQuads: TPlaceRecord[];
   };
   taxonomies?: TCoreDataTaxonomies[];
   items?: {
@@ -241,6 +256,7 @@ export type TIslandClientData = TIslandServerData &
   TRelatedCoreDataRecords & {
     wpData: TWordPressData;
     geoJSON: FeatureCollection;
+    maps: any;
   };
 
 type TRelatedType = {
@@ -273,7 +289,7 @@ export type TTypeHit = {
 
 type TCoordinates = [number, number];
 
-export type TTopoNames =
+export type TTopoName =
   | "Altamaha_Sound"
   | "Bladen"
   | "Bluffton"
@@ -369,7 +385,7 @@ export type TTopoNames =
   | "Willie"
   | "Woodbine";
 
-export type TTopoYears =
+export type TTopoYear =
   | "1917"
   | "1918"
   | "1919"
@@ -415,12 +431,20 @@ export type TTopoYears =
   | "2024";
 
 export type TTopoCoords = {
-  resourceCoords: [[number, number]];
-  geoCoords: [[number, number]];
+  resourceCoords: TCoordinates[];
+  geoCoords: TCoordinates[];
 };
 
 export type TTopoCoordsRecord = {
-  [key in TTopoNames]: {
-    [key in TTopoYears]: TTopoCoords;
+  [key in TTopoName]: {
+    [key in TTopoYear]: TTopoCoords;
   };
 };
+
+// export type TPlaceMap = {
+//   name: {
+//     name: TTopoName | string;
+//     primary: boolean;
+//   };
+//   layers: TLayer[];
+// };

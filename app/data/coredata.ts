@@ -1,5 +1,10 @@
-import { coreDataRelatedEndpoints, dataHosts, keys } from "~/config";
-import type { TCoreDataPlace } from "~/types";
+import {
+  coreDataRelatedEndpoints,
+  dataHosts,
+  keys,
+  modelFieldUUIDs,
+} from "~/config";
+import type { TCoreDataPlace, TPlaceRecord } from "~/types";
 
 export const fetchRelatedRecords = async (id: string) => {
   const relatedRecords = {};
@@ -7,13 +12,15 @@ export const fetchRelatedRecords = async (id: string) => {
     const relatedResponse = await fetch(
       `https://${dataHosts.coreData}/core_data/public/v1/places/${id}/${related.endpoint}?project_ids=${keys.coreDataProject}&per_page=2000`,
     );
+
     const relatedData = await relatedResponse.json();
+
     const items = relatedData[related.endpoint];
+
     for (const item of items) {
       for (const value of Object.values(item.user_defined)) {
         // @ts-ignore
         item[(value.label as string).toLowerCase()] = value.value;
-        console.log("🚀 ~ fetchRelatedRecords ~ item:", item);
       }
     }
     // @ts-ignore
@@ -35,15 +42,17 @@ export const fetchPlaceRecord = async (id: string) => {
   const response = await fetch(
     `https://${dataHosts.coreData}/core_data/public/v1/places/${id}?project_ids=1`,
   );
-  const data: TCoreDataPlace = await response.json();
-  if (data && data.place.user_defined) {
-    for (const value of Object.values(data.place.user_defined)) {
-      data.place[value.label.toLowerCase()] = value.value;
+
+  const data: { place: TPlaceRecord } = await response.json();
+  const placeData: TPlaceRecord = data.place;
+
+  if (placeData && placeData.user_defined) {
+    for (const value of Object.values(placeData.user_defined)) {
+      placeData[value.label.toLowerCase()] = value.value;
     }
-    const photographAssoc = coreDataRelatedEndpoints
-      ?.find((e) => e?.endpoint == "media_contents")
-      ?.types.find((t) => t?.type == "photographs")?.uuid;
-    data.place.iiif_manifest = `https://${dataHosts.coreData}/core_data/public/v1/places/${data.place.uuid}/manifests/${photographAssoc}`;
+
+    placeData.iiif_manifest = `https://${dataHosts.coreData}/core_data/public/v1/places/${data.place.uuid}/manifests/${modelFieldUUIDs.photographs}`;
   }
-  return data;
+
+  return placeData;
 };

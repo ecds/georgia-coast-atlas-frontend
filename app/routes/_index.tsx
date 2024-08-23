@@ -6,21 +6,23 @@ import { islands } from "~/config";
 import { fetchPlaceRecord } from "~/data/coredata";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import type { FeatureCollection } from "geojson";
-import type { TCoreDataPlaceRecord } from "~/types";
+import type { TPlaceRecord } from "~/types";
 import type { LoaderFunction } from "@remix-run/node";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import IntroModal from "~/components/layout/IntroModal"; 
+import IntroModal from "~/components/layout/IntroModal";
 
 export const loader: LoaderFunction = async () => {
-  const islandDataPromises = islands.map(island => 
+  const islandDataPromises = islands.map((island) =>
     fetchPlaceRecord(island.coreDataId)
-      .then(data => data?.place)
-      .catch(() => undefined)
+      .then((data) => data?.place)
+      .catch(() => undefined),
   );
 
   const islandData = await Promise.all(islandDataPromises);
-  const validIslandData: TCoreDataPlaceRecord[] = islandData.filter((data): data is TCoreDataPlaceRecord => data !== undefined);
+  const validIslandData: TPlaceRecord[] = islandData.filter(
+    (data): data is TPlaceRecord => data !== undefined,
+  );
   const geoJSON = toFeatureCollection(validIslandData);
 
   return { geoJSON };
@@ -33,29 +35,33 @@ export default function Index() {
   const { geoJSON } = useLoaderData<{ geoJSON: FeatureCollection }>();
 
   const handleMouseEnter = useCallback(() => {
-    if (map) map.getCanvas().style.cursor = 'pointer';
+    if (map) map.getCanvas().style.cursor = "pointer";
   }, [map]);
 
   const handleMouseLeave = useCallback(() => {
-    if (map) map.getCanvas().style.cursor = '';
+    if (map) map.getCanvas().style.cursor = "";
   }, [map]);
 
-  const handleClick = useCallback((e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] }) => {
-    if (!map) return;
-    if (e.features && e.features.length > 0) {
-      const coordinates = e.lngLat;
-      const name = e.features[0].properties?.name;
+  const handleClick = useCallback(
+    (
+      e: maplibregl.MapMouseEvent & {
+        features?: maplibregl.MapGeoJSONFeature[];
+      },
+    ) => {
+      if (!map) return;
+      if (e.features && e.features.length > 0) {
+        const coordinates = e.lngLat;
+        const name = e.features[0].properties?.name;
 
-      while (Math.abs(e.lngLat.lng - coordinates.lng) > 180) {
-        coordinates.lng += e.lngLat.lng > coordinates.lng ? 360 : -360;
+        while (Math.abs(e.lngLat.lng - coordinates.lng) > 180) {
+          coordinates.lng += e.lngLat.lng > coordinates.lng ? 360 : -360;
+        }
+
+        new maplibregl.Popup().setLngLat(coordinates).setHTML(name).addTo(map);
       }
-
-      new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(name)
-        .addTo(map);
-    }
-  }, [map]);
+    },
+    [map],
+  );
 
   useEffect(() => {
     if (!map || !mapLoaded || !geoJSON) return;
@@ -93,31 +99,33 @@ export default function Index() {
       },
     });
 
-    map.on('mouseenter', 'islands-fill', handleMouseEnter);
-    map.on('mouseleave', 'islands-fill', handleMouseLeave);
-    map.on('click', 'islands-fill', handleClick);
+    map.on("mouseenter", "islands-fill", handleMouseEnter);
+    map.on("mouseleave", "islands-fill", handleMouseLeave);
+    map.on("click", "islands-fill", handleClick);
 
     return () => {
       if (map.getLayer("islands-fill")) map.removeLayer("islands-fill");
       if (map.getLayer("islands-outline")) map.removeLayer("islands-outline");
       if (map.getSource("islands")) map.removeSource("islands");
-      map.off('mouseenter', 'islands-fill', handleMouseEnter);
-      map.off('mouseleave', 'islands-fill', handleMouseLeave);
-      map.off('click', 'islands-fill', handleClick);
+      map.off("mouseenter", "islands-fill", handleMouseEnter);
+      map.off("mouseleave", "islands-fill", handleMouseLeave);
+      map.off("click", "islands-fill", handleClick);
     };
-  }, [map, mapLoaded, geoJSON, handleMouseEnter, handleMouseLeave, handleClick]);
+  }, [
+    map,
+    mapLoaded,
+    geoJSON,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleClick,
+  ]);
 
   return (
     <div className="w-full h-full">
-      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />} {/* Render the modal */}
+      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
+      {/* Render the modal */}
       <ClientOnly>
-        {() => (
-          <Map 
-            map={map} 
-            setMap={setMap} 
-            setMapLoaded={setMapLoaded}
-          />
-        )}
+        {() => <Map map={map} setMap={setMap} setMapLoaded={setMapLoaded} />}
       </ClientOnly>
     </div>
   );

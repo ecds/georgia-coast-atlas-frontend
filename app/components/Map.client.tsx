@@ -1,20 +1,19 @@
 import maplibregl from "maplibre-gl";
-import { WarpedMapLayer } from "@allmaps/maplibre";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
+import { PlaceContext } from "~/contexts";
 import style from "~/data/style.json";
 import { topBarHeight, mapLayers } from "~/config";
 import "maplibre-gl/dist/maplibre-gl.css";
-import MapSwitcher from "./MapSwitcher";
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction, ReactNode } from "react";
 import type { StyleSpecification } from "maplibre-gl";
 
 interface Props {
-  map: maplibregl.Map | undefined;
-  setMap: Dispatch<SetStateAction<maplibregl.Map | undefined>>;
-  setMapLoaded: Dispatch<SetStateAction<boolean>>;
+  children?: ReactNode;
 }
 
-const Map = ({ map, setMap, setMapLoaded }: Props) => {
+const Map = ({ children }: Props) => {
+  const { map, setMap, setMapLoaded } = useContext(PlaceContext);
+
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,10 +41,25 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
       setMapLoaded(true);
     });
 
+    const addMapLayers = (_map: maplibregl.Map) => {
+      mapLayers.forEach((layer) => {
+        _map.addSource(layer.id, {
+          type: "raster",
+          tiles: layer.tiles,
+          tileSize: 256,
+          attribution: layer.attribution,
+        });
+        _map.addLayer({
+          id: `${layer.id}-layer`,
+          type: "raster",
+          source: layer.id,
+          layout: { visibility: "none" },
+        });
+      });
+    };
+
     return () => {
       if (_map) {
-        if (_map.getLayer("fernandina")) _map.removeLayer("fernandina");
-        if (_map.getLayer("tybee")) _map.removeLayer("tybee");
         _map.remove();
       }
       setMap(undefined);
@@ -53,37 +67,13 @@ const Map = ({ map, setMap, setMapLoaded }: Props) => {
     };
   }, [setMap]);
 
-  useEffect(() => {
-    if (!map) return;
-    map.on("load", async () => {
-      setMapLoaded(true);
-      const warpedMapLayer = new WarpedMapLayer("fernandina");
-      map.addLayer(warpedMapLayer);
-      warpedMapLayer.addGeoreferenceAnnotationByUrl(
-        "/iiif/annotation-page/2011/Fernandina_Beach",
-      );
-
-      const warpedMapLayer2 = new WarpedMapLayer("tybee");
-      map.addLayer(warpedMapLayer2);
-      warpedMapLayer2.addGeoreferenceAnnotationByUrl(
-        "/iiif/annotation-page/2024/Wassaw_Sound",
-      );
-      console.log(
-        "🚀 ~ map.on ~ warpedMapLayer2:",
-        map,
-        warpedMapLayer,
-        warpedMapLayer2,
-      );
-    });
-  }, [map, setMapLoaded]);
-
   return (
     <div className="relative">
       <div
         ref={mapContainerRef}
         className={`h-[calc(100vh-${topBarHeight})]`}
       ></div>
-      <MapSwitcher map={map} />
+      {children}
     </div>
   );
 };

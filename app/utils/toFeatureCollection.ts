@@ -1,10 +1,10 @@
 import { feature, featureCollection, explode, polygon } from "@turf/turf";
 import { modelFieldUUIDs } from "~/config";
-import type { TCoreDataPlaceRecord } from "~/types";
+import type { TPlaceRecord } from "~/types";
 import type { Hit } from "instantsearch.js";
-console.log("🚀 ~ explode:", explode, polygon);
 
-export const toFeatureCollection = (places: TCoreDataPlaceRecord[]) => {
+export const toFeatureCollection = (places: TPlaceRecord[]) => {
+  console.log("🚀 ~ toFeatureCollection ~ places:", places);
   return featureCollection(
     places.map((place) => {
       const placeFeature = feature(place.place_geometry.geometry_json);

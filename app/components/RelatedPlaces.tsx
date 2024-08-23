@@ -4,21 +4,21 @@ import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
-import { IslandContext } from "~/contexts";
+import { PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "./PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { TCoreDataPlaceRecord } from "~/types";
+import type { TPlaceRecord } from "~/types";
 
 interface Props {
-  places: TCoreDataPlaceRecord[];
+  places: TPlaceRecord[];
 }
 
 const RelatedPlaces = ({ places }: Props) => {
-  const { map, mapLoaded } = useContext(IslandContext);
-  const [activePlace, setActivePlace] = useState<
-    TCoreDataPlaceRecord | undefined
-  >(undefined);
+  const { map, mapLoaded } = useContext(PlaceContext);
+  const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (!map || !mapLoaded) return;
@@ -44,7 +44,7 @@ const RelatedPlaces = ({ places }: Props) => {
       data: geoJSON,
       cluster: true,
       clusterMaxZoom: 14,
-      clusterRadius: 50
+      clusterRadius: 50,
     });
 
     map.addLayer({
@@ -60,18 +60,10 @@ const RelatedPlaces = ({ places }: Props) => {
           100,
           "#f1f075",
           750,
-          "#f28cb1"
+          "#f28cb1",
         ],
-        "circle-radius": [
-          "step",
-          ["get", "point_count"],
-          20,
-          100,
-          30,
-          750,
-          40
-        ]
-      }
+        "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+      },
     });
 
     map.addLayer({
@@ -82,8 +74,8 @@ const RelatedPlaces = ({ places }: Props) => {
       layout: {
         "text-field": "{point_count_abbreviated}",
         "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-        "text-size": 12
-      }
+        "text-size": 12,
+      },
     });
 
     map.addLayer({
@@ -93,14 +85,18 @@ const RelatedPlaces = ({ places }: Props) => {
       filter: ["!", ["has", "point_count"]],
       layout: {
         "icon-image": "pulsing-dot",
-      }
+      },
     });
 
     const handleClusterClick = async (e: MapLayerMouseEvent) => {
       const features = map.queryRenderedFeatures(e.point, {
-        layers: ["clusters"]
+        layers: ["clusters"],
       });
-      if (features.length > 0 && features[0].properties && features[0].geometry) {
+      if (
+        features.length > 0 &&
+        features[0].properties &&
+        features[0].geometry
+      ) {
         const clusterId = features[0].properties.cluster_id;
         const source = map.getSource("places") as GeoJSONSource;
         if (source) {
@@ -110,7 +106,7 @@ const RelatedPlaces = ({ places }: Props) => {
             if (geometry.type === "Point") {
               map.easeTo({
                 center: geometry.coordinates as [number, number],
-                zoom: zoom
+                zoom: zoom,
               });
             }
           } catch (err) {
@@ -125,7 +121,7 @@ const RelatedPlaces = ({ places }: Props) => {
 
       const feature = e.features[0];
       const clickedPlace = places.find(
-        (place) => place.identifier === feature.properties.identifier
+        (place) => place.identifier === feature.properties.identifier,
       );
 
       setActivePlace(clickedPlace);
@@ -158,7 +154,8 @@ const RelatedPlaces = ({ places }: Props) => {
         if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
         if (map.getLayer("clusters")) map.removeLayer("clusters");
         if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
-        if (map.getLayer("unclustered-point")) map.removeLayer("unclustered-point");
+        if (map.getLayer("unclustered-point"))
+          map.removeLayer("unclustered-point");
         if (map.getSource("places")) map.removeSource("places");
         map.off("click", "clusters", handleClusterClick);
         map.off("click", "unclustered-point", handleUnclusteredPointClick);

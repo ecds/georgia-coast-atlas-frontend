@@ -3,16 +3,15 @@ import { bbox } from "@turf/turf";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { islands, dataHosts, topBarHeight } from "~/config.ts";
+import { islands, dataHosts, topBarHeight, modelFieldUUIDs } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import RelatedPlaces from "~/components/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/RelatedVideos";
-import { IslandContext } from "~/contexts";
+import { PlaceContext } from "~/contexts";
 import type {
-  TCoreDataPlace,
   TWordPressData,
   TIslandServerData,
   TIslandClientData,
@@ -22,43 +21,46 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import type { Map as TMap } from "maplibre-gl";
 import RelatedPhotographs from "~/components/RelatedPhotographs";
+import MapSwitcher from "~/components/MapSwitcher";
+import TopoQuads from "~/components/mapping/TopoQuads";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.island == `${i.slug}-island`);
 
   if (!island) return { wpData: null, place: null };
 
-  const cdData: TCoreDataPlace = await fetchPlaceRecord(island?.coreDataId);
-
-  return { place: cdData?.place, island } || null;
-};
-
-export const clientLoader = async ({
-  params,
-  serverLoader,
-}: ClientLoaderFunctionArgs) => {
-  const serverData = await serverLoader<TIslandServerData>();
-  const relatedRecords: TRelatedCoreDataRecords = await fetchRelatedRecords(
-    serverData.island.coreDataId,
-  );
+  const place = await fetchPlaceRecord(island?.coreDataId);
   const wpResponse = await fetch(
     `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.island}`,
   );
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
+  return { place, island, wpData: wpData[0] } || null;
+};
+
+export const clientLoader = async ({
+  serverLoader,
+}: ClientLoaderFunctionArgs) => {
+  const serverData = await serverLoader<TIslandServerData>();
+  const relatedRecords: TRelatedCoreDataRecords = await fetchRelatedRecords(
+    serverData.island.coreDataId,
+  );
+
   const geoJSON = toFeatureCollection([serverData.place]);
 
-  return { ...serverData, ...relatedRecords, wpData: wpData[0], geoJSON };
+  return { ...serverData, ...relatedRecords, geoJSON };
 };
 
 clientLoader.hydrate = true;
 
 const IslandPage = () => {
-  const { island, wpData, place, geoJSON, ...related } =
+  const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
+  console.log("🚀 ~ IslandPage ~ place:", place);
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [activeLayers, setActiveLayers] = useState<string[]>([]);
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
 
@@ -125,6 +127,9 @@ const IslandPage = () => {
     return () => {
       try {
         if (!map) return;
+        for (const layer of activeLayers) {
+          if (map.getLayer(layer)) map.removeLayer(layer);
+        }
         if (map.getLayer(`${island.slug}-fill`))
           map.removeLayer(`${island.slug}-fill`);
         if (map.getLayer(`${island.slug}-outline`))
@@ -135,12 +140,14 @@ const IslandPage = () => {
   }, [map, mapLoaded, geoJSON, island]);
 
   return (
-    <IslandContext.Provider
+    <PlaceContext.Provider
       value={{
         map,
         setMap,
         mapLoaded,
         setMapLoaded,
+        activeLayers,
+        setActiveLayers,
       }}
     >
       <div
@@ -151,13 +158,13 @@ const IslandPage = () => {
             <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
               {island.label} Island
             </h1>
-            <div ref={topRef} className="relative -top-12 z-50 bg-black">
+            <div ref={topRef} className="relative -top-12 z-50 min-h-10">
               <FeaturedMedium record={related} />
             </div>
             <div
               className="relative px-4 -mt-12 primary-content"
               dangerouslySetInnerHTML={{
-                __html: wpData?.content.rendered,
+                __html: wpData?.content.rendered ?? place.description,
               }}
             />
           </div>
@@ -171,18 +178,29 @@ const IslandPage = () => {
           )}
 
           {related.media_contents?.photographs && (
+            // @ts-ignore
             <RelatedPhotographs manifest={place.iiif_manifest} />
           )}
         </div>
         <div className="hidden md:block w-1/2">
           <ClientOnly>
             {() => (
-              <Map map={map} setMap={setMap} setMapLoaded={setMapLoaded} />
+              <Map>
+                <MapSwitcher>
+                  {related.places?.topoQuads && (
+                    <>
+                      {related.places?.topoQuads.map((quad) => {
+                        return <TopoQuads key={quad.uuid} quadId={quad.uuid} />;
+                      })}
+                    </>
+                  )}
+                </MapSwitcher>
+              </Map>
             )}
           </ClientOnly>
         </div>
       </div>
-    </IslandContext.Provider>
+    </PlaceContext.Provider>
   );
 };
 
