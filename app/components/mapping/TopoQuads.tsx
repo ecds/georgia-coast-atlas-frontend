@@ -1,12 +1,13 @@
 import { WarpedMapLayer } from "@allmaps/maplibre";
 import { useContext, useEffect, useRef, useState } from "react";
-import { PlaceContext } from "~/contexts";
+import { PlaceContext, MapContext } from "~/contexts";
 import { fetchPlaceRecord } from "~/data/coredata";
 import type { TPlaceRecord, TCoreDataLayer } from "~/types";
 import RelatedSection from "../RelatedSection";
 
 const TopoQuads = ({ quadId }: { quadId: string }) => {
-  const { map, activeLayers, setActiveLayers } = useContext(PlaceContext);
+  const { map } = useContext(MapContext);
+  const { activeLayers, setActiveLayers } = useContext(PlaceContext);
   const activeQuadRef = useRef<TCoreDataLayer | undefined>(undefined);
   const [quadRecord, setQuadRecord] = useState<TPlaceRecord | null>(null);
   const [activeQuad, setActiveQuad] = useState<TCoreDataLayer | undefined>(

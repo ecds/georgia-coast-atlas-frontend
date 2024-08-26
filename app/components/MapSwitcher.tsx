@@ -1,13 +1,13 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { useContext, useEffect, useState } from "react";
-import { PlaceContext } from "~/contexts";
+import { MapContext } from "~/contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { mapLayers } from "~/config";
 import type { ReactNode } from "react";
 
 const MapSwitcher = ({ children }: { children?: ReactNode }) => {
-  const { map } = useContext(PlaceContext);
+  const { map } = useContext(MapContext);
   const [activeLayer, setActiveLayer] = useState<string>("custom");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 

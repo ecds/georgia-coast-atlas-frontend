@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
+import { MapContext } from "~/contexts";
 import { useLoaderData } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import Map from "~/components/Map.client";
@@ -11,11 +12,12 @@ import type { LoaderFunction } from "@remix-run/node";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import IntroModal from "~/components/layout/IntroModal";
+import MapSwitcher from "~/components/MapSwitcher";
 
 export const loader: LoaderFunction = async () => {
   const islandDataPromises = islands.map((island) =>
     fetchPlaceRecord(island.coreDataId)
-      .then((data) => data?.place)
+      .then((data) => data)
       .catch(() => undefined),
   );
 
@@ -121,12 +123,25 @@ export default function Index() {
   ]);
 
   return (
-    <div className="w-full h-full">
-      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
-      {/* Render the modal */}
-      <ClientOnly>
-        {() => <Map map={map} setMap={setMap} setMapLoaded={setMapLoaded} />}
-      </ClientOnly>
-    </div>
+    <MapContext.Provider
+      value={{
+        map,
+        setMap,
+        mapLoaded,
+        setMapLoaded,
+      }}
+    >
+      <div className="w-full h-full">
+        {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
+        {/* Render the modal */}
+        <ClientOnly>
+          {() => (
+            <Map>
+              <MapSwitcher />
+            </Map>
+          )}
+        </ClientOnly>
+      </div>
+    </MapContext.Provider>
   );
 }

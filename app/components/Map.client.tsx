@@ -1,6 +1,6 @@
 import maplibregl from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
-import { PlaceContext } from "~/contexts";
+import { MapContext } from "~/contexts";
 import style from "~/data/style.json";
 import { topBarHeight, mapLayers } from "~/config";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const Map = ({ children }: Props) => {
-  const { map, setMap, setMapLoaded } = useContext(PlaceContext);
+  const { map, setMap, setMapLoaded } = useContext(MapContext);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
 

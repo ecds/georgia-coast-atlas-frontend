@@ -3,14 +3,14 @@ import { bbox } from "@turf/turf";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { islands, dataHosts, topBarHeight, modelFieldUUIDs } from "~/config.ts";
+import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import RelatedPlaces from "~/components/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/RelatedVideos";
-import { PlaceContext } from "~/contexts";
+import { PlaceContext, MapContext } from "~/contexts";
 import type {
   TWordPressData,
   TIslandServerData,
@@ -57,7 +57,6 @@ clientLoader.hydrate = true;
 const IslandPage = () => {
   const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
-  console.log("🚀 ~ IslandPage ~ place:", place);
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
@@ -140,67 +139,64 @@ const IslandPage = () => {
   }, [map, mapLoaded, geoJSON, island]);
 
   return (
-    <PlaceContext.Provider
-      value={{
-        map,
-        setMap,
-        mapLoaded,
-        setMapLoaded,
-        activeLayers,
-        setActiveLayers,
-      }}
-    >
-      <div
-        className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
+    <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
+      <PlaceContext.Provider
+        value={{
+          activeLayers,
+          setActiveLayers,
+        }}
       >
-        <div className="w-full md:w-1/2 overflow-scroll pb-32">
-          <div className="flex flex-col">
-            <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
-              {island.label} Island
-            </h1>
-            <div ref={topRef} className="relative -top-12 z-50 min-h-10">
-              <FeaturedMedium record={related} />
+        <div
+          className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
+        >
+          <div className="w-full md:w-1/2 overflow-scroll pb-32">
+            <div className="flex flex-col">
+              <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
+                {island.label} Island
+              </h1>
+              <div ref={topRef} className="relative -top-12 z-50 min-h-10">
+                <FeaturedMedium record={related} />
+              </div>
+              <div
+                className="relative px-4 -mt-12 primary-content"
+                dangerouslySetInnerHTML={{
+                  __html: wpData?.content.rendered ?? place.description,
+                }}
+              />
             </div>
-            <div
-              className="relative px-4 -mt-12 primary-content"
-              dangerouslySetInnerHTML={{
-                __html: wpData?.content.rendered ?? place.description,
-              }}
-            />
-          </div>
-
-          {related.places?.relatedPlaces && (
-            <RelatedPlaces places={related.places.relatedPlaces} />
-          )}
-
-          {related.items?.videos && (
-            <RelatedVideos videos={related.items.videos} />
-          )}
-
-          {related.media_contents?.photographs && (
-            // @ts-ignore
-            <RelatedPhotographs manifest={place.iiif_manifest} />
-          )}
-        </div>
-        <div className="hidden md:block w-1/2">
-          <ClientOnly>
-            {() => (
-              <Map>
-                <MapSwitcher>
-                  {related.places?.topoQuads && (
-                    <>
-                      {related.places?.topoQuads.map((quad) => {
-                        return <TopoQuads key={quad.uuid} quadId={quad.uuid} />;
-                      })}
-                    </>
-                  )}
-                </MapSwitcher>
-              </Map>
+            {related.places?.relatedPlaces && (
+              <RelatedPlaces places={related.places.relatedPlaces} />
             )}
-          </ClientOnly>
+            {related.items?.videos && (
+              <RelatedVideos videos={related.items.videos} />
+            )}
+            {related.media_contents?.photographs && (
+              // @ts-ignore
+              <RelatedPhotographs manifest={place.iiif_manifest} />
+            )}
+          </div>
+          <div className="hidden md:block w-1/2">
+            <ClientOnly>
+              {() => (
+                <Map>
+                  <MapSwitcher>
+                    {related.places?.topoQuads && (
+                      <>
+                        {related.places?.topoQuads.map((quad) => {
+                          return (
+                            <TopoQuads key={quad.uuid} quadId={quad.uuid} />
+                          );
+                        })}
+                      </>
+                    )}
+                  </MapSwitcher>
+                </Map>
+              )}
+            </ClientOnly>
+          </div>
         </div>
-      </div>
-    </PlaceContext.Provider>
+      </PlaceContext.Provider>
+    </MapContext.Provider>
   );
 };
 
