@@ -4,7 +4,7 @@ import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
-import { PlaceContext } from "~/contexts";
+import { MapContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "./PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const RelatedPlaces = ({ places }: Props) => {
-  const { map, mapLoaded } = useContext(PlaceContext);
+  const { map, mapLoaded } = useContext(MapContext);
   const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(
     undefined,
   );
