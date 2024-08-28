@@ -1,5 +1,6 @@
 import { WarpedMapLayer } from "@allmaps/maplibre";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useNavigation } from "@remix-run/react";
 import { PlaceContext, MapContext } from "~/contexts";
 import { fetchPlaceRecord } from "~/data/coredata";
 import type { TPlaceRecord, TCoreDataLayer } from "~/types";
@@ -8,11 +9,25 @@ import RelatedSection from "../RelatedSection";
 const TopoQuads = ({ quadId }: { quadId: string }) => {
   const { map } = useContext(MapContext);
   const { activeLayers, setActiveLayers } = useContext(PlaceContext);
+  const navigation = useNavigation();
   const activeQuadRef = useRef<TCoreDataLayer | undefined>(undefined);
   const [quadRecord, setQuadRecord] = useState<TPlaceRecord | null>(null);
   const [activeQuad, setActiveQuad] = useState<TCoreDataLayer | undefined>(
     undefined,
   );
+
+  useEffect(() => {
+    console.log(
+      "🚀 ~ useEffect ~ activeQuad:",
+      activeQuad,
+      activeQuadRef.current,
+    );
+    if (navigation.state === "loading" && activeQuad) {
+      if (map?.getLayer(activeQuad.id)) map.removeLayer(activeQuad.id);
+      setActiveQuad(undefined);
+      activeQuadRef.current = undefined;
+    }
+  }, [navigation]);
 
   useEffect(() => {
     if (!map || !quadId) return;
@@ -27,6 +42,13 @@ const TopoQuads = ({ quadId }: { quadId: string }) => {
     };
 
     fetchRecords();
+
+    return () => {
+      console.log(
+        "🚀 ~ fetchRecords ~ activeQuadRef.current:",
+        activeQuadRef.current,
+      );
+    };
   }, [quadId, map]);
 
   useEffect(() => {

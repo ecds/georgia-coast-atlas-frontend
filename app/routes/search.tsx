@@ -19,8 +19,10 @@ import { history } from "instantsearch.js/es/lib/routers";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { topBarHeight } from "~/config";
+import { MapContext } from "~/contexts";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
+import MapSwitcher from "~/components/MapSwitcher";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
@@ -45,65 +47,76 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
 
   return (
     <InstantSearchSSRProvider {...serverState}>
-      <InstantSearch
-        indexName="gca"
-        searchClient={searchClient}
-        future={{ preserveSharedStateOnUnmount: true }}
-        routing={{
-          router: history({
-            getLocation() {
-              if (typeof window === "undefined") {
-                return new URL(serverUrl!) as unknown as Location;
-              }
-              return window.location;
-            },
-            cleanUrlOnDispose: false,
-          }),
+      <MapContext.Provider
+        value={{
+          map,
+          setMap,
+          mapLoaded,
+          setMapLoaded,
         }}
       >
-        <div
-          className={`grid grid-cols-3 h-[calc(100vh-${topBarHeight})] overflow-hidden`}
+        <InstantSearch
+          indexName="gca"
+          searchClient={searchClient}
+          future={{ preserveSharedStateOnUnmount: true }}
+          routing={{
+            router: history({
+              getLocation() {
+                if (typeof window === "undefined") {
+                  return new URL(serverUrl!) as unknown as Location;
+                }
+                return window.location;
+              },
+              cleanUrlOnDispose: false,
+            }),
+          }}
         >
-          <div className="col-span-1 overflow-auto">
-            <SearchForm />
-            <Hits
-              hitComponent={SearchResult}
-              classNames={{ root: "px-8 overflow-auto" }}
-            />
-            <Pagination
-              className="mt-4"
-              classNames={{
-                list: "flex flex-row items-stretch w-full py-1 px-4",
-                item: "grow bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded text-center",
-              }}
-            />
-            <HitsPerPage
-              className="p-4 mb-4"
-              items={[
-                { label: "25 results per page", value: 25, default: true },
-                { label: "50 results per page", value: 50 },
-                { label: "100 results per page", value: 100 },
-                { label: "150 results per page", value: 150 },
-                { label: "200 results per page", value: 200 },
-                { label: "250 results per page", value: 250 },
-              ]}
-              title="Results per page"
-              classNames={{
-                select:
-                  "bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded",
-              }}
-            />
+          <div
+            className={`grid grid-cols-3 h-[calc(100vh-${topBarHeight})] overflow-hidden`}
+          >
+            <div className="col-span-1 overflow-auto">
+              <SearchForm />
+              <Hits
+                hitComponent={SearchResult}
+                classNames={{ root: "px-8 overflow-auto" }}
+              />
+              <Pagination
+                className="mt-4"
+                classNames={{
+                  list: "flex flex-row items-stretch w-full py-1 px-4",
+                  item: "grow bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded text-center",
+                }}
+              />
+              <HitsPerPage
+                className="p-4 mb-4"
+                items={[
+                  { label: "25 results per page", value: 25, default: true },
+                  { label: "50 results per page", value: 50 },
+                  { label: "100 results per page", value: 100 },
+                  { label: "150 results per page", value: 150 },
+                  { label: "200 results per page", value: 200 },
+                  { label: "250 results per page", value: 250 },
+                ]}
+                title="Results per page"
+                classNames={{
+                  select:
+                    "bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded",
+                }}
+              />
+            </div>
+            <div className="col-span-2">
+              <ClientOnly>
+                {() => (
+                  <Map>
+                    <MapSwitcher />
+                  </Map>
+                )}
+              </ClientOnly>
+              <GeoSearch />
+            </div>
           </div>
-          <div className="col-span-2">
-            <ClientOnly>
-              {() => (
-                <Map map={map} setMap={setMap} setMapLoaded={setMapLoaded} />
-              )}
-            </ClientOnly>
-            <GeoSearch map={map} mapLoaded={mapLoaded} />
-          </div>
-        </div>
-      </InstantSearch>
+        </InstantSearch>
+      </MapContext.Provider>
     </InstantSearchSSRProvider>
   );
 };

@@ -1,16 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
+import { MapContext } from "~/contexts";
 import { useGeoSearch, useInstantSearch } from "react-instantsearch";
 import { pulsingDot } from "~/utils/pulsingDot";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 
-import type { Map as TMap } from "maplibre-gl";
-
-interface Props {
-  map: TMap | undefined;
-  mapLoaded: boolean;
-}
-
-const GeoSearch = ({ map, mapLoaded }: Props) => {
+const GeoSearch = () => {
+  const { map, mapLoaded } = useContext(MapContext);
   const { refine } = useGeoSearch();
   const { renderState, status, ...rest } = useInstantSearch();
 
