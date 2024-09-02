@@ -31,6 +31,8 @@ const PlacePopup = ({ map, place, show, onClose }: PopupProps) => {
       number,
       number,
     ];
+    console.log("Popup Coordinates:", coordinates.current); // Debugging: Check if coordinates are set
+
     if (!coordinates.current || coordinates.current.length !== 2) return;
 
     if (popupRef.current) {
@@ -52,6 +54,7 @@ const PlacePopup = ({ map, place, show, onClose }: PopupProps) => {
 
   useEffect(() => {
     if (show && map) {
+      console.log("Showing Popup for:", place);
       popupRef.current?.addTo(map);
       map.flyTo({ center: coordinates.current, zoom: 15 });
     } else {
