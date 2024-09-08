@@ -3,17 +3,16 @@ import { MapContext } from "~/contexts";
 import { useGeoSearch, useInstantSearch } from "react-instantsearch";
 import { pulsingDot } from "~/utils/pulsingDot";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
+import { modelFieldUUIDs } from "~/config";
 import PlacePopup from "~/components/PlacePopup";
 import type { TPlaceRecord } from "~/types";
-import type { MapLayerMouseEvent } from "maplibre-gl";
+import type { Map, MapLayerMouseEvent, MapMouseEvent } from "maplibre-gl";
 
 const GeoSearch = () => {
   const { map, mapLoaded } = useContext(MapContext);
   const { refine } = useGeoSearch();
-  const { renderState, status, ...rest } = useInstantSearch();
+  const { renderState } = useInstantSearch();
   const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(undefined);
-
-  const eventListenerAdded = useRef(false);
 
   const handleBoundsChange = useCallback(() => {
     if (!mapLoaded || !map) return;
@@ -27,36 +26,42 @@ const GeoSearch = () => {
   useEffect(() => {
     if (!mapLoaded || !map) return;
     map.on("moveend", handleBoundsChange);
+
+    return () => {
+      map.off("moveend", handleBoundsChange);
+    };
   }, [map, mapLoaded, handleBoundsChange]);
 
   useEffect(() => {
     const hits = renderState.gca?.hits?.items;
     if (!mapLoaded || !map || !hits) return;
 
-    if (!map.getImage("pulsing-dot")) {
-      const dot = pulsingDot(map);
-      if (dot) {
-        map.addImage("pulsing-dot", dot, { pixelRatio: 2 });
+    const setupMap = () => {
+      if (!map.getImage("pulsing-dot")) {
+        const dot = pulsingDot(map);
+        if (dot) {
+          map.addImage("pulsing-dot", dot, { pixelRatio: 2 });
+        }
       }
-    }
 
-    if (map.getLayer("hits")) map.removeLayer("hits");
-    if (map.getSource("hits")) map.removeSource("hits");
+      if (map.getLayer("hits")) map.removeLayer("hits");
+      if (map.getSource("hits")) map.removeSource("hits");
 
-    map.addSource("hits", {
-      type: "geojson",
-      data: hitsToFeatureCollection(hits),
-    });
+      map.addSource("hits", {
+        type: "geojson",
+        data: hitsToFeatureCollection(hits),
+      });
 
-    map.addLayer({
-      id: "hits",
-      type: "symbol",
-      source: "hits",
-      layout: {
-        "icon-image": "pulsing-dot",
-      },
-      filter: ["==", "$type", "Point"],
-    });
+      map.addLayer({
+        id: "hits",
+        type: "symbol",
+        source: "hits",
+        layout: {
+          "icon-image": "pulsing-dot",
+        },
+        filter: ["==", "$type", "Point"],
+      });
+    };
 
     const handleUnclusteredPointClick = (e: MapLayerMouseEvent) => {
       if (!e.features || !e.features.length) return;
@@ -65,7 +70,7 @@ const GeoSearch = () => {
       console.log("Clicked Feature:", feature);
 
       const clickedHit = hits.find(
-        (hit) => hit.identifier === feature.properties.identifier
+        (hit) => hit[modelFieldUUIDs.identifier] === feature.properties.identifier
       );
 
       console.log("Clicked Hit:", clickedHit);
@@ -78,9 +83,9 @@ const GeoSearch = () => {
           place_names: clickedHit.place_names || [],
           place_layers: clickedHit.place_layers || [],
           web_identifiers: clickedHit.web_identifiers || [],
-          place_geometry: clickedHit.place_geometry || null,
+          place_geometry: { geometry_json: clickedHit.geometry } || null,
           user_defined: clickedHit.user_defined || false,
-          identifier: clickedHit.identifier,
+          identifier: clickedHit[modelFieldUUIDs.identifier],
           iiif_manifest: clickedHit.iiif_manifest || null,
         };
 
@@ -89,24 +94,27 @@ const GeoSearch = () => {
       }
     };
 
-    if (!eventListenerAdded.current) {
-      map.on("click", "hits", handleUnclusteredPointClick);
-      eventListenerAdded.current = true; 
-    }
-
-    map.on("mouseenter", "hits", () => {
+    const handleMouseEnter = () => {
       map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", "hits", () => {
+    };
+
+    const handleMouseLeave = () => {
       map.getCanvas().style.cursor = "";
-    });
+    };
+
+    setupMap();
+
+    map.on("click", "hits", handleUnclusteredPointClick);
+    map.on("mouseenter", "hits", handleMouseEnter);
+    map.on("mouseleave", "hits", handleMouseLeave);
 
     return () => {
       if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
       if (map.getLayer("hits")) map.removeLayer("hits");
       if (map.getSource("hits")) map.removeSource("hits");
       map.off("click", "hits", handleUnclusteredPointClick);
-      eventListenerAdded.current = false; 
+      map.off("mouseenter", "hits", handleMouseEnter);
+      map.off("mouseleave", "hits", handleMouseLeave);
     };
   }, [renderState, map, mapLoaded]);
 
