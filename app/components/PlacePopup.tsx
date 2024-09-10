@@ -10,11 +10,11 @@ interface PopupProps {
   place: TPlaceRecord;
   show: boolean;
   onClose: () => void;
-  zoomToFeature?: boolean; // Add zoomToFeature prop
+  zoomToFeature?: boolean;
 }
 
 const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupProps) => {
-  const popupRef = useRef<Popup | undefined>(undefined);
+  const popupRef = useRef<Popup | null>(null);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const coordinates = useRef<[number, number] | undefined>();
 
@@ -24,14 +24,9 @@ const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupPr
   };
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !place.place_geometry || !place.place_geometry.geometry_json) return;
 
-    if (!place.place_geometry || !place.place_geometry.geometry_json) return;
-
-    coordinates.current = place.place_geometry.geometry_json.coordinates as [
-      number,
-      number,
-    ];
+    coordinates.current = place.place_geometry.geometry_json.coordinates as [number, number];
 
     if (!coordinates.current || coordinates.current.length !== 2) return;
 
@@ -46,22 +41,18 @@ const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupPr
       .setLngLat(coordinates.current)
       .setDOMContent(popupContentRef.current as Node);
 
-    return () => {
-      popupRef.current?.remove();
-      popupRef.current = undefined;
-    };
-  }, [map, place]);
-
-  useEffect(() => {
-    if (show && map) {
-      popupRef.current?.addTo(map);
+    if (show) {
+      popupRef.current.addTo(map);
       if (zoomToFeature) {
         map.flyTo({ center: coordinates.current, zoom: 15 });
       }
-    } else {
-      popupRef.current?.remove();
     }
-  }, [show, map, zoomToFeature]);
+
+    return () => {
+      popupRef.current?.remove();
+      popupRef.current = null;
+    };
+  }, [map, place, show, zoomToFeature]);
 
   return (
     <div ref={popupContentRef}>
@@ -79,7 +70,7 @@ const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupPr
         onClick={handleClick}
       >
         <FontAwesomeIcon icon={faClose} />
-      </button>{" "}
+      </button>
     </div>
   );
 };
