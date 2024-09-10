@@ -37,6 +37,7 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
       <PopoverPanel
         anchor="bottom"
         className="flex flex-col mt-2 -ml-4 pb-2 min-w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+        unmount={false}
       >
         <span className="px-4 mt-2">Base Maps</span>
         {mapLayers.map((layer) => (
