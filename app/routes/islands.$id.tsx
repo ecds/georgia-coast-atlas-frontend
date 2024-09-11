@@ -1,7 +1,12 @@
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { useEffect, useRef, useState } from "react";
-import { useLoaderData, useNavigation } from "@remix-run/react";
+import {
+  useLoaderData,
+  useNavigation,
+  useRouteError,
+  isRouteErrorResponse,
+} from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
@@ -11,6 +16,12 @@ import RelatedPlaces from "~/components/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
+import RelatedPhotographs from "~/components/RelatedPhotographs";
+import MapSwitcher from "~/components/MapSwitcher";
+import TopoQuads from "~/components/mapping/TopoQuads";
+import RouteError from "~/components/errorResponses/RouteError";
+import CodeError from "~/components/errorResponses/CodeError";
+import Loading from "~/components/layout/Loading";
 import type {
   TWordPressData,
   TIslandServerData,
@@ -20,18 +31,20 @@ import type {
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import type { Map as TMap } from "maplibre-gl";
-import RelatedPhotographs from "~/components/RelatedPhotographs";
-import MapSwitcher from "~/components/MapSwitcher";
-import TopoQuads from "~/components/mapping/TopoQuads";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const island = islands.find((i) => params.island == `${i.slug}-island`);
+  const island = islands.find((i) => params.id == `${i.id}`);
 
-  if (!island) return { wpData: null, place: null };
+  if (!island) {
+    throw new Response(null, {
+      status: 404,
+      statusText: "Not found",
+    });
+  }
 
   const place = await fetchPlaceRecord(island?.coreDataId);
   const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.island}`,
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.id}-island`,
   );
 
   const wpData: TWordPressData[] = await wpResponse.json();
@@ -54,9 +67,22 @@ export const clientLoader = async ({
 
 clientLoader.hydrate = true;
 
+export const HydrateFallback = () => {
+  return <Loading />;
+};
+
 const IslandPage = () => {
   const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
+  console.log(
+    "🚀 ~ IslandPage ~ island, wpData, place, geoJSON, maps, ...related:",
+    island,
+    wpData,
+    place,
+    geoJSON,
+    maps,
+    related,
+  );
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
@@ -68,29 +94,32 @@ const IslandPage = () => {
   }, [navigation]);
 
   useEffect(() => {
-    if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.slug}-fill`))
+    if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.id}-fill`))
       return;
 
-    const layers = map.getStyle().layers;
+    // const layers = map.getStyle().layers;
     // Find the index of the first symbol layer in the map style
-    let firstSymbolId;
-    for (let i = 0; i < layers.length; i++) {
-      if (layers[i].type === "symbol") {
-        firstSymbolId = layers[i].id;
-        break;
-      }
-    }
+    // let firstSymbolId;
+    // for (let i = 0; i < layers.length; i++) {
+    //   if (layers[i].type === "symbol") {
+    //     firstSymbolId = layers[i].id;
+    //     break;
+    //   }
+    // }
+    const firstSymbolId = map
+      .getStyle()
+      .layers.find((layer) => layer.type === "symbol")?.id;
 
-    map.addSource(island.slug, {
+    map.addSource(island.id, {
       type: "geojson",
       data: geoJSON,
     });
 
     map.addLayer(
       {
-        id: `${island.slug}-fill`,
+        id: `${island.id}-fill`,
         type: "fill",
-        source: island.slug,
+        source: island.id,
         layout: {},
         paint: {
           "fill-color": "blue",
@@ -102,9 +131,9 @@ const IslandPage = () => {
     );
 
     map.addLayer({
-      id: `${island.slug}-outline`,
+      id: `${island.id}-outline`,
       type: "line",
-      source: island.slug,
+      source: island.id,
       layout: {
         "line-join": "round",
         "line-cap": "round",
@@ -116,6 +145,18 @@ const IslandPage = () => {
       },
       filter: ["==", "$type", "Polygon"],
     });
+
+    // for (const labelLayer of map
+    //   .getStyle()
+    //   .layers.filter((layer) => layer.id.includes("label"))) {
+    //   console.log("🚀 ~ .layers.filter ~ layer:", labelLayer.id);
+
+    //   map.moveLayer(`${island.id}-outline`, labelLayer.id);
+    // }
+
+    if (map.getLayer("clusters")) {
+      map.moveLayer(`${island.id}-outline`, "clusters");
+    }
 
     const bounds = new LngLatBounds(
       bbox(geoJSON) as [number, number, number, number],
@@ -129,11 +170,11 @@ const IslandPage = () => {
         for (const layer of activeLayers) {
           if (map.getLayer(layer)) map.removeLayer(layer);
         }
-        if (map.getLayer(`${island.slug}-fill`))
-          map.removeLayer(`${island.slug}-fill`);
-        if (map.getLayer(`${island.slug}-outline`))
-          map.removeLayer(`${island.slug}-outline`);
-        if (map.getSource(island.slug)) map.removeSource(island.slug);
+        if (map.getLayer(`${island.id}-fill`))
+          map.removeLayer(`${island.id}-fill`);
+        if (map.getLayer(`${island.id}-outline`))
+          map.removeLayer(`${island.id}-outline`);
+        if (map.getSource(island.id)) map.removeSource(island.id);
       } catch {}
     };
   }, [map, mapLoaded, geoJSON, island]);
@@ -142,6 +183,7 @@ const IslandPage = () => {
     <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
       <PlaceContext.Provider
         value={{
+          place: island,
           activeLayers,
           setActiveLayers,
         }}
@@ -154,7 +196,7 @@ const IslandPage = () => {
               <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
                 {island.label} Island
               </h1>
-              <div ref={topRef} className="relative -top-12 z-50 min-h-10">
+              <div ref={topRef} className="relative -top-12 z-10 min-h-10">
                 <FeaturedMedium record={related} />
               </div>
               <div
@@ -171,7 +213,6 @@ const IslandPage = () => {
               <RelatedVideos videos={related.items.videos} />
             )}
             {related.media_contents?.photographs && (
-              // @ts-ignore
               <RelatedPhotographs manifest={place.iiif_manifest} />
             )}
           </div>
@@ -199,5 +240,18 @@ const IslandPage = () => {
     </MapContext.Provider>
   );
 };
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+
+  if (isRouteErrorResponse(error)) {
+    return <RouteError error={error} />;
+  } else if (error instanceof Error) {
+    return <CodeError error={error} />;
+  } else {
+    return <h1>Unknown Error</h1>;
+  }
+}
 
 export default IslandPage;
