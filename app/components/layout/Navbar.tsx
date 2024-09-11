@@ -53,8 +53,8 @@ const Navbar = () => {
           <div className="absolute right-8 transform translate-x-1/3 top-full mt-4 bg-white rounded-md shadow-lg w-max">
             <ul className="text-lg text-center">
               {islands.map((island) => (
-                <li key={island.slug} className="text-left p-2">
-                  <Link to={`/${island.slug}-island`}>
+                <li key={island.id} className="text-left p-2">
+                  <Link to={`/islands/${island.id}`}>
                     {island.label} Island
                   </Link>
                 </li>

@@ -14,7 +14,7 @@ const Sidebar = () => {
         <ul className="space-y-2 divide-y divide-gray-200">
           {islands.map((island) => (
             <li
-              key={island.slug}
+              key={island.id}
               className="flex justify-between py-2 items-center"
             >
               <span className="font-bold text-black">
@@ -22,7 +22,7 @@ const Sidebar = () => {
               </span>
               <button
                 className="bg-white text-sm font-bold py-2 px-6 rounded-lg border-2 border-black flex items-center justify-center transition-colors duration-300 hover:bg-gray-100"
-                onClick={() => navigate(`/${island.slug}-island`)}
+                onClick={() => navigate(`/islands/${island.id}`)}
               >
                 Explore <span className="ml-1">→</span>
               </button>
