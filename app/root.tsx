@@ -5,6 +5,7 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteError,
+  isRouteErrorResponse,
 } from "@remix-run/react";
 import styles from "./index.css?url";
 import Navbar from "./components/layout/Navbar";
@@ -12,6 +13,8 @@ import Sidebar from "./components/layout/Sidebar";
 import { useLocation } from "react-router-dom";
 import Loading from "./components/layout/Loading";
 import type { LinksFunction } from "@remix-run/node";
+import RouteError from "./components/errorResponses/RouteError";
+import CodeError from "./components/errorResponses/CodeError";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -27,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-slate-600 font-inter">
+      <body className="font-inter bg-white">
         <a href="#main" className="sr-only">
           skip to main content
         </a>
@@ -53,18 +56,12 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  console.error(error);
-  return (
-    <html lang="en">
-      <head>
-        <title>Oh no!</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        dang
-        <Scripts />
-      </body>
-    </html>
-  );
+
+  if (isRouteErrorResponse(error)) {
+    return <RouteError error={error} />;
+  } else if (error instanceof Error) {
+    return <CodeError error={error} />;
+  } else {
+    return <h1>Unknown Error</h1>;
+  }
 }
