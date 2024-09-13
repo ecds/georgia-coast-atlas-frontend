@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import { useGeoSearch, useInstantSearch } from "react-instantsearch";
 import { pulsingDot } from "~/utils/pulsingDot";
@@ -13,6 +13,7 @@ const GeoSearch = () => {
   const { refine } = useGeoSearch();
   const { renderState } = useInstantSearch();
   const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(undefined);
+  const [places, setPlaces] = useState<TPlaceRecord[]>([]);
 
   const handleBoundsChange = useCallback(() => {
     if (!mapLoaded || !map) return;
@@ -31,6 +32,19 @@ const GeoSearch = () => {
   useEffect(() => {
     const hits = renderState.gca?.hits?.items;
     if (!mapLoaded || !map || !hits) return;
+
+    setPlaces(hits.map(hit => ({
+      uuid: hit.uuid,
+      name: hit.name,
+      description: hit.description,
+      place_names: hit.place_names || [],
+      place_layers: hit.place_layers || [],
+      web_identifiers: hit.web_identifiers || [],
+      place_geometry: { geometry_json: hit.geometry } || null,
+      user_defined: hit.user_defined || false,
+      identifier: hit[modelFieldUUIDs.identifier],
+      iiif_manifest: hit.iiif_manifest || null,
+    })));
 
     if (!map.getImage("pulsing-dot")) {
       const dot = pulsingDot(map);
@@ -66,7 +80,7 @@ const GeoSearch = () => {
       );
 
       if (clickedHit) {
-        const clickedPlace: TPlaceRecord = {
+        setActivePlace({
           uuid: clickedHit.uuid,
           name: clickedHit.name,
           description: clickedHit.description,
@@ -77,9 +91,7 @@ const GeoSearch = () => {
           user_defined: clickedHit.user_defined || false,
           identifier: clickedHit[modelFieldUUIDs.identifier],
           iiif_manifest: clickedHit.iiif_manifest || null,
-        };
-
-        setActivePlace(clickedPlace);
+        });
       }
     };
 
@@ -93,23 +105,39 @@ const GeoSearch = () => {
     });
 
     return () => {
-      if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
-      if (map.getLayer("hits")) map.removeLayer("hits");
-      if (map.getSource("hits")) map.removeSource("hits");
+      try {
+        if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
+      } catch (error) {
+        console.error("Error removing pulsing-dot image:", error);
+      }
+
+      try {
+        if (map.getLayer("hits")) map.removeLayer("hits");
+      } catch (error) {
+        console.error("Error removing hits layer:", error);
+      }
+
+      try {
+        if (map.getSource("hits")) map.removeSource("hits");
+      } catch (error) {
+        console.error("Error removing hits source:", error);
+      }
+
       map.off("click", "hits", handleUnclusteredPointClick);
     };
   }, [renderState, map, mapLoaded]);
 
   return (
     <>
-      {activePlace && (
+      {places.map(place => (
         <PlacePopup
+          key={place.uuid}
           map={map}
-          place={activePlace}
-          show={Boolean(activePlace)}
+          place={place}
+          show={activePlace?.identifier === place.identifier}
           onClose={() => setActivePlace(undefined)}
         />
-      )}
+      ))}
     </>
   );
 };
