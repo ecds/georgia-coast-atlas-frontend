@@ -135,6 +135,7 @@ const GeoSearch = () => {
           map={map}
           place={place}
           show={activePlace?.identifier === place.identifier}
+          zoomToFeature = {false}
           onClose={() => setActivePlace(undefined)}
         />
       ))}
