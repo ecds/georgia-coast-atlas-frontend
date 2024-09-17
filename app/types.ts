@@ -87,6 +87,8 @@ export type TCoreDataLayer = {
   id: string;
   name: TTopoYear | string;
   url: string;
+  layer_type: "georeference" | "raster";
+  placeName?: string;
 };
 
 export type TCoreDataPlace = {
@@ -228,7 +230,7 @@ type TIslandLabel =
   | "Wolf";
 
 export type TIslandConfig = {
-  slug: TIslandSlug;
+  id: TIslandSlug;
   label: TIslandLabel;
   coreDataId: string;
 };
@@ -238,12 +240,26 @@ export type TIslandServerData = {
   place: TPlaceRecord;
 };
 
+export type TRelatedPlaceRecord = {
+  project_model_relationship_uuid: string;
+  project_model_relationship_inverse: boolean;
+  user_defined: TUserDefinedField;
+  identifier?: string;
+  description?: string;
+  uuid: string;
+  name: string;
+  place_geometry: {
+    geometry_json: Geometry;
+  };
+};
+
 export type TRelatedCoreDataRecords = {
   media_contents?: TMediaContents;
   places?: {
-    county: TPlaceRecord;
-    relatedPlaces: TPlaceRecord[];
-    topoQuads: TPlaceRecord[];
+    county: TRelatedPlaceRecord;
+    relatedPlaces: TRelatedPlaceRecord[];
+    topoQuads: TRelatedPlaceRecord[];
+    mapLayers: TRelatedPlaceRecord[];
   };
   taxonomies?: TCoreDataTaxonomies[];
   items?: {
@@ -439,6 +455,10 @@ export type TTopoCoordsRecord = {
   [key in TTopoName]: {
     [key in TTopoYear]: TTopoCoords;
   };
+};
+
+export type TActiveLayer = {
+  [key: string]: TCoreDataLayer;
 };
 
 // export type TPlaceMap = {

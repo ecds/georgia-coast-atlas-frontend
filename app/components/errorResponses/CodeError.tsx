@@ -8,9 +8,9 @@ const CodeError = ({ error }: { error: Error }) => {
         <p className="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48">
           Stack Trace:
         </p>
-        <p className="text-left">
+        <div className="text-left">
           <pre>{error.stack}</pre>
-        </p>
+        </div>
       </div>
     </section>
   );

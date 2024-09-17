@@ -1,7 +1,7 @@
 import type { TVideoItem } from "~/types";
 import RelatedSection from "./RelatedSection";
-import VideoThumbnail from "./VideoThumbnail";
-import VideoModal from "./VideoModal";
+import VideoThumbnail from "../VideoThumbnail";
+import VideoModal from "../VideoModal";
 
 interface Props {
   videos: TVideoItem[];

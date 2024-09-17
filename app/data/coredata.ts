@@ -4,17 +4,20 @@ import {
   keys,
   modelFieldUUIDs,
 } from "~/config";
-import type { TCoreDataPlace, TPlaceRecord } from "~/types";
+import type { TPlaceRecord } from "~/types";
+
+export const fetchRelatedRecord = async (id: string, endpoint: string) => {
+  const relatedResponse = await fetch(
+    `https://${dataHosts.coreData}/core_data/public/v1/places/${id}/${endpoint}?project_ids=${keys.coreDataProject}&per_page=2000`,
+  );
+
+  return await relatedResponse.json();
+};
 
 export const fetchRelatedRecords = async (id: string) => {
   const relatedRecords = {};
   for (const related of coreDataRelatedEndpoints) {
-    const relatedResponse = await fetch(
-      `https://${dataHosts.coreData}/core_data/public/v1/places/${id}/${related.endpoint}?project_ids=${keys.coreDataProject}&per_page=2000`,
-    );
-
-    const relatedData = await relatedResponse.json();
-
+    const relatedData = await fetchRelatedRecord(id, related.endpoint);
     const items = relatedData[related.endpoint];
 
     for (const item of items) {

@@ -3,11 +3,11 @@ import { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import type { Popup } from "maplibre-gl";
-import type { TPlaceRecord } from "~/types";
+import type { TPlaceRecord, TRelatedPlaceRecord } from "~/types";
 
 interface PopupProps {
   map: maplibregl.Map | undefined;
-  place: TPlaceRecord;
+  place: TPlaceRecord | TRelatedPlaceRecord;
   show: boolean;
   onClose: () => void;
 }
@@ -61,21 +61,25 @@ const PlacePopup = ({ map, place, show, onClose }: PopupProps) => {
 
   return (
     <div ref={popupContentRef}>
-      <h4 className="text-xl">{place.name}</h4>
-      <div
-        className="text-sm"
-        dangerouslySetInnerHTML={{
-          __html: place.description ?? "No description available",
-        }}
-      />
-      <button
-        className="maplibregl-popup-close-button"
-        type="button"
-        aria-label="Close popup"
-        onClick={handleClick}
-      >
-        <FontAwesomeIcon icon={faClose} />
-      </button>{" "}
+      {show && (
+        <>
+          <h4 className="text-xl">{place.name}</h4>
+          <div
+            className="text-sm"
+            dangerouslySetInnerHTML={{
+              __html: place.description ?? "No description available",
+            }}
+          />
+          <button
+            className="maplibregl-popup-close-button"
+            type="button"
+            aria-label="Close popup"
+            onClick={handleClick}
+          >
+            <FontAwesomeIcon icon={faClose} />
+          </button>{" "}
+        </>
+      )}
     </div>
   );
 };

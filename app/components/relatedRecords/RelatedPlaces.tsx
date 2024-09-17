@@ -3,10 +3,10 @@ import type { MapLayerMouseEvent, GeoJSONSource } from "maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
-import RelatedSection from "./relatedRecords/RelatedSection";
+import RelatedSection from "./RelatedSection";
 import { MapContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import PlacePopup from "./PlacePopup";
+import PlacePopup from "../PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { TRelatedPlaceRecord } from "~/types";
 

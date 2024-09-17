@@ -1,10 +1,10 @@
-import maplibregl from "maplibre-gl";
+import maplibregl, { AttributionControl } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
 import style from "~/data/style.json";
 import { topBarHeight, mapLayers } from "~/config";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Dispatch, SetStateAction, ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { StyleSpecification } from "maplibre-gl";
 
 interface Props {
@@ -12,8 +12,10 @@ interface Props {
 }
 
 const Map = ({ children }: Props) => {
-  const { map, setMap, setMapLoaded } = useContext(MapContext);
-
+  const { setMap, setMapLoaded } = useContext(MapContext);
+  const attributionControlRef = useRef<AttributionControl | undefined>(
+    undefined,
+  );
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,7 +33,14 @@ const Map = ({ children }: Props) => {
       zoom: 9,
       maxPitch: 0,
       preserveDrawingBuffer: true,
+      attributionControl: false,
     });
+
+    attributionControlRef.current = new AttributionControl({
+      compact: true,
+    });
+
+    _map.addControl(attributionControlRef.current);
 
     _map.fitBounds(bounds);
 
@@ -65,7 +74,7 @@ const Map = ({ children }: Props) => {
       setMap(undefined);
       setMapLoaded(false);
     };
-  }, [setMap]);
+  }, [setMap, setMapLoaded]);
 
   return (
     <div className="relative">
