@@ -3,9 +3,7 @@ import { modelFieldUUIDs } from "~/config";
 import type { TPlaceRecord, TRelatedPlaceRecord } from "~/types";
 import type { Hit } from "instantsearch.js";
 
-export const toFeatureCollection = (
-  places: TPlaceRecord[] | TRelatedPlaceRecord[],
-) => {
+export const toFeatureCollection = (places: TPlaceRecord[]) => {
   return featureCollection(
     places.map((place) => {
       const placeFeature = feature(place.place_geometry.geometry_json);
