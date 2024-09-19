@@ -12,17 +12,25 @@ const GeoSearch = () => {
   const { map, mapLoaded } = useContext(MapContext);
   const { refine } = useGeoSearch();
   const { renderState } = useInstantSearch();
-  const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(undefined);
+  const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(
+    undefined,
+  );
   const [places, setPlaces] = useState<TPlaceRecord[]>([]);
 
   const handleBoundsChange = useCallback(() => {
     if (!mapLoaded || !map) return;
+
+    setActivePlace(undefined);
 
     refine({
       northEast: map.getBounds().getNorthEast(),
       southWest: map.getBounds().getSouthWest(),
     });
   }, [map, mapLoaded, refine]);
+
+  useEffect(() => {
+    setActivePlace(undefined);
+  }, [places]);
 
   useEffect(() => {
     if (!mapLoaded || !map) return;
@@ -33,18 +41,20 @@ const GeoSearch = () => {
     const hits = renderState.gca?.hits?.items;
     if (!mapLoaded || !map || !hits) return;
 
-    setPlaces(hits.map(hit => ({
-      uuid: hit.uuid,
-      name: hit.name,
-      description: hit.description,
-      place_names: hit.place_names || [],
-      place_layers: hit.place_layers || [],
-      web_identifiers: hit.web_identifiers || [],
-      place_geometry: { geometry_json: hit.geometry } || null,
-      user_defined: hit.user_defined || false,
-      identifier: hit[modelFieldUUIDs.identifier],
-      iiif_manifest: hit.iiif_manifest || null,
-    })));
+    setPlaces(
+      hits.map((hit) => ({
+        uuid: hit.uuid,
+        name: hit.name,
+        description: hit.description,
+        place_names: hit.place_names || [],
+        place_layers: hit.place_layers || [],
+        web_identifiers: hit.web_identifiers || [],
+        place_geometry: { geometry_json: hit.geometry } || null,
+        user_defined: hit.user_defined || false,
+        identifier: hit[modelFieldUUIDs.identifier],
+        iiif_manifest: hit.iiif_manifest || null,
+      })),
+    );
 
     if (!map.getImage("pulsing-dot")) {
       const dot = pulsingDot(map);
@@ -76,7 +86,8 @@ const GeoSearch = () => {
 
       const feature = e.features[0];
       const clickedHit = hits.find(
-        (hit) => hit[modelFieldUUIDs.identifier] === feature.properties.identifier
+        (hit) =>
+          hit[modelFieldUUIDs.identifier] === feature.properties.identifier,
       );
 
       if (clickedHit) {
@@ -129,13 +140,13 @@ const GeoSearch = () => {
 
   return (
     <>
-      {places.map(place => (
+      {places.map((place) => (
         <PlacePopup
           key={place.uuid}
           map={map}
           place={place}
           show={activePlace?.identifier === place.identifier}
-          zoomToFeature = {false}
+          zoomToFeature={false}
           onClose={() => setActivePlace(undefined)}
         />
       ))}

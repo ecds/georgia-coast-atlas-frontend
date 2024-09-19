@@ -13,7 +13,13 @@ interface PopupProps {
   zoomToFeature?: boolean;
 }
 
-const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupProps) => {
+const PlacePopup = ({
+  map,
+  place,
+  show,
+  onClose,
+  zoomToFeature = true,
+}: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const coordinates = useRef<[number, number] | undefined>();
@@ -24,9 +30,13 @@ const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupPr
   };
 
   useEffect(() => {
-    if (!map || !place.place_geometry || !place.place_geometry.geometry_json) return;
+    if (!map || !place.place_geometry || !place.place_geometry.geometry_json)
+      return;
 
-    coordinates.current = place.place_geometry.geometry_json.coordinates as [number, number];
+    coordinates.current = place.place_geometry.geometry_json.coordinates as [
+      number,
+      number,
+    ];
 
     if (!coordinates.current || coordinates.current.length !== 2) return;
 
@@ -49,8 +59,10 @@ const PlacePopup = ({ map, place, show, onClose, zoomToFeature = true }: PopupPr
     }
 
     return () => {
-      popupRef.current?.remove();
-      popupRef.current = null;
+      try {
+        popupRef.current?.remove();
+        popupRef.current = null;
+      } catch {}
     };
   }, [map, place, show, zoomToFeature]);
 
