@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons"; // Import the search icon
+import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons"; 
 import { Link, NavLink, useLocation } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
 import { islands } from "~/config.ts";
@@ -35,7 +35,13 @@ const Navbar = () => {
           </NavLink>
         </li>
       </ul>
-      {/* Add the dropdown component here */}
+
+      <div className="flex items-center space-x-6">
+        {/* Search Button */}
+        <NavLink to="/search" className="text-white text-2xl">
+          <FontAwesomeIcon icon={faSearch} />
+        </NavLink>
+
       <div className="relative inline-block mr-6">
         <button
           onClick={toggleDropdown}
@@ -62,6 +68,7 @@ const Navbar = () => {
             </ul>
           </div>
         )}
+      </div>
       </div>
     </nav>
   );
