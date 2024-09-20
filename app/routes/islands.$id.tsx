@@ -12,25 +12,28 @@ import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import RelatedPlaces from "~/components/RelatedPlaces";
+import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
-import RelatedVideos from "~/components/RelatedVideos";
+import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
-import RelatedPhotographs from "~/components/RelatedPhotographs";
+import RelatedPhotographs from "~/components/relatedRecords/RelatedPhotographs";
 import MapSwitcher from "~/components/MapSwitcher";
-import TopoQuads from "~/components/mapping/TopoQuads";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
 import type {
+  TPlaceRecord,
   TWordPressData,
   TIslandServerData,
   TIslandClientData,
   TRelatedCoreDataRecords,
+  TActiveLayer,
 } from "~/types";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import type { Map as TMap } from "maplibre-gl";
+import RelatedMapLayers from "~/components/relatedRecords/RelatedMapLayers";
+import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.id == `${i.id}`);
@@ -74,38 +77,27 @@ export const HydrateFallback = () => {
 const IslandPage = () => {
   const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
-  console.log(
-    "🚀 ~ IslandPage ~ island, wpData, place, geoJSON, maps, ...related:",
-    island,
-    wpData,
-    place,
-    geoJSON,
-    maps,
-    related,
-  );
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [activeLayers, setActiveLayers] = useState<string[]>([]);
+  const [topoQuads, setTopoQuads] = useState<TPlaceRecord[]>([]);
+  const [activeLayers, setActiveLayers] = useState<TActiveLayer>({});
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
 
   useEffect(() => {
     if (navigation.state === "idle") topRef.current?.scrollIntoView();
-  }, [navigation]);
+    if (navigation.state === "loading") {
+      if (map?.getLayer(`${island.id}-outline`))
+        map.removeLayer(`${island.id}-outline`);
+      if (map?.getLayer(`${island.id}-fill`))
+        map.removeLayer(`${island.id}-fill`);
+    }
+  }, [navigation, island, map]);
 
   useEffect(() => {
     if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.id}-fill`))
       return;
 
-    // const layers = map.getStyle().layers;
-    // Find the index of the first symbol layer in the map style
-    // let firstSymbolId;
-    // for (let i = 0; i < layers.length; i++) {
-    //   if (layers[i].type === "symbol") {
-    //     firstSymbolId = layers[i].id;
-    //     break;
-    //   }
-    // }
     const firstSymbolId = map
       .getStyle()
       .layers.find((layer) => layer.type === "symbol")?.id;
@@ -146,14 +138,6 @@ const IslandPage = () => {
       filter: ["==", "$type", "Polygon"],
     });
 
-    // for (const labelLayer of map
-    //   .getStyle()
-    //   .layers.filter((layer) => layer.id.includes("label"))) {
-    //   console.log("🚀 ~ .layers.filter ~ layer:", labelLayer.id);
-
-    //   map.moveLayer(`${island.id}-outline`, labelLayer.id);
-    // }
-
     if (map.getLayer("clusters")) {
       map.moveLayer(`${island.id}-outline`, "clusters");
     }
@@ -167,9 +151,6 @@ const IslandPage = () => {
     return () => {
       try {
         if (!map) return;
-        for (const layer of activeLayers) {
-          if (map.getLayer(layer)) map.removeLayer(layer);
-        }
         if (map.getLayer(`${island.id}-fill`))
           map.removeLayer(`${island.id}-fill`);
         if (map.getLayer(`${island.id}-outline`))
@@ -186,14 +167,16 @@ const IslandPage = () => {
           place: island,
           activeLayers,
           setActiveLayers,
+          topoQuads,
+          setTopoQuads,
         }}
       >
         <div
           className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
         >
-          <div className="w-full md:w-1/2 overflow-scroll pb-32">
+          <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
             <div className="flex flex-col">
-              <h1 className="text-2xl px-4 pt-4 sticky top-0 bg-white z-10">
+              <h1 className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white">
                 {island.label} Island
               </h1>
               <div ref={topRef} className="relative -top-12 z-10 min-h-10">
@@ -215,22 +198,18 @@ const IslandPage = () => {
             {related.media_contents?.photographs && (
               <RelatedPhotographs manifest={place.iiif_manifest} />
             )}
+            {related.places?.mapLayers && (
+              <RelatedMapLayers layers={related.places.mapLayers} />
+            )}
+            {related.places?.topoQuads && (
+              <RelatedTopoQuads quads={related.places.topoQuads} />
+            )}
           </div>
-          <div className="hidden md:block w-1/2">
+          <div className="hidden md:block w-1/2 lg:w-3/5">
             <ClientOnly>
               {() => (
                 <Map>
-                  <MapSwitcher>
-                    {related.places?.topoQuads && (
-                      <>
-                        {related.places?.topoQuads.map((quad) => {
-                          return (
-                            <TopoQuads key={quad.uuid} quadId={quad.uuid} />
-                          );
-                        })}
-                      </>
-                    )}
-                  </MapSwitcher>
+                  <MapSwitcher></MapSwitcher>
                 </Map>
               )}
             </ClientOnly>

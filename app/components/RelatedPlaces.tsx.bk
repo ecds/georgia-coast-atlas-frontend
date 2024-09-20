@@ -1,24 +1,24 @@
 import { useContext, useEffect, useState } from "react";
-import type { MapLayerMouseEvent, Point, GeoJSONSource } from "maplibre-gl";
+import type { MapLayerMouseEvent, GeoJSONSource } from "maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
-import RelatedSection from "./RelatedSection";
+import RelatedSection from "./relatedRecords/RelatedSection";
 import { MapContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "./PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { TPlaceRecord } from "~/types";
+import type { TRelatedPlaceRecord } from "~/types";
 
 interface Props {
-  places: TPlaceRecord[];
+  places: TRelatedPlaceRecord[];
 }
 
 const RelatedPlaces = ({ places }: Props) => {
   const { map, mapLoaded } = useContext(MapContext);
-  const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(
-    undefined,
-  );
+  const [activePlace, setActivePlace] = useState<
+    TRelatedPlaceRecord | undefined
+  >(undefined);
 
   useEffect(() => {
     if (!map || !mapLoaded) return;

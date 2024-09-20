@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { renderToString } from "react-dom/server";
 import {
   InstantSearch,

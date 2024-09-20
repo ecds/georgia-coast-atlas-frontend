@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import RelatedSection from "./RelatedSection";
-import PhotographModal from "./PhotographModal";
+import PhotographModal from "../PhotographModal";
 import type { TIIIFManifest, TIIIFBody, TPhotograph } from "~/types";
 
 interface Props {
@@ -52,12 +52,12 @@ const RelatedPhotographs = ({ manifest }: Props) => {
                     <img
                       src={photo.thumb}
                       alt=""
-                      className="drop-shadow-md h-auto md:h-32 w-full md:w-auto"
+                      className="drop-shadow-md h-auto md:h-32 w-full md:w-auto m-auto"
                     />
                     <span className="sr-only">Select image</span>
-                    <figcaption className="md:w-32 text-left break-words text-sm pt-1">
+                    {/* <figcaption className="md:w-32 text-left break-words text-sm pt-1">
                       {photo.name}
-                    </figcaption>
+                    </figcaption> */}
                   </figure>
                 </PhotographModal>
               );

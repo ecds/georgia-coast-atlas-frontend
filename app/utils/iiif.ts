@@ -173,10 +173,21 @@ export const annotationGeo = ({
       transformation: {
         type: "polynomial",
         options: {
-          order: 1,
+          order: 2,
         },
       },
       features,
+      _allmaps: {
+        id: url,
+        version: url,
+        image: {
+          id: `${protocol}//${host}/iiif/${year}/annotation-page/${id}`,
+          version: `${protocol}//${host}/iiif/${year}/annotation-page/${id}`,
+          canvases: [],
+        },
+        scale: 0.411472,
+        area: 165909713.54,
+      },
     },
   };
 };

@@ -1,5 +1,5 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { MapContext } from "~/contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,6 @@ import type { ReactNode } from "react";
 const MapSwitcher = ({ children }: { children?: ReactNode }) => {
   const { map } = useContext(MapContext);
   const [activeLayer, setActiveLayer] = useState<string>("custom");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleLayer = (layerName: string) => {
     if (!map) return;
@@ -25,12 +24,11 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
     }
 
     setActiveLayer(layerName);
-    setIsDropdownOpen(false);
   };
 
   return (
     <Popover>
-      <PopoverButton className="flex items-center gap-2 absolute top-4 right-4 bg-white p-4 rounded-md shadow-md">
+      <PopoverButton className="flex items-center gap-2 absolute top-4 right-4 bg-white p-4 rounded-full shadow-md">
         <FontAwesomeIcon icon={faLayerGroup} />
         <span className="sr-only">Toggle layer menu</span>
       </PopoverButton>

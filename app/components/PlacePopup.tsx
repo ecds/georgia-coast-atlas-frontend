@@ -3,11 +3,11 @@ import { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import type { Popup } from "maplibre-gl";
-import type { TPlaceRecord } from "~/types";
+import type { TPlaceRecord, TRelatedPlaceRecord } from "~/types";
 
 interface PopupProps {
   map: maplibregl.Map | undefined;
-  place: TPlaceRecord;
+  place: TPlaceRecord | TRelatedPlaceRecord;
   show: boolean;
   onClose: () => void;
   zoomToFeature?: boolean;

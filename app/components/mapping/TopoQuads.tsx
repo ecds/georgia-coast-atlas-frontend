@@ -1,129 +1,57 @@
-import { WarpedMapLayer } from "@allmaps/maplibre";
-import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigation } from "@remix-run/react";
-import { PlaceContext, MapContext } from "~/contexts";
-import { fetchPlaceRecord } from "~/data/coredata";
+import { useContext } from "react";
+import { PlaceContext } from "~/contexts";
 import type { TPlaceRecord, TCoreDataLayer } from "~/types";
-import RelatedSection from "../RelatedSection";
+import RelatedSection from "../relatedRecords/RelatedSection";
 
-const TopoQuads = ({ quadId }: { quadId: string }) => {
-  const { map } = useContext(MapContext);
+const TopoQuads = ({ quad }: { quad: TPlaceRecord }) => {
   const { activeLayers, setActiveLayers } = useContext(PlaceContext);
-  const navigation = useNavigation();
-  const activeQuadRef = useRef<TCoreDataLayer | undefined>(undefined);
-  const [quadRecord, setQuadRecord] = useState<TPlaceRecord | null>(null);
-  const [activeQuad, setActiveQuad] = useState<TCoreDataLayer | undefined>(
-    undefined,
-  );
 
-  useEffect(() => {
-    console.log(
-      "🚀 ~ useEffect ~ activeQuad:",
-      activeQuad,
-      activeQuadRef.current,
-    );
-    if (navigation.state === "loading" && activeQuad) {
-      if (map?.getLayer(activeQuad.id)) map.removeLayer(activeQuad.id);
-      setActiveQuad(undefined);
-      activeQuadRef.current = undefined;
-    }
-  }, [navigation]);
-
-  useEffect(() => {
-    if (!map || !quadId) return;
-    const fetchRecords = async () => {
-      const record = await fetchPlaceRecord(quadId);
-      setQuadRecord(record);
-      if (record)
-        setActiveQuad(
-          record.place_layers.find((p) => activeLayers.includes(p.url)),
-        );
-      activeQuadRef.current = undefined;
-    };
-
-    fetchRecords();
-
-    return () => {
-      console.log(
-        "🚀 ~ fetchRecords ~ activeQuadRef.current:",
-        activeQuadRef.current,
+  const handleClick = (
+    quad: string,
+    layer: TCoreDataLayer,
+    isActive: boolean,
+  ) => {
+    if (isActive) {
+      const newObj = Object.fromEntries(
+        Object.entries(activeLayers).filter(([key]) => key !== quad),
       );
-    };
-  }, [quadId, map]);
-
-  useEffect(() => {
-    if (!map) return;
-    if (activeQuadRef.current) {
-      if (map?.getLayer(activeQuadRef.current.id))
-        map.removeLayer(activeQuadRef.current.id);
-    }
-    if (activeQuad) {
-      if (!map.getLayer(activeQuad.id)) {
-        const warpedMapLayer = new WarpedMapLayer(activeQuad.id);
-        warpedMapLayer.addGeoreferenceAnnotationByUrl(activeQuad.url);
-        map?.addLayer(warpedMapLayer);
-      }
-      activeQuadRef.current = activeQuad;
-    }
-  }, [activeQuad]);
-
-  useEffect(() => {}, []);
-
-  const removeActiveLayer = (quadToRemove: string, quadToAdd?: string) => {
-    if (!setActiveLayers) return;
-    const quadPosition = activeLayers?.indexOf(quadToRemove);
-    if (quadToAdd) {
-      setActiveLayers([...activeLayers?.toSpliced(quadPosition, 1, quadToAdd)]);
+      setActiveLayers(newObj);
     } else {
-      setActiveLayers([...activeLayers?.toSpliced(quadPosition, 1)]);
-      setActiveQuad(undefined);
+      setActiveLayers({ ...activeLayers, [quad]: layer });
     }
   };
 
-  const handleClick = (quad: TCoreDataLayer) => {
-    if (quad === activeQuad) {
-      removeActiveLayer(quad.url);
-      setActiveQuad(undefined);
-    } else if (activeQuad) {
-      removeActiveLayer(activeQuad.url, quad.url);
-      setActiveQuad(quad);
-    } else {
-      setActiveLayers([...activeLayers, quad.url]);
-      setActiveQuad(quad);
-    }
-  };
-
-  if (quadRecord) {
+  if (quad) {
     return (
-      <div className="border-t-2 pt-2">
-        <span className="px-4 inline">Topo Quads</span>
-        <RelatedSection
-          title={quadRecord.name}
-          titleClassName="text-sm text-gray-700 mt-2 text-left"
-          defaultOpen={false}
-          topBorder={false}
-          horzSpacing="p-1"
-        >
-          <ul className="px-2">
-            {quadRecord.place_layers.map((layer) => {
-              return (
-                <li key={layer.id} className="py-1">
-                  <button
-                    onClick={() => handleClick(layer)}
-                    className={`${activeQuad == layer ? "font-bold" : ""}`}
-                  >
-                    {layer.name}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </RelatedSection>
-      </div>
+      <RelatedSection
+        title={quad.name}
+        titleClassName="text-sm text-gray-700 mt-2 text-left"
+        defaultOpen={false}
+        topBorder={false}
+        horzSpacing="p-1"
+      >
+        <ul className="px-2">
+          {quad.place_layers.map((layer) => {
+            const isActive =
+              quad.uuid in activeLayers &&
+              activeLayers[quad.uuid].id === layer.id;
+            return (
+              <li key={layer.id} className="py-1">
+                <button
+                  onClick={() => handleClick(quad.uuid, layer, isActive)}
+                  className={`${isActive ? "font-bold" : ""}`}
+                >
+                  {layer.name}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </RelatedSection>
     );
   }
 
-  return <></>;
+  return undefined;
 };
 
 export default TopoQuads;

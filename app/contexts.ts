@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
-import type { TCoreDataPlace } from "./types";
+import type { TIslandConfig, TPlaceRecord, TActiveLayer } from "./types";
 
 type TMapContext = {
   map: Map | undefined;
@@ -11,8 +11,12 @@ type TMapContext = {
 };
 
 type TPlaceContext = {
-  activeLayers: string[];
-  setActiveLayers: Dispatch<SetStateAction<string[]>>;
+  place: TPlaceRecord | TIslandConfig;
+  activeLayers: TActiveLayer;
+  setActiveLayers: Dispatch<SetStateAction<TActiveLayer>>;
+  topoQuads?: TPlaceRecord[];
+  setTopoQuads?: Dispatch<SetStateAction<TPlaceRecord[]>>;
+  setMapLayers?: Dispatch<SetStateAction<TPlaceRecord[]>>;
 };
 
 export const MapContext = createContext<TMapContext>({
@@ -27,10 +31,12 @@ export const MapContext = createContext<TMapContext>({
 });
 
 export const PlaceContext = createContext<TPlaceContext>({
-  activeLayers: [],
-  setActiveLayers: (_: SetStateAction<string[]>) => {
+  place: { id: "wolf", label: "Wolf", coreDataId: "" },
+  activeLayers: {},
+  setActiveLayers: (_: SetStateAction<TActiveLayer>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?",
     );
   },
+  topoQuads: [],
 });
