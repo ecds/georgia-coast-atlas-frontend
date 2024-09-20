@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { PlaceContext } from "~/contexts";
 import type { TRelatedPlaceRecord } from "~/types";
-import PlaceLayers from "../mapping/PlaceLayers";
+import WMSLayer from "../mapping/WMSLayer";
 import RelatedSection from "./RelatedSection";
 
 interface Props {
@@ -13,17 +13,15 @@ const RelatedMapLayers = ({ layers }: Props) => {
   if (setMapLayers) {
     return (
       <RelatedSection title="Map Layers">
-        <div className="flex flex-wrap justify-around md:justify-start">
-          {layers.map((mapLayer) => {
-            return (
-              <PlaceLayers
-                key={`map-layer-${mapLayer.uuid}`}
-                layer={mapLayer}
-                setGroup={setMapLayers}
-              />
-            );
-          })}
-        </div>
+        {layers.map((mapLayer) => {
+          return (
+            <WMSLayer
+              key={`map-layer-${mapLayer.uuid}`}
+              layer={mapLayer}
+              setGroup={setMapLayers}
+            />
+          );
+        })}
       </RelatedSection>
     );
   }

@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
+import IIIFMapLayer from "./IIIFMapLayer";
+import { fetchPlaceRecord } from "~/data/coredata";
+import RelatedSection from "./RelatedSection";
 import type {
   TPlaceRecord,
   TRelatedPlaceRecord,
   TCoreDataLayer,
 } from "~/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import IIIFMapLayer from "./IIIFMapLayer";
-import { fetchPlaceRecord } from "~/data/coredata";
-import RelatedSection from "./RelatedSection";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from "@headlessui/react";
 
 type YearGroup = {
   [key: string]: TCoreDataLayer[];
@@ -78,40 +71,32 @@ const RelatedTopoQuads = ({ quads }: Props) => {
 
   if (quadGroups && yearGroups) {
     return (
-      <RelatedSection title="Topo Quads">
+      <>
+        <div className="border-t-2 w-full mx-4">
+          <h3 className="p-6">Topo Quads</h3>
+        </div>
         {yearGroups.map((year) => {
           return (
-            <Disclosure key={`quads-for-${year}`} as="div" className="mb-2">
-              <DisclosureButton className="group flex w-full items-center justify-between">
-                {year}
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  className="size-5 fill-black/60 group-data-[hover]:fill-black/50 transition-transform duration-700 group-data-[open]:rotate-180 group-data-[open]:-translate-x-5 pr-4"
-                />
-              </DisclosureButton>
-              <DisclosurePanel
-                as="div"
-                className="mt-2 text-sm/5 origin-top transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0 border-b-2 border-spacing-2"
-              >
-                {quadGroups[year].map((layer) => {
-                  const isActive = visibleLayers.includes(layer);
-                  return (
-                    <span key={`quad-place-layer-${layer.id}`} className="px-2">
-                      <button
-                        className={isActive ? "font-bold" : ""}
-                        onClick={() => handleClick(layer, isActive)}
-                      >
-                        {layer.placeName}
-                      </button>
-                      <IIIFMapLayer layer={layer} show={isActive} />
-                    </span>
-                  );
-                })}
-              </DisclosurePanel>
-            </Disclosure>
+            <RelatedSection
+              key={`quads-for-${year}`}
+              title={year}
+              defaultOpen={false}
+            >
+              {quadGroups[year].map((layer) => {
+                const isActive = visibleLayers.includes(layer);
+                return (
+                  <IIIFMapLayer
+                    key={`quad-place-layer-${layer.id}`}
+                    layer={layer}
+                    show={isActive}
+                    onClick={() => handleClick(layer, isActive)}
+                  />
+                );
+              })}
+            </RelatedSection>
           );
         })}
-      </RelatedSection>
+      </>
     );
   }
 

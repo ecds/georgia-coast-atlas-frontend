@@ -159,9 +159,7 @@ const RelatedPlaces = ({ places }: Props) => {
         if (map.getSource("places")) map.removeSource("places");
         map.off("click", "clusters", handleClusterClick);
         map.off("click", "unclustered-point", handleUnclusteredPointClick);
-      } catch (error) {
-        console.error("Cleanup error:", error);
-      }
+      } catch {}
     };
   }, [map, places, mapLoaded]);
 

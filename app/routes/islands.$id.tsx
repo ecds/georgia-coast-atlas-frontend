@@ -1,6 +1,6 @@
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigation,
@@ -12,7 +12,7 @@ import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import RelatedPlaces from "~/components/RelatedPlaces";
+import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
@@ -89,7 +89,7 @@ const IslandPage = () => {
   useEffect(() => {
     if (navigation.state === "idle") topRef.current?.scrollIntoView();
     if (navigation.state === "loading") {
-      setActiveLayers({});
+      // setActiveLayers({});
       if (map?.getLayer(`${island.id}-outline`))
         map.removeLayer(`${island.id}-outline`);
       if (map?.getLayer(`${island.id}-fill`))
@@ -97,7 +97,7 @@ const IslandPage = () => {
     }
   }, [navigation, island, map]);
 
-  useMemo(() => {
+  useEffect(() => {
     if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.id}-fill`))
       return;
 
@@ -180,7 +180,7 @@ const IslandPage = () => {
         >
           <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
             <div className="flex flex-col">
-              <h1 className="text-2xl px-4 pt-4 sticky top-0 z-10">
+              <h1 className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white">
                 {island.label} Island
               </h1>
               <div ref={topRef} className="relative -top-12 z-10 min-h-10">
