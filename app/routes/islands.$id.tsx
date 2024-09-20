@@ -18,7 +18,6 @@ import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
 import RelatedPhotographs from "~/components/relatedRecords/RelatedPhotographs";
 import MapSwitcher from "~/components/MapSwitcher";
-import TopoQuads from "~/components/mapping/TopoQuads";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
@@ -81,7 +80,6 @@ const IslandPage = () => {
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [topoQuads, setTopoQuads] = useState<TPlaceRecord[]>([]);
-  const [mapLayers, setMapLayers] = useState<TPlaceRecord[]>([]);
   const [activeLayers, setActiveLayers] = useState<TActiveLayer>({});
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
@@ -89,7 +87,6 @@ const IslandPage = () => {
   useEffect(() => {
     if (navigation.state === "idle") topRef.current?.scrollIntoView();
     if (navigation.state === "loading") {
-      // setActiveLayers({});
       if (map?.getLayer(`${island.id}-outline`))
         map.removeLayer(`${island.id}-outline`);
       if (map?.getLayer(`${island.id}-fill`))
@@ -172,7 +169,6 @@ const IslandPage = () => {
           setActiveLayers,
           topoQuads,
           setTopoQuads,
-          setMapLayers,
         }}
       >
         <div
@@ -213,39 +209,7 @@ const IslandPage = () => {
             <ClientOnly>
               {() => (
                 <Map>
-                  <MapSwitcher>
-                    {mapLayers && (
-                      <>
-                        {mapLayers.map((layer) => {
-                          return (
-                            <button
-                              key={`layer-switcher-${layer.uuid}`}
-                              className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${layer.id in activeLayers ? "bg-gray-200" : ""}`}
-                              role="menuitem"
-                              onClick={() =>
-                                setActiveLayers({
-                                  ...activeLayers,
-                                  [layer.uuid]: layer.place_layers[0],
-                                })
-                              }
-                            >
-                              {layer.name}
-                            </button>
-                          );
-                        })}
-                      </>
-                    )}
-                    <div className="border-t-2 pt-2">
-                      <span className="px-4 inline">Topo Quads</span>
-                      {topoQuads && (
-                        <>
-                          {topoQuads.map((quad) => {
-                            return <TopoQuads key={quad.uuid} quad={quad} />;
-                          })}
-                        </>
-                      )}
-                    </div>
-                  </MapSwitcher>
+                  <MapSwitcher></MapSwitcher>
                 </Map>
               )}
             </ClientOnly>

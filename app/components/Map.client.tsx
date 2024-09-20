@@ -1,7 +1,7 @@
 import maplibregl, { AttributionControl } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
-import style from "~/data/style2.json";
+import style from "~/data/style.json";
 import { topBarHeight, mapLayers } from "~/config";
 import type { ReactNode } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
