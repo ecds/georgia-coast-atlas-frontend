@@ -22,6 +22,7 @@ export const hitsToFeatureCollection = (hits: Hit[]) => {
       hitFeature.properties = {
         name: hit.name,
         description: hit[modelFieldUUIDs.description],
+        identifier: hit[modelFieldUUIDs.identifier],
       };
       return hitFeature;
     }),

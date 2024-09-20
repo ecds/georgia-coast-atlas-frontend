@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons"; 
 import { Link, NavLink, useLocation } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
 import { islands } from "~/config.ts";
@@ -18,8 +18,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#4D4D4D] fixed top-0 w-screen px-6 pt-6 h-20 flex justify-between z-10">
-      <ul className="flex flex-row space-x-6 uppercase">
+    <nav className="bg-[#4D4D4D] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-10">
+      <ul className="flex flex-row space-x-6 uppercase items-center">
         <li>
           <NavLink
             className={({ isActive, isPending }) =>
@@ -30,12 +30,18 @@ const Navbar = () => {
             <img
               src={gcaLogo}
               alt="Georgia Coast Atlas Logo"
-              className="w-auto h-12 absolute left-6 top-4"
+              className="w-auto h-12"
             />
           </NavLink>
         </li>
       </ul>
-      {/* Add the dropdown component here */}
+
+      <div className="flex items-center space-x-6">
+        {/* Search Button */}
+        <NavLink to="/search" className="text-white text-2xl">
+          <FontAwesomeIcon icon={faSearch} />
+        </NavLink>
+
       <div className="relative inline-block mr-6">
         <button
           onClick={toggleDropdown}
@@ -62,6 +68,7 @@ const Navbar = () => {
             </ul>
           </div>
         )}
+      </div>
       </div>
     </nav>
   );

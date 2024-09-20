@@ -1,13 +1,26 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 interface IntroModalProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
 export default function IntroModal({ setIsOpen }: IntroModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
   function closeModal() {
     setIsOpen(false);
+  }
+
+  function handleSearch() {
+    if (searchQuery.trim()) {
+      closeModal();
+      navigate(`/search?gca%5Bquery%5D=${encodeURIComponent(searchQuery)}`);
+    }
   }
 
   return (
@@ -58,18 +71,29 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
                   >
                     Explore the Coast
                   </button>
-                  <span className="text-gray-500 ml-2">OR</span>
-                  <label htmlFor="search" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative ml-2 w-full max-w-xs">
+                  <span className="text-gray-500 mx-2">OR</span>
+                  <div className="relative flex items-center">
                     <input
                       type="text"
                       id="search"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 p-2.5"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-10 py-2.5"
                       placeholder="Search"
-                      required
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
                     />
+                    <button
+                      type="button"
+                      className="absolute right-2 inline-flex justify-center items-center rounded-full bg-black/80 p-2 text-base font-medium text-white hover:bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+                      onClick={handleSearch}
+                      aria-label="Search"
+                    >
+                      <FontAwesomeIcon icon={faSearch} />
+                    </button>
                   </div>
                 </div>
               </Dialog.Panel>
