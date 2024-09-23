@@ -40,7 +40,7 @@ const RelatedSection = ({
             </span>
             <FontAwesomeIcon
               icon={faChevronDown}
-              className="size-5 fill-black/60 group-data-[hover]:fill-black/50 transition-transform duration-700 group-data-[open]:rotate-180 pr-4"
+              className="size-5 fill-black/60 group-data-[hover]:fill-black/50 transition-transform duration-700 group-data-[open]:rotate-180"
             />
           </DisclosureButton>
           <DisclosurePanel
