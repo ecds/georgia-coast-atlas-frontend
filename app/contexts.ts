@@ -14,9 +14,6 @@ type TPlaceContext = {
   place: TPlaceRecord | TIslandConfig;
   activeLayers: TActiveLayer;
   setActiveLayers: Dispatch<SetStateAction<TActiveLayer>>;
-  topoQuads?: TPlaceRecord[];
-  setTopoQuads?: Dispatch<SetStateAction<TPlaceRecord[]>>;
-  setMapLayers?: Dispatch<SetStateAction<TPlaceRecord[]>>;
 };
 
 export const MapContext = createContext<TMapContext>({
@@ -38,5 +35,4 @@ export const PlaceContext = createContext<TPlaceContext>({
       "setActiveLayers not implemented. Did you pass it to context?",
     );
   },
-  topoQuads: [],
 });

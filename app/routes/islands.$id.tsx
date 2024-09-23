@@ -22,7 +22,6 @@ import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
 import type {
-  TPlaceRecord,
   TWordPressData,
   TIslandServerData,
   TIslandClientData,
@@ -79,7 +78,6 @@ const IslandPage = () => {
     useLoaderData<TIslandClientData>();
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [topoQuads, setTopoQuads] = useState<TPlaceRecord[]>([]);
   const [activeLayers, setActiveLayers] = useState<TActiveLayer>({});
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
@@ -167,8 +165,6 @@ const IslandPage = () => {
           place: island,
           activeLayers,
           setActiveLayers,
-          topoQuads,
-          setTopoQuads,
         }}
       >
         <div

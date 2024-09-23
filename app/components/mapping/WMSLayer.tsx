@@ -7,7 +7,6 @@ import type {
   TPlaceRecord,
   TRelatedPlaceRecord,
 } from "~/types";
-import type { Dispatch, SetStateAction } from "react";
 import type { AddLayerObject } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import AddLayerButton from "../relatedRecords/AddLayerButton";
@@ -20,10 +19,9 @@ import {
 
 interface Props {
   layer: TRelatedPlaceRecord;
-  setGroup: Dispatch<SetStateAction<TPlaceRecord[]>>;
 }
 
-const WMSLayer = ({ layer, setGroup }: Props) => {
+const WMSLayer = ({ layer }: Props) => {
   const { map } = useContext(MapContext);
   const { activeLayers, place, setActiveLayers } = useContext(PlaceContext);
   const [placeRecord, setPlaceRecord] = useState<TPlaceRecord>();
@@ -45,13 +43,6 @@ const WMSLayer = ({ layer, setGroup }: Props) => {
       const record = await fetchPlaceRecord(layer.uuid);
       if (record && !ignore) {
         setPlaceRecord(record);
-
-        setGroup((layers) => {
-          if (layers.map((l) => l.uuid).includes(record.uuid)) {
-            return layers;
-          }
-          return [...layers, record];
-        });
       }
     };
 
@@ -66,13 +57,8 @@ const WMSLayer = ({ layer, setGroup }: Props) => {
     return () => {
       ignore = true;
       setPlaceRecord(undefined);
-      setGroup([]);
     };
-  }, [layer, setGroup]);
-
-  // useEffect(() => {
-  //   removeFromGroup();
-  // }, [removeFromGroup, placeRecord]);
+  }, [layer]);
 
   useEffect(() => {
     if (!map || !placeRecord) return;
