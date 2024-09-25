@@ -9,7 +9,7 @@ import {
   getServerState,
 } from "react-instantsearch";
 import { searchClient } from "~/utils/typesense-adapter";
-import Map from "~/components/Map.client";
+import Map from "~/components/mapping/Map.client";
 import { ClientOnly } from "remix-utils/client-only";
 import GeoSearch from "~/components/search/GeoSearch";
 import type { Map as TMap } from "maplibre-gl";
@@ -22,7 +22,7 @@ import { topBarHeight } from "~/config";
 import { MapContext } from "~/contexts";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
-import MapSwitcher from "~/components/MapSwitcher";
+import MapSwitcher from "~/components/mapping/MapSwitcher";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;

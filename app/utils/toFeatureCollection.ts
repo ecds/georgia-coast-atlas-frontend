@@ -1,9 +1,11 @@
 import { feature, featureCollection } from "@turf/turf";
 import { modelFieldUUIDs } from "~/config";
-import type { TPlaceRecord } from "~/types";
+import type { TPlaceRecord, TRelatedPlaceRecord } from "~/types";
 import type { Hit } from "instantsearch.js";
 
-export const toFeatureCollection = (places: TPlaceRecord[]) => {
+export const toFeatureCollection = (
+  places: TPlaceRecord[] | TRelatedPlaceRecord[],
+) => {
   return featureCollection(
     places.map((place) => {
       const placeFeature = feature(place.place_geometry.geometry_json);

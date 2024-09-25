@@ -10,7 +10,9 @@ const RelatedMapLayers = ({ layers }: Props) => {
   return (
     <RelatedSection title="Map Layers">
       {layers.map((mapLayer) => {
-        return <WMSLayer key={`map-layer-${mapLayer.uuid}`} layer={mapLayer} />;
+        return (
+          <WMSLayer key={`map-layer-${mapLayer.uuid}`} placeLayer={mapLayer} />
+        );
       })}
     </RelatedSection>
   );

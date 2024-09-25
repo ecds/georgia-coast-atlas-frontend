@@ -1,28 +1,84 @@
-import { useContext, useEffect, useState } from "react";
-import type { MapLayerMouseEvent, GeoJSONSource } from "maplibre-gl";
+import { useCallback, useContext, useEffect, useState } from "react";
+import type {
+  MapLayerMouseEvent,
+  GeoJSONSource,
+  SourceSpecification,
+  AddLayerObject,
+} from "maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
-import { MapContext } from "~/contexts";
+import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { TRelatedPlaceRecord } from "~/types";
+import { orderLayers } from "~/utils/orderMaps";
+import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 
 interface Props {
   places: TRelatedPlaceRecord[];
 }
 
 const RelatedPlaces = ({ places }: Props) => {
-  const { map, mapLoaded } = useContext(MapContext);
+  const { map } = useContext(MapContext);
+  const { place, setGeoJSONSources, setGeoJSONLayers, activeLayers } =
+    useContext(PlaceContext);
   const [activePlace, setActivePlace] = useState<
     TRelatedPlaceRecord | undefined
   >(undefined);
 
+  const handleUnclusteredPointClick = useCallback(
+    (e: MapLayerMouseEvent) => {
+      if (!e.features || !e.features.length) return;
+      const feature = e.features[0];
+      const clickedPlace = places.find(
+        (place) => place.identifier === feature.properties.identifier,
+      );
+
+      setActivePlace(clickedPlace);
+    },
+    [places],
+  );
+
+  const handleClusterClick = useCallback(
+    async (e: MapLayerMouseEvent) => {
+      if (!map) return;
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [`${place.id}-clusters`],
+      });
+      if (
+        features.length > 0 &&
+        features[0].properties &&
+        features[0].geometry
+      ) {
+        const clusterId = features[0].properties.cluster_id;
+        const source = map.getSource(`${place.id}-places`) as GeoJSONSource;
+        if (source) {
+          try {
+            const zoom = await source.getClusterExpansionZoom(clusterId);
+            const geometry = features[0].geometry;
+            if (geometry.type === "Point") {
+              map.easeTo({
+                center: geometry.coordinates as [number, number],
+                zoom: zoom,
+              });
+            }
+          } catch (err) {
+            console.error("Error expanding cluster:", err);
+          }
+        }
+      }
+    },
+    [map, place],
+  );
+
   useEffect(() => {
-    if (!map || !mapLoaded) return;
+    if (!map) return;
+
     const geoJSON = toFeatureCollection(places);
+
     const bounds = new LngLatBounds(
       bbox(geoJSON) as [number, number, number, number],
     );
@@ -39,129 +95,107 @@ const RelatedPlaces = ({ places }: Props) => {
       }
     }
 
-    map.addSource("places", {
+    const placesSource: SourceSpecification = {
       type: "geojson",
       data: geoJSON,
       cluster: true,
       clusterMaxZoom: 14,
       clusterRadius: 50,
-    });
-
-    map.addLayer({
-      id: "clusters",
-      type: "circle",
-      source: "places",
-      filter: ["has", "point_count"],
-      paint: {
-        "circle-color": [
-          "step",
-          ["get", "point_count"],
-          "#51bbd6",
-          100,
-          "#f1f075",
-          750,
-          "#f28cb1",
-        ],
-        "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-      },
-    });
-
-    map.addLayer({
-      id: "cluster-count",
-      type: "symbol",
-      source: "places",
-      filter: ["has", "point_count"],
-      layout: {
-        "text-field": "{point_count_abbreviated}",
-        "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-        "text-size": 12,
-      },
-    });
-
-    map.addLayer({
-      id: "unclustered-point",
-      type: "symbol",
-      source: "places",
-      filter: ["!", ["has", "point_count"]],
-      layout: {
-        "icon-image": "pulsing-dot",
-      },
-    });
-
-    const handleClusterClick = async (e: MapLayerMouseEvent) => {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ["clusters"],
-      });
-      if (
-        features.length > 0 &&
-        features[0].properties &&
-        features[0].geometry
-      ) {
-        const clusterId = features[0].properties.cluster_id;
-        const source = map.getSource("places") as GeoJSONSource;
-        if (source) {
-          try {
-            const zoom = await source.getClusterExpansionZoom(clusterId);
-            const geometry = features[0].geometry;
-            if (geometry.type === "Point") {
-              map.easeTo({
-                center: geometry.coordinates as [number, number],
-                zoom: zoom,
-              });
-            }
-          } catch (err) {
-            console.error("Error expanding cluster:", err);
-          }
-        }
-      }
     };
 
-    const handleUnclusteredPointClick = (e: MapLayerMouseEvent) => {
-      if (!e.features || !e.features.length) return;
+    if (map.getSource(`${place.id}-places`)) {
+      map.removeSource(`${place.id}-places`);
+    }
 
-      const feature = e.features[0];
-      const clickedPlace = places.find(
-        (place) => place.identifier === feature.properties.identifier,
-      );
+    map.addSource(`${place.id}-places`, placesSource);
 
-      setActivePlace(clickedPlace);
-    };
+    const clusterLayer = cluster(place.id);
+
+    if (!map.getLayer(clusterLayer.id)) {
+      map.addLayer(clusterLayer);
+    }
+
+    const countLayer = clusterCount(place.id);
+
+    if (!map.getLayer(countLayer.id)) {
+      map.addLayer(countLayer);
+    }
+
+    const unclusteredLayer = singlePoint(place.id);
+
+    if (!map.getLayer(unclusteredLayer.id)) {
+      map.addLayer(unclusteredLayer);
+    }
 
     // Clear active place when clicking outside of a point
     map.on("click", () => {
       setActivePlace(undefined);
     });
 
-    map.on("click", "clusters", handleClusterClick);
-    map.on("click", "unclustered-point", handleUnclusteredPointClick);
+    map.on("click", clusterLayer.id, handleClusterClick);
+    map.on("click", unclusteredLayer.id, handleUnclusteredPointClick);
 
-    map.on("mouseenter", "clusters", () => {
+    map.on("mouseenter", clusterLayer.id, () => {
       map.getCanvas().style.cursor = "pointer";
     });
-    map.on("mouseleave", "clusters", () => {
+    map.on("mouseleave", clusterLayer.id, () => {
       map.getCanvas().style.cursor = "";
     });
 
-    map.on("mouseenter", "unclustered-point", () => {
+    map.on("mouseenter", unclusteredLayer.id, () => {
       map.getCanvas().style.cursor = "pointer";
     });
-    map.on("mouseleave", "unclustered-point", () => {
+    map.on("mouseleave", unclusteredLayer.id, () => {
       map.getCanvas().style.cursor = "";
     });
+
+    if (setGeoJSONSources)
+      setGeoJSONSources((geoJSONSources) => {
+        return { ...geoJSONSources, [`${place.id}-places`]: placesSource };
+      });
+    if (setGeoJSONLayers)
+      if (setGeoJSONLayers)
+        setGeoJSONLayers((geoJSONLayers) => {
+          const newLayers = [clusterLayer, countLayer, unclusteredLayer];
+          let layersToAdd: AddLayerObject[] = [];
+          for (const newLayer of newLayers) {
+            layersToAdd = [
+              ...layersToAdd.filter((l) => l.id !== newLayer.id),
+              newLayer,
+            ];
+          }
+          return [
+            ...geoJSONLayers.filter(
+              (l) => !layersToAdd.map((a) => a.id).includes(l.id),
+            ),
+            ...layersToAdd,
+          ];
+        });
+
+    orderLayers(map, place.id, activeLayers);
 
     return () => {
       try {
         if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
-        if (map.getLayer("clusters")) map.removeLayer("clusters");
-        if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
-        if (map.getLayer("unclustered-point"))
-          map.removeLayer("unclustered-point");
-        if (map.getSource("places")) map.removeSource("places");
-        map.off("click", "clusters", handleClusterClick);
-        map.off("click", "unclustered-point", handleUnclusteredPointClick);
+        if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
+        if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+        if (map.getLayer(unclusteredLayer.id))
+          map.removeLayer(unclusteredLayer.id);
+        if (map.getSource(`${place.id}-places`))
+          map.removeSource(`${place.id}-places`);
+        map.off("click", clusterLayer.id, handleClusterClick);
+        map.off("click", unclusteredLayer.id, handleUnclusteredPointClick);
       } catch {}
     };
-  }, [map, places, mapLoaded]);
+  }, [
+    map,
+    place,
+    handleClusterClick,
+    handleUnclusteredPointClick,
+    setGeoJSONLayers,
+    setGeoJSONSources,
+    places,
+  ]);
 
   return (
     <RelatedSection title="Related Places">

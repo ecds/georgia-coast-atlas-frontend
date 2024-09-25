@@ -6,38 +6,36 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import type { ReactNode } from "react";
+import Heading from "../layout/Heading";
 
 interface Props {
   children: ReactNode;
   title: string;
-  titleClassName?: string;
   defaultOpen?: boolean;
-  topBorder?: boolean;
-  horzSpacing?: string;
+  nested?: boolean;
 }
 
 const RelatedSection = ({
   children,
   title,
-  titleClassName,
   defaultOpen = true,
-  topBorder = true,
-  horzSpacing,
+  nested = false,
 }: Props) => {
   return (
-    <div className={`w-full px-4`}>
-      <div className={`mx-auto w-full ${topBorder ? "border-t-2" : ""}`}>
+    <div className={`w-full ${nested ? "" : "px-4"}`}>
+      <div className={`mx-auto w-full border-t-2`}>
         <Disclosure
           as="div"
-          className={horzSpacing ?? "p-6"}
+          className={nested ? "py-4" : "p-6"}
           defaultOpen={defaultOpen}
         >
           <DisclosureButton className="group flex w-full items-center justify-between">
-            <span
-              className={`font-medium text-black group-data-[hover]:text-black/80 ${titleClassName}`}
+            <Heading
+              as={nested ? "h3" : "h2"}
+              className={`font-medium text-black group-data-[hover]:text-black/80`}
             >
               {title}
-            </span>
+            </Heading>
             <FontAwesomeIcon
               icon={faChevronDown}
               className="size-5 fill-black/60 group-data-[hover]:fill-black/50 transition-transform duration-700 group-data-[open]:rotate-180"

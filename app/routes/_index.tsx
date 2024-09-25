@@ -2,7 +2,7 @@ import { useContext, useState, useEffect, useCallback } from "react";
 import { MapContext } from "~/contexts";
 import { useLoaderData } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import Map from "~/components/Map.client";
+import Map from "~/components/mapping/Map.client";
 import { islands } from "~/config";
 import { fetchPlaceRecord } from "~/data/coredata";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
@@ -12,7 +12,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import IntroModal from "~/components/layout/IntroModal";
-import MapSwitcher from "~/components/MapSwitcher";
+import MapSwitcher from "~/components/mapping/MapSwitcher";
 
 export const loader: LoaderFunction = async () => {
   const islandDataPromises = islands.map((island) =>
@@ -31,8 +31,7 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function Index() {
-  const [map, setMap] = useState<maplibregl.Map | undefined>(undefined);
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const { map, mapLoaded } = useContext(MapContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
   const { geoJSON } = useLoaderData<{ geoJSON: FeatureCollection }>();
 
@@ -123,25 +122,16 @@ export default function Index() {
   ]);
 
   return (
-    <MapContext.Provider
-      value={{
-        map,
-        setMap,
-        mapLoaded,
-        setMapLoaded,
-      }}
-    >
-      <div className="w-full h-full">
-        {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
-        {/* Render the modal */}
-        <ClientOnly>
-          {() => (
-            <Map>
-              <MapSwitcher />
-            </Map>
-          )}
-        </ClientOnly>
-      </div>
-    </MapContext.Provider>
+    <div className="w-full h-full">
+      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
+      {/* Render the modal */}
+      <ClientOnly>
+        {() => (
+          <Map>
+            <MapSwitcher />
+          </Map>
+        )}
+      </ClientOnly>
+    </div>
   );
 }

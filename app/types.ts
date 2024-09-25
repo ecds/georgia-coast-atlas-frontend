@@ -9,6 +9,7 @@ import type {
 } from "geojson";
 import type { LabeledIIIFExternalWebResource } from "@samvera/clover-iiif/image";
 import type { ImageService } from "@iiif/presentation-3";
+import type { SourceSpecification } from "maplibre-gl";
 
 export type Geometry =
   | Point
@@ -457,9 +458,19 @@ export type TTopoCoordsRecord = {
   };
 };
 
-export type TActiveLayer = {
-  [key: string]: TCoreDataLayer;
+export type TStyleSource = {
+  source: string;
+  label: string;
+  id: string;
 };
+
+export type TPlaceSource = {
+  [key: string]: SourceSpecification;
+};
+
+// export type TActiveLayer = {
+//   [key: string]: TCoreDataLayer;
+// };
 
 // export type TPlaceMap = {
 //   name: {

@@ -10,7 +10,7 @@ const AddLayerButton = ({ onClick, children, image }: Props) => {
   return (
     <button
       onClick={onClick}
-      className="md:mx-8 w-32 drop-shadow-md h-auto md:h-32 mx-auto bg-cover flex items-end rounded-md"
+      className="md:mr-8 w-32 drop-shadow-md h-auto md:h-32 mx-auto bg-cover flex items-end rounded-md"
       style={{
         backgroundImage: `url(${image})`,
       }}

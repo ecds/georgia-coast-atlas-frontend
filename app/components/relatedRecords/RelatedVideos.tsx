@@ -16,7 +16,7 @@ const RelatedVideos = ({ videos }: Props) => {
             <VideoModal key={video.uuid} video={video}>
               <VideoThumbnail
                 video={video}
-                figClassName="md:m-8 max-w-xs"
+                figClassName="md:my-8 md:mr-8 max-w-xs"
                 imgClassName="drop-shadow-md md:h-32  md:w-32"
               />
             </VideoModal>

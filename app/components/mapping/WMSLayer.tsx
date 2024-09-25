@@ -9,8 +9,8 @@ import type {
 } from "~/types";
 import type { AddLayerObject } from "maplibre-gl";
 import { bbox } from "@turf/turf";
-import AddLayerButton from "../relatedRecords/AddLayerButton";
-import LayerOpacity from "../relatedRecords/LayerOpacity";
+import AddLayerButton from "./AddLayerButton";
+import LayerOpacity from "./LayerOpacity";
 import {
   PlaceLayerBody,
   PlaceLayerContainer,
@@ -18,10 +18,10 @@ import {
 } from "../relatedRecords/PlaceLayerContainer";
 
 interface Props {
-  layer: TRelatedPlaceRecord;
+  placeLayer: TRelatedPlaceRecord;
 }
 
-const WMSLayer = ({ layer }: Props) => {
+const WMSLayer = ({ placeLayer }: Props) => {
   const { map } = useContext(MapContext);
   const { activeLayers, place, setActiveLayers } = useContext(PlaceContext);
   const [placeRecord, setPlaceRecord] = useState<TPlaceRecord>();
@@ -31,23 +31,26 @@ const WMSLayer = ({ layer }: Props) => {
   const layerRef = useRef<AddLayerObject>();
 
   useEffect(() => {
-    setActive(Boolean(layerRef.current && layerRef.current.id in activeLayers));
-  }, [activeLayers]);
+    setActive(Boolean(activeLayers.includes(placeLayer.uuid)));
+  }, [activeLayers, placeLayer, placeRecord]);
 
   useEffect(() => {
-    if (!layer) return;
+    if (!placeLayer) return;
 
     let ignore = false;
 
     const fetchLayerRecord = async () => {
-      const record = await fetchPlaceRecord(layer.uuid);
+      const record = await fetchPlaceRecord(placeLayer.uuid);
       if (record && !ignore) {
         setPlaceRecord(record);
       }
     };
 
     const fetchRelatedMediaRecord = async () => {
-      const record = await fetchRelatedRecord(layer.uuid, "media_contents");
+      const record = await fetchRelatedRecord(
+        placeLayer.uuid,
+        "media_contents",
+      );
       if (record && !ignore) setThumbnails(record.media_contents);
     };
 
@@ -58,10 +61,17 @@ const WMSLayer = ({ layer }: Props) => {
       ignore = true;
       setPlaceRecord(undefined);
     };
-  }, [layer]);
+  }, [placeLayer]);
 
   useEffect(() => {
     if (!map || !placeRecord) return;
+
+    layerRef.current = {
+      id: placeRecord.uuid,
+      type: "raster",
+      source: placeRecord.uuid,
+      paint: {},
+    };
 
     if (!map.getSource(placeRecord.uuid)) {
       map.addSource(placeRecord.uuid, {
@@ -69,77 +79,54 @@ const WMSLayer = ({ layer }: Props) => {
         tiles: placeRecord.place_layers.map((layer) => layer.url),
         tileSize: 256,
       });
-      layerRef.current = {
-        id: placeRecord.uuid,
-        type: "raster",
-        source: placeRecord.uuid,
-        paint: {},
-      };
     }
 
     return () => {
-      if (!layerRef.current) return;
-      if (map?.getLayer(layerRef.current.id))
-        map.removeLayer(layerRef.current.id);
-      if (map.getSource(layerRef.current.id))
-        map.removeSource(layerRef.current.id);
-      layerRef.current = undefined;
+      if (map?.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
+      if (map.getSource(placeRecord.uuid)) map.removeSource(placeRecord.uuid);
     };
-  }, [map, placeRecord]);
+  }, [map, placeRecord, active]);
 
   useEffect(() => {
-    if (layerRef.current && active && map?.getLayer(layerRef.current.id)) {
-      map?.setPaintProperty(
-        layerRef.current.id,
-        "raster-opacity",
-        opacity * 0.01,
-      );
+    if (active && placeRecord && map?.getLayer(placeRecord.uuid)) {
+      map?.setPaintProperty(placeRecord.uuid, "raster-opacity", opacity * 0.01);
     }
-    console.log("🚀 ~ WMSLayer ~ opacity:", opacity);
-  }, [map, opacity, activeLayers, active]);
+  }, [map, opacity, activeLayers, active, placeRecord]);
 
   useEffect(() => {
-    if (!map || !layerRef.current) return;
+    if (!map || !placeRecord) return;
 
-    if (layerRef.current.id in activeLayers) {
-      if (map && !map.getLayer(layerRef.current.id)) {
+    if (active && placeRecord) {
+      if (map && layerRef.current && !map.getLayer(placeRecord.uuid)) {
         map.addLayer(layerRef.current);
-        const layerBounds = bbox(layer.place_geometry.geometry_json);
+        const layerBounds = bbox(placeLayer.place_geometry.geometry_json);
         const newBounds = map
           .getBounds()
           .extend(layerBounds as [number, number, number, number]);
         map.fitBounds(newBounds, { padding: 20 });
       }
 
-      if (layerRef.current.type == "raster") {
-        orderLayers(map, layerRef.current.id, place.id);
+      if (layerRef.current?.type == "raster") {
+        orderLayers(map, place.id);
       }
     } else {
-      if (map.getLayer(layerRef.current.id))
-        map.removeLayer(layerRef.current.id);
+      if (map.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
     }
-  }, [map, activeLayers, place, layer]);
+  }, [map, active, place, placeLayer, placeRecord]);
 
   const handleClick = () => {
     if (placeRecord) {
-      if (placeRecord.uuid in activeLayers) {
-        const newObj = Object.fromEntries(
-          Object.entries(activeLayers).filter(
-            ([key]) => key !== placeRecord.uuid,
-          ),
+      if (activeLayers.includes(placeRecord.uuid)) {
+        setActiveLayers(
+          activeLayers.filter((layer) => layer !== placeRecord.uuid),
         );
-        setActiveLayers(newObj);
       } else {
-        setActiveLayers({
-          ...activeLayers,
-          [placeRecord.uuid]: placeRecord.place_layers[0],
-        });
+        setActiveLayers([...activeLayers, placeRecord.uuid]);
       }
     }
   };
 
   const handleOpacityChange = (newValue: string) => {
-    console.log("🚀 ~ handleOpacityChange ~ newValue:", newValue);
     setOpacity(parseInt(newValue));
   };
 
@@ -158,7 +145,7 @@ const WMSLayer = ({ layer }: Props) => {
               <PlaceLayerBody>
                 <PlaceLayerTitle>{thumbNail.name}</PlaceLayerTitle>
                 <LayerOpacity
-                  id={layer.uuid}
+                  id={placeLayer.uuid}
                   opacity={opacity}
                   handleChange={handleOpacityChange}
                   disabled={!active}

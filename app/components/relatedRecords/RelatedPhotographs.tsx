@@ -48,7 +48,7 @@ const RelatedPhotographs = ({ manifest }: Props) => {
                   setActivePhotograph={setActivePhotograph}
                   photograph={photo}
                 >
-                  <figure className="md:m-8 max-w-xs">
+                  <figure className="md:my-8 md:mr-8 max-w-xs">
                     <img
                       src={photo.thumb}
                       alt=""

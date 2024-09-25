@@ -10,7 +10,7 @@ import {
   PlaceLayerBody,
   PlaceLayerContainer,
   PlaceLayerTitle,
-} from "./PlaceLayerContainer";
+} from "~/components/relatedRecords/PlaceLayerContainer";
 
 interface Props {
   layer: TCoreDataLayer;
@@ -19,7 +19,6 @@ interface Props {
 }
 
 const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
-  console.log("🚀 ~ IIIFMapLayer ~ layer:", layer);
   const { map, mapLoaded } = useContext(MapContext);
   const { place } = useContext(PlaceContext);
   const [opacity, setOpacity] = useState<number>(100);
@@ -41,7 +40,7 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
 
   useEffect(() => {
     const addLayer = async () => {
-      if (!layerRef.current || !map) return;
+      if (!layerRef.current || !layerRef.current.renderer || !map) return;
       await layerRef.current.addGeoreferenceAnnotationByUrl(
         `https://dev.georgiacoastatlas.org/iiif/annotation-geo/${layer.name}/${layer.placeName?.replaceAll(" ", "_") ?? ""}`,
       );
@@ -64,8 +63,13 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
       if (!mapRef.current.getLayer(layerRef.current.id)) {
         mapRef.current.addLayer(layerRef.current);
         mapRef.current.on("allrequestedtilesloaded", () => {
-          if (mapRef.current && layerRef.current)
-            orderLayers(mapRef.current, layerRef.current.id, place.id);
+          if (mapRef.current && layerRef.current) {
+            orderLayers(mapRef.current, place.id);
+            mapRef.current.moveLayer(
+              layerRef.current.id,
+              `${place.id}-outline`,
+            );
+          }
         });
       }
       addLayer();

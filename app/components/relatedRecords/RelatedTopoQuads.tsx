@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import IIIFMapLayer from "./IIIFMapLayer";
+import { useContext, useEffect, useState } from "react";
+import { PlaceContext } from "~/contexts";
+import IIIFMapLayer from "~/components/mapping/IIIFMapLayer";
 import { fetchPlaceRecord } from "~/data/coredata";
 import RelatedSection from "./RelatedSection";
 import type {
@@ -21,6 +22,7 @@ const RelatedTopoQuads = ({ quads }: Props) => {
   const [quadGroups, setQuadGroups] = useState<YearGroup>();
   const [yearGroups, setYearGroups] = useState<string[]>();
   const [visibleLayers, setVisibleLayers] = useState<TCoreDataLayer[]>([]);
+  const { activeLayers, setActiveLayers } = useContext(PlaceContext);
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -54,33 +56,39 @@ const RelatedTopoQuads = ({ quads }: Props) => {
     setQuadGroups(groups);
   }, [quadRecords]);
 
+  const removeFromActiveLayers = (id: string) => {
+    console.log("🚀 ~ removeFromActiveLayers ~ id:", id);
+    setActiveLayers(activeLayers.filter((l) => l !== id));
+  };
+
   const handleClick = (layer: TCoreDataLayer, isActive: boolean) => {
     if (isActive) {
+      removeFromActiveLayers(layer.id);
       setVisibleLayers(visibleLayers.filter((l) => l.id !== layer.id));
     } else {
-      console.log(
-        "🚀 ~ handleClick ~ visibleLayers.filter((l) => l.name !== layer.name:",
-        visibleLayers.filter((l) => l.name !== layer.name),
+      const otherVersion = visibleLayers.find(
+        (l) => l.placeName === layer.placeName,
       );
+      if (otherVersion && activeLayers.includes(otherVersion.id))
+        removeFromActiveLayers(otherVersion.id);
       setVisibleLayers([
         ...visibleLayers.filter((l) => l.placeName !== layer.placeName),
         layer,
       ]);
+      setActiveLayers([...activeLayers, layer.id]);
     }
   };
 
   if (quadGroups && yearGroups) {
     return (
-      <>
-        <div className="border-t-2 w-full mx-4">
-          <h3 className="p-6">Topo Quads</h3>
-        </div>
+      <RelatedSection title="Topo Quads">
         {yearGroups.map((year) => {
           return (
             <RelatedSection
               key={`quads-for-${year}`}
               title={year}
               defaultOpen={false}
+              nested
             >
               {quadGroups[year].map((layer) => {
                 const isActive = visibleLayers.includes(layer);
@@ -96,7 +104,7 @@ const RelatedTopoQuads = ({ quads }: Props) => {
             </RelatedSection>
           );
         })}
-      </>
+      </RelatedSection>
     );
   }
 

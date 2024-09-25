@@ -1,6 +1,4 @@
-import { LngLatBounds } from "maplibre-gl";
-import { bbox } from "@turf/turf";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigation,
@@ -10,14 +8,14 @@ import {
 import { ClientOnly } from "remix-utils/client-only";
 import { islands, dataHosts, topBarHeight } from "~/config.ts";
 import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
-import Map from "~/components/Map.client";
+import Map from "~/components/mapping/Map.client";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
 import RelatedPhotographs from "~/components/relatedRecords/RelatedPhotographs";
-import MapSwitcher from "~/components/MapSwitcher";
+import MapSwitcher from "~/components/mapping/MapSwitcher";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
@@ -26,13 +24,15 @@ import type {
   TIslandServerData,
   TIslandClientData,
   TRelatedCoreDataRecords,
-  TActiveLayer,
+  TPlaceSource,
 } from "~/types";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { ClientLoaderFunctionArgs } from "@remix-run/react";
-import type { Map as TMap } from "maplibre-gl";
 import RelatedMapLayers from "~/components/relatedRecords/RelatedMapLayers";
 import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
+import Heading from "~/components/layout/Heading";
+import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ClientLoaderFunctionArgs } from "@remix-run/react";
+import type { AddLayerObject } from "maplibre-gl";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.id == `${i.id}`);
@@ -51,7 +51,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  return { place, island, wpData: wpData[0] } || null;
+  return { place, island, wpData: wpData[0] };
 };
 
 export const clientLoader = async ({
@@ -76,9 +76,10 @@ export const HydrateFallback = () => {
 const IslandPage = () => {
   const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
-  const [map, setMap] = useState<TMap | undefined>(undefined);
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [activeLayers, setActiveLayers] = useState<TActiveLayer>({});
+  const { map, mapLoaded } = useContext(MapContext);
+  const [activeLayers, setActiveLayers] = useState<string[]>([]);
+  const [geoJSONSources, setGeoJSONSources] = useState<TPlaceSource>({});
+  const [geoJSONLayers, setGeoJSONLayers] = useState<AddLayerObject[]>([]);
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
 
@@ -95,124 +96,70 @@ const IslandPage = () => {
   useEffect(() => {
     if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.id}-fill`))
       return;
-
-    const firstSymbolId = map
-      .getStyle()
-      .layers.find((layer) => layer.type === "symbol")?.id;
-
-    map.addSource(island.id, {
-      type: "geojson",
-      data: geoJSON,
-    });
-
-    map.addLayer(
-      {
-        id: `${island.id}-fill`,
-        type: "fill",
-        source: island.id,
-        layout: {},
-        paint: {
-          "fill-color": "blue",
-          "fill-opacity": 0.25,
-        },
-        filter: ["==", "$type", "Polygon"],
-      },
-      firstSymbolId,
-    );
-
-    map.addLayer({
-      id: `${island.id}-outline`,
-      type: "line",
-      source: island.id,
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "blue",
-        "line-width": 2,
-        "line-opacity": 0.5,
-      },
-      filter: ["==", "$type", "Polygon"],
-    });
-
-    if (map.getLayer("clusters")) {
-      map.moveLayer(`${island.id}-outline`, "clusters");
-    }
-
-    const bounds = new LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number],
-    );
-
-    map.fitBounds(bounds, { padding: 100 });
-
-    return () => {
-      try {
-        if (!map) return;
-        if (map.getLayer(`${island.id}-fill`))
-          map.removeLayer(`${island.id}-fill`);
-        if (map.getLayer(`${island.id}-outline`))
-          map.removeLayer(`${island.id}-outline`);
-        if (map.getSource(island.id)) map.removeSource(island.id);
-      } catch {}
-    };
-  }, [map, mapLoaded, geoJSON, island]);
+  }, [map, mapLoaded, geoJSON, island, activeLayers]);
 
   return (
-    <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
-      <PlaceContext.Provider
-        value={{
-          place: island,
-          activeLayers,
-          setActiveLayers,
-        }}
+    <PlaceContext.Provider
+      value={{
+        place: island,
+        activeLayers,
+        setActiveLayers,
+        geoJSON,
+        geoJSONSources,
+        geoJSONLayers,
+        setGeoJSONSources,
+        setGeoJSONLayers,
+      }}
+    >
+      <div
+        className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
       >
-        <div
-          className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
-        >
-          <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
-            <div className="flex flex-col">
-              <h1 className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white">
-                {island.label} Island
-              </h1>
-              <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-                <FeaturedMedium record={related} />
-              </div>
-              <div
-                className="relative px-4 -mt-12 primary-content"
-                dangerouslySetInnerHTML={{
-                  __html: wpData?.content.rendered ?? place.description,
-                }}
-              />
+        <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
+          <div className="flex flex-col">
+            <Heading
+              as="h1"
+              className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+            >
+              {island.label} Island
+            </Heading>
+            <div ref={topRef} className="relative -top-12 z-10 min-h-10">
+              <FeaturedMedium record={related} />
             </div>
-            {related.places?.relatedPlaces && (
-              <RelatedPlaces places={related.places.relatedPlaces} />
-            )}
-            {related.items?.videos && (
-              <RelatedVideos videos={related.items.videos} />
-            )}
-            {related.media_contents?.photographs && (
-              <RelatedPhotographs manifest={place.iiif_manifest} />
-            )}
-            {related.places?.mapLayers && (
-              <RelatedMapLayers layers={related.places.mapLayers} />
-            )}
-            {related.places?.topoQuads && (
-              <RelatedTopoQuads quads={related.places.topoQuads} />
-            )}
+            <div
+              className="relative px-4 -mt-12 primary-content"
+              dangerouslySetInnerHTML={{
+                __html: wpData?.content.rendered ?? place.description,
+              }}
+            />
           </div>
-          <div className="hidden md:block w-1/2 lg:w-3/5">
-            <ClientOnly>
-              {() => (
-                <Map>
-                  <MapSwitcher></MapSwitcher>
-                </Map>
-              )}
-            </ClientOnly>
-          </div>
+          {related.places?.relatedPlaces && (
+            <RelatedPlaces places={related.places.relatedPlaces} />
+          )}
+          {related.items?.videos && (
+            <RelatedVideos videos={related.items.videos} />
+          )}
+          {related.media_contents?.photographs && (
+            <RelatedPhotographs manifest={place.iiif_manifest} />
+          )}
+          {related.places?.mapLayers && (
+            <RelatedMapLayers layers={related.places.mapLayers} />
+          )}
+          {related.places?.topoQuads && (
+            <RelatedTopoQuads quads={related.places.topoQuads} />
+          )}
+          {geoJSON && <PlaceGeoJSON />}
         </div>
-      </PlaceContext.Provider>
-    </MapContext.Provider>
+        <div className="hidden md:block w-1/2 lg:w-3/5">
+          <ClientOnly>
+            {() => (
+              <Map>
+                <MapSwitcher></MapSwitcher>
+              </Map>
+            )}
+          </ClientOnly>
+        </div>
+      </div>
+    </PlaceContext.Provider>
   );
 };
 

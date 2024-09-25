@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Links,
   Meta,
@@ -12,15 +13,19 @@ import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import { useLocation } from "react-router-dom";
 import Loading from "./components/layout/Loading";
-import type { LinksFunction } from "@remix-run/node";
 import RouteError from "./components/errorResponses/RouteError";
 import CodeError from "./components/errorResponses/CodeError";
+import { MapContext } from "./contexts";
+import type { LinksFunction } from "@remix-run/node";
+import type { Map } from "maplibre-gl";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const isHomepage = location.pathname === "/";
+  const [map, setMap] = useState<Map>();
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   return (
     <html lang="en">
@@ -36,12 +41,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </a>
         <Navbar />
         {isHomepage && <Sidebar />}
-        <main
-          className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white overflow-hidden`}
-          id="main"
-        >
-          {children}
-        </main>
+        <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
+          <main
+            className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white overflow-hidden`}
+            id="main"
+          >
+            {children}
+          </main>
+        </MapContext.Provider>
         <Loading />
         <ScrollRestoration />
         <Scripts />
