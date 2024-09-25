@@ -7,7 +7,7 @@ import type {
   TPlaceRecord,
   TRelatedPlaceRecord,
 } from "~/types";
-import type { AddLayerObject } from "maplibre-gl";
+import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import AddLayerButton from "./AddLayerButton";
 import LayerOpacity from "./LayerOpacity";
@@ -23,7 +23,8 @@ interface Props {
 
 const WMSLayer = ({ placeLayer }: Props) => {
   const { map } = useContext(MapContext);
-  const { activeLayers, place, setActiveLayers } = useContext(PlaceContext);
+  const { activeLayers, place, setActiveLayers, setLayerSources } =
+    useContext(PlaceContext);
   const [placeRecord, setPlaceRecord] = useState<TPlaceRecord>();
   const [thumbnails, setThumbnails] = useState<TCoreDataImage[]>([]);
   const [opacity, setOpacity] = useState<number>(100);
@@ -31,8 +32,13 @@ const WMSLayer = ({ placeLayer }: Props) => {
   const layerRef = useRef<AddLayerObject>();
 
   useEffect(() => {
-    setActive(Boolean(activeLayers.includes(placeLayer.uuid)));
-  }, [activeLayers, placeLayer, placeRecord]);
+    setActive(
+      Boolean(
+        layerRef.current &&
+          activeLayers.map((l) => l.id).includes(layerRef.current.id),
+      ),
+    );
+  }, [activeLayers]);
 
   useEffect(() => {
     if (!placeLayer) return;
@@ -74,18 +80,26 @@ const WMSLayer = ({ placeLayer }: Props) => {
     };
 
     if (!map.getSource(placeRecord.uuid)) {
-      map.addSource(placeRecord.uuid, {
+      const source: SourceSpecification = {
         type: "raster",
         tiles: placeRecord.place_layers.map((layer) => layer.url),
         tileSize: 256,
+      };
+      setLayerSources((layerSources) => {
+        return { ...layerSources, [placeRecord.uuid]: source };
       });
+      map.addSource(placeRecord.uuid, source);
+      console.log(
+        "🚀 ~ SOURCE ADDED:",
+        placeRecord.place_layers.map((layer) => layer.url),
+      );
     }
 
     return () => {
-      if (map?.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
-      if (map.getSource(placeRecord.uuid)) map.removeSource(placeRecord.uuid);
+      // if (map?.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
+      // if (map.getSource(placeRecord.uuid)) map.removeSource(placeRecord.uuid);
     };
-  }, [map, placeRecord, active]);
+  }, [map, placeRecord, active, setLayerSources]);
 
   useEffect(() => {
     if (active && placeRecord && map?.getLayer(placeRecord.uuid)) {
@@ -107,21 +121,21 @@ const WMSLayer = ({ placeLayer }: Props) => {
       }
 
       if (layerRef.current?.type == "raster") {
-        orderLayers(map, place.id);
+        orderLayers(map, place.id, activeLayers, "wms");
       }
     } else {
       if (map.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
     }
-  }, [map, active, place, placeLayer, placeRecord]);
+  }, [map, active, place, placeLayer, placeRecord, activeLayers]);
 
   const handleClick = () => {
-    if (placeRecord) {
-      if (activeLayers.includes(placeRecord.uuid)) {
+    if (placeRecord && layerRef.current) {
+      if (activeLayers.map((l) => l.id).includes(layerRef.current.id)) {
         setActiveLayers(
-          activeLayers.filter((layer) => layer !== placeRecord.uuid),
+          activeLayers.filter((layer) => layer.id !== layerRef.current?.id),
         );
       } else {
-        setActiveLayers([...activeLayers, placeRecord.uuid]);
+        setActiveLayers([...activeLayers, layerRef.current]);
       }
     }
   };

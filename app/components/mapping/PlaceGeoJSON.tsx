@@ -6,7 +6,7 @@ import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
 
 const PlaceGeoJSON = () => {
   const { map } = useContext(MapContext);
-  const { place, activeLayers, geoJSON, setGeoJSONSources, setGeoJSONLayers } =
+  const { place, geoJSON, setLayerSources, setActiveLayers } =
     useContext(PlaceContext);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const PlaceGeoJSON = () => {
       layout: {},
       paint: {
         "fill-color": "blue",
-        "fill-opacity": activeLayers.length > 0 ? 0 : 0.25,
+        "fill-opacity": 0.25,
       },
       filter: ["==", "$type", "Polygon"],
     };
@@ -70,12 +70,11 @@ const PlaceGeoJSON = () => {
     );
 
     map.fitBounds(bounds, { padding: 100 });
-    if (setGeoJSONSources)
-      setGeoJSONSources((geoJSONSources) => {
-        return { ...geoJSONSources, [place.id]: placeSource };
-      });
-    if (setGeoJSONLayers)
-      setGeoJSONLayers((geoJSONLayers) => {
+    setLayerSources((layerSources) => {
+      return { ...layerSources, [place.id]: placeSource };
+    });
+    if (setActiveLayers)
+      setActiveLayers((activeLayers) => {
         const newLayers = [fillLayer, outlineLayer];
         let layersToAdd: AddLayerObject[] = [];
         for (const newLayer of newLayers) {
@@ -83,11 +82,11 @@ const PlaceGeoJSON = () => {
             ...layersToAdd.filter((l) => l.id !== newLayer.id),
             newLayer,
           ];
-          if (!geoJSONLayers.map((layer) => layer.id).includes(newLayer.id))
+          if (!activeLayers.map((layer) => layer.id).includes(newLayer.id))
             layersToAdd.push(newLayer);
         }
         return [
-          ...geoJSONLayers.filter(
+          ...activeLayers.filter(
             (l) => !layersToAdd.map((a) => a.id).includes(l.id),
           ),
           ...layersToAdd,
@@ -104,7 +103,7 @@ const PlaceGeoJSON = () => {
         if (map.getSource(place.id)) map.removeSource(place.id);
       } catch {}
     };
-  }, [map, place, setGeoJSONLayers, setGeoJSONSources, activeLayers, geoJSON]);
+  }, [map, place, setActiveLayers, setLayerSources, geoJSON]);
   return null;
 };
 

@@ -11,46 +11,55 @@ import type { StyleSpecification } from "maplibre-gl";
 
 const MapSwitcher = ({ children }: { children?: ReactNode }) => {
   const { map } = useContext(MapContext);
-  const { place, geoJSONSources, geoJSONLayers, activeLayers } =
-    useContext(PlaceContext);
-  const [activeLayer, setActiveLayer] =
+  const { place, layerSources, activeLayers } = useContext(PlaceContext);
+  const [activeStyle, setActiveStyle] =
     useState<StyleSpecification>(baseWithLabels);
 
   const addLayers = useCallback(() => {
     if (!map) return;
 
-    if (geoJSONSources) {
-      for (const source of Object.keys(geoJSONSources)) {
-        if (!map.getSource(source))
-          map.addSource(source, geoJSONSources[source]);
+    if (layerSources) {
+      for (const source of Object.keys(layerSources)) {
+        if (!map.getSource(source)) map.addSource(source, layerSources[source]);
       }
     }
-    if (geoJSONLayers) {
-      for (const layer of geoJSONLayers) {
+
+    if (activeLayers) {
+      for (const layer of activeLayers) {
         if (!map.getLayer(layer.id)) map.addLayer(layer);
       }
     }
 
-    orderLayers(map, place.id, activeLayers);
-    if (map.getLayer(activeLayer.layers[activeLayer.layers.length - 1].id)) {
+    if (activeLayers) {
+      for (const layer of activeLayers) {
+        if (!map.getLayer(layer.id)) map.addLayer(layer);
+      }
+    }
+
+    orderLayers(map, place.id, activeLayers, "switcher");
+    if (map.getLayer(activeStyle.layers[activeStyle.layers.length - 1].id)) {
       // Remove the listener so it will not run again until another layer is selected.
       map.off("idle", addLayers);
     }
-  }, [map, place, geoJSONSources, geoJSONLayers, activeLayer, activeLayers]);
+  }, [map, place, layerSources, activeStyle, activeLayers]);
 
   useEffect(() => {
     if (!map) return;
     // When the style is updated, all the other layers are removed.
     // We use this listener to wait until the style has changed
     // before re-adding all the layers.
-    map.on("idle", addLayers);
 
-    map.setStyle(activeLayer);
-  }, [map, addLayers, activeLayer]);
+    if (map.getStyle().name !== activeStyle.name) {
+      console.log("🚀 ~ LISTENING TO IDLE", map);
+
+      map.once("idle", addLayers);
+      map.setStyle(activeStyle);
+    }
+  }, [map, addLayers, activeStyle]);
 
   // Use a standalone function to make sure it only updates when layer is explicitly selected.
   const handleClick = (layer: StyleSpecification) => {
-    setActiveLayer(layer);
+    setActiveStyle(layer);
   };
 
   return (
@@ -69,7 +78,7 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
           <button
             key={layer?.name?.replace(" ", "")}
             onClick={() => handleClick(layer)}
-            className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeLayer?.name === layer.name ? "bg-gray-200" : ""}`}
+            className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeStyle?.name === layer.name ? "bg-gray-200" : ""}`}
             role="menuitem"
           >
             {layer.name}

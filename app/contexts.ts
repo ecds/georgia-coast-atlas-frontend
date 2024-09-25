@@ -13,13 +13,11 @@ type TMapContext = {
 
 type TPlaceContext = {
   place: TPlaceRecord | TIslandConfig;
-  activeLayers: string[];
-  setActiveLayers: Dispatch<SetStateAction<string[]>>;
+  activeLayers: AddLayerObject[];
+  setActiveLayers: Dispatch<SetStateAction<AddLayerObject[]>>;
   geoJSON?: FeatureCollection;
-  geoJSONSources?: TPlaceSource;
-  geoJSONLayers?: AddLayerObject[];
-  setGeoJSONSources?: Dispatch<SetStateAction<TPlaceSource>>;
-  setGeoJSONLayers?: Dispatch<SetStateAction<AddLayerObject[]>>;
+  layerSources: TPlaceSource;
+  setLayerSources: Dispatch<SetStateAction<TPlaceSource>>;
 };
 
 export const MapContext = createContext<TMapContext>({
@@ -36,9 +34,15 @@ export const MapContext = createContext<TMapContext>({
 export const PlaceContext = createContext<TPlaceContext>({
   place: { id: "wolf", label: "Wolf", coreDataId: "" },
   activeLayers: [],
-  setActiveLayers: (_: SetStateAction<string[]>) => {
+  layerSources: {},
+  setActiveLayers: (_: SetStateAction<AddLayerObject[]>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?",
+    );
+  },
+  setLayerSources: (_: SetStateAction<TPlaceSource>) => {
+    console.error(
+      "setLayerSources not implemented. Did you pass it to context?",
     );
   },
 });

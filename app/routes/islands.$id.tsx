@@ -77,9 +77,8 @@ const IslandPage = () => {
   const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
   const { map, mapLoaded } = useContext(MapContext);
-  const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  const [geoJSONSources, setGeoJSONSources] = useState<TPlaceSource>({});
-  const [geoJSONLayers, setGeoJSONLayers] = useState<AddLayerObject[]>([]);
+  const [activeLayers, setActiveLayers] = useState<AddLayerObject[]>([]);
+  const [layerSources, setLayerSources] = useState<TPlaceSource>({});
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
 
@@ -105,10 +104,8 @@ const IslandPage = () => {
         activeLayers,
         setActiveLayers,
         geoJSON,
-        geoJSONSources,
-        geoJSONLayers,
-        setGeoJSONSources,
-        setGeoJSONLayers,
+        layerSources,
+        setLayerSources,
       }}
     >
       <div

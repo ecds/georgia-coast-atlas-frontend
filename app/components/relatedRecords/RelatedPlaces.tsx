@@ -23,7 +23,7 @@ interface Props {
 
 const RelatedPlaces = ({ places }: Props) => {
   const { map } = useContext(MapContext);
-  const { place, setGeoJSONSources, setGeoJSONLayers, activeLayers } =
+  const { place, setLayerSources, setActiveLayers, activeLayers } =
     useContext(PlaceContext);
   const [activePlace, setActivePlace] = useState<
     TRelatedPlaceRecord | undefined
@@ -149,13 +149,13 @@ const RelatedPlaces = ({ places }: Props) => {
       map.getCanvas().style.cursor = "";
     });
 
-    if (setGeoJSONSources)
-      setGeoJSONSources((geoJSONSources) => {
-        return { ...geoJSONSources, [`${place.id}-places`]: placesSource };
+    if (setLayerSources)
+      setLayerSources((layerSources) => {
+        return { ...layerSources, [`${place.id}-places`]: placesSource };
       });
-    if (setGeoJSONLayers)
-      if (setGeoJSONLayers)
-        setGeoJSONLayers((geoJSONLayers) => {
+    if (setActiveLayers)
+      if (setActiveLayers)
+        setActiveLayers((activeLayers) => {
           const newLayers = [clusterLayer, countLayer, unclusteredLayer];
           let layersToAdd: AddLayerObject[] = [];
           for (const newLayer of newLayers) {
@@ -165,7 +165,7 @@ const RelatedPlaces = ({ places }: Props) => {
             ];
           }
           return [
-            ...geoJSONLayers.filter(
+            ...activeLayers.filter(
               (l) => !layersToAdd.map((a) => a.id).includes(l.id),
             ),
             ...layersToAdd,
@@ -192,8 +192,8 @@ const RelatedPlaces = ({ places }: Props) => {
     place,
     handleClusterClick,
     handleUnclusteredPointClick,
-    setGeoJSONLayers,
-    setGeoJSONSources,
+    setActiveLayers,
+    setLayerSources,
     places,
   ]);
 
