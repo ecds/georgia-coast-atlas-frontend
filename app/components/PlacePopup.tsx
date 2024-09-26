@@ -68,27 +68,31 @@ const PlacePopup = ({
     };
   }, [map, place, show, zoomToFeature]);
 
-  return (
-    <div ref={popupContentRef}>
-      <h4 className="text-xl">{place.name}</h4>
-      <div
-        className="text-sm"
-        dangerouslySetInnerHTML={{
-          __html: place.description ?? "No description available",
-        }}
-      />
-      {showCloseButton && ( // Conditionally render the close button
-        <button
-          className="maplibregl-popup-close-button"
-          type="button"
-          aria-label="Close popup"
-          onClick={handleClick}
-        >
-          <FontAwesomeIcon icon={faClose} />
-        </button>
-      )}
-    </div>
-  );
+  if (map) {
+    return (
+      <div ref={popupContentRef}>
+        <h4 className="text-xl">{place.name}</h4>
+        <div
+          className="text-sm"
+          dangerouslySetInnerHTML={{
+            __html: place.description ?? "No description available",
+          }}
+        />
+        {showCloseButton && ( // Conditionally render the close button
+          <button
+            className="maplibregl-popup-close-button"
+            type="button"
+            aria-label="Close popup"
+            onClick={handleClick}
+          >
+            <FontAwesomeIcon icon={faClose} />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default PlacePopup;

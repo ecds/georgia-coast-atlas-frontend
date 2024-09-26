@@ -14,7 +14,7 @@ import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../PlacePopup";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { TRelatedPlaceRecord } from "~/types";
-import { orderLayers } from "~/utils/orderMaps";
+import { orderLayers } from "~/utils/orderLayers";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 
 interface Props {
@@ -23,8 +23,7 @@ interface Props {
 
 const RelatedPlaces = ({ places }: Props) => {
   const { map } = useContext(MapContext);
-  const { place, setLayerSources, setActiveLayers, activeLayers } =
-    useContext(PlaceContext);
+  const { place, setLayerSources, setActiveLayers } = useContext(PlaceContext);
   const [activePlace, setActivePlace] = useState<
     TRelatedPlaceRecord | undefined
   >(undefined);
@@ -172,7 +171,7 @@ const RelatedPlaces = ({ places }: Props) => {
           ];
         });
 
-    orderLayers(map, place.id, activeLayers);
+    orderLayers(map, place.id);
 
     return () => {
       try {

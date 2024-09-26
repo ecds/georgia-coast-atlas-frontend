@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { fetchPlaceRecord, fetchRelatedRecord } from "~/data/coredata";
-import { orderLayers } from "~/utils/orderMaps";
+import { orderLayers } from "~/utils/orderLayers";
 import type {
   TCoreDataImage,
   TPlaceRecord,
@@ -121,7 +121,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
       }
 
       if (layerRef.current?.type == "raster") {
-        orderLayers(map, place.id, activeLayers, "wms");
+        orderLayers(map, place.id);
       }
     } else {
       if (map.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);

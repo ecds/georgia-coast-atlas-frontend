@@ -10,8 +10,9 @@ import {
 } from "~/mapStyles";
 
 import type { ReactNode } from "react";
-import { orderLayers } from "~/utils/orderMaps";
+import { orderLayers } from "~/utils/orderLayers";
 import type { StyleSpecification } from "maplibre-gl";
+import {} from "~/mapStyles/usgsWithLabels";
 
 const MapSwitcher = ({ children }: { children?: ReactNode }) => {
   const { map } = useContext(MapContext);
@@ -40,7 +41,7 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
       }
     }
 
-    orderLayers(map, place.id, activeLayers, "switcher");
+    orderLayers(map, place.id);
     if (map.getLayer(activeStyle.layers[activeStyle.layers.length - 1].id)) {
       // Remove the listener so it will not run again until another layer is selected.
       map.off("idle", addLayers);

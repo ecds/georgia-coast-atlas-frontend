@@ -1,7 +1,7 @@
 import { WarpedMapLayer } from "@allmaps/maplibre";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import { orderLayers } from "~/utils/orderMaps";
+import { orderLayers } from "~/utils/orderLayers";
 import LayerOpacity from "./LayerOpacity";
 import type { Map } from "maplibre-gl";
 import type { TCoreDataLayer } from "~/types";
