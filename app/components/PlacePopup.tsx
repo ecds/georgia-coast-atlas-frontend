@@ -11,6 +11,7 @@ interface PopupProps {
   show: boolean;
   onClose: () => void;
   zoomToFeature?: boolean;
+  showCloseButton?: boolean; // New prop to control close button visibility
 }
 
 const PlacePopup = ({
@@ -19,6 +20,7 @@ const PlacePopup = ({
   show,
   onClose,
   zoomToFeature = true,
+  showCloseButton = true, // Defaults to showing the close button
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const popupContentRef = useRef<HTMLDivElement>(null);
@@ -66,16 +68,16 @@ const PlacePopup = ({
     };
   }, [map, place, show, zoomToFeature]);
 
-  if (map) {
-    return (
-      <div ref={popupContentRef}>
-        <h4 className="text-xl">{place.name}</h4>
-        <div
-          className="text-sm"
-          dangerouslySetInnerHTML={{
-            __html: place.description ?? "No description available",
-          }}
-        />
+  return (
+    <div ref={popupContentRef}>
+      <h4 className="text-xl">{place.name}</h4>
+      <div
+        className="text-sm"
+        dangerouslySetInnerHTML={{
+          __html: place.description ?? "No description available",
+        }}
+      />
+      {showCloseButton && ( // Conditionally render the close button
         <button
           className="maplibregl-popup-close-button"
           type="button"
@@ -84,11 +86,9 @@ const PlacePopup = ({
         >
           <FontAwesomeIcon icon={faClose} />
         </button>
-      </div>
-    );
-  }
-
-  return null;
+      )}
+    </div>
+  );
 };
 
 export default PlacePopup;
