@@ -6,8 +6,29 @@ import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
 
 const PlaceGeoJSON = () => {
   const { map } = useContext(MapContext);
-  const { place, geoJSON, setLayerSources, setActiveLayers } =
+  const { place, geoJSON, setLayerSources, setActiveLayers, activeLayers } =
     useContext(PlaceContext);
+
+  useEffect(() => {
+    if (!map) return;
+    const activeRasters = activeLayers
+      .map((layer) => layer.type)
+      .includes("raster");
+    if (map.getLayer(`${place.id}-fill`)) {
+      map.setPaintProperty(
+        `${place.id}-fill`,
+        "fill-opacity",
+        activeRasters ? 0 : 0.25,
+      );
+    }
+    if (map.getLayer(`${place.id}-outline`)) {
+      map.setPaintProperty(
+        `${place.id}-outline`,
+        "line-opacity",
+        activeRasters ? 0 : 0.5,
+      );
+    }
+  }, [map, place, activeLayers]);
 
   useEffect(() => {
     if (!map || !place || !geoJSON) return;
@@ -73,6 +94,7 @@ const PlaceGeoJSON = () => {
     setLayerSources((layerSources) => {
       return { ...layerSources, [place.id]: placeSource };
     });
+
     if (setActiveLayers)
       setActiveLayers((activeLayers) => {
         const newLayers = [fillLayer, outlineLayer];
