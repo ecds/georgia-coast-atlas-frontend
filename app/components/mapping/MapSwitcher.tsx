@@ -3,7 +3,11 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
-import { baseWithLabels, satelliteWithLabels, usgs } from "~/mapStyles";
+import {
+  baseWithLabels,
+  satelliteWithLabels,
+  usgsWithLabels,
+} from "~/mapStyles";
 
 import type { ReactNode } from "react";
 import { orderLayers } from "~/utils/orderMaps";
@@ -50,8 +54,6 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
     // before re-adding all the layers.
 
     if (map.getStyle().name !== activeStyle.name) {
-      console.log("🚀 ~ LISTENING TO IDLE", map);
-
       map.once("idle", addLayers);
       map.setStyle(activeStyle);
     }
@@ -74,7 +76,7 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
         unmount={false}
       >
         <span className="px-4 mt-2">Base Maps</span>
-        {[baseWithLabels, satelliteWithLabels, usgs].map((layer) => (
+        {[baseWithLabels, satelliteWithLabels, usgsWithLabels].map((layer) => (
           <button
             key={layer?.name?.replace(" ", "")}
             onClick={() => handleClick(layer)}

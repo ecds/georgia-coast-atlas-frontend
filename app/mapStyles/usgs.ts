@@ -16,7 +16,7 @@ export const usgs: StyleSpecification = {
     usgsImageryTopo: {
       type: "raster",
       tiles: [
-        "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}",
+        "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",
       ],
       tileSize: 256,
       attribution:
