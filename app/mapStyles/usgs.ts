@@ -27,17 +27,6 @@ export const usgs: StyleSpecification = {
   glyphs: labels.glyphs,
   layers: [
     {
-      id: "background",
-      type: "background",
-      maxzoom: 0,
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "background-color": "#f8f4f0",
-      },
-    },
-    {
       id: "usgsImageryTopo",
       type: "raster",
       source: "usgsImageryTopo",

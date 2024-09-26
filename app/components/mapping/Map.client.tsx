@@ -2,7 +2,7 @@ import maplibregl from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
 import { topBarHeight } from "~/config";
-import { baseWithLabels } from "~/mapStyles";
+import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
 
@@ -27,7 +27,7 @@ const Map = ({ children }: Props) => {
     try {
       _map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: baseWithLabels,
+        style: combined,
         center: [-81.40348956381558, 31.41113196761974],
         zoom: 9,
         maxPitch: 0,
