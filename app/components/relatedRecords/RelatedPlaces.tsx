@@ -3,7 +3,6 @@ import type {
   MapLayerMouseEvent,
   GeoJSONSource,
   SourceSpecification,
-  AddLayerObject,
 } from "maplibre-gl";
 import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
@@ -152,24 +151,24 @@ const RelatedPlaces = ({ places }: Props) => {
       setLayerSources((layerSources) => {
         return { ...layerSources, [`${place.id}-places`]: placesSource };
       });
-    if (setActiveLayers)
-      if (setActiveLayers)
-        setActiveLayers((activeLayers) => {
-          const newLayers = [clusterLayer, countLayer, unclusteredLayer];
-          let layersToAdd: AddLayerObject[] = [];
-          for (const newLayer of newLayers) {
-            layersToAdd = [
-              ...layersToAdd.filter((l) => l.id !== newLayer.id),
-              newLayer,
-            ];
-          }
-          return [
-            ...activeLayers.filter(
-              (l) => !layersToAdd.map((a) => a.id).includes(l.id),
-            ),
-            ...layersToAdd,
-          ];
-        });
+    // if (setActiveLayers)
+    //   if (setActiveLayers)
+    //     setActiveLayers((activeLayers) => {
+    //       const newLayers = [clusterLayer, countLayer, unclusteredLayer];
+    //       let layersToAdd: AddLayerObject[] = [];
+    //       for (const newLayer of newLayers) {
+    //         layersToAdd = [
+    //           ...layersToAdd.filter((l) => l.id !== newLayer.id),
+    //           newLayer,
+    //         ];
+    //       }
+    //       return [
+    //         ...activeLayers.filter(
+    //           (l) => !layersToAdd.map((a) => a.id).includes(l.id),
+    //         ),
+    //         ...layersToAdd,
+    //       ];
+    //     });
 
     orderLayers(map, place.id);
 

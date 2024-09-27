@@ -468,14 +468,10 @@ export type TPlaceSource = {
   [key: string]: SourceSpecification;
 };
 
-// export type TActiveLayer = {
-//   [key: string]: TCoreDataLayer;
-// };
+export type TBaseStyleName = "default" | "satellite" | "usgs";
 
-// export type TPlaceMap = {
-//   name: {
-//     name: TTopoName | string;
-//     primary: boolean;
-//   };
-//   layers: TLayer[];
-// };
+export type TBaseStyle = {
+  name: TBaseStyleName;
+  label: string;
+  layers: string[];
+};

@@ -5,3 +5,4 @@ export * from "./labels";
 export * from "./baseWithLabels";
 export * from "./usgs";
 export * from "./usgsWithLabels";
+export * from "./combined";

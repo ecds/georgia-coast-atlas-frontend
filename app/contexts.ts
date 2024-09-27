@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { AddLayerObject, Map } from "maplibre-gl";
+import type { Map } from "maplibre-gl";
 import type { TIslandConfig, TPlaceRecord, TPlaceSource } from "./types";
 import type { FeatureCollection } from "geojson";
 
@@ -13,8 +13,8 @@ type TMapContext = {
 
 type TPlaceContext = {
   place: TPlaceRecord | TIslandConfig;
-  activeLayers: AddLayerObject[];
-  setActiveLayers: Dispatch<SetStateAction<AddLayerObject[]>>;
+  activeLayers: string[];
+  setActiveLayers: Dispatch<SetStateAction<string[]>>;
   geoJSON?: FeatureCollection;
   layerSources: TPlaceSource;
   setLayerSources: Dispatch<SetStateAction<TPlaceSource>>;
@@ -35,7 +35,7 @@ export const PlaceContext = createContext<TPlaceContext>({
   place: { id: "wolf", label: "Wolf", coreDataId: "" },
   activeLayers: [],
   layerSources: {},
-  setActiveLayers: (_: SetStateAction<AddLayerObject[]>) => {
+  setActiveLayers: (_: SetStateAction<string[]>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?",
     );

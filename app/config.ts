@@ -1,4 +1,5 @@
-import type { TCoreDataRelatedEndpoints } from "./types";
+import { base, satellite, usgs } from "./mapStyles";
+import type { TBaseStyle, TCoreDataRelatedEndpoints } from "./types";
 
 export const islands = [
   {
@@ -149,31 +150,21 @@ export const keys = {
   coreDataProject: 1,
 };
 
-export const mapLayers = [
+export const mapLayers: TBaseStyle[] = [
   {
-    id: "google-satellite",
-    label: "Google Satellite",
-    type: "raster",
-    tiles: ["https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"],
-    attribution: "© Google",
+    name: "default",
+    label: "Default",
+    layers: base.layers.map((layer) => layer.id),
   },
   {
-    id: "usgs-topo",
-    label: "USGS Topo",
-    type: "raster",
-    tiles: [
-      "https://basemap.nationalmap.gov/arcgis/services/USGSTopo/MapServer/WMSServer?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=0&styles=default",
-    ],
-    attribution: "© USGS",
+    name: "satellite",
+    label: "Satellite",
+    layers: satellite.layers.map((layer) => layer.id),
   },
   {
-    id: "atlmaps",
-    label: "ATLMaps",
-    type: "raster",
-    tiles: [
-      "https://geoserver.ecds.emory.edu/ATLMaps/gwc/service/wms?layers=ATLMaps:r9jps&service=WMS&request=GetMap&styles=&format=image/png&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}",
-    ],
-    attribution: "© ATLMaps",
+    name: "usgs",
+    label: "USGS",
+    layers: usgs.layers.map((layer) => layer.id),
   },
 ];
 

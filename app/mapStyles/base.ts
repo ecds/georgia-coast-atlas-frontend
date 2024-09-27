@@ -3,7 +3,6 @@ import type { StyleSpecification } from "maplibre-gl";
 export const base: StyleSpecification = {
   version: 8,
   name: "Default",
-  id: "poo",
   metadata: {
     id: "default",
     "mapbox:autocomposite": false,
@@ -22,24 +21,8 @@ export const base: StyleSpecification = {
       type: "vector",
       url: "https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
     },
-    hillshading: {
-      type: "raster",
-      url: "https://api.maptiler.com/tiles/hillshade/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
-      tileSize: 256,
-    },
-    contours: {
-      type: "vector",
-      url: "https://api.maptiler.com/tiles/contours/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
-    },
   },
   layers: [
-    {
-      id: "background",
-      type: "background",
-      paint: {
-        "background-color": "hsl(47, 26%, 88%)",
-      },
-    },
     {
       id: "landuse-residential",
       type: "fill",
@@ -47,43 +30,29 @@ export const base: StyleSpecification = {
       "source-layer": "landuse",
       filter: [
         "all",
-        ["==", "$type", "Polygon"],
-        ["==", "class", "residential"],
+        ["==", ["geometry-type"], "Polygon"],
+        ["==", ["get", "class"], "residential"],
       ],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "fill-color": "hsl(47, 13%, 86%)",
-        "fill-opacity": 0.7,
-      },
+      layout: { visibility: "visible" },
+      paint: { "fill-color": "hsl(47,13%,86%)", "fill-opacity": 0.7 },
     },
     {
       id: "landcover_grass",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "landcover",
-      filter: ["==", "class", "grass"],
-      paint: {
-        "fill-color": "hsl(82, 46%, 72%)",
-        "fill-opacity": 0.45,
-      },
+      filter: ["==", ["get", "class"], "grass"],
+      paint: { "fill-color": "hsl(82,46%,72%)", "fill-opacity": 0.45 },
     },
     {
       id: "landcover_wood",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "landcover",
-      filter: ["==", "class", "wood"],
+      filter: ["==", ["get", "class"], "wood"],
       paint: {
-        "fill-color": "hsl(82, 46%, 72%)",
-        "fill-opacity": {
-          base: 1,
-          stops: [
-            [8, 0.6],
-            [22, 1],
-          ],
-        },
+        "fill-color": "hsl(82,46%,72%)",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.6, 22, 1],
       },
     },
     {
@@ -91,43 +60,27 @@ export const base: StyleSpecification = {
       type: "fill",
       source: "openmaptiles",
       "source-layer": "park",
-      paint: {
-        "fill-color": "rgba(192, 216, 151, 0.53)",
-        "fill-opacity": 1,
-      },
+      paint: { "fill-color": "rgba(192, 216, 151, 0.53)", "fill-opacity": 1 },
     },
     {
       id: "landcover-ice-shelf",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "landcover",
-      filter: ["==", "subclass", "ice_shelf"],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "fill-color": "hsl(47, 26%, 88%)",
-        "fill-opacity": 0.8,
-      },
+      filter: ["==", ["get", "subclass"], "ice_shelf"],
+      layout: { visibility: "visible" },
+      paint: { "fill-color": "hsl(47,26%,88%)", "fill-opacity": 0.8 },
     },
     {
       id: "landcover-glacier",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "landcover",
-      filter: ["==", "subclass", "glacier"],
-      layout: {
-        visibility: "visible",
-      },
+      filter: ["==", ["get", "subclass"], "glacier"],
+      layout: { visibility: "visible" },
       paint: {
-        "fill-color": "hsl(47, 22%, 94%)",
-        "fill-opacity": {
-          base: 1,
-          stops: [
-            [0, 1],
-            [8, 0.5],
-          ],
-        },
+        "fill-color": "hsl(47,22%,94%)",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 0, 1, 8, 0.5],
       },
     },
     {
@@ -136,7 +89,7 @@ export const base: StyleSpecification = {
       metadata: {},
       source: "openmaptiles",
       "source-layer": "landcover",
-      filter: ["all", ["in", "class", "sand"]],
+      filter: ["match", ["get", "class"], ["sand"], true, false],
       paint: {
         "fill-antialias": false,
         "fill-color": "rgba(232, 214, 38, 1)",
@@ -144,53 +97,23 @@ export const base: StyleSpecification = {
       },
     },
     {
-      id: "hillshading",
-      type: "raster",
-      source: "hillshading",
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "raster-contrast": 0,
-        "raster-fade-duration": 300,
-        "raster-opacity": {
-          base: 0.5,
-          stops: [
-            [3, 0],
-            [5, 0.15],
-            [12, 0.15],
-          ],
-        },
-      },
-    },
-    {
       id: "landuse",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "landuse",
-      filter: ["==", "class", "agriculture"],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "fill-color": "#eae0d0",
-      },
+      filter: ["==", ["get", "class"], "agriculture"],
+      layout: { visibility: "visible" },
+      paint: { "fill-color": "#eae0d0" },
     },
     {
       id: "landuse_overlay_national_park",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "landcover",
-      filter: ["==", "class", "national_park"],
+      filter: ["==", ["get", "class"], "national_park"],
       paint: {
         "fill-color": "#E1EBB0",
-        "fill-opacity": {
-          base: 1,
-          stops: [
-            [5, 0],
-            [9, 0.75],
-          ],
-        },
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0, 9, 0.75],
       },
     },
     {
@@ -205,44 +128,16 @@ export const base: StyleSpecification = {
       },
     },
     {
-      id: "contour_index",
-      type: "line",
-      source: "contours",
-      "source-layer": "contour",
-      filter: ["all", [">", "height", 0], ["in", "nth_line", 10, 5]],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "line-color": "hsl(0, 1%, 58%)",
-        "line-opacity": 0.4,
-        "line-width": 1.1,
-      },
-    },
-    {
-      id: "contour",
-      type: "line",
-      source: "contours",
-      "source-layer": "contour",
-      filter: ["all", ["!in", "nth_line", 10, 5], [">", "height", 0]],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "line-color": "hsl(0, 1%, 58%)",
-        "line-opacity": 0.3,
-        "line-width": 0.6,
-      },
-    },
-    {
       id: "water",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "water",
-      filter: ["all", ["==", "$type", "Polygon"], ["!=", "brunnel", "tunnel"]],
-      paint: {
-        "fill-color": "hsl(205, 56%, 73%)",
-      },
+      filter: [
+        "all",
+        ["==", ["geometry-type"], "Polygon"],
+        ["!=", ["get", "brunnel"], "tunnel"],
+      ],
+      paint: { "fill-color": "hsl(205,56%,73%)" },
     },
     {
       id: "waterway-tunnel",
@@ -251,26 +146,23 @@ export const base: StyleSpecification = {
       "source-layer": "waterway",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["==", "brunnel", "tunnel"],
+        ["==", ["geometry-type"], "LineString"],
+        ["==", ["get", "brunnel"], "tunnel"],
       ],
       paint: {
-        "line-color": "hsl(205, 56%, 73%)",
+        "line-color": "hsl(205,56%,73%)",
         "line-dasharray": [3, 3],
-        "line-gap-width": {
-          stops: [
-            [12, 0],
-            [20, 6],
-          ],
-        },
+        "line-gap-width": ["interpolate", ["linear"], ["zoom"], 12, 0, 20, 6],
         "line-opacity": 1,
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [8, 1],
-            [20, 2],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          8,
+          1,
+          20,
+          2,
+        ],
       },
     },
     {
@@ -280,19 +172,21 @@ export const base: StyleSpecification = {
       "source-layer": "waterway",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["!in", "brunnel", "tunnel", "bridge"],
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
       ],
       paint: {
-        "line-color": "hsl(205, 56%, 73%)",
+        "line-color": "hsl(205,56%,73%)",
         "line-opacity": 1,
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [8, 1],
-            [20, 8],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          8,
+          1,
+          20,
+          8,
+        ],
       },
     },
     {
@@ -303,24 +197,15 @@ export const base: StyleSpecification = {
       minzoom: 0,
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["==", "brunnel", "tunnel"],
-        ["==", "class", "transit"],
+        ["==", ["geometry-type"], "LineString"],
+        ["==", ["get", "brunnel"], "tunnel"],
+        ["==", ["get", "class"], "transit"],
       ],
-      layout: {
-        "line-cap": "butt",
-        "line-join": "miter",
-      },
+      layout: { "line-cap": "butt", "line-join": "miter" },
       paint: {
-        "line-color": "hsl(34, 12%, 66%)",
+        "line-color": "hsl(34,12%,66%)",
         "line-dasharray": [3, 3],
-        "line-opacity": {
-          base: 1,
-          stops: [
-            [11, 0],
-            [16, 1],
-          ],
-        },
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
       },
     },
     {
@@ -329,15 +214,9 @@ export const base: StyleSpecification = {
       source: "openmaptiles",
       "source-layer": "building",
       paint: {
-        "fill-color": "hsl(39, 41%, 86%)",
-        "fill-opacity": {
-          base: 1,
-          stops: [
-            [13, 0.6],
-            [14, 1],
-          ],
-        },
-        "fill-outline-color": "hsl(36, 45%, 80%)",
+        "fill-color": "hsl(39,41%,86%)",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.6, 14, 1],
+        "fill-outline-color": "hsl(36,45%,80%)",
       },
     },
     {
@@ -346,14 +225,13 @@ export const base: StyleSpecification = {
       metadata: {},
       source: "openmaptiles",
       "source-layer": "transportation",
-      filter: ["all", ["==", "$type", "Polygon"], ["==", "class", "pier"]],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "fill-antialias": true,
-        "fill-color": "hsl(47, 26%, 88%)",
-      },
+      filter: [
+        "all",
+        ["==", ["geometry-type"], "Polygon"],
+        ["==", ["get", "class"], "pier"],
+      ],
+      layout: { visibility: "visible" },
+      paint: { "fill-antialias": true, "fill-color": "hsl(47,26%,88%)" },
     },
     {
       id: "road_pier",
@@ -361,20 +239,23 @@ export const base: StyleSpecification = {
       metadata: {},
       source: "openmaptiles",
       "source-layer": "transportation",
-      filter: ["all", ["==", "$type", "LineString"], ["in", "class", "pier"]],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      filter: [
+        "all",
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "class"], ["pier"], true, false],
+      ],
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": "hsl(47, 26%, 88%)",
-        "line-width": {
-          base: 1.2,
-          stops: [
-            [15, 1],
-            [17, 4],
-          ],
-        },
+        "line-color": "hsl(47,26%,88%)",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.2],
+          ["zoom"],
+          15,
+          1,
+          17,
+          4,
+        ],
       },
     },
     {
@@ -382,12 +263,13 @@ export const base: StyleSpecification = {
       type: "fill",
       source: "openmaptiles",
       "source-layer": "transportation",
-      filter: ["all", ["==", "$type", "Polygon"], ["in", "brunnel", "bridge"]],
+      filter: [
+        "all",
+        ["==", ["geometry-type"], "Polygon"],
+        ["match", ["get", "brunnel"], ["bridge"], true, false],
+      ],
       layout: {},
-      paint: {
-        "fill-color": "hsl(47, 26%, 88%)",
-        "fill-opacity": 0.5,
-      },
+      paint: { "fill-color": "hsl(47,26%,88%)", "fill-opacity": 0.5 },
     },
     {
       id: "road_path",
@@ -396,23 +278,22 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["in", "class", "path", "track"],
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "class"], ["path", "track"], true, false],
       ],
-      layout: {
-        "line-cap": "square",
-        "line-join": "bevel",
-      },
+      layout: { "line-cap": "square", "line-join": "bevel" },
       paint: {
-        "line-color": "hsl(0, 0%, 97%)",
+        "line-color": "hsl(0,0%,97%)",
         "line-dasharray": [1, 1],
-        "line-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 10],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          10,
+        ],
       },
     },
     {
@@ -422,22 +303,21 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["in", "class", "minor", "service"],
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "class"], ["minor", "service"], true, false],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": "hsl(0, 0%, 97%)",
-        "line-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
+        "line-color": "hsl(0,0%,97%)",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -447,23 +327,26 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["all", ["==", "brunnel", "tunnel"], ["==", "class", "minor_road"]],
+        ["==", ["geometry-type"], "LineString"],
+        [
+          "all",
+          ["==", ["get", "brunnel"], "tunnel"],
+          ["==", ["get", "class"], "minor_road"],
+        ],
       ],
-      layout: {
-        "line-cap": "butt",
-        "line-join": "miter",
-      },
+      layout: { "line-cap": "butt", "line-join": "miter" },
       paint: {
         "line-color": "#efefef",
         "line-dasharray": [0.36, 0.18],
-        "line-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -473,27 +356,32 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
+        ["==", ["geometry-type"], "LineString"],
         [
           "all",
-          ["==", "brunnel", "tunnel"],
-          ["in", "class", "primary", "secondary", "tertiary", "trunk"],
+          ["==", ["get", "brunnel"], "tunnel"],
+          [
+            "match",
+            ["get", "class"],
+            ["primary", "secondary", "tertiary", "trunk"],
+            true,
+            false,
+          ],
         ],
       ],
-      layout: {
-        "line-cap": "butt",
-        "line-join": "miter",
-      },
+      layout: { "line-cap": "butt", "line-join": "miter" },
       paint: {
         "line-color": "#fff",
         "line-dasharray": [0.28, 0.14],
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [6, 0.5],
-            [20, 30],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          6,
+          0.5,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -503,22 +391,21 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["in", "class", "trunk", "primary"],
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "class"], ["primary", "trunk"], true, false],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
         "line-color": "#fff",
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [6, 0.5],
-            [20, 30],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          6,
+          0.5,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -528,22 +415,21 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["in", "class", "secondary", "tertiary"],
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "class"], ["secondary", "tertiary"], true, false],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
         "line-color": "#fff",
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [6, 0.5],
-            [20, 20],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          6,
+          0.5,
+          20,
+          20,
+        ],
       },
     },
     {
@@ -553,23 +439,22 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["==", "class", "motorway"],
+        ["==", ["geometry-type"], "LineString"],
+        ["==", ["get", "class"], "motorway"],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": "hsl(0, 0%, 100%)",
+        "line-color": "hsl(0,0%,100%)",
         "line-offset": 0,
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [8, 1],
-            [16, 10],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          8,
+          1,
+          16,
+          10,
+        ],
       },
     },
     {
@@ -577,19 +462,15 @@ export const base: StyleSpecification = {
       type: "line",
       source: "openmaptiles",
       "source-layer": "transportation",
-      filter: ["all", ["==", "class", "transit"], ["!=", "brunnel", "tunnel"]],
-      layout: {
-        visibility: "visible",
-      },
+      filter: [
+        "all",
+        ["==", ["get", "class"], "transit"],
+        ["!=", ["get", "brunnel"], "tunnel"],
+      ],
+      layout: { visibility: "visible" },
       paint: {
-        "line-color": "hsl(34, 12%, 66%)",
-        "line-opacity": {
-          base: 1,
-          stops: [
-            [11, 0],
-            [16, 1],
-          ],
-        },
+        "line-color": "hsl(34,12%,66%)",
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
       },
     },
     {
@@ -597,19 +478,11 @@ export const base: StyleSpecification = {
       type: "line",
       source: "openmaptiles",
       "source-layer": "transportation",
-      filter: ["==", "class", "rail"],
-      layout: {
-        visibility: "visible",
-      },
+      filter: ["==", ["get", "class"], "rail"],
+      layout: { visibility: "visible" },
       paint: {
-        "line-color": "hsl(34, 12%, 66%)",
-        "line-opacity": {
-          base: 1,
-          stops: [
-            [11, 0],
-            [16, 1],
-          ],
-        },
+        "line-color": "hsl(34,12%,66%)",
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
       },
     },
     {
@@ -619,29 +492,30 @@ export const base: StyleSpecification = {
       "source-layer": "waterway",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["==", "brunnel", "bridge"],
+        ["==", ["geometry-type"], "LineString"],
+        ["==", ["get", "brunnel"], "bridge"],
       ],
-      layout: {
-        "line-cap": "butt",
-        "line-join": "miter",
-      },
+      layout: { "line-cap": "butt", "line-join": "miter" },
       paint: {
         "line-color": "#bbbbbb",
-        "line-gap-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
-        "line-width": {
-          base: 1.6,
-          stops: [
-            [12, 0.5],
-            [20, 10],
-          ],
-        },
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0.5,
+          20,
+          10,
+        ],
       },
     },
     {
@@ -651,22 +525,21 @@ export const base: StyleSpecification = {
       "source-layer": "waterway",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["==", "brunnel", "bridge"],
+        ["==", ["geometry-type"], "LineString"],
+        ["==", ["get", "brunnel"], "bridge"],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": "hsl(205, 56%, 73%)",
-        "line-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
+        "line-color": "hsl(205,56%,73%)",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -676,29 +549,34 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["all", ["==", "brunnel", "bridge"], ["==", "class", "minor_road"]],
+        ["==", ["geometry-type"], "LineString"],
+        [
+          "all",
+          ["==", ["get", "brunnel"], "bridge"],
+          ["==", ["get", "class"], "minor_road"],
+        ],
       ],
-      layout: {
-        "line-cap": "butt",
-        "line-join": "miter",
-      },
+      layout: { "line-cap": "butt", "line-join": "miter" },
       paint: {
         "line-color": "#dedede",
-        "line-gap-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
-        "line-width": {
-          base: 1.6,
-          stops: [
-            [12, 0.5],
-            [20, 10],
-          ],
-        },
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0.5,
+          20,
+          10,
+        ],
       },
     },
     {
@@ -708,33 +586,40 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
+        ["==", ["geometry-type"], "LineString"],
         [
           "all",
-          ["==", "brunnel", "bridge"],
-          ["in", "class", "primary", "secondary", "tertiary", "trunk"],
+          ["==", ["get", "brunnel"], "bridge"],
+          [
+            "match",
+            ["get", "class"],
+            ["primary", "secondary", "tertiary", "trunk"],
+            true,
+            false,
+          ],
         ],
       ],
-      layout: {
-        "line-cap": "butt",
-        "line-join": "miter",
-      },
+      layout: { "line-cap": "butt", "line-join": "miter" },
       paint: {
         "line-color": "#dedede",
-        "line-gap-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
-        "line-width": {
-          base: 1.6,
-          stops: [
-            [12, 0.5],
-            [20, 10],
-          ],
-        },
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0.5,
+          20,
+          10,
+        ],
       },
     },
     {
@@ -744,22 +629,25 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
-        ["all", ["==", "brunnel", "bridge"], ["==", "class", "minor_road"]],
+        ["==", ["geometry-type"], "LineString"],
+        [
+          "all",
+          ["==", ["get", "brunnel"], "bridge"],
+          ["==", ["get", "class"], "minor_road"],
+        ],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
         "line-color": "#efefef",
-        "line-width": {
-          base: 1.55,
-          stops: [
-            [4, 0.25],
-            [20, 30],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.55],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -769,26 +657,31 @@ export const base: StyleSpecification = {
       "source-layer": "transportation",
       filter: [
         "all",
-        ["==", "$type", "LineString"],
+        ["==", ["geometry-type"], "LineString"],
         [
           "all",
-          ["==", "brunnel", "bridge"],
-          ["in", "class", "primary", "secondary", "tertiary", "trunk"],
+          ["==", ["get", "brunnel"], "bridge"],
+          [
+            "match",
+            ["get", "class"],
+            ["primary", "secondary", "tertiary", "trunk"],
+            true,
+            false,
+          ],
         ],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
         "line-color": "#fff",
-        "line-width": {
-          base: 1.4,
-          stops: [
-            [6, 0.5],
-            [20, 30],
-          ],
-        },
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.4],
+          ["zoom"],
+          6,
+          0.5,
+          20,
+          30,
+        ],
       },
     },
     {
@@ -796,14 +689,9 @@ export const base: StyleSpecification = {
       type: "line",
       source: "openmaptiles",
       "source-layer": "boundary",
-      filter: ["in", "admin_level", 4, 6, 8],
-      layout: {
-        visibility: "visible",
-      },
-      paint: {
-        "line-color": "hsl(0, 0%, 76%)",
-        "line-dasharray": [2, 1],
-      },
+      filter: ["match", ["get", "admin_level"], [4, 6, 8], true, false],
+      layout: { visibility: "visible" },
+      paint: { "line-color": "hsl(0,0%,76%)", "line-dasharray": [2, 1] },
     },
     {
       id: "admin_country_z0-4",
@@ -813,23 +701,22 @@ export const base: StyleSpecification = {
       maxzoom: 5,
       filter: [
         "all",
-        ["<=", "admin_level", 2],
-        ["==", "$type", "LineString"],
-        ["!has", "claimed_by"],
+        ["<=", ["get", "admin_level"], 2],
+        ["==", ["geometry-type"], "LineString"],
+        ["!", ["has", "claimed_by"]],
       ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": "hsla(0, 8%, 22%, 0.51)",
-        "line-width": {
-          base: 1.3,
-          stops: [
-            [3, 0.5],
-            [22, 15],
-          ],
-        },
+        "line-color": "hsla(0,8%,22%,0.51)",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.3],
+          ["zoom"],
+          3,
+          0.5,
+          22,
+          15,
+        ],
       },
     },
     {
@@ -838,20 +725,23 @@ export const base: StyleSpecification = {
       source: "openmaptiles",
       "source-layer": "boundary",
       minzoom: 5,
-      filter: ["all", ["<=", "admin_level", 2], ["==", "$type", "LineString"]],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
+      filter: [
+        "all",
+        ["<=", ["get", "admin_level"], 2],
+        ["==", ["geometry-type"], "LineString"],
+      ],
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": "hsla(0, 8%, 22%, 0.51)",
-        "line-width": {
-          base: 1.3,
-          stops: [
-            [3, 0.5],
-            [22, 15],
-          ],
-        },
+        "line-color": "hsla(0,8%,22%,0.51)",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.3],
+          ["zoom"],
+          3,
+          0.5,
+          22,
+          15,
+        ],
       },
     },
   ],

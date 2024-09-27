@@ -57,8 +57,7 @@ const RelatedTopoQuads = ({ quads }: Props) => {
   }, [quadRecords]);
 
   const removeFromActiveLayers = (id: string) => {
-    console.log("🚀 ~ removeFromActiveLayers ~ id:", id);
-    setActiveLayers(activeLayers.filter((l) => l.id !== id));
+    setActiveLayers(activeLayers.filter((l) => l !== id));
   };
 
   const handleClick = (layer: TCoreDataLayer, isActive: boolean) => {
@@ -69,16 +68,13 @@ const RelatedTopoQuads = ({ quads }: Props) => {
       const otherVersion = visibleLayers.find(
         (l) => l.placeName === layer.placeName,
       );
-      if (
-        otherVersion &&
-        activeLayers.map((l) => l.id).includes(otherVersion.id)
-      )
+      if (otherVersion && activeLayers.map((l) => l).includes(otherVersion.id))
         removeFromActiveLayers(otherVersion.id);
       setVisibleLayers([
         ...visibleLayers.filter((l) => l.placeName !== layer.placeName),
         layer,
       ]);
-      // setActiveLayers([...activeLayers, layer.id]);
+      setActiveLayers([...activeLayers, layer.id]);
     }
   };
 

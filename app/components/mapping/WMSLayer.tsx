@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { fetchPlaceRecord, fetchRelatedRecord } from "~/data/coredata";
-import { orderLayers } from "~/utils/orderLayers";
 import type {
   TCoreDataImage,
   TPlaceRecord,
@@ -32,12 +31,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
   const layerRef = useRef<AddLayerObject>();
 
   useEffect(() => {
-    setActive(
-      Boolean(
-        layerRef.current &&
-          activeLayers.map((l) => l.id).includes(layerRef.current.id),
-      ),
-    );
+    if (layerRef.current) setActive(activeLayers.includes(layerRef.current.id));
   }, [activeLayers]);
 
   useEffect(() => {
@@ -89,16 +83,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
         return { ...layerSources, [placeRecord.uuid]: source };
       });
       map.addSource(placeRecord.uuid, source);
-      console.log(
-        "🚀 ~ SOURCE ADDED:",
-        placeRecord.place_layers.map((layer) => layer.url),
-      );
     }
-
-    return () => {
-      // if (map?.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
-      // if (map.getSource(placeRecord.uuid)) map.removeSource(placeRecord.uuid);
-    };
   }, [map, placeRecord, active, setLayerSources]);
 
   useEffect(() => {
@@ -113,15 +98,12 @@ const WMSLayer = ({ placeLayer }: Props) => {
     if (active && placeRecord) {
       if (map && layerRef.current && !map.getLayer(placeRecord.uuid)) {
         map.addLayer(layerRef.current);
+        map.moveLayer(layerRef.current.id, `${place.id}-outline`);
         const layerBounds = bbox(placeLayer.place_geometry.geometry_json);
         const newBounds = map
           .getBounds()
           .extend(layerBounds as [number, number, number, number]);
         map.fitBounds(newBounds, { padding: 20 });
-      }
-
-      if (layerRef.current?.type == "raster") {
-        orderLayers(map, place.id);
       }
     } else {
       if (map.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
@@ -130,12 +112,12 @@ const WMSLayer = ({ placeLayer }: Props) => {
 
   const handleClick = () => {
     if (placeRecord && layerRef.current) {
-      if (activeLayers.map((l) => l.id).includes(layerRef.current.id)) {
+      if (activeLayers.includes(layerRef.current.id)) {
         setActiveLayers(
-          activeLayers.filter((layer) => layer.id !== layerRef.current?.id),
+          activeLayers.filter((layer) => layer !== layerRef.current?.id),
         );
       } else {
-        setActiveLayers([...activeLayers, layerRef.current]);
+        setActiveLayers([...activeLayers, layerRef.current.id]);
       }
     }
   };
