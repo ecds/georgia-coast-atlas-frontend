@@ -4,12 +4,17 @@ import { MapContext } from "~/contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { mapLayers } from "~/config";
-import {} from "~/mapStyles/usgsWithLabels";
 import type { ReactNode } from "react";
+import type { TBaseStyleName } from "~/types";
+import { labels } from "~/mapStyles";
 
-const MapSwitcher = ({ children }: { children?: ReactNode }) => {
+const defaultLabelColor = "#000000"
+const rasterLabelColor = "hsl(25.71deg 63.64% 97.84%)"
+const labelLayers = labels.layers.filter((layer) => layer.id.includes("label"))
+
+const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
   const { map } = useContext(MapContext);
-  const [activeStyle, setActiveStyle] = useState<string>("default");
+  const [activeStyle, setActiveStyle] = useState<TBaseStyleName>("default");
 
   useEffect(() => {
     if (!map) return;
@@ -22,6 +27,25 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
         style.layers.forEach((layer) =>
           map.setLayoutProperty(layer, "visibility", "none"),
         );
+      }
+
+      switch (activeStyle) {
+        case "default":
+          for (const label of labelLayers) {
+            map.setPaintProperty(label.id, "text-color", defaultLabelColor)
+            map.setPaintProperty(label.id, "text-halo-color", rasterLabelColor)
+          }
+          break
+        case "satellite":
+        case "usgs":
+          for (const label of labelLayers) {
+            map.setPaintProperty(label.id, "text-color", rasterLabelColor)
+            map.setPaintProperty(label.id, "text-halo-color", defaultLabelColor)
+          }
+          break;
+
+        default:
+          break;
       }
     }
   }, [map, activeStyle]);
@@ -42,10 +66,10 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
           <button
             key={layer?.name?.replace(" ", "")}
             onClick={() => setActiveStyle(layer.name)}
-            className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left uppercase ${activeStyle === layer.name ? "bg-gray-200" : ""}`}
+            className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${activeStyle === layer.name ? "bg-gray-200" : ""}`}
             role="menuitem"
           >
-            {layer.name}
+            {layer.label}
           </button>
         ))}
         {children}
@@ -54,4 +78,4 @@ const MapSwitcher = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export default MapSwitcher;
+export default StyleSwitcher;

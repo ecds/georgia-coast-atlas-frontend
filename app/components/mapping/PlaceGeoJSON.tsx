@@ -11,9 +11,7 @@ const PlaceGeoJSON = () => {
 
   useEffect(() => {
     if (!map) return;
-    const activeRasters = activeLayers
-      .map((layer) => layer.type)
-      .includes("raster");
+    const activeRasters = activeLayers.length > 0;
     if (map.getLayer(`${place.id}-fill`)) {
       map.setPaintProperty(
         `${place.id}-fill`,
@@ -94,26 +92,6 @@ const PlaceGeoJSON = () => {
     setLayerSources((layerSources) => {
       return { ...layerSources, [place.id]: placeSource };
     });
-
-    if (setActiveLayers)
-      setActiveLayers((activeLayers) => {
-        const newLayers = [fillLayer, outlineLayer];
-        let layersToAdd: AddLayerObject[] = [];
-        for (const newLayer of newLayers) {
-          layersToAdd = [
-            ...layersToAdd.filter((l) => l.id !== newLayer.id),
-            newLayer,
-          ];
-          if (!activeLayers.map((layer) => layer.id).includes(newLayer.id))
-            layersToAdd.push(newLayer);
-        }
-        return [
-          ...activeLayers.filter(
-            (l) => !layersToAdd.map((a) => a.id).includes(l.id),
-          ),
-          ...layersToAdd,
-        ];
-      });
 
     return () => {
       try {

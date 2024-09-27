@@ -1,7 +1,6 @@
 import { WarpedMapLayer } from "@allmaps/maplibre";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import { orderLayers } from "~/utils/orderLayers";
 import LayerOpacity from "./LayerOpacity";
 import type { Map } from "maplibre-gl";
 import type { TCoreDataLayer } from "~/types";
@@ -20,10 +19,10 @@ interface Props {
 
 const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
   const { map, mapLoaded } = useContext(MapContext);
-  const { place } = useContext(PlaceContext);
+  const { place, setActiveLayers } = useContext(PlaceContext);
   const [opacity, setOpacity] = useState<number>(100);
   const loaded = useRef<boolean>(false);
-  const layerRef = useRef<WarpedMapLayer>();
+  const layerRef = useRef<WarpedMapLayer>(new WarpedMapLayer());
   const mapRef = useRef<Map>();
 
   useEffect(() => {
@@ -39,11 +38,16 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
   }, [mapLoaded, map, layer]);
 
   useEffect(() => {
-    const addLayer = async () => {
+    const addWarpedLayer = async () => {
       if (!layerRef.current || !layerRef.current.renderer || !map) return;
       await layerRef.current.addGeoreferenceAnnotationByUrl(
         `https://dev.georgiacoastatlas.org/iiif/annotation-geo/${layer.name}/${layer.placeName?.replaceAll(" ", "_") ?? ""}`,
       );
+      if (setActiveLayers)
+        setActiveLayers((activeLayers) => [
+          ...activeLayers,
+          layerRef.current.id,
+        ]);
 
       const currentBounds = map.getBounds();
       const imageBounds = layerRef.current.getBounds();
@@ -64,7 +68,7 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
         mapRef.current.addLayer(layerRef.current);
         mapRef.current.on("allrequestedtilesloaded", () => {
           if (mapRef.current && layerRef.current) {
-            orderLayers(mapRef.current, place.id);
+            // orderLayers(mapRef.current, place.id);
             mapRef.current.moveLayer(
               layerRef.current.id,
               `${place.id}-outline`,
@@ -72,7 +76,7 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
           }
         });
       }
-      addLayer();
+      addWarpedLayer();
     }
 
     if (!show) clearLayer();
@@ -80,7 +84,7 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
     return () => {
       clearLayer();
     };
-  }, [show, layer, place, map]);
+  }, [show, layer, place, map, setActiveLayers]);
 
   useEffect(() => {
     if (layerRef.current?.renderer) layerRef.current.setOpacity(opacity * 0.01);

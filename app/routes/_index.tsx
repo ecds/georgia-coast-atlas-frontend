@@ -12,7 +12,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import IntroModal from "~/components/layout/IntroModal";
-import MapSwitcher from "~/components/mapping/MapSwitcher";
+import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 
 export const loader: LoaderFunction = async () => {
   const islandDataPromises = islands.map((island) =>
@@ -128,7 +128,7 @@ export default function Index() {
       <ClientOnly>
         {() => (
           <Map>
-            <MapSwitcher />
+            <StyleSwitcher />
           </Map>
         )}
       </ClientOnly>

@@ -22,7 +22,7 @@ import { topBarHeight } from "~/config";
 import { MapContext } from "~/contexts";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
-import MapSwitcher from "~/components/mapping/MapSwitcher";
+import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
@@ -108,7 +108,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
               <ClientOnly>
                 {() => (
                   <Map>
-                    <MapSwitcher />
+                    <StyleSwitcher />
                   </Map>
                 )}
               </ClientOnly>

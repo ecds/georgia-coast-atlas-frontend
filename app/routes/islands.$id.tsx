@@ -15,7 +15,7 @@ import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
 import RelatedPhotographs from "~/components/relatedRecords/RelatedPhotographs";
-import MapSwitcher from "~/components/mapping/MapSwitcher";
+import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
@@ -32,7 +32,6 @@ import Heading from "~/components/layout/Heading";
 import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
-import type { AddLayerObject } from "maplibre-gl";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const island = islands.find((i) => params.id == `${i.id}`);
@@ -77,7 +76,7 @@ const IslandPage = () => {
   const { island, wpData, place, geoJSON, maps, ...related } =
     useLoaderData<TIslandClientData>();
   const { map, mapLoaded } = useContext(MapContext);
-  const [activeLayers, setActiveLayers] = useState<AddLayerObject[]>([]);
+  const [activeLayers, setActiveLayers] = useState<string[]>([]);
   const [layerSources, setLayerSources] = useState<TPlaceSource>({});
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
@@ -150,7 +149,7 @@ const IslandPage = () => {
           <ClientOnly>
             {() => (
               <Map>
-                <MapSwitcher></MapSwitcher>
+                <StyleSwitcher></StyleSwitcher>
               </Map>
             )}
           </ClientOnly>

@@ -20,7 +20,7 @@ export const combined: StyleSpecification = {
         visibility: "visible",
       },
       paint: {
-        "background-color": "#f8f4f0",
+        "background-color": "rgb(123 162 141)",
       },
     },
     ...base.layers,

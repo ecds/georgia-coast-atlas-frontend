@@ -1,5 +1,5 @@
 import { base, satellite, usgs } from "./mapStyles";
-import type { TCoreDataRelatedEndpoints } from "./types";
+import type { TBaseStyle, TCoreDataRelatedEndpoints } from "./types";
 
 export const islands = [
   {
@@ -150,17 +150,20 @@ export const keys = {
   coreDataProject: 1,
 };
 
-export const mapLayers = [
+export const mapLayers: TBaseStyle[] = [
   {
     name: "default",
+    label: "Default",
     layers: base.layers.map((layer) => layer.id),
   },
   {
     name: "satellite",
+    label: "Satellite",
     layers: satellite.layers.map((layer) => layer.id),
   },
   {
     name: "usgs",
+    label: "USGS",
     layers: usgs.layers.map((layer) => layer.id),
   },
 ];

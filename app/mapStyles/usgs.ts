@@ -32,7 +32,7 @@ export const usgs: StyleSpecification = {
       source: "usgsImageryTopo",
       maxzoom: 20,
       layout: {
-        visibility: "visible",
+        visibility: "none",
       },
     },
   ],

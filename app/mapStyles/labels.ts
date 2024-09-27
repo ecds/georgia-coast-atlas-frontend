@@ -88,10 +88,10 @@ export const labels: StyleSpecification = {
         visibility: "visible",
       },
       paint: {
-        "text-color": "#666",
-        "text-halo-blur": 1,
-        "text-halo-color": "rgba(255,255,255,0.75)",
-        "text-halo-width": 1,
+        "text-color": "hsl(0,10%,25%)",
+        "text-halo-blur": 0,
+        "text-halo-color": "hsl(0,0%,100%)",
+        "text-halo-width": 1.5,
       },
     },
     {
@@ -242,7 +242,7 @@ export const labels: StyleSpecification = {
         "text-color": "hsl(0,10%,25%)",
         "text-halo-blur": 0,
         "text-halo-color": "hsl(0,0%,100%)",
-        "text-halo-width": 2,
+        "text-halo-width": 1,
       },
     },
     {
