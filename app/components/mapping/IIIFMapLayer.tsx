@@ -41,7 +41,7 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
     const addWarpedLayer = async () => {
       if (!layerRef.current || !layerRef.current.renderer || !map) return;
       await layerRef.current.addGeoreferenceAnnotationByUrl(
-        `https://dev.georgiacoastatlas.org/iiif/annotation-geo/${layer.name}/${layer.placeName?.replaceAll(" ", "_") ?? ""}`,
+        `https://dev.georgiacoastatlas.org/iiif/annotation-geo/${layer.name}/${layer.placeName?.replaceAll(" ", "_") ?? ""}`
       );
       if (setActiveLayers)
         setActiveLayers((activeLayers) => [
@@ -71,7 +71,7 @@ const IIIFMapLayer = ({ layer, show, onClick }: Props) => {
             // orderLayers(mapRef.current, place.id);
             mapRef.current.moveLayer(
               layerRef.current.id,
-              `${place.id}-outline`,
+              `${place.uuid}-outline`
             );
           }
         });

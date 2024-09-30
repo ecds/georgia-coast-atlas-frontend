@@ -1,29 +1,32 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
+import { pulsingDot } from "~/utils/pulsingDot";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
+import PlacePopup from "../PlacePopup";
 
 const PlaceGeoJSON = () => {
   const { map } = useContext(MapContext);
   const { place, geoJSON, setLayerSources, setActiveLayers, activeLayers } =
     useContext(PlaceContext);
+  const [showPopup, setShowPopup] = useState<boolean>(true);
 
   useEffect(() => {
     if (!map) return;
     const activeRasters = activeLayers.length > 0;
-    if (map.getLayer(`${place.id}-fill`)) {
+    if (map.getLayer(`${place.uuid}-fill`)) {
       map.setPaintProperty(
-        `${place.id}-fill`,
+        `${place.uuid}-fill`,
         "fill-opacity",
-        activeRasters ? 0 : 0.25,
+        activeRasters ? 0 : 0.25
       );
     }
-    if (map.getLayer(`${place.id}-outline`)) {
+    if (map.getLayer(`${place.uuid}-outline`)) {
       map.setPaintProperty(
-        `${place.id}-outline`,
+        `${place.uuid}-outline`,
         "line-opacity",
-        activeRasters ? 0 : 0.5,
+        activeRasters ? 0 : 0.5
       );
     }
   }, [map, place, activeLayers]);
@@ -40,14 +43,14 @@ const PlaceGeoJSON = () => {
       data: geoJSON,
     };
 
-    if (!map.getSource(`${place.id}`)) {
-      map.addSource(place.id, placeSource);
+    if (!map.getSource(`${place.uuid}`)) {
+      map.addSource(place.uuid, placeSource);
     }
 
     const fillLayer: AddLayerObject = {
-      id: `${place.id}-fill`,
+      id: `${place.uuid}-fill`,
       type: "fill",
-      source: place.id,
+      source: place.uuid,
       layout: {},
       paint: {
         "fill-color": "blue",
@@ -60,10 +63,31 @@ const PlaceGeoJSON = () => {
       map.addLayer(fillLayer, firstSymbolId);
     }
 
+    if (!map.getImage("pulsing-dot")) {
+      const dot = pulsingDot(map);
+      if (dot) {
+        map.addImage("pulsing-dot", dot, { pixelRatio: 2 });
+      }
+    }
+
+    const pointLayer: AddLayerObject = {
+      id: `${place.uuid}-point`,
+      type: "symbol",
+      source: `${place.uuid}`,
+      filter: ["==", "$type", "Point"],
+      layout: {
+        "icon-image": "pulsing-dot",
+      },
+    };
+
+    if (!map.getLayer(pointLayer.id)) {
+      map.addLayer(pointLayer);
+    }
+
     const outlineLayer: AddLayerObject = {
-      id: `${place.id}-outline`,
+      id: `${place.uuid}-outline`,
       type: "line",
-      source: place.id,
+      source: place.uuid,
       layout: {
         "line-join": "round",
         "line-cap": "round",
@@ -85,10 +109,10 @@ const PlaceGeoJSON = () => {
     }
 
     const bounds = new LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number],
+      bbox(geoJSON) as [number, number, number, number]
     );
 
-    map.fitBounds(bounds, { padding: 100 });
+    map.fitBounds(bounds, { maxZoom: 15 });
     setLayerSources((layerSources) => {
       return { ...layerSources, [place.id]: placeSource };
     });
@@ -96,15 +120,23 @@ const PlaceGeoJSON = () => {
     return () => {
       try {
         if (!map) return;
-        if (map.getLayer(`${place.id}-fill`))
-          map.removeLayer(`${place.id}-fill`);
-        if (map.getLayer(`${place.id}-outline`))
-          map.removeLayer(`${place.id}-outline`);
+        if (map.getLayer(`${place.uuid}-fill`))
+          map.removeLayer(`${place.uuid}-fill`);
+        if (map.getLayer(`${place.uuid}-outline`))
+          map.removeLayer(`${place.uuid}-outline`);
         if (map.getSource(place.id)) map.removeSource(place.id);
       } catch {}
     };
   }, [map, place, setActiveLayers, setLayerSources, geoJSON]);
-  return null;
+
+  return (
+    <PlacePopup
+      map={map}
+      place={place}
+      show={showPopup}
+      onClose={() => setShowPopup(false)}
+    />
+  );
 };
 
 export default PlaceGeoJSON;

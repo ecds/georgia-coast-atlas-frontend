@@ -32,12 +32,12 @@ const RelatedPlaces = ({ places }: Props) => {
       if (!e.features || !e.features.length) return;
       const feature = e.features[0];
       const clickedPlace = places.find(
-        (place) => place.identifier === feature.properties.identifier,
+        (place) => place.identifier === feature.properties.identifier
       );
 
       setActivePlace(clickedPlace);
     },
-    [places],
+    [places]
   );
 
   const handleClusterClick = useCallback(
@@ -69,7 +69,7 @@ const RelatedPlaces = ({ places }: Props) => {
         }
       }
     },
-    [map, place],
+    [map, place]
   );
 
   useEffect(() => {
@@ -78,13 +78,13 @@ const RelatedPlaces = ({ places }: Props) => {
     const geoJSON = toFeatureCollection(places);
 
     const bounds = new LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number],
+      bbox(geoJSON) as [number, number, number, number]
     );
 
     // Extend the island bounds if related places are beyond the island bounds.
     const newBounds = map.getBounds().extend(bounds);
 
-    map.fitBounds(newBounds, { padding: 100 });
+    map.fitBounds(newBounds, { maxZoom: 14 });
 
     if (!map.getImage("pulsing-dot")) {
       const dot = pulsingDot(map);
@@ -151,24 +151,6 @@ const RelatedPlaces = ({ places }: Props) => {
       setLayerSources((layerSources) => {
         return { ...layerSources, [`${place.id}-places`]: placesSource };
       });
-    // if (setActiveLayers)
-    //   if (setActiveLayers)
-    //     setActiveLayers((activeLayers) => {
-    //       const newLayers = [clusterLayer, countLayer, unclusteredLayer];
-    //       let layersToAdd: AddLayerObject[] = [];
-    //       for (const newLayer of newLayers) {
-    //         layersToAdd = [
-    //           ...layersToAdd.filter((l) => l.id !== newLayer.id),
-    //           newLayer,
-    //         ];
-    //       }
-    //       return [
-    //         ...activeLayers.filter(
-    //           (l) => !layersToAdd.map((a) => a.id).includes(l.id),
-    //         ),
-    //         ...layersToAdd,
-    //       ];
-    //     });
 
     orderLayers(map, place.id);
 

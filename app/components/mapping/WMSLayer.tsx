@@ -49,7 +49,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
     const fetchRelatedMediaRecord = async () => {
       const record = await fetchRelatedRecord(
         placeLayer.uuid,
-        "media_contents",
+        "media_contents"
       );
       if (record && !ignore) setThumbnails(record.media_contents);
     };
@@ -98,7 +98,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
     if (active && placeRecord) {
       if (map && layerRef.current && !map.getLayer(placeRecord.uuid)) {
         map.addLayer(layerRef.current);
-        map.moveLayer(layerRef.current.id, `${place.id}-outline`);
+        map.moveLayer(layerRef.current.id, `${place.uuid}-outline`);
         const layerBounds = bbox(placeLayer.place_geometry.geometry_json);
         const newBounds = map
           .getBounds()
@@ -114,7 +114,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
     if (placeRecord && layerRef.current) {
       if (activeLayers.includes(layerRef.current.id)) {
         setActiveLayers(
-          activeLayers.filter((layer) => layer !== layerRef.current?.id),
+          activeLayers.filter((layer) => layer !== layerRef.current?.id)
         );
       } else {
         setActiveLayers([...activeLayers, layerRef.current.id]);

@@ -6,6 +6,7 @@ interface Props {
 }
 
 const FeaturedMedium = ({ record }: Props) => {
+  if (!record.items || !record.media_contents) return null;
   if (record.items?.videos) {
     return <VideoEmbed video={record.items.videos[0]} />;
   }

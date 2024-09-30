@@ -5,14 +5,16 @@ import { pulsingDot } from "~/utils/pulsingDot";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 import { modelFieldUUIDs } from "~/config";
 import PlacePopup from "~/components/PlacePopup";
-import type { TPlaceRecord } from "~/types";
+import type { Geometry, TPlaceRecord } from "~/types";
 import type { MapLayerMouseEvent } from "maplibre-gl";
 
 const GeoSearch = () => {
   const { map, mapLoaded } = useContext(MapContext);
   const { refine } = useGeoSearch();
   const { renderState } = useInstantSearch();
-  const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(undefined);
+  const [activePlace, setActivePlace] = useState<TPlaceRecord | undefined>(
+    undefined
+  );
 
   const handleBoundsChange = useCallback(() => {
     if (!mapLoaded || !map) return;
@@ -62,7 +64,8 @@ const GeoSearch = () => {
 
       const feature = e.features[0];
       const clickedHit = hits.find(
-        (hit) => hit[modelFieldUUIDs.identifier] === feature.properties.identifier
+        (hit) =>
+          hit[modelFieldUUIDs.identifier] === feature.properties.identifier
       );
 
       if (clickedHit) {
@@ -73,7 +76,7 @@ const GeoSearch = () => {
           place_names: clickedHit.place_names || [],
           place_layers: clickedHit.place_layers || [],
           web_identifiers: clickedHit.web_identifiers || [],
-          place_geometry: { geometry_json: clickedHit.geometry } || null,
+          place_geometry: { geometry_json: clickedHit.geometry as Geometry },
           user_defined: clickedHit.user_defined || false,
           identifier: clickedHit[modelFieldUUIDs.identifier],
           iiif_manifest: clickedHit.iiif_manifest || null,
@@ -123,7 +126,6 @@ const GeoSearch = () => {
           place={activePlace}
           show={Boolean(activePlace)}
           onClose={() => setActivePlace(undefined)}
-          showCloseButton={false} // Hides the close button in GeoSearch
         />
       )}
     </>
