@@ -42,6 +42,7 @@ type SearchProps = {
 };
 
 const Search = ({ serverState, serverUrl }: SearchProps) => {
+  console.log("🚀 ~ Search ~ serverState:", serverState);
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
