@@ -5,7 +5,7 @@ import { ClearRefinements, RefinementList } from "react-instantsearch";
 import { modelFieldUUIDs } from "~/config";
 import type { RefinementListClassNames } from "node_modules/react-instantsearch/dist/es/ui/RefinementList";
 
-const RefinementListClassNames: Partial<RefinementListClassNames> = {
+const refinementListClassNames: Partial<RefinementListClassNames> = {
   checkbox:
     "me-2 group size-3 rounded border bg-white data-[checked]:bg-blue-500",
   count:
@@ -41,7 +41,7 @@ const FacetMenu = () => {
         <MenuSection className="mb-4 pb-4 border-b-2">
           <RefinementList
             attribute={`${modelFieldUUIDs.types}.name_facet`}
-            classNames={RefinementListClassNames}
+            classNames={refinementListClassNames}
             sortBy={["count:desc"]}
             showMore
             showMoreLimit={200}
@@ -51,7 +51,7 @@ const FacetMenu = () => {
         <MenuSection>
           <RefinementList
             attribute={`${modelFieldUUIDs.county}.names_facet`}
-            classNames={RefinementListClassNames}
+            classNames={refinementListClassNames}
             sortBy={["name:asc"]}
             operator="and"
           />

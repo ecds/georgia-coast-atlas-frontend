@@ -1,6 +1,6 @@
 // FIXME: This is a known issue: https://github.com/typesense/typesense-instantsearch-adapter/issues/199
 import TypesenseInstantSearchAdapterExport from "typesense-instantsearch-adapter";
-import { keys } from "~/config";
+import { keys, modelFieldUUIDs } from "~/config";
 
 export const TypesenseInstantSearchAdapter =
   // @ts-ignore
@@ -25,10 +25,9 @@ export const typesenseInstantSearchAdapter = new TypesenseInstantSearchAdapter({
   //  So you can pass any parameters supported by the search endpoint below.
   //  query_by is required.
   additionalSearchParameters: {
-    query_by: "name,names",
+    query_by: "*",
     collection: "gca",
-    facet_by: "*",
-    max_facet_values: 20,
+    facet_by: `${modelFieldUUIDs.county}.names_facet,${modelFieldUUIDs.types}.name_facet`,
     per_page: 25,
   },
 });
