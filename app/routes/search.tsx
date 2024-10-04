@@ -7,6 +7,7 @@ import {
   HitsPerPage,
   InstantSearchSSRProvider,
   getServerState,
+  InfiniteHits,
 } from "react-instantsearch";
 import { searchClient } from "~/utils/typesense-adapter";
 import Map from "~/components/mapping/Map.client";
@@ -23,6 +24,7 @@ import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import type { Map as TMap } from "maplibre-gl";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
+import SearchResults from "~/components/search/SearchResults.client";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
@@ -42,10 +44,8 @@ type SearchProps = {
 };
 
 const Search = ({ serverState, serverUrl }: SearchProps) => {
-  console.log("🚀 ~ Search ~ serverState:", serverState);
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-
   return (
     <InstantSearchSSRProvider {...serverState}>
       <MapContext.Provider
@@ -77,10 +77,12 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
           >
             <div className="col-span-1 overflow-auto">
               <SearchForm />
-              <Hits
+              {/* <InfiniteHits
                 hitComponent={SearchResult}
                 classNames={{ root: "px-8 overflow-auto" }}
-              />
+                cache={cache}
+              /> */}
+              <ClientOnly>{() => <SearchResults />}</ClientOnly>
               <Pagination
                 className="mt-4"
                 classNames={{
@@ -88,7 +90,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
                   item: "grow bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded text-center",
                 }}
               />
-              <HitsPerPage
+              {/* <HitsPerPage
                 className="p-4 mb-4"
                 items={[
                   { label: "25 results per page", value: 25, default: true },
@@ -103,7 +105,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
                   select:
                     "bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded",
                 }}
-              />
+              /> */}
             </div>
             <div className="col-span-2">
               <ClientOnly>

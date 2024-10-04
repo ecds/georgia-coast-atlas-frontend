@@ -1,20 +1,33 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItems, MenuSection } from "@headlessui/react";
-import { ClearRefinements, RefinementList } from "react-instantsearch";
-import { modelFieldUUIDs } from "~/config";
+import {
+  ClearRefinements,
+  RefinementList,
+  useRefinementList,
+} from "react-instantsearch";
+import { modelFieldUUIDs, PLACE_TYPES } from "~/config";
 import type { RefinementListClassNames } from "node_modules/react-instantsearch/dist/es/ui/RefinementList";
 
-const refinementListClassNames: Partial<RefinementListClassNames> = {
-  checkbox:
-    "me-2 group size-3 rounded border bg-white data-[checked]:bg-blue-500",
-  count:
-    "bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded",
-  item: "py-2 font-light text-sm",
-  selectedItem: "font-semibold",
+const refinementListClassNames = (type: string) => {
+  console.log("🚀 ~ refinementListClassNames ~ type:", type);
+  const classNames: Partial<RefinementListClassNames> = {
+    checkbox:
+      "me-2 group size-3 rounded border bg-white data-[checked]:bg-blue-500",
+    count:
+      "bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded",
+    item: `py-2 font-light text-sm bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"}`,
+    selectedItem: "font-semibold",
+  };
+  return classNames;
 };
 
 const FacetMenu = () => {
+  const { items, toggleShowMore, isShowingMore } = useRefinementList({
+    attribute: `${modelFieldUUIDs.types}.name_facet`,
+    showMore: true,
+    showMoreLimit: Object.keys(PLACE_TYPES).length + 1,
+  });
   return (
     <Menu>
       <MenuButton className="w-full h-14 bg-blue-100 text-blue-800 font-medium mx-2 px-2.5 py-0.5 rounded">
@@ -39,19 +52,38 @@ const FacetMenu = () => {
           />
         </MenuSection>
         <MenuSection className="mb-4 pb-4 border-b-2">
-          <RefinementList
+          {/* <RefinementList
             attribute={`${modelFieldUUIDs.types}.name_facet`}
-            classNames={refinementListClassNames}
+            classNames={refinementListClassNames(
+              `${modelFieldUUIDs.types}.name_facet`
+            )}
             sortBy={["count:desc"]}
             showMore
             showMoreLimit={200}
             operator="and"
-          />
+          /> */}
+          <ul>
+            {items.map((type) => {
+              return (
+                <li
+                  key={type.value}
+                  className={`p-1 my-2 rounded-md bg-${PLACE_TYPES[type.value]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type.value]?.textColor ?? "green-800"} flex`}
+                >
+                  <input type="checkbox" className="ml-2 mr-4" />
+                  <span className="block">{type.label}</span>
+                  <span className="block ml-4">{type.count}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <button onClick={toggleShowMore}>
+            {isShowingMore ? "show less" : "shwo more"}
+          </button>
         </MenuSection>
         <MenuSection>
           <RefinementList
             attribute={`${modelFieldUUIDs.county}.names_facet`}
-            classNames={refinementListClassNames}
+            classNames={refinementListClassNames("Pond")}
             sortBy={["name:asc"]}
             operator="and"
           />

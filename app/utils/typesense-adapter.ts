@@ -28,7 +28,9 @@ export const typesenseInstantSearchAdapter = new TypesenseInstantSearchAdapter({
     query_by: "*",
     collection: "gca",
     facet_by: `${modelFieldUUIDs.county}.names_facet,${modelFieldUUIDs.types}.name_facet`,
-    per_page: 25,
+    per_page: 250,
+    include_fields: `${modelFieldUUIDs.description},${modelFieldUUIDs.types},geometry,name,uuid`,
+    use_cache: true,
   },
 });
 

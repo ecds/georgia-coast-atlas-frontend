@@ -31,7 +31,7 @@ const GeoSearch = () => {
   }, [map, mapLoaded, handleBoundsChange]);
 
   useEffect(() => {
-    const hits = renderState.gca?.hits?.items;
+    const hits = renderState.gca?.infiniteHits?.items;
     if (!mapLoaded || !map || !hits) return;
 
     if (!map.getImage("pulsing-dot")) {
@@ -41,27 +41,46 @@ const GeoSearch = () => {
       }
     }
 
-    if (map.getLayer("hits")) map.removeLayer("hits");
-    if (map.getSource("hits")) map.removeSource("hits");
+    // if (map.getLayer("hits")) map.removeLayer("hits");
+    // if (map.getSource("hits")) map.removeSource("hits");
+
+    const geoJSON = hitsToFeatureCollection(hits);
 
     map.addSource("hits", {
       type: "geojson",
-      data: hitsToFeatureCollection(hits),
+      data: geoJSON,
+      cluster: true,
+      clusterRadius: 6,
     });
 
     map.addLayer({
       id: "hits",
-      type: "symbol",
+      type: "circle",
       source: "hits",
-      layout: {
-        "icon-image": "pulsing-dot",
+      filter: ["has", "point_count"],
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["number", ["get", "point_count"], 1],
+          0,
+          8,
+          20,
+          28,
+        ],
+        "circle-stroke-width": 1,
+        "circle-color": [
+          "case",
+          ["boolean", ["feature-state", "hover"], false],
+          "#3b62ff",
+          "#ff623b",
+        ],
+        "circle-stroke-color": "#8d260c",
       },
-      filter: ["==", "$type", "Point"],
     });
 
     const handleUnclusteredPointClick = (e: MapLayerMouseEvent) => {
       if (!e.features || !e.features.length) return;
-
       const feature = e.features[0];
       const clickedHit = hits.find(
         (hit) =>
@@ -69,20 +88,19 @@ const GeoSearch = () => {
       );
 
       if (clickedHit) {
-        const clickedPlace: TPlaceRecord = {
-          uuid: clickedHit.uuid,
-          name: clickedHit.name,
-          description: clickedHit.description,
-          place_names: clickedHit.place_names || [],
-          place_layers: clickedHit.place_layers || [],
-          web_identifiers: clickedHit.web_identifiers || [],
-          place_geometry: { geometry_json: clickedHit.geometry as Geometry },
-          user_defined: clickedHit.user_defined || false,
-          identifier: clickedHit[modelFieldUUIDs.identifier],
-          iiif_manifest: clickedHit.iiif_manifest || null,
-        };
-
-        setActivePlace(clickedPlace);
+        // const clickedPlace: TPlaceRecord = {
+        //   uuid: clickedHit.uuid,
+        //   name: clickedHit.name,
+        //   description: clickedHit.description,
+        //   place_names: clickedHit.place_names || [],
+        //   place_layers: clickedHit.place_layers || [],
+        //   web_identifiers: clickedHit.web_identifiers || [],
+        //   place_geometry: { geometry_json: clickedHit.geometry as Geometry },
+        //   user_defined: clickedHit.user_defined || false,
+        //   identifier: clickedHit[modelFieldUUIDs.identifier],
+        //   iiif_manifest: clickedHit.iiif_manifest || null,
+        // };
+        // setActivePlace(clickedPlace);
       }
     };
 

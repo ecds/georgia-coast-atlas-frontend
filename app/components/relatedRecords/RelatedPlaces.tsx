@@ -45,6 +45,7 @@ const RelatedPlaces = ({ places }: Props) => {
       if (!map) return;
       const features = map.queryRenderedFeatures(e.point, {
         layers: [`${place.uuid}-clusters`],
+        layers: [`${place.uuid}-clusters`],
       });
       if (
         features.length > 0 &&
@@ -52,6 +53,7 @@ const RelatedPlaces = ({ places }: Props) => {
         features[0].geometry
       ) {
         const clusterId = features[0].properties.cluster_id;
+        const source = map.getSource(`${place.uuid}-places`) as GeoJSONSource;
         const source = map.getSource(`${place.uuid}-places`) as GeoJSONSource;
         if (source) {
           try {
@@ -97,14 +99,17 @@ const RelatedPlaces = ({ places }: Props) => {
       type: "geojson",
       data: geoJSON,
       cluster: true,
-      clusterMaxZoom: 14,
-      clusterRadius: 50,
+      // clusterMaxZoom: 14,
+      // clusterRadius: 50,
     };
 
     if (map.getSource(`${place.uuid}-places`)) {
       map.removeSource(`${place.uuid}-places`);
+    if (map.getSource(`${place.uuid}-places`)) {
+      map.removeSource(`${place.uuid}-places`);
     }
 
+    map.addSource(`${place.uuid}-places`, placesSource);
     map.addSource(`${place.uuid}-places`, placesSource);
 
     const clusterLayer = cluster(place.uuid);
@@ -114,11 +119,13 @@ const RelatedPlaces = ({ places }: Props) => {
     }
 
     const countLayer = clusterCount(place.uuid);
+    const countLayer = clusterCount(place.uuid);
 
     if (!map.getLayer(countLayer.id)) {
       map.addLayer(countLayer);
     }
 
+    const unclusteredLayer = singlePoint(place.uuid);
     const unclusteredLayer = singlePoint(place.uuid);
 
     if (!map.getLayer(unclusteredLayer.id)) {
@@ -150,8 +157,10 @@ const RelatedPlaces = ({ places }: Props) => {
     if (setLayerSources)
       setLayerSources((layerSources) => {
         return { ...layerSources, [`${place.uuid}-places`]: placesSource };
+        return { ...layerSources, [`${place.uuid}-places`]: placesSource };
       });
 
+    orderLayers(map, place.uuid);
     orderLayers(map, place.uuid);
 
     return () => {
@@ -161,6 +170,8 @@ const RelatedPlaces = ({ places }: Props) => {
         if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
         if (map.getLayer(unclusteredLayer.id))
           map.removeLayer(unclusteredLayer.id);
+        if (map.getSource(`${place.uuid}-places`))
+          map.removeSource(`${place.uuid}-places`);
         if (map.getSource(`${place.uuid}-places`))
           map.removeSource(`${place.uuid}-places`);
         map.off("click", clusterLayer.id, handleClusterClick);

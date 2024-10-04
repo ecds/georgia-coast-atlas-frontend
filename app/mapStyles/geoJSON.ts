@@ -8,16 +8,23 @@ export const cluster = (id: string) => {
     source: `${id}-places`,
     filter: ["has", "point_count"],
     paint: {
-      "circle-color": [
-        "step",
-        ["get", "point_count"],
-        "#51bbd6",
-        100,
-        "#f1f075",
-        750,
-        "#f28cb1",
+      "circle-radius": [
+        "interpolate",
+        ["linear"],
+        ["number", ["get", "point_count"], 1],
+        0,
+        4,
+        10,
+        14,
       ],
-      "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+      "circle-stroke-width": 1,
+      "circle-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        "#3b62ff",
+        "#ff623b",
+      ],
+      "circle-stroke-color": "#8d260c",
     },
   };
   return layer;
