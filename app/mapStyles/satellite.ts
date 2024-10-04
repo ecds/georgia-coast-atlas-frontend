@@ -22,8 +22,7 @@ export const satellite: StyleSpecification = {
       maxzoom: 18,
     },
   },
-  glyphs:
-    "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=uXfXuebPlkoPXiY3TPcv",
+  glyphs: "https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf",
   layers: [
     {
       id: "ortoEsri",
