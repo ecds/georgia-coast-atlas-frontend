@@ -12,18 +12,18 @@ const PlaceGeoJSON = () => {
   useEffect(() => {
     if (!map) return;
     const activeRasters = activeLayers.length > 0;
-    if (map.getLayer(`${place.id}-fill`)) {
+    if (map.getLayer(`${place.uuid}-fill`)) {
       map.setPaintProperty(
-        `${place.id}-fill`,
+        `${place.uuid}-fill`,
         "fill-opacity",
-        activeRasters ? 0 : 0.25,
+        activeRasters ? 0 : 0.25
       );
     }
-    if (map.getLayer(`${place.id}-outline`)) {
+    if (map.getLayer(`${place.uuid}-outline`)) {
       map.setPaintProperty(
-        `${place.id}-outline`,
+        `${place.uuid}-outline`,
         "line-opacity",
-        activeRasters ? 0 : 0.5,
+        activeRasters ? 0 : 0.5
       );
     }
   }, [map, place, activeLayers]);
@@ -40,14 +40,14 @@ const PlaceGeoJSON = () => {
       data: geoJSON,
     };
 
-    if (!map.getSource(`${place.id}`)) {
-      map.addSource(place.id, placeSource);
+    if (!map.getSource(`${place.uuid}`)) {
+      map.addSource(place.uuid, placeSource);
     }
 
     const fillLayer: AddLayerObject = {
-      id: `${place.id}-fill`,
+      id: `${place.uuid}-fill`,
       type: "fill",
-      source: place.id,
+      source: place.uuid,
       layout: {},
       paint: {
         "fill-color": "blue",
@@ -61,9 +61,9 @@ const PlaceGeoJSON = () => {
     }
 
     const outlineLayer: AddLayerObject = {
-      id: `${place.id}-outline`,
+      id: `${place.uuid}-outline`,
       type: "line",
-      source: place.id,
+      source: place.uuid,
       layout: {
         "line-join": "round",
         "line-cap": "round",
@@ -80,27 +80,27 @@ const PlaceGeoJSON = () => {
       map.addLayer(outlineLayer);
     }
 
-    if (map.getLayer(`${place.id}-clusters`)) {
-      map.moveLayer(outlineLayer.id, `${place.id}-clusters`);
+    if (map.getLayer(`${place.uuid}-clusters`)) {
+      map.moveLayer(outlineLayer.id, `${place.uuid}-clusters`);
     }
 
     const bounds = new LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number],
+      bbox(geoJSON) as [number, number, number, number]
     );
 
     map.fitBounds(bounds, { padding: 100 });
     setLayerSources((layerSources) => {
-      return { ...layerSources, [place.id]: placeSource };
+      return { ...layerSources, [place.uuid]: placeSource };
     });
 
     return () => {
       try {
         if (!map) return;
-        if (map.getLayer(`${place.id}-fill`))
-          map.removeLayer(`${place.id}-fill`);
-        if (map.getLayer(`${place.id}-outline`))
-          map.removeLayer(`${place.id}-outline`);
-        if (map.getSource(place.id)) map.removeSource(place.id);
+        if (map.getLayer(`${place.uuid}-fill`))
+          map.removeLayer(`${place.uuid}-fill`);
+        if (map.getLayer(`${place.uuid}-outline`))
+          map.removeLayer(`${place.uuid}-outline`);
+        if (map.getSource(place.uuid)) map.removeSource(place.uuid);
       } catch {}
     };
   }, [map, place, setActiveLayers, setLayerSources, geoJSON]);

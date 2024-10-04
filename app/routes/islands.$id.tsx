@@ -45,7 +45,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   const place = await fetchPlaceRecord(island?.coreDataId);
   const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.id}-island`,
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.id}-island`
   );
 
   const wpData: TWordPressData[] = await wpResponse.json();
@@ -58,7 +58,7 @@ export const clientLoader = async ({
 }: ClientLoaderFunctionArgs) => {
   const serverData = await serverLoader<TIslandServerData>();
   const relatedRecords: TRelatedCoreDataRecords = await fetchRelatedRecords(
-    serverData.island.coreDataId,
+    serverData.island.coreDataId
   );
 
   const geoJSON = toFeatureCollection([serverData.place]);
@@ -99,7 +99,7 @@ const IslandPage = () => {
   return (
     <PlaceContext.Provider
       value={{
-        place: island,
+        place,
         activeLayers,
         setActiveLayers,
         geoJSON,
