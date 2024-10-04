@@ -1,6 +1,7 @@
 import type { AddLayerObject } from "maplibre-gl";
 
 export const cluster = (id: string) => {
+  console.log("🚀 ~ cluster ~ id:", id);
   const layer: AddLayerObject = {
     id: `${id}-clusters`,
     type: "circle",
@@ -30,7 +31,7 @@ export const clusterCount = (id: string) => {
     filter: ["has", "point_count"],
     layout: {
       "text-field": "{point_count_abbreviated}",
-      "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+      "text-font": ["Noto Sans Regular"],
       "text-size": 12,
     },
   };

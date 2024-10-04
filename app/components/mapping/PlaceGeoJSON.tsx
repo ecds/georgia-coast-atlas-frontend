@@ -104,8 +104,8 @@ const PlaceGeoJSON = () => {
       map.addLayer(outlineLayer);
     }
 
-    if (map.getLayer(`${place.id}-clusters`)) {
-      map.moveLayer(outlineLayer.id, `${place.id}-clusters`);
+    if (map.getLayer(`${place.uuid}-clusters`)) {
+      map.moveLayer(outlineLayer.id, `${place.uuid}-clusters`);
     }
 
     const bounds = new LngLatBounds(
@@ -114,7 +114,7 @@ const PlaceGeoJSON = () => {
 
     map.fitBounds(bounds, { maxZoom: 15 });
     setLayerSources((layerSources) => {
-      return { ...layerSources, [place.id]: placeSource };
+      return { ...layerSources, [place.uuid]: placeSource };
     });
 
     return () => {
@@ -124,7 +124,7 @@ const PlaceGeoJSON = () => {
           map.removeLayer(`${place.uuid}-fill`);
         if (map.getLayer(`${place.uuid}-outline`))
           map.removeLayer(`${place.uuid}-outline`);
-        if (map.getSource(place.id)) map.removeSource(place.id);
+        if (map.getSource(place.uuid)) map.removeSource(place.uuid);
       } catch {}
     };
   }, [map, place, setActiveLayers, setLayerSources, geoJSON]);
