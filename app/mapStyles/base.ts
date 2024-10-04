@@ -19,7 +19,7 @@ export const base: StyleSpecification = {
   sources: {
     openmaptiles: {
       type: "vector",
-      url: "https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
+      url: "https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json",
     },
   },
   layers: [

@@ -1,16 +1,20 @@
-import { base } from "./base"
+import { base } from "./base";
 import { labels } from "./labels";
 import { satellite } from "./satellite";
-import { usgs } from "./usgs"
+import { usgs } from "./usgs";
 
 import type { StyleSpecification } from "maplibre-gl";
 
 export const combined: StyleSpecification = {
   version: 8,
   name: "Combined",
-  glyphs:
-  "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=uXfXuebPlkoPXiY3TPcv",
-  sources: {...base.sources, ...satellite.sources, ...usgs.sources, ...labels.sources},
+  glyphs: "https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf",
+  sources: {
+    ...base.sources,
+    ...satellite.sources,
+    ...usgs.sources,
+    ...labels.sources,
+  },
   layers: [
     {
       id: "background",
@@ -26,5 +30,6 @@ export const combined: StyleSpecification = {
     ...base.layers,
     ...satellite.layers,
     ...usgs.layers,
-    ...labels.layers]
-}
+    ...labels.layers,
+  ],
+};
