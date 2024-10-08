@@ -1,9 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, Suspense } from "react";
 import {
   useLoaderData,
   useNavigation,
   useRouteError,
   isRouteErrorResponse,
+  defer,
 } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { islands, dataHosts, topBarHeight } from "~/config.ts";
@@ -50,7 +51,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  return { place, island, wpData: wpData[0] };
+  return defer({ place, island, wpData: wpData[0] });
 };
 
 export const clientLoader = async ({
@@ -127,22 +128,24 @@ const IslandPage = () => {
               }}
             />
           </div>
-          {related.places?.relatedPlaces && (
-            <RelatedPlaces places={related.places.relatedPlaces} />
-          )}
-          {related.items?.videos && (
-            <RelatedVideos videos={related.items.videos} />
-          )}
-          {related.media_contents?.photographs && (
-            <RelatedPhotographs manifest={place.iiif_manifest} />
-          )}
-          {related.places?.mapLayers && (
-            <RelatedMapLayers layers={related.places.mapLayers} />
-          )}
-          {related.places?.topoQuads && (
-            <RelatedTopoQuads quads={related.places.topoQuads} />
-          )}
-          {geoJSON && <PlaceGeoJSON />}
+          <Suspense fallback={<HydrateFallback />}>
+            {related.places?.relatedPlaces && (
+              <RelatedPlaces places={related.places.relatedPlaces} />
+            )}
+            {related.items?.videos && (
+              <RelatedVideos videos={related.items.videos} />
+            )}
+            {related.media_contents?.photographs && (
+              <RelatedPhotographs manifest={place.iiif_manifest} />
+            )}
+            {related.places?.mapLayers && (
+              <RelatedMapLayers layers={related.places.mapLayers} />
+            )}
+            {related.places?.topoQuads && (
+              <RelatedTopoQuads quads={related.places.topoQuads} />
+            )}
+            {geoJSON && <PlaceGeoJSON />}
+          </Suspense>
         </div>
         <div className="hidden md:block w-1/2 lg:w-3/5">
           <ClientOnly>
