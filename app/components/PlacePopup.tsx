@@ -48,10 +48,12 @@ const PlacePopup = ({
   zoomToFeature = true,
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
+
   const [coordinates, setCoordinates] = useState<
     [number, number] | undefined
   >();
   const popContainerRef = useRef<HTMLDivElement>(document.createElement("div"));
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -74,7 +76,6 @@ const PlacePopup = ({
           )?.coordinates as [number, number]
         );
         break;
-
       default:
         setCoordinates(
           place.place_geometry.geometry_json.coordinates as [number, number]
