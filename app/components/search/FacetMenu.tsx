@@ -6,27 +6,27 @@ import {
   RefinementList,
   useRefinementList,
 } from "react-instantsearch";
-import { modelFieldUUIDs, PLACE_TYPES } from "~/config";
+import { PLACE_TYPES } from "~/config";
 import type { RefinementListClassNames } from "node_modules/react-instantsearch/dist/es/ui/RefinementList";
 
-const refinementListClassNames = (type: string) => {
-  console.log("🚀 ~ refinementListClassNames ~ type:", type);
+const refinementListClassNames = () => {
   const classNames: Partial<RefinementListClassNames> = {
     checkbox:
       "me-2 group size-3 rounded border bg-white data-[checked]:bg-blue-500",
     count:
       "bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded",
-    item: `py-2 font-light text-sm bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"}`,
+    item: `py-2 font-light text-sm`,
     selectedItem: "font-semibold",
   };
   return classNames;
 };
 
 const FacetMenu = () => {
-  const { items, toggleShowMore, isShowingMore } = useRefinementList({
-    attribute: `${modelFieldUUIDs.types}.name_facet`,
+  const { items, toggleShowMore, isShowingMore, refine } = useRefinementList({
+    attribute: "types",
     showMore: true,
     showMoreLimit: Object.keys(PLACE_TYPES).length + 1,
+    operator: "and",
   });
   return (
     <Menu>
@@ -52,38 +52,42 @@ const FacetMenu = () => {
           />
         </MenuSection>
         <MenuSection className="mb-4 pb-4 border-b-2">
-          {/* <RefinementList
-            attribute={`${modelFieldUUIDs.types}.name_facet`}
-            classNames={refinementListClassNames(
-              `${modelFieldUUIDs.types}.name_facet`
-            )}
-            sortBy={["count:desc"]}
-            showMore
-            showMoreLimit={200}
-            operator="and"
-          /> */}
           <ul>
-            {items.map((type) => {
+            {items.map((type, index) => {
               return (
-                <li
-                  key={type.value}
-                  className={`p-1 my-2 rounded-md bg-${PLACE_TYPES[type.value]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type.value]?.textColor ?? "green-800"} flex`}
-                >
-                  <input type="checkbox" className="ml-2 mr-4" />
-                  <span className="block">{type.label}</span>
-                  <span className="block ml-4">{type.count}</span>
+                <li key={type.label} className="flex items-center me-4 my-2">
+                  <input
+                    type="checkbox"
+                    className={`w-6 h-6 text-${PLACE_TYPES[type.value]?.bgColor ?? "green-800"} bg-gray-100 border-gray-300 rounded focus:ring-${PLACE_TYPES[type.value]?.bgColor ?? "green-800"} focus:ring-2`}
+                    checked={type.isRefined}
+                    onChange={() => refine(type.value)}
+                    id={`type-${index}`}
+                  />
+                  <label htmlFor={`type-${index}`}>
+                    <span className="ms-2 text-sm font-light">
+                      {type.label}
+                    </span>
+                    <span
+                      className={`ms-2 p-1 text-xs font-medium text-${PLACE_TYPES[type.value]?.textColor ?? "green-800"} rounded bg-${PLACE_TYPES[type.value]?.bgColor ?? "green-100"}`}
+                    >
+                      {type.count}
+                    </span>
+                  </label>
                 </li>
               );
             })}
           </ul>
-          <button onClick={toggleShowMore}>
-            {isShowingMore ? "show less" : "shwo more"}
+          <button
+            onClick={toggleShowMore}
+            className={`border-2 rounded-md p-1 capitalize mt-2 bg-gray-200`}
+          >
+            {isShowingMore ? "show less" : "show more"}
           </button>
         </MenuSection>
         <MenuSection>
           <RefinementList
-            attribute={`${modelFieldUUIDs.county}.names_facet`}
-            classNames={refinementListClassNames("Pond")}
+            attribute="county"
+            classNames={refinementListClassNames()}
             sortBy={["name:asc"]}
             operator="and"
           />

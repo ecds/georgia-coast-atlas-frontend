@@ -22,6 +22,7 @@ export default {
       },
     },
   },
+  future: {},
   plugins: [
     plugin(function ({ addBase }) {
       addBase({

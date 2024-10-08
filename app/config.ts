@@ -1,5 +1,9 @@
 import { base, satellite, usgs } from "./mapStyles";
-import type { TBaseStyle, TCoreDataRelatedEndpoints } from "./types";
+import type {
+  TBaseStyle,
+  TCoreDataRelatedEndpoints,
+  TTypeColors,
+} from "./types";
 
 export const islands = [
   {
@@ -144,11 +148,13 @@ export const dataHosts = {
   coreData: "coredata.ecdsdev.org",
   wordPress: "wp.georgiacoastatlas.org",
   typesense: "coredata.ecds.io",
+  elasticSearch: "https://search.ecds.io",
 };
 
 export const keys = {
   typesense: "67d9b8d2810cc3a174eb949067",
   coreDataProject: 1,
+  elasticsearch: "aXVlS1o1SUJJbFNSMlFHZFBCVXE6MXJQbWtKZmZSSS0xU0FvdG5adTlvZw==",
 };
 
 export const mapLayers: TBaseStyle[] = [
@@ -171,10 +177,10 @@ export const mapLayers: TBaseStyle[] = [
 
 export const topBarHeight = "5rem";
 
-export const PLACE_TYPES = {
+export const PLACE_TYPES: TTypeColors = {
   Airport: {
-    bgColor: "red-100",
-    textColor: "red-800",
+    bgColor: "gray-100",
+    textColor: "gray-800",
   },
   Bar: {
     bgColor: "orange-100",
@@ -197,44 +203,44 @@ export const PLACE_TYPES = {
     textColor: "emerald-800",
   },
   "Bike path": {
-    bgColor: "teal-100",
-    textColor: "teal-800",
+    bgColor: "green-100",
+    textColor: "green-800",
   },
   Bluff: {
     bgColor: "cyan-100",
     textColor: "cyan-800",
   },
   Bridge: {
-    bgColor: "sky-100",
-    textColor: "sky-800",
+    bgColor: "gray-800",
+    textColor: "gray-100",
   },
   Building: {
-    bgColor: "blue-100",
-    textColor: "blue-800",
+    bgColor: "red-600",
+    textColor: "red-50",
   },
   Canal: {
-    bgColor: "indigo-100",
-    textColor: "indigo-800",
+    bgColor: "gray-200",
+    textColor: "gray-800",
   },
   Cape: {
     bgColor: "violet-100",
     textColor: "violet-800",
   },
   Cemetery: {
-    bgColor: "purple-100",
-    textColor: "purple-800",
+    bgColor: "amber-100",
+    textColor: "amber-800",
   },
   Center: {
-    bgColor: "fuchsia-100",
-    textColor: "fuchsia-800",
+    bgColor: "red-100",
+    textColor: "red-800",
   },
   Channel: {
     bgColor: "pink-100",
     textColor: "pink-800",
   },
   Church: {
-    bgColor: "rose-100",
-    textColor: "rose-800",
+    bgColor: "blue-100",
+    textColor: "blue-800",
   },
   Cliff: {
     bgColor: "red-800",
@@ -249,60 +255,60 @@ export const PLACE_TYPES = {
     textColor: "yellow-100",
   },
   Dam: {
-    bgColor: "lime-800",
-    textColor: "lime-100",
+    bgColor: "blue-800",
+    textColor: "blue-100",
   },
   Dock: {
-    bgColor: "emerald-800",
-    textColor: "emerald-100",
+    bgColor: "gray-700",
+    textColor: "gray-100",
   },
   Facility: {
-    bgColor: "teal-800",
-    textColor: "teal-100",
+    bgColor: "stone-300",
+    textColor: "stone-800",
   },
   Field: {
-    bgColor: "cyan-800",
-    textColor: "cyan-100",
+    bgColor: "lime-900",
+    textColor: "lime-100",
   },
   "Fish Farm": {
-    bgColor: "sky-800",
-    textColor: "sky-100",
+    bgColor: "green-800",
+    textColor: "green-100",
   },
   Flats: {
     bgColor: "blue-800",
     textColor: "blue-100",
   },
   Forest: {
-    bgColor: "indigo-800",
-    textColor: "indigo-100",
+    bgColor: "teal-950",
+    textColor: "teal-100",
   },
   Fort: {
-    bgColor: "violet-800",
-    textColor: "violet-100",
+    bgColor: "rose-200",
+    textColor: "rose-800",
   },
   "Golf Course": {
-    bgColor: "purple-800",
-    textColor: "purple-100",
+    bgColor: "lime-800",
+    textColor: "lime-100",
   },
   Government: {
-    bgColor: "fuchsia-800",
-    textColor: "fuchsia-100",
+    bgColor: "sky-800",
+    textColor: "sky-100",
   },
   Hammock: {
     bgColor: "pink-800",
     textColor: "pink-100",
   },
   Harbor: {
-    bgColor: "rose-800",
-    textColor: "rose-100",
+    bgColor: "gray-800",
+    textColor: "gray-100",
   },
   "Historical Site": {
-    bgColor: "red-50",
-    textColor: "red-700",
+    bgColor: "orange-900",
+    textColor: "orange-100",
   },
   Hospital: {
-    bgColor: "orange-50",
-    textColor: "orange-700",
+    bgColor: "cyan-800",
+    textColor: "cyan-100",
   },
   House: {
     bgColor: "amber-50",
@@ -329,7 +335,7 @@ export const PLACE_TYPES = {
     textColor: "teal-700",
   },
   Library: {
-    bgColor: "cyan-50",
+    bgColor: "blue-100",
     textColor: "cyan-700",
   },
   Lighthouse: {
@@ -345,12 +351,12 @@ export const PLACE_TYPES = {
     textColor: "indigo-700",
   },
   Park: {
-    bgColor: "violet-50",
-    textColor: "violet-700",
+    bgColor: "teal-600",
+    textColor: "teal-100",
   },
   Pasture: {
-    bgColor: "purple-50",
-    textColor: "purple-700",
+    bgColor: "emerald-900",
+    textColor: "emerald-100",
   },
   Plantation: {
     bgColor: "fuchsia-50",
@@ -365,16 +371,16 @@ export const PLACE_TYPES = {
     textColor: "rose-700",
   },
   "Populated Place": {
-    bgColor: "red-700",
-    textColor: "red-50",
+    bgColor: "slate-800",
+    textColor: "slate-50",
   },
   "Post Office": {
     bgColor: "orange-700",
     textColor: "orange-50",
   },
   "Rail Station": {
-    bgColor: "amber-700",
-    textColor: "amber-50",
+    bgColor: "purple-700",
+    textColor: "purple-50",
   },
   Reservoir: {
     bgColor: "yellow-700",
@@ -397,8 +403,8 @@ export const PLACE_TYPES = {
     textColor: "teal-50",
   },
   School: {
-    bgColor: "cyan-700",
-    textColor: "cyan-50",
+    bgColor: "blue-400",
+    textColor: "blue-950",
   },
   Shoal: {
     bgColor: "sky-700",
@@ -417,8 +423,8 @@ export const PLACE_TYPES = {
     textColor: "red-50",
   },
   Square: {
-    bgColor: "violet-700",
-    textColor: "violet-50",
+    bgColor: "green-900",
+    textColor: "green-50",
   },
   Stream: {
     bgColor: "purple-700",
@@ -429,12 +435,16 @@ export const PLACE_TYPES = {
     textColor: "fuchsia-50",
   },
   Swamp: {
-    bgColor: "pink-700",
-    textColor: "pink-50",
+    bgColor: "lime-950",
+    textColor: "lime-50",
   },
   Tower: {
     bgColor: "rose-700",
     textColor: "rose-50",
+  },
+  Tree: {
+    bgColor: "teal-950",
+    textColor: "teal-100",
   },
   "Tree Boneyard": {
     bgColor: "red-900",

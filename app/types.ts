@@ -484,3 +484,10 @@ export type TBaseStyle = {
   label: string;
   layers: string[];
 };
+
+export type TTypeColors = {
+  [key: string]: {
+    bgColor: string;
+    textColor: string;
+  };
+};

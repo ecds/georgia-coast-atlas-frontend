@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-import { useInstantSearch } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -15,20 +13,6 @@ interface Props {
 }
 
 const FacetDisclosure = ({ title, children }: Props) => {
-  const { uiState, setUiState } = useInstantSearch();
-  const uiStateRef = useRef(uiState);
-
-  // useEffect(() => {
-  //   uiStateRef.current = uiState;
-  //   console.log("🚀 ~ FacetDisclosure ~ uiState:", uiState);
-  // }, [uiState]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     console.log("🚀 ~ return ~ uiStateRef.current:", uiStateRef.current);
-  //     setTimeout(() => setUiState(uiStateRef.current));
-  //   };
-  // }, [setUiState]);
   return (
     <Disclosure as="details">
       <DisclosureButton

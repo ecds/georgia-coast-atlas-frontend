@@ -8,7 +8,8 @@ import type { StyleSpecification } from "maplibre-gl";
 export const combined: StyleSpecification = {
   version: 8,
   name: "Combined",
-  glyphs: "https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf",
+  glyphs:
+    "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=uXfXuebPlkoPXiY3TPcv",
   sources: {
     ...base.sources,
     ...satellite.sources,

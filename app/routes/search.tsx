@@ -2,29 +2,24 @@ import { useState } from "react";
 import { renderToString } from "react-dom/server";
 import {
   InstantSearch,
-  Hits,
-  Pagination,
-  HitsPerPage,
   InstantSearchSSRProvider,
   getServerState,
-  InfiniteHits,
 } from "react-instantsearch";
-import { searchClient } from "~/utils/typesense-adapter";
+import { searchClient } from "~/utils/elasticsearchAdapter";
 import Map from "~/components/mapping/Map.client";
 import { ClientOnly } from "remix-utils/client-only";
 import GeoSearch from "~/components/search/GeoSearch";
 import SearchForm from "~/components/search/SearchForm";
-import SearchResult from "~/components/search/SearchResult";
 import { history } from "instantsearch.js/es/lib/routers";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { topBarHeight } from "~/config";
 import { MapContext } from "~/contexts";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
+import SearchResults from "~/components/search/SearchResults.client";
 import type { Map as TMap } from "maplibre-gl";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
-import SearchResults from "~/components/search/SearchResults.client";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
@@ -57,7 +52,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
         }}
       >
         <InstantSearch
-          indexName="gca"
+          indexName="georgia_coast"
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
           routing={{
@@ -83,13 +78,13 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
                 cache={cache}
               /> */}
               <ClientOnly>{() => <SearchResults />}</ClientOnly>
-              <Pagination
+              {/* <Pagination
                 className="mt-4"
                 classNames={{
                   list: "flex flex-row items-stretch w-full py-1 px-4",
                   item: "grow bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded text-center",
                 }}
-              />
+              /> */}
               {/* <HitsPerPage
                 className="p-4 mb-4"
                 items={[
