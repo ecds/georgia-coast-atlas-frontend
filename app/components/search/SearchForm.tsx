@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FacetMenu from "./FacetMenu";
 import { topBarHeight } from "~/config";
-import { useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 const ButtonComponent = ({
   children,
@@ -51,23 +51,9 @@ const LoadingComponent = () => {
 };
 
 const SearchForm = () => {
-  const queryRef = useRef<string>();
-
-  const delayedSearch = (query: string, search: (query: string) => void) => {
-    if (queryRef.current === query) search(queryRef.current);
-  };
-
-  const queryHook = (query: string, search: (query: string) => void) => {
-    queryRef.current = query;
-    setTimeout(() => {
-      delayedSearch(query, search);
-    }, 500);
-  };
-
   return (
     <div className="flex">
       <SearchBox
-        queryHook={queryHook}
         resetIconComponent={ResetComponent}
         submitIconComponent={SubmitComponent}
         loadingIconComponent={LoadingComponent}

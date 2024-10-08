@@ -111,24 +111,24 @@ const IslandPage = () => {
         className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
       >
         <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
-          <div className="flex flex-col">
-            <Heading
-              as="h1"
-              className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
-            >
-              {island.label} Island
-            </Heading>
-            <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-              <FeaturedMedium record={related} />
-            </div>
-            <div
-              className="relative px-4 -mt-12 primary-content"
-              dangerouslySetInnerHTML={{
-                __html: wpData?.content.rendered ?? place.description,
-              }}
-            />
-          </div>
           <Suspense fallback={<HydrateFallback />}>
+            <div className="flex flex-col">
+              <Heading
+                as="h1"
+                className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+              >
+                {island.label} Island
+              </Heading>
+              <div ref={topRef} className="relative -top-12 z-10 min-h-10">
+                <FeaturedMedium record={related} />
+              </div>
+              <div
+                className="relative px-4 -mt-12 primary-content"
+                dangerouslySetInnerHTML={{
+                  __html: wpData?.content.rendered ?? place.description,
+                }}
+              />
+            </div>
             {related.places?.relatedPlaces && (
               <RelatedPlaces places={related.places.relatedPlaces} />
             )}

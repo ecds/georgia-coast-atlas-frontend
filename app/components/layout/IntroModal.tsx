@@ -1,15 +1,15 @@
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 interface IntroModalProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
 export default function IntroModal({ setIsOpen }: IntroModalProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   function closeModal() {
@@ -19,7 +19,9 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
   function handleSearch() {
     if (searchQuery.trim()) {
       closeModal();
-      navigate(`/search?gca%5Bquery%5D=${encodeURIComponent(searchQuery)}`);
+      navigate(
+        `/search?georgia_coast%5Bquery%5D=${encodeURIComponent(searchQuery)}`
+      );
     }
   }
 
@@ -59,7 +61,17 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
                 <hr className="border-gray-300 mb-4" />
                 <div className="mt-2 text-center">
                   <p className="text-base text-gray-500">
-                    The Georgia coast, approximately 100 miles long, is defined by its barrier islands and their back-barrier environments. With a variety of life in maritime forests, salt marshes, tidal channels and creeks, back-dune meadows, coastal dunes, beaches, and offshore environments, the barrier islands and their back barrier environments are biologically rich. The seasonally subtropical climate of the islands, combined with large tidal fluxes, helps make Georgia salt marshes among the most biologically productive ecosystems in the world. The Georgia coast also holds nearly one-third of the salt marshes in the eastern U.S.
+                    The Georgia coast, approximately 100 miles long, is defined
+                    by its barrier islands and their back-barrier environments.
+                    With a variety of life in maritime forests, salt marshes,
+                    tidal channels and creeks, back-dune meadows, coastal dunes,
+                    beaches, and offshore environments, the barrier islands and
+                    their back barrier environments are biologically rich. The
+                    seasonally subtropical climate of the islands, combined with
+                    large tidal fluxes, helps make Georgia salt marshes among
+                    the most biologically productive ecosystems in the world.
+                    The Georgia coast also holds nearly one-third of the salt
+                    marshes in the eastern U.S.
                   </p>
                 </div>
                 <hr className="border-gray-300 my-4" />
@@ -81,7 +93,7 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           handleSearch();
                         }
                       }}

@@ -39,6 +39,7 @@ type SearchProps = {
 };
 
 const Search = ({ serverState, serverUrl }: SearchProps) => {
+  console.log("🚀 ~ Search ~ serverState, serverUrl:", serverState, serverUrl);
   const [map, setMap] = useState<TMap | undefined>(undefined);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   return (
@@ -59,7 +60,10 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
             router: history({
               getLocation() {
                 if (typeof window === "undefined") {
-                  return new URL(serverUrl!) as unknown as Location;
+                  const urlToReturn = new URL(
+                    serverUrl!
+                  ) as unknown as Location;
+                  return urlToReturn;
                 }
                 return window.location;
               },
@@ -72,35 +76,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
           >
             <div className="col-span-1 overflow-auto">
               <SearchForm />
-              {/* <InfiniteHits
-                hitComponent={SearchResult}
-                classNames={{ root: "px-8 overflow-auto" }}
-                cache={cache}
-              /> */}
               <ClientOnly>{() => <SearchResults />}</ClientOnly>
-              {/* <Pagination
-                className="mt-4"
-                classNames={{
-                  list: "flex flex-row items-stretch w-full py-1 px-4",
-                  item: "grow bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded text-center",
-                }}
-              /> */}
-              {/* <HitsPerPage
-                className="p-4 mb-4"
-                items={[
-                  { label: "25 results per page", value: 25, default: true },
-                  { label: "50 results per page", value: 50 },
-                  { label: "100 results per page", value: 100 },
-                  { label: "150 results per page", value: 150 },
-                  { label: "200 results per page", value: 200 },
-                  { label: "250 results per page", value: 250 },
-                ]}
-                title="Results per page"
-                classNames={{
-                  select:
-                    "bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded",
-                }}
-              /> */}
             </div>
             <div className="col-span-2">
               <ClientOnly>
