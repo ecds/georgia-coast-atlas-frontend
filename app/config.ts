@@ -48,7 +48,7 @@ export const islands = [
   },
   {
     id: "tybee",
-    label: "Tybee Island",
+    label: "Tybee",
     coreDataId: "532b46db-0bf7-486b-b055-3b852ee6d21f",
   },
   {
