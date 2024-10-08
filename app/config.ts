@@ -143,6 +143,7 @@ export const coreDataRelatedEndpoints: TCoreDataRelatedEndpoints[] = [
 export const dataHosts = {
   coreData: "coredata.ecdsdev.org",
   wordPress: "wp.georgiacoastatlas.org",
+  typesense: "coredata.ecds.io",
 };
 
 export const keys = {

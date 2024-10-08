@@ -12,7 +12,6 @@ import { searchClient } from "~/utils/typesense-adapter";
 import Map from "~/components/mapping/Map.client";
 import { ClientOnly } from "remix-utils/client-only";
 import GeoSearch from "~/components/search/GeoSearch";
-import type { Map as TMap } from "maplibre-gl";
 import SearchForm from "~/components/search/SearchForm";
 import SearchResult from "~/components/search/SearchResult";
 import { history } from "instantsearch.js/es/lib/routers";
@@ -20,9 +19,10 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { topBarHeight } from "~/config";
 import { MapContext } from "~/contexts";
+import StyleSwitcher from "~/components/mapping/StyleSwitcher";
+import type { Map as TMap } from "maplibre-gl";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
-import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;

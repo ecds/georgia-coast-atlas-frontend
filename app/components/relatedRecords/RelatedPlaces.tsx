@@ -84,7 +84,7 @@ const RelatedPlaces = ({ places }: Props) => {
     // Extend the island bounds if related places are beyond the island bounds.
     const newBounds = map.getBounds().extend(bounds);
 
-    map.fitBounds(newBounds, { padding: 100 });
+    map.fitBounds(newBounds, { maxZoom: 14 });
 
     if (!map.getImage("pulsing-dot")) {
       const dot = pulsingDot(map);
@@ -151,24 +151,6 @@ const RelatedPlaces = ({ places }: Props) => {
       setLayerSources((layerSources) => {
         return { ...layerSources, [`${place.uuid}-places`]: placesSource };
       });
-    // if (setActiveLayers)
-    //   if (setActiveLayers)
-    //     setActiveLayers((activeLayers) => {
-    //       const newLayers = [clusterLayer, countLayer, unclusteredLayer];
-    //       let layersToAdd: AddLayerObject[] = [];
-    //       for (const newLayer of newLayers) {
-    //         layersToAdd = [
-    //           ...layersToAdd.filter((l) => l.id !== newLayer.id),
-    //           newLayer,
-    //         ];
-    //       }
-    //       return [
-    //         ...activeLayers.filter(
-    //           (l) => !layersToAdd.map((a) => a.id).includes(l.id),
-    //         ),
-    //         ...layersToAdd,
-    //       ];
-    //     });
 
     orderLayers(map, place.uuid);
 

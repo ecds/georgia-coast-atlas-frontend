@@ -19,6 +19,15 @@ export type Geometry =
   | Polygon
   | MultiPolygon;
 
+type GeometryCollection = {
+  geometries: Geometry[];
+  type: "GeometryCollection";
+};
+
+type GeometryJSON = {
+  geometry_json: Geometry | GeometryCollection;
+};
+
 type TNames = {
   name: string;
   primary: boolean;
@@ -98,9 +107,7 @@ export type TCoreDataPlace = {
   place_names: TNames[];
   place_layers: TCoreDataLayer[];
   web_identifiers: [];
-  place_geometry: {
-    geometry_json: Geometry;
-  };
+  place_geometry: GeometryJSON;
   user_defined: TUserDefinedField;
 };
 
@@ -110,9 +117,7 @@ export type TPlaceRecord = TCoreDataPlace & {
   place_names: TNames[];
   place_layers: TCoreDataLayer[];
   web_identifiers: [];
-  place_geometry: {
-    geometry_json: Geometry;
-  };
+  place_geometry: Geometry | GeometryCollection | GeometryJSON;
   user_defined: TUserDefinedField;
   description?: string;
   identifier?: string;
@@ -249,10 +254,14 @@ export type TRelatedPlaceRecord = {
   description?: string;
   uuid: string;
   name: string;
-  place_geometry: {
-    geometry_json: Geometry;
-  };
+  place_geometry: GeometryJSON;
 };
+
+// export type TRelatedEndpoint =
+//   | "media_contents"
+//   | "places"
+//   | "taxonomies"
+//   | "items";
 
 export type TRelatedCoreDataRecords = {
   media_contents?: TMediaContents;

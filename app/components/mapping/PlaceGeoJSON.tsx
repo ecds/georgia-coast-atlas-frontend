@@ -1,13 +1,16 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
+import { pulsingDot } from "~/utils/pulsingDot";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
+import PlacePopup from "../PlacePopup";
 
 const PlaceGeoJSON = () => {
   const { map } = useContext(MapContext);
   const { place, geoJSON, setLayerSources, setActiveLayers, activeLayers } =
     useContext(PlaceContext);
+  const [showPopup, setShowPopup] = useState<boolean>(true);
 
   useEffect(() => {
     if (!map) return;
@@ -60,6 +63,27 @@ const PlaceGeoJSON = () => {
       map.addLayer(fillLayer, firstSymbolId);
     }
 
+    if (!map.getImage("pulsing-dot")) {
+      const dot = pulsingDot(map);
+      if (dot) {
+        map.addImage("pulsing-dot", dot, { pixelRatio: 2 });
+      }
+    }
+
+    const pointLayer: AddLayerObject = {
+      id: `${place.uuid}-point`,
+      type: "symbol",
+      source: `${place.uuid}`,
+      filter: ["==", "$type", "Point"],
+      layout: {
+        "icon-image": "pulsing-dot",
+      },
+    };
+
+    if (!map.getLayer(pointLayer.id)) {
+      map.addLayer(pointLayer);
+    }
+
     const outlineLayer: AddLayerObject = {
       id: `${place.uuid}-outline`,
       type: "line",
@@ -88,7 +112,7 @@ const PlaceGeoJSON = () => {
       bbox(geoJSON) as [number, number, number, number]
     );
 
-    map.fitBounds(bounds, { padding: 100 });
+    map.fitBounds(bounds, { maxZoom: 15 });
     setLayerSources((layerSources) => {
       return { ...layerSources, [place.uuid]: placeSource };
     });
@@ -104,7 +128,15 @@ const PlaceGeoJSON = () => {
       } catch {}
     };
   }, [map, place, setActiveLayers, setLayerSources, geoJSON]);
-  return null;
+
+  return (
+    <PlacePopup
+      map={map}
+      place={place}
+      show={showPopup}
+      onClose={() => setShowPopup(false)}
+    />
+  );
 };
 
 export default PlaceGeoJSON;

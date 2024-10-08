@@ -1,6 +1,6 @@
 // FIXME: This is a known issue: https://github.com/typesense/typesense-instantsearch-adapter/issues/199
 import TypesenseInstantSearchAdapterExport from "typesense-instantsearch-adapter";
-import { keys, modelFieldUUIDs } from "~/config";
+import { dataHosts, keys, modelFieldUUIDs } from "~/config";
 
 export const TypesenseInstantSearchAdapter =
   // @ts-ignore
@@ -13,7 +13,7 @@ export const typesenseInstantSearchAdapter = new TypesenseInstantSearchAdapter({
     connectionTimeoutSeconds: 10000,
     nodes: [
       {
-        host: "coredata.ecdsdev.org",
+        host: dataHosts.typesense,
         port: 443,
         protocol: "https",
       },

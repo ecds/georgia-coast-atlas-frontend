@@ -57,9 +57,8 @@ export const clientLoader = async ({
   serverLoader,
 }: ClientLoaderFunctionArgs) => {
   const serverData = await serverLoader<TIslandServerData>();
-  const relatedRecords: TRelatedCoreDataRecords = await fetchRelatedRecords(
-    serverData.island.coreDataId
-  );
+  const relatedRecords: TRelatedCoreDataRecords | {} =
+    await fetchRelatedRecords(serverData.island.coreDataId);
 
   const geoJSON = toFeatureCollection([serverData.place]);
 
