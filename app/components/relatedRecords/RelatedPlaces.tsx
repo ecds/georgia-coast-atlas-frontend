@@ -44,7 +44,7 @@ const RelatedPlaces = ({ places }: Props) => {
     async (e: MapLayerMouseEvent) => {
       if (!map) return;
       const features = map.queryRenderedFeatures(e.point, {
-        layers: [`${place.id}-clusters`],
+        layers: [`${place.uuid}-clusters`],
       });
       if (
         features.length > 0 &&
@@ -52,7 +52,7 @@ const RelatedPlaces = ({ places }: Props) => {
         features[0].geometry
       ) {
         const clusterId = features[0].properties.cluster_id;
-        const source = map.getSource(`${place.id}-places`) as GeoJSONSource;
+        const source = map.getSource(`${place.uuid}-places`) as GeoJSONSource;
         if (source) {
           try {
             const zoom = await source.getClusterExpansionZoom(clusterId);
@@ -101,25 +101,25 @@ const RelatedPlaces = ({ places }: Props) => {
       clusterRadius: 50,
     };
 
-    if (map.getSource(`${place.id}-places`)) {
-      map.removeSource(`${place.id}-places`);
+    if (map.getSource(`${place.uuid}-places`)) {
+      map.removeSource(`${place.uuid}-places`);
     }
 
-    map.addSource(`${place.id}-places`, placesSource);
+    map.addSource(`${place.uuid}-places`, placesSource);
 
-    const clusterLayer = cluster(place.id);
+    const clusterLayer = cluster(place.uuid);
 
     if (!map.getLayer(clusterLayer.id)) {
       map.addLayer(clusterLayer);
     }
 
-    const countLayer = clusterCount(place.id);
+    const countLayer = clusterCount(place.uuid);
 
     if (!map.getLayer(countLayer.id)) {
       map.addLayer(countLayer);
     }
 
-    const unclusteredLayer = singlePoint(place.id);
+    const unclusteredLayer = singlePoint(place.uuid);
 
     if (!map.getLayer(unclusteredLayer.id)) {
       map.addLayer(unclusteredLayer);
@@ -149,10 +149,10 @@ const RelatedPlaces = ({ places }: Props) => {
 
     if (setLayerSources)
       setLayerSources((layerSources) => {
-        return { ...layerSources, [`${place.id}-places`]: placesSource };
+        return { ...layerSources, [`${place.uuid}-places`]: placesSource };
       });
 
-    orderLayers(map, place.id);
+    orderLayers(map, place.uuid);
 
     return () => {
       try {
@@ -161,8 +161,8 @@ const RelatedPlaces = ({ places }: Props) => {
         if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
         if (map.getLayer(unclusteredLayer.id))
           map.removeLayer(unclusteredLayer.id);
-        if (map.getSource(`${place.id}-places`))
-          map.removeSource(`${place.id}-places`);
+        if (map.getSource(`${place.uuid}-places`))
+          map.removeSource(`${place.uuid}-places`);
         map.off("click", clusterLayer.id, handleClusterClick);
         map.off("click", unclusteredLayer.id, handleUnclusteredPointClick);
       } catch {}
