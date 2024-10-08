@@ -25,10 +25,15 @@ export const typesenseInstantSearchAdapter = new TypesenseInstantSearchAdapter({
   //  So you can pass any parameters supported by the search endpoint below.
   //  query_by is required.
   additionalSearchParameters: {
-    query_by: "*",
+    // query_by: `name,${modelFieldUUIDs.types}`,
+    query_by: "name",
     collection: "gca",
     facet_by: `${modelFieldUUIDs.county}.names_facet,${modelFieldUUIDs.types}.name_facet`,
-    per_page: 25,
+    per_page: 250,
+    include_fields: `${modelFieldUUIDs.description},${modelFieldUUIDs.types},geometry,name,uuid`,
+    use_cache: true,
+    // filter_by: "coordinates:(31.400258489798006, -81.46808450954086, 500mi)",
+    // sort_by: "coordinates(31.400258489798006, -81.46808450954086):asc",
   },
 });
 

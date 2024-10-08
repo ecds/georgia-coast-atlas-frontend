@@ -10,7 +10,7 @@ const PlaceGeoJSON = () => {
   const { map } = useContext(MapContext);
   const { place, geoJSON, setLayerSources, setActiveLayers, activeLayers } =
     useContext(PlaceContext);
-  const [showPopup, setShowPopup] = useState<boolean>(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
     if (!map) return;
@@ -124,6 +124,8 @@ const PlaceGeoJSON = () => {
           map.removeLayer(`${place.uuid}-fill`);
         if (map.getLayer(`${place.uuid}-outline`))
           map.removeLayer(`${place.uuid}-outline`);
+        if (map.getLayer(`${place.uuid}-point`))
+          map.removeLayer(`${place.uuid}-point`);
         if (map.getSource(place.uuid)) map.removeSource(place.uuid);
       } catch {}
     };

@@ -1,23 +1,51 @@
 import type { AddLayerObject } from "maplibre-gl";
 
 export const cluster = (id: string) => {
-  console.log("🚀 ~ cluster ~ id:", id);
   const layer: AddLayerObject = {
     id: `${id}-clusters`,
     type: "circle",
     source: `${id}-places`,
     filter: ["has", "point_count"],
     paint: {
-      "circle-color": [
-        "step",
-        ["get", "point_count"],
-        "#51bbd6",
-        100,
-        "#f1f075",
-        750,
-        "#f28cb1",
-      ],
       "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+      "circle-stroke-width": 1,
+      "circle-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        "#3b62ff",
+        "#ff623b",
+      ],
+      "circle-stroke-color": "#8d260c",
+    },
+  };
+  return layer;
+};
+
+export const largeCluster = (id: string) => {
+  const layer: AddLayerObject = {
+    id: `${id}-clusters`,
+    type: "circle",
+    source: `${id}-places`,
+    filter: ["has", "point_count"],
+    paint: {
+      "circle-radius": [
+        "interpolate",
+        ["linear"],
+        ["number", ["get", "point_count"], 1],
+        0,
+        8,
+        12,
+        16,
+      ],
+      "circle-stroke-width": 1,
+      "circle-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        "#ca8a04",
+        "#fef08a",
+      ],
+      "circle-stroke-color": "#8d260c",
+      "circle-opacity": 0.7,
     },
   };
   return layer;
@@ -41,11 +69,12 @@ export const clusterCount = (id: string) => {
 export const singlePoint = (id: string) => {
   const point: AddLayerObject = {
     id: `${id}-unclustered-point`,
-    type: "symbol",
+    type: "circle",
     source: `${id}-places`,
     filter: ["!", ["has", "point_count"]],
-    layout: {
-      "icon-image": "pulsing-dot",
+    paint: {
+      "circle-radius": 6,
+      "circle-color": ["string", ["get", "hexColor"]],
     },
   };
   return point;

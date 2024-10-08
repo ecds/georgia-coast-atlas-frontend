@@ -160,8 +160,6 @@ const IslandPage = () => {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  console.error(error);
-
   if (isRouteErrorResponse(error)) {
     return <RouteError error={error} />;
   } else if (error instanceof Error) {

@@ -37,7 +37,7 @@ export const pulsingDot = (map: maplibregl.Map) => {
         this.height / 2,
         outerRadius,
         0,
-        Math.PI * 2,
+        Math.PI * 2
       );
       this.context.fillStyle = `rgba(255, 200, 200,${1 - t})`;
       this.context.fill();

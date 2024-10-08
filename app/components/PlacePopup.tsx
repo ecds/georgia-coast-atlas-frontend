@@ -1,5 +1,5 @@
 import maplibregl from "maplibre-gl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import type { Popup } from "maplibre-gl";
@@ -48,16 +48,21 @@ const PlacePopup = ({
   zoomToFeature = true,
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
-  const popupContentRef = useRef<HTMLDivElement>();
-  const coordinates = useRef<[number, number] | undefined>();
+
+  const [coordinates, setCoordinates] = useState<
+    [number, number] | undefined
+  >();
+  const popContainerRef = useRef<HTMLDivElement>(document.createElement("div"));
+
   const navigation = useNavigation();
 
   useEffect(() => {
     if (navigation.state === "loading" && popupRef.current) {
       popupRef.current.remove();
       popupRef.current = null;
+      onClose();
     }
-  }, [navigation]);
+  }, [navigation, onClose]);
 
   useEffect(() => {
     if (!map || !place.place_geometry || !place.place_geometry.geometry_json)
@@ -65,52 +70,50 @@ const PlacePopup = ({
 
     switch (place.place_geometry.geometry_json.type) {
       case "GeometryCollection":
-        coordinates.current =
+        setCoordinates(
           place.place_geometry.geometry_json.geometries.find(
             (geom) => geom.type === "Point"
-          )?.coordinates as [number, number];
+          )?.coordinates as [number, number]
+        );
         break;
-
       default:
-        coordinates.current = place.place_geometry.geometry_json
-          .coordinates as [number, number];
+        setCoordinates(
+          place.place_geometry.geometry_json.coordinates as [number, number]
+        );
         break;
     }
+  }, [map, place]);
 
-    if (!coordinates.current || coordinates.current.length !== 2) return;
+  useEffect(() => {
+    if (popContainerRef.current && coordinates && show && map) {
+      popupRef.current = new maplibregl.Popup({
+        closeButton: false,
+        className: "pointer-events-auto",
+      })
+        .setLngLat(coordinates)
+        .setDOMContent(popContainerRef.current);
 
-    if (popupRef.current) {
-      popupRef.current.remove();
-    }
-
-    popupContentRef.current = document.createElement("div");
-
-    popupRef.current = new maplibregl.Popup({
-      closeButton: false,
-      className: "pointer-events-auto",
-    })
-      .setLngLat(coordinates.current)
-      .setDOMContent(popupContentRef.current);
-
-    if (show) {
-      popupRef.current.addTo(map);
+      popupRef.current?.addTo(map);
       if (zoomToFeature) {
-        map.flyTo({ center: coordinates.current, zoom: 15 });
+        map.flyTo({ center: coordinates, zoom: 15 });
       }
     }
 
-    return () => {
-      try {
-        popupRef.current?.remove();
-        popupRef.current = null;
-      } catch {}
-    };
-  }, [map, place, show, zoomToFeature]);
+    if (!show) {
+      if (popupRef.current) {
+        popupRef.current.remove();
+      }
+    }
+  }, [show, map, coordinates, zoomToFeature, onClose]);
 
-  if (map && popupContentRef.current) {
-    return createPortal(
-      <PopupContent place={place} onClose={onClose} />,
-      popupContentRef.current
+  if (map && popContainerRef.current) {
+    return (
+      <>
+        {createPortal(
+          <PopupContent place={place} onClose={onClose} />,
+          popContainerRef.current
+        )}
+      </>
     );
   }
 

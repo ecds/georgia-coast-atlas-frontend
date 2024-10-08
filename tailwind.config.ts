@@ -1,6 +1,13 @@
 import type { Config } from "tailwindcss";
-import { topBarHeight } from "./app/config";
+import { topBarHeight, PLACE_TYPES } from "./app/config";
 import plugin from "tailwindcss/plugin";
+
+const bgColors = Object.keys(PLACE_TYPES).map(
+  (type) => `bg-${PLACE_TYPES[type].bgColor}`
+);
+const textColors = Object.keys(PLACE_TYPES).map(
+  (type) => `text-${PLACE_TYPES[type].textColor}`
+);
 
 export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
@@ -15,6 +22,7 @@ export default {
       },
     },
   },
+  future: {},
   plugins: [
     plugin(function ({ addBase }) {
       addBase({
@@ -53,5 +61,8 @@ export default {
     `h-[calc(100vh-${topBarHeight})]`,
     "bg-blue-500",
     "text-6xl",
+    "bg-red-100",
+    ...bgColors,
+    ...textColors,
   ],
 } satisfies Config;

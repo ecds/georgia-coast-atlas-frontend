@@ -163,6 +163,8 @@ const RelatedPlaces = ({ places }: Props) => {
           map.removeLayer(unclusteredLayer.id);
         if (map.getSource(`${place.uuid}-places`))
           map.removeSource(`${place.uuid}-places`);
+        if (map.getSource(`${place.uuid}-places`))
+          map.removeSource(`${place.uuid}-places`);
         map.off("click", clusterLayer.id, handleClusterClick);
         map.off("click", unclusteredLayer.id, handleUnclusteredPointClick);
       } catch {}
