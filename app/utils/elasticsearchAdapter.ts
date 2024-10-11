@@ -25,6 +25,8 @@ const sk = new Searchkit({
       "location",
       "types",
       "identifier",
+      "geojson",
+      "slug",
     ],
     facet_attributes: [
       { attribute: "types", field: "types", type: "string" },

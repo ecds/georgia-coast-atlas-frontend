@@ -254,14 +254,8 @@ export type TRelatedPlaceRecord = {
   description?: string;
   uuid: string;
   name: string;
-  place_geometry: GeometryJSON;
+  place_geometry: { geometry_json: { type: string; coordinates: number[] } };
 };
-
-// export type TRelatedEndpoint =
-//   | "media_contents"
-//   | "places"
-//   | "taxonomies"
-//   | "items";
 
 export type TRelatedCoreDataRecords = {
   media_contents?: TMediaContents;
@@ -490,4 +484,27 @@ export type TTypeColors = {
     bgColor: string;
     textColor: string;
   };
+};
+
+export type TPlace = {
+  geojson: FeatureCollection;
+  identifier: string;
+  types: string[];
+  name: string;
+  county: string;
+  description: string;
+  location: {
+    lon: number;
+    lat: number;
+  };
+  uuid: string;
+  slug: string;
+};
+
+export type TESHit = {
+  _index: string;
+  _type: string;
+  _id: string;
+  _score: number;
+  _source: TPlace;
 };

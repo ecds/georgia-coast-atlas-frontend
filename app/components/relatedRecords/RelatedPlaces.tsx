@@ -195,11 +195,20 @@ const RelatedPlaces = ({ places }: Props) => {
                 {place.name}
               </button>
               <PlacePopup
-                map={map}
-                place={place}
+                location={{
+                  lat: place.place_geometry.geometry_json.coordinates[1],
+                  lon: place.place_geometry.geometry_json.coordinates[0],
+                }}
                 show={activePlace === place}
                 onClose={() => setActivePlace(undefined)}
-              />
+              >
+                <h4>{place.name}</h4>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: place.description ?? "",
+                  }}
+                />
+              </PlacePopup>
             </div>
           );
         })}

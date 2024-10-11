@@ -1,10 +1,10 @@
 import type { AddLayerObject } from "maplibre-gl";
 
-export const cluster = (id: string) => {
+export const cluster = (id: string, source: string) => {
   const layer: AddLayerObject = {
-    id: `${id}-clusters`,
+    id,
     type: "circle",
-    source: `${id}-places`,
+    source,
     filter: ["has", "point_count"],
     paint: {
       "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
@@ -21,11 +21,11 @@ export const cluster = (id: string) => {
   return layer;
 };
 
-export const largeCluster = (id: string) => {
+export const largeCluster = (id: string, source: string) => {
   const layer: AddLayerObject = {
-    id: `${id}-clusters`,
+    id,
     type: "circle",
-    source: `${id}-places`,
+    source,
     filter: ["has", "point_count"],
     paint: {
       "circle-radius": [
@@ -51,11 +51,11 @@ export const largeCluster = (id: string) => {
   return layer;
 };
 
-export const clusterCount = (id: string) => {
+export const clusterCount = (id: string, source: string) => {
   const count: AddLayerObject = {
-    id: `${id}-cluster-count`,
+    id,
     type: "symbol",
-    source: `${id}-places`,
+    source,
     filter: ["has", "point_count"],
     layout: {
       "text-field": "{point_count_abbreviated}",
@@ -66,11 +66,11 @@ export const clusterCount = (id: string) => {
   return count;
 };
 
-export const singlePoint = (id: string) => {
+export const singlePoint = (id: string, source: string) => {
   const point: AddLayerObject = {
-    id: `${id}-unclustered-point`,
+    id,
     type: "circle",
-    source: `${id}-places`,
+    source,
     filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": 6,

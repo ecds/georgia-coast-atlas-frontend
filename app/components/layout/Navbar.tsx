@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons"; 
+import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
 import { islands } from "~/config.ts";
@@ -34,6 +34,9 @@ const Navbar = () => {
             />
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/explore">Explore the Coast</NavLink>
+        </li>
       </ul>
 
       <div className="flex items-center space-x-6">
@@ -42,33 +45,33 @@ const Navbar = () => {
           <FontAwesomeIcon icon={faSearch} />
         </NavLink>
 
-      <div className="relative inline-block mr-6">
-        <button
-          onClick={toggleDropdown}
-          className="flex justify-center text-3xl text-white"
-          tabIndex={0}
-          onKeyDown={({ key }) => {
-            if (key === "Enter") {
-              toggleDropdown();
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={faBars} />
-        </button>
-        {isDropdownOpen && (
-          <div className="absolute right-8 transform translate-x-1/3 top-full mt-4 bg-white rounded-md shadow-lg w-max">
-            <ul className="text-lg text-center">
-              {islands.map((island) => (
-                <li key={island.id} className="text-left p-2">
-                  <Link to={`/islands/${island.id}`}>
-                    {island.label} Island
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+        <div className="relative inline-block mr-6">
+          <button
+            onClick={toggleDropdown}
+            className="flex justify-center text-3xl text-white"
+            tabIndex={0}
+            onKeyDown={({ key }) => {
+              if (key === "Enter") {
+                toggleDropdown();
+              }
+            }}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute right-8 transform translate-x-1/3 top-full mt-4 bg-white rounded-md shadow-lg w-max">
+              <ul className="text-lg text-center">
+                {islands.map((island) => (
+                  <li key={island.id} className="text-left p-2">
+                    <Link to={`/islands/${island.id}-island`}>
+                      {island.label} Island
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

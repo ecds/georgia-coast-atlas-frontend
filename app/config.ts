@@ -451,3 +451,5 @@ export const PLACE_TYPES: TTypeColors = {
     textColor: "red-300",
   },
 };
+
+export const indexCollection = "georgia_coast";

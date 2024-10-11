@@ -7,10 +7,9 @@ import {
   defer,
 } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { islands, dataHosts, topBarHeight } from "~/config.ts";
-import { fetchPlaceRecord, fetchRelatedRecords } from "~/data/coredata";
+import { dataHosts, topBarHeight } from "~/config.ts";
+import { fetchPlaceBySlug, fetchRelatedRecords } from "~/data/coredata";
 import Map from "~/components/mapping/Map.client";
-import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
@@ -35,23 +34,22 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const island = islands.find((i) => params.id == `${i.id}`);
+  const place = await fetchPlaceBySlug(params.id);
 
-  if (!island) {
+  if (!place) {
     throw new Response(null, {
       status: 404,
       statusText: "Not found",
     });
   }
 
-  const place = await fetchPlaceRecord(island?.coreDataId);
   const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.id}-island`
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=${params.id}`
   );
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  return defer({ place, island, wpData: wpData[0] });
+  return defer({ place, wpData: wpData[0] });
 };
 
 export const clientLoader = async ({
@@ -59,11 +57,9 @@ export const clientLoader = async ({
 }: ClientLoaderFunctionArgs) => {
   const serverData = await serverLoader<TIslandServerData>();
   const relatedRecords: TRelatedCoreDataRecords | {} =
-    await fetchRelatedRecords(serverData.island.coreDataId);
+    await fetchRelatedRecords(serverData.place.uuid);
 
-  const geoJSON = toFeatureCollection([serverData.place]);
-
-  return { ...serverData, ...relatedRecords, geoJSON };
+  return { ...serverData, ...relatedRecords };
 };
 
 clientLoader.hydrate = true;
@@ -73,7 +69,7 @@ export const HydrateFallback = () => {
 };
 
 const IslandPage = () => {
-  const { island, wpData, place, geoJSON, maps, ...related } =
+  const { island, wpData, place, maps, ...related } =
     useLoaderData<TIslandClientData>();
   const { map, mapLoaded } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
@@ -84,17 +80,22 @@ const IslandPage = () => {
   useEffect(() => {
     if (navigation.state === "idle") topRef.current?.scrollIntoView();
     if (navigation.state === "loading") {
-      if (map?.getLayer(`${island.id}-outline`))
-        map.removeLayer(`${island.id}-outline`);
-      if (map?.getLayer(`${island.id}-fill`))
-        map.removeLayer(`${island.id}-fill`);
+      if (map?.getLayer(`${place.uuid}-outline`))
+        map.removeLayer(`${place.uuid}-outline`);
+      if (map?.getLayer(`${place.uuid}-fill`))
+        map.removeLayer(`${place.uuid}-fill`);
     }
-  }, [navigation, island, map]);
+  }, [navigation, place, map]);
 
   useEffect(() => {
-    if (!mapLoaded || !map || !geoJSON || map.getLayer(`${island.id}-fill`))
+    if (
+      !mapLoaded ||
+      !map ||
+      !place.geojson ||
+      map.getLayer(`${place.uuid}-fill`)
+    )
       return;
-  }, [map, mapLoaded, geoJSON, island, activeLayers]);
+  }, [map, mapLoaded, place.geojson, place, activeLayers]);
 
   return (
     <PlaceContext.Provider
@@ -102,7 +103,7 @@ const IslandPage = () => {
         place,
         activeLayers,
         setActiveLayers,
-        geoJSON,
+        geoJSON: place.geojson,
         layerSources,
         setLayerSources,
       }}
@@ -117,7 +118,7 @@ const IslandPage = () => {
                 as="h1"
                 className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
               >
-                {island.label} Island
+                {place.name}
               </Heading>
               <div ref={topRef} className="relative -top-12 z-10 min-h-10">
                 <FeaturedMedium record={related} />
@@ -135,8 +136,11 @@ const IslandPage = () => {
             {related.items?.videos && (
               <RelatedVideos videos={related.items.videos} />
             )}
+            {/* TODO: Fix how the manifest is indexed */}
             {related.media_contents?.photographs && (
-              <RelatedPhotographs manifest={place.iiif_manifest} />
+              <RelatedPhotographs
+                manifest={`https://${dataHosts.coreData}${place.manifest.identifier}`}
+              />
             )}
             {related.places?.mapLayers && (
               <RelatedMapLayers layers={related.places.mapLayers} />
@@ -144,7 +148,7 @@ const IslandPage = () => {
             {related.places?.topoQuads && (
               <RelatedTopoQuads quads={related.places.topoQuads} />
             )}
-            {geoJSON && <PlaceGeoJSON />}
+            {place.geojson && <PlaceGeoJSON />}
           </Suspense>
         </div>
         <div className="hidden md:block w-1/2 lg:w-3/5">

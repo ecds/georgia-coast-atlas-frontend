@@ -1,10 +1,19 @@
 import {
   coreDataRelatedEndpoints,
   dataHosts,
+  indexCollection,
   keys,
   modelFieldUUIDs,
 } from "~/config";
-import type { TPlaceRecord } from "~/types";
+import type { TPlaceRecord, TPlace, TESHit } from "~/types";
+
+const elasticSearchHeaders = () => {
+  const esHeaders = new Headers();
+  esHeaders.append("authorization", `ApiKey ${keys.elasticsearch}`);
+  esHeaders.append("Content-Type", "application/json");
+  esHeaders.append("ApiKey", keys.elasticsearch);
+  return esHeaders;
+};
 
 export const fetchRelatedRecord = async (id: string, endpoint: string) => {
   const relatedResponse = await fetch(
@@ -69,40 +78,87 @@ export const fetchPlaceRecord = async (id: string) => {
   return placeData;
 };
 
-export const fetchPlaceRecordByIdentifier = async (identifier: string) => {
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
-
-  const body = JSON.stringify({
-    searches: [
-      {
-        query_by: "378d2b43-dcc0-4b64-8ef9-ecd7d743e2fb",
-        collection: "gca",
-        per_page: 1,
-        q: identifier,
-        page: 1,
-        highlight_fields: "none",
-        exclude_fields: `${modelFieldUUIDs.county},${modelFieldUUIDs.relatedPlaces},${modelFieldUUIDs.photographs},${modelFieldUUIDs.mapLayers},${modelFieldUUIDs.topoQuads}`,
-      },
-    ],
-  });
+export const fetchPlaceBySlug = async (slug: string | undefined) => {
+  if (!slug) return undefined;
+  const body = {
+    query: {
+      simple_query_string: { query: slug, fields: ["slug"] },
+    },
+    size: 1,
+    from: 0,
+    _source: {
+      includes: [
+        "name",
+        "description",
+        "county",
+        "uuid",
+        "location",
+        "types",
+        "identifier",
+        "geojson",
+        "slug",
+        "manifest",
+      ],
+    },
+  };
 
   const response = await fetch(
-    `https://${dataHosts.typesense}/multi_search?x-typesense-api-key=${keys.typesense}`,
+    `${dataHosts.elasticSearch}/${indexCollection}/_search`,
     {
       method: "POST",
-      headers,
-      body,
-      redirect: "follow",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
     }
   );
 
   const data = await response.json();
+  const place: TPlace = data.hits.hits.map((hit: TESHit) => hit._source)[0];
+  return place;
+};
 
-  const placeID = data.results[0].hits[0].document.uuid;
+export const fetchPlacesByType = async (type: string) => {
+  const body = {
+    query: {
+      bool: {
+        filter: [
+          {
+            term: {
+              types: "Barrier Island",
+            },
+          },
+        ],
+        must: {
+          match_all: {},
+        },
+      },
+    },
+    size: 250,
+    from: 0,
+    _source: {
+      includes: [
+        "name",
+        "description",
+        "county",
+        "uuid",
+        "location",
+        "types",
+        "identifier",
+        "geojson",
+        "slug",
+      ],
+    },
+  };
 
-  if (!placeID) return;
+  const response = await fetch(
+    `${dataHosts.elasticSearch}/${indexCollection}/_search`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
+    }
+  );
 
-  const placeRecord = await fetchPlaceRecord(placeID);
-  return placeRecord as TPlaceRecord;
+  const data = await response.json();
+  const places: TPlace[] = data.hits.hits.map((hit: TESHit) => hit._source);
+  return places;
 };

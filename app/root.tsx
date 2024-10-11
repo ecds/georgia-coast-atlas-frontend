@@ -10,7 +10,6 @@ import {
 } from "@remix-run/react";
 import styles from "./index.css?url";
 import Navbar from "./components/layout/Navbar";
-import Sidebar from "./components/layout/Sidebar";
 import { useLocation } from "react-router-dom";
 import Loading from "./components/layout/Loading";
 import RouteError from "./components/errorResponses/RouteError";
@@ -40,10 +39,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           skip to main content
         </a>
         <Navbar />
-        {isHomepage && <Sidebar />}
         <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
           <main
-            className={`${isHomepage ? "ml-96" : "mx-auto"} relative mt-20 bg-white overflow-hidden`}
+            className={`mx-auto relative mt-20 bg-white overflow-hidden`}
             id="main"
           >
             {children}
