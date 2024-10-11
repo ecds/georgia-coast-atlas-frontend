@@ -25,7 +25,7 @@ const Navbar = () => {
             className={({ isActive, isPending }) =>
               isPending ? "pending" : "no-underline"
             }
-            to="/"
+            to="/explore"
           >
             <img
               src={gcaLogo}
@@ -33,9 +33,6 @@ const Navbar = () => {
               className="w-auto h-12"
             />
           </NavLink>
-        </li>
-        <li>
-          <NavLink to="/explore">Explore the Coast</NavLink>
         </li>
       </ul>
 
