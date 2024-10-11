@@ -1,9 +1,9 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
 import { islands } from "~/config.ts";
 import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons"; 
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -18,51 +18,41 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#4D4D4D] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-10">
-      <ul className="flex flex-row space-x-6 uppercase items-center">
+    <nav className="bg-[#4A5D41] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-10">
+      <ul className="flex flex-row space-x-6 items-center ml-6">
         <li>
-          <NavLink
-            className={({ isActive, isPending }) =>
-              isPending ? "pending" : "no-underline"
-            }
-            to="/"
-          >
+          <NavLink to="/explore">
             <img
               src={gcaLogo}
               alt="Georgia Coast Atlas Logo"
-              className="w-auto h-12"
+              className="w-auto h-14"  
             />
           </NavLink>
         </li>
-        <li>
-          <NavLink to="/explore">Explore the Coast</NavLink>
-        </li>
       </ul>
 
-      <div className="flex items-center space-x-6">
-        {/* Search Button */}
-        <NavLink to="/search" className="text-white text-2xl">
-          <FontAwesomeIcon icon={faSearch} />
-        </NavLink>
-
-        <div className="relative inline-block mr-6">
+      <div className="flex items-center space-x-12 text-white text-lg" style={{ fontFamily: 'Barlow, sans-serif' }}>
+        <div className="relative inline-block">
           <button
             onClick={toggleDropdown}
-            className="flex justify-center text-3xl text-white"
+            className="tracking-wide flex items-center space-x-1"
             tabIndex={0}
+            style={{ fontFamily: 'Barlow, sans-serif' }} 
             onKeyDown={({ key }) => {
               if (key === "Enter") {
                 toggleDropdown();
               }
             }}
           >
-            <FontAwesomeIcon icon={faBars} />
+            <span>Explore the Coast</span>
+            <FontAwesomeIcon icon={faChevronDown} />
           </button>
+
           {isDropdownOpen && (
-            <div className="absolute right-8 transform translate-x-1/3 top-full mt-4 bg-white rounded-md shadow-lg w-max">
-              <ul className="text-lg text-center">
+            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max">
+              <ul className="text-black text-lg" style={{ fontFamily: 'Roboto Slab, serif' }}>
                 {islands.map((island) => (
-                  <li key={island.id} className="text-left p-2">
+                  <li key={island.id} className="p-2 hover:bg-gray-100">
                     <Link to={`/islands/${island.id}-island`}>
                       {island.label} Island
                     </Link>
@@ -72,6 +62,15 @@ const Navbar = () => {
             </div>
           )}
         </div>
+
+        <NavLink to="/search" className="tracking-wide" style={{ fontFamily: 'Barlow, sans-serif', fontWeight: 500 }}>
+          Search By Place
+        </NavLink>
+
+        <NavLink to="#" className="tracking-wide flex items-center space-x-1" style={{ fontFamily: 'Barlow, sans-serif', fontWeight: 500 }}>
+          <span>Resources</span>
+          <FontAwesomeIcon icon={faChevronDown} /> 
+        </NavLink>
       </div>
     </nav>
   );
