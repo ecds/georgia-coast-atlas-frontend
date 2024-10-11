@@ -8,7 +8,7 @@ import { placesToFeatureCollection } from "~/utils/toFeatureCollection";
 import type { TPlace } from "~/types";
 import type { LoaderFunction } from "@remix-run/node";
 import "maplibre-gl/dist/maplibre-gl.css";
-import IntroModal from "~/components/layout/IntroModal";
+//import IntroModal from "~/components/layout/IntroModal";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import Loading from "~/components/layout/Loading";
 import Sidebar from "~/components/layout/Sidebar";
@@ -28,7 +28,7 @@ export const HydrateFallback = () => {
 
 const Explore = () => {
   const { map, mapLoaded } = useContext(MapContext);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
+  //const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
   const [activeIsland, setActiveIsland] = useState<TPlace | undefined>(
     undefined
   );
@@ -121,7 +121,7 @@ const Explore = () => {
     <div
       className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
     >
-      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
+      {/* {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "} */}
       {/* Render the modal */}
       <Suspense fallback={<Loading />}>
         <div className="w-1/3 verflow-scroll pb-32">
