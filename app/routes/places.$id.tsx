@@ -7,22 +7,19 @@ import {
 } from "@remix-run/react";
 import { fetchPlaceBySlug, fetchRelatedRecords } from "~/data/coredata";
 import { PlaceContext } from "~/contexts";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type {
-  TPlaceRecord,
-  TPlaceSource,
-  TRelatedCoreDataRecords,
-} from "~/types";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import PlaceContainer from "~/components/layout/PlaceContainer";
 import PlaceContent from "~/components/layout/PlaceContent";
 import RelatedRecords from "~/components/layout/RelatedRecords";
 import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
-import { ClientOnly } from "remix-utils/client-only";
-import Map from "~/components/mapping/Map.client";
-import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import Loading from "~/components/layout/Loading";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  TPlaceRecord,
+  TPlaceSource,
+  TRelatedCoreDataRecords,
+} from "~/types";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.id) {
@@ -55,7 +52,6 @@ const PlacePage = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ location:", location);
     setBackToSearch(location.state == "fromSearch");
   }, [location]);
 
@@ -74,9 +70,7 @@ const PlacePage = () => {
         <PlaceContainer>
           <PlaceContent>
             {backToSearch && (
-              <button onClick={() => navigate(-1, { state: "returning" })}>
-                Back to Search
-              </button>
+              <button onClick={() => navigate(-1)}>Back to Search</button>
             )}
             <Heading
               as="h1"
@@ -96,15 +90,6 @@ const PlacePage = () => {
           </PlaceContent>
           <RelatedRecords related={related} />
           {place.geojson && <PlaceGeoJSON />}
-          <div className="hidden md:block w-1/2 lg:w-3/5">
-            <ClientOnly>
-              {() => (
-                <Map>
-                  <StyleSwitcher></StyleSwitcher>
-                </Map>
-              )}
-            </ClientOnly>
-          </div>
         </PlaceContainer>
       </Suspense>
     </PlaceContext.Provider>

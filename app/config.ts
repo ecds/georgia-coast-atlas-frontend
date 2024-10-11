@@ -1,3 +1,4 @@
+import { LngLat, LngLatBounds } from "maplibre-gl";
 import { base, satellite, usgs } from "./mapStyles";
 import type {
   TBaseStyle,
@@ -453,3 +454,10 @@ export const PLACE_TYPES: TTypeColors = {
 };
 
 export const indexCollection = "georgia_coast";
+
+export const defaultBounds = () => {
+  return new LngLatBounds(
+    new LngLat(-82.01409567385569, 30.679059125170696),
+    new LngLat(-80.92207334522604, 32.11595891326837)
+  );
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Links,
   Meta,
@@ -7,24 +7,63 @@ import {
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
+  useLocation,
 } from "@remix-run/react";
 import styles from "./index.css?url";
 import Navbar from "./components/layout/Navbar";
-import { useLocation } from "react-router-dom";
 import Loading from "./components/layout/Loading";
 import RouteError from "./components/errorResponses/RouteError";
 import CodeError from "./components/errorResponses/CodeError";
 import { MapContext } from "./contexts";
 import type { LinksFunction } from "@remix-run/node";
-import type { Map } from "maplibre-gl";
+import type { Map as TMap } from "maplibre-gl";
+import { ClientOnly } from "remix-utils/client-only";
+import StyleSwitcher from "./components/mapping/StyleSwitcher";
+import Map from "./components/mapping/Map.client";
+import { topBarHeight } from "./config";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
+const ChildContent = ({
+  children,
+  isMapRoute,
+}: {
+  children: React.ReactNode;
+  isMapRoute: boolean;
+}) => {
+  if (isMapRoute) {
+    return (
+      <div
+        className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
+      >
+        {children}
+        <div className="hidden md:block flex-grow">
+          <ClientOnly>
+            {() => (
+              <Map>
+                <StyleSwitcher></StyleSwitcher>
+              </Map>
+            )}
+          </ClientOnly>
+        </div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  const isHomepage = location.pathname === "/";
-  const [map, setMap] = useState<Map>();
+  const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [isMapRoute, setIsMapRoute] = useState<boolean>(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const mapRoutes = ["/search", "/places", "/island", "/explore"];
+    setIsMapRoute(
+      mapRoutes.some((route) => location.pathname.startsWith(route))
+    );
+  }, [location]);
 
   return (
     <html lang="en">
@@ -44,7 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             className={`mx-auto relative mt-20 bg-white overflow-hidden`}
             id="main"
           >
-            {children}
+            <ChildContent isMapRoute={isMapRoute}>{children}</ChildContent>
           </main>
         </MapContext.Provider>
         <Loading />

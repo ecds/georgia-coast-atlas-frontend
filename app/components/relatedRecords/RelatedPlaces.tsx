@@ -107,19 +107,28 @@ const RelatedPlaces = ({ places }: Props) => {
 
     map.addSource(`${place.uuid}-places`, placesSource);
 
-    const clusterLayer = cluster(place.uuid);
+    const clusterLayer = cluster(
+      `clusters-${place.uuid}`,
+      `${place.uuid}-places`
+    );
 
     if (!map.getLayer(clusterLayer.id)) {
       map.addLayer(clusterLayer);
     }
 
-    const countLayer = clusterCount(place.uuid);
+    const countLayer = clusterCount(
+      `counts-${place.uuid}`,
+      `${place.uuid}-places`
+    );
 
     if (!map.getLayer(countLayer.id)) {
       map.addLayer(countLayer);
     }
 
-    const unclusteredLayer = singlePoint(place.uuid);
+    const unclusteredLayer = singlePoint(
+      `points-${place.uuid}`,
+      `${place.uuid}-places`
+    );
 
     if (!map.getLayer(unclusteredLayer.id)) {
       map.addLayer(unclusteredLayer);
