@@ -1,16 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { pulsingDot } from "~/utils/pulsingDot";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
-import PlacePopup from "../PlacePopup";
+// import PlacePopup from "../PlacePopup";
+// import { ClientOnly } from "remix-utils/client-only";
 
 const PlaceGeoJSON = () => {
   const { map } = useContext(MapContext);
   const { place, geoJSON, setLayerSources, setActiveLayers, activeLayers } =
     useContext(PlaceContext);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  // const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
     if (!map) return;
@@ -131,14 +132,21 @@ const PlaceGeoJSON = () => {
     };
   }, [map, place, setActiveLayers, setLayerSources, geoJSON]);
 
-  return (
-    <PlacePopup
-      map={map}
-      place={place}
-      show={showPopup}
-      onClose={() => setShowPopup(false)}
-    />
-  );
+  // TODO: This is probably not needed?
+  //   return (
+  //     <ClientOnly>
+  //       {() => (
+  //         <PlacePopup
+  //           location={}
+  //           show={showPopup}
+  //           onClose={() => setShowPopup(false)}
+  //         >
+  //           hello
+  //         </PlacePopup>
+  //       )}
+  //     </ClientOnly>
+  //   );
+  return null;
 };
 
 export default PlaceGeoJSON;

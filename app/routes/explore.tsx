@@ -26,6 +26,7 @@ export const HydrateFallback = () => {
 
 const Explore = () => {
   const { map, mapLoaded } = useContext(MapContext);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
   const [activeIsland, setActiveIsland] = useState<TPlace | undefined>(
     undefined
   );
@@ -121,8 +122,9 @@ const Explore = () => {
 
   return (
     <div
-      className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})] w-96 px-4`}
+      className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})] max-w-96 px-4`}
     >
+      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
       <Suspense fallback={<Loading />}>
         <Sidebar title="Explore the Islands">
           <ul className="space-y-2 divide-y divide-gray-200">

@@ -15,6 +15,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { TRelatedPlaceRecord } from "~/types";
 import { orderLayers } from "~/utils/orderLayers";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
+import { Link } from "@remix-run/react";
 
 interface Props {
   places: TRelatedPlaceRecord[];
@@ -191,32 +192,39 @@ const RelatedPlaces = ({ places }: Props) => {
   return (
     <RelatedSection title="Related Places">
       <div className="grid grid-cols-1 md:grid-cols-2">
-        {places.map((place) => {
+        {places.map((relatedPlace) => {
           return (
-            <div key={place.uuid}>
+            <div key={relatedPlace.uuid}>
               <button
-                key={place.uuid}
-                className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === place ? "underline font-bold" : ""}`}
+                key={relatedPlace.uuid}
+                className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
                 onClick={() => {
-                  setActivePlace(place);
+                  setActivePlace(relatedPlace);
                 }}
               >
-                {place.name}
+                {relatedPlace.name}
               </button>
               <PlacePopup
                 location={{
-                  lat: place.place_geometry.geometry_json.coordinates[1],
-                  lon: place.place_geometry.geometry_json.coordinates[0],
+                  lat: relatedPlace.place_geometry.geometry_json.coordinates[1],
+                  lon: relatedPlace.place_geometry.geometry_json.coordinates[0],
                 }}
-                show={activePlace === place}
+                show={activePlace === relatedPlace}
                 onClose={() => setActivePlace(undefined)}
               >
-                <h4>{place.name}</h4>
+                <h4 className="text-xl">{relatedPlace.name}</h4>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: place.description ?? "",
+                    __html: relatedPlace.description ?? "",
                   }}
                 />
+                <Link
+                  to={`/places/${relatedPlace.name.replaceAll(" ", "-")}`}
+                  state={{ backTo: place.name }}
+                  className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+                >
+                  Read More
+                </Link>
               </PlacePopup>
             </div>
           );
