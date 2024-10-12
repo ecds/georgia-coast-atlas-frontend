@@ -1,7 +1,7 @@
 import maplibregl from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
-import { topBarHeight } from "~/config";
+import { defaultBounds, topBarHeight } from "~/config";
 import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
@@ -17,11 +17,6 @@ const Map = ({ children }: Props) => {
   useEffect(() => {
     if (!setMap || !mapContainerRef.current) return;
 
-    const bounds = new maplibregl.LngLatBounds(
-      new maplibregl.LngLat(-82.01409567385569, 30.679059125170696),
-      new maplibregl.LngLat(-80.92207334522604, 32.11595891326837),
-    );
-
     let _map: any = undefined;
 
     try {
@@ -35,7 +30,7 @@ const Map = ({ children }: Props) => {
         attributionControl: false,
       });
 
-      _map.fitBounds(bounds);
+      _map.fitBounds(defaultBounds());
 
       _map.on("load", () => {
         setMap(_map);

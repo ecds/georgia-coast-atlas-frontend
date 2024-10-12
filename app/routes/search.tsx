@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { renderToString } from "react-dom/server";
 import {
   InstantSearch,
@@ -6,20 +6,18 @@ import {
   getServerState,
 } from "react-instantsearch";
 import { searchClient } from "~/utils/elasticsearchAdapter";
-import Map from "~/components/mapping/Map.client";
 import { ClientOnly } from "remix-utils/client-only";
 import GeoSearch from "~/components/search/GeoSearch";
 import SearchForm from "~/components/search/SearchForm";
 import { history } from "instantsearch.js/es/lib/routers";
 import { json } from "@remix-run/node";
 import { useLoaderData, useLocation } from "@remix-run/react";
-import { topBarHeight } from "~/config";
+import { defaultBounds } from "~/config";
 import { MapContext } from "~/contexts";
-import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import SearchResults from "~/components/search/SearchResults.client";
-import type { Map as TMap } from "maplibre-gl";
 import type { LoaderFunction } from "@remix-run/node";
 import type { InstantSearchServerState } from "react-instantsearch";
+import { getBB } from "~/utils/getBB";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
@@ -36,13 +34,22 @@ export const loader: LoaderFunction = async ({ request }) => {
 type SearchProps = {
   serverState?: InstantSearchServerState;
   serverUrl?: string;
-  location: any;
+  location?: any;
 };
 
 const Search = ({ serverState, serverUrl, location }: SearchProps) => {
+  const { map } = useContext(MapContext);
   useEffect(() => {
-    console.log("🚀 ~ Search ~ location:", location);
-  }, [location]);
+    if (location.search && map) {
+      const previousBounds = getBB(location.search);
+      if (previousBounds) {
+        map.fitBounds(previousBounds);
+      }
+    } else {
+      map?.fitBounds(defaultBounds());
+    }
+  }, [location, map]);
+
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -62,23 +69,10 @@ const Search = ({ serverState, serverUrl, location }: SearchProps) => {
           }),
         }}
       >
-        <div
-          className={`grid grid-cols-3 h-[calc(100vh-${topBarHeight})] overflow-hidden`}
-        >
-          <div className="col-span-1 overflow-auto">
-            <SearchForm />
-            <ClientOnly>{() => <SearchResults />}</ClientOnly>
-          </div>
-          <div className="col-span-2">
-            <ClientOnly>
-              {() => (
-                <Map>
-                  <StyleSwitcher />
-                </Map>
-              )}
-            </ClientOnly>
-            <GeoSearch />
-          </div>
+        <div className="overflow-auto w-full md:max-w-1/2 lg:w-2/5">
+          <SearchForm />
+          <ClientOnly>{() => <SearchResults />}</ClientOnly>
+          <GeoSearch />
         </div>
       </InstantSearch>
     </InstantSearchSSRProvider>

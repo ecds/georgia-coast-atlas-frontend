@@ -5,24 +5,23 @@ import {
   useNavigate,
   useLocation,
 } from "@remix-run/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { fetchPlaceBySlug, fetchRelatedRecords } from "~/data/coredata";
 import { PlaceContext } from "~/contexts";
+import Heading from "~/components/layout/Heading";
+import FeaturedMedium from "~/components/FeaturedMedium";
+import PlaceContent from "~/components/layout/PlaceContent";
+import RelatedRecords from "~/components/layout/RelatedRecords";
+import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
+import Loading from "~/components/layout/Loading";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type {
   TPlaceRecord,
   TPlaceSource,
   TRelatedCoreDataRecords,
 } from "~/types";
-import Heading from "~/components/layout/Heading";
-import FeaturedMedium from "~/components/FeaturedMedium";
-import PlaceContainer from "~/components/layout/PlaceContainer";
-import PlaceContent from "~/components/layout/PlaceContent";
-import RelatedRecords from "~/components/layout/RelatedRecords";
-import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
-import { ClientOnly } from "remix-utils/client-only";
-import Map from "~/components/mapping/Map.client";
-import StyleSwitcher from "~/components/mapping/StyleSwitcher";
-import Loading from "~/components/layout/Loading";
+// import { faArrowCircleLeft, faArrowLeft, faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.id) {
@@ -49,14 +48,14 @@ const PlacePage = () => {
   const { place, related } = useLoaderData<TPlaceRecord>();
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
   const [layerSources, setLayerSources] = useState<TPlaceSource>({});
-  const [backToSearch, setBackToSearch] = useState<boolean>(false);
+  const [backTo, setBackTo] = useState<boolean>(false);
   const topRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ location:", location);
-    setBackToSearch(location.state == "fromSearch");
+    // setBackToSearch(location.state == "fromSearch");
+    setBackTo(location.state?.backTo ?? undefined);
   }, [location]);
 
   return (
@@ -71,41 +70,33 @@ const PlacePage = () => {
       }}
     >
       <Suspense fallback={<Loading />}>
-        <PlaceContainer>
-          <PlaceContent>
-            {backToSearch && (
-              <button onClick={() => navigate(-1, { state: "returning" })}>
-                Back to Search
-              </button>
-            )}
-            <Heading
-              as="h1"
-              className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+        <PlaceContent>
+          {backTo && (
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-2 rounded-lg text-left w-max m-4 text-xs"
             >
-              {place.name}
-            </Heading>
-            <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-              <FeaturedMedium record={related} />
-            </div>
-            <div
-              className="relative px-4 -mt-12 primary-content"
-              dangerouslySetInnerHTML={{
-                __html: place.description,
-              }}
-            />
-          </PlaceContent>
-          <RelatedRecords related={related} />
-          {place.geojson && <PlaceGeoJSON />}
-          <div className="hidden md:block w-1/2 lg:w-3/5">
-            <ClientOnly>
-              {() => (
-                <Map>
-                  <StyleSwitcher></StyleSwitcher>
-                </Map>
-              )}
-            </ClientOnly>
+              <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo}
+            </button>
+          )}
+          <Heading
+            as="h1"
+            className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+          >
+            {place.name}
+          </Heading>
+          <div ref={topRef} className="relative -top-12 z-10 min-h-10">
+            <FeaturedMedium record={related} />
           </div>
-        </PlaceContainer>
+          <div
+            className="relative px-4 -mt-12 primary-content"
+            dangerouslySetInnerHTML={{
+              __html: place.description,
+            }}
+          />
+        </PlaceContent>
+        <RelatedRecords related={related} />
+        {place.geojson && <PlaceGeoJSON />}
       </Suspense>
     </PlaceContext.Provider>
   );

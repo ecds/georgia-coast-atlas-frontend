@@ -6,16 +6,13 @@ import {
   isRouteErrorResponse,
   defer,
 } from "@remix-run/react";
-import { ClientOnly } from "remix-utils/client-only";
-import { dataHosts, topBarHeight } from "~/config.ts";
+import { dataHosts } from "~/config.ts";
 import { fetchPlaceBySlug, fetchRelatedRecords } from "~/data/coredata";
-import Map from "~/components/mapping/Map.client";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
 import { PlaceContext, MapContext } from "~/contexts";
 import RelatedPhotographs from "~/components/relatedRecords/RelatedPhotographs";
-import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
@@ -108,58 +105,45 @@ const IslandPage = () => {
         setLayerSources,
       }}
     >
-      <div
-        className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
-      >
-        <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
-          <Suspense fallback={<HydrateFallback />}>
-            <div className="flex flex-col">
-              <Heading
-                as="h1"
-                className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
-              >
-                {place.name}
-              </Heading>
-              <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-                <FeaturedMedium record={related} />
-              </div>
-              <div
-                className="relative px-4 -mt-12 primary-content"
-                dangerouslySetInnerHTML={{
-                  __html: wpData?.content.rendered ?? place.description,
-                }}
-              />
+      <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
+        <Suspense fallback={<HydrateFallback />}>
+          <div className="flex flex-col">
+            <Heading
+              as="h1"
+              className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+            >
+              {place.name}
+            </Heading>
+            <div ref={topRef} className="relative -top-12 z-10 min-h-10">
+              <FeaturedMedium record={related} />
             </div>
-            {related.places?.relatedPlaces && (
-              <RelatedPlaces places={related.places.relatedPlaces} />
-            )}
-            {related.items?.videos && (
-              <RelatedVideos videos={related.items.videos} />
-            )}
-            {/* TODO: Fix how the manifest is indexed */}
-            {related.media_contents?.photographs && (
-              <RelatedPhotographs
-                manifest={`https://${dataHosts.coreData}${place.manifest.identifier}`}
-              />
-            )}
-            {related.places?.mapLayers && (
-              <RelatedMapLayers layers={related.places.mapLayers} />
-            )}
-            {related.places?.topoQuads && (
-              <RelatedTopoQuads quads={related.places.topoQuads} />
-            )}
-            {place.geojson && <PlaceGeoJSON />}
-          </Suspense>
-        </div>
-        <div className="hidden md:block w-1/2 lg:w-3/5">
-          <ClientOnly>
-            {() => (
-              <Map>
-                <StyleSwitcher></StyleSwitcher>
-              </Map>
-            )}
-          </ClientOnly>
-        </div>
+            <div
+              className="relative px-4 -mt-12 primary-content"
+              dangerouslySetInnerHTML={{
+                __html: wpData?.content.rendered ?? place.description,
+              }}
+            />
+          </div>
+          {related.places?.relatedPlaces && (
+            <RelatedPlaces places={related.places.relatedPlaces} />
+          )}
+          {related.items?.videos && (
+            <RelatedVideos videos={related.items.videos} />
+          )}
+          {/* TODO: Fix how the manifest is indexed */}
+          {related.media_contents?.photographs && (
+            <RelatedPhotographs
+              manifest={`https://${dataHosts.coreData}${place.manifest.identifier}`}
+            />
+          )}
+          {related.places?.mapLayers && (
+            <RelatedMapLayers layers={related.places.mapLayers} />
+          )}
+          {related.places?.topoQuads && (
+            <RelatedTopoQuads quads={related.places.topoQuads} />
+          )}
+          {place.geojson && <PlaceGeoJSON />}
+        </Suspense>
       </div>
     </PlaceContext.Provider>
   );

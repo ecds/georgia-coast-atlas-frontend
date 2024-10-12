@@ -24,6 +24,7 @@ export const toFeatureCollection = (
 ) => {
   return featureCollection(
     places.map((place) => {
+      // @ts-ignore
       const placeFeature = feature(place.place_geometry.geometry_json);
       placeFeature.properties = place;
       placeFeature.properties.hexColor = DEFAULT_COLOR;

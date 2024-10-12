@@ -28,7 +28,9 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     (event: MapLayerMouseEvent) => {
       if (!event.features || !event.features.length) return;
       const properties = event.features[0].properties;
-      navigate(`/places/${properties.slug}`, { state: "fromSearch" });
+      navigate(`/places/${properties.slug}`, {
+        state: { backTo: "Search Results" },
+      });
     },
     [navigate]
   );
