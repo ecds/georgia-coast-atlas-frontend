@@ -21,6 +21,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setIsExploreDropdownOpen(false);
+    setIsResourceDropdownOpen(false);
   }, [location]);
 
   const toggleExploreDropdown = () => {
@@ -69,7 +70,7 @@ const Navbar = () => {
           </button>
 
           {isExploreDropdownOpen && (
-            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max">
+            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max z-100">
               <ul className="text-black text-lg font-sans">
                 <li className="p-2 hover:bg-gray-100">
                   <Link to="/explore">Islands</Link>
@@ -114,12 +115,14 @@ const Navbar = () => {
             />
           </button>
           {isResourceDropdownOpen && (
-            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max">
+            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max z-100">
               <ul className="text-black text-lg font-sans">
                 <li className="p-2 hover:bg-gray-100">
                   <Link to="/about">About</Link>
                 </li>
-                <li className="p-2 cursor-not-allowed">Videos</li>
+                <li className="p-2 hover:bg-gray-100">
+                  <Link to="/videos">Videos</Link>
+                </li>
               </ul>
             </div>
           )}

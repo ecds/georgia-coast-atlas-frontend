@@ -21,7 +21,7 @@ const About = () => {
         <div className="bg-[#4A5D41] bg-opacity-90 p-12 rounded-lg max-w-5xl mx-auto"
               style={{ fontFamily: "Barlow, sans-serif" }}>
           <p className="text-lg text-center mb-8">
-            A partnership between <a href="https://envs.emory.edu/" className="text-blue-300 font-bold">Emory's University's Department of Environmental Sciences</a> 
+            A partnership between <a href="https://envs.emory.edu/" className="text-blue-300 font-bold">Emory's University's Department of Environmental Sciences </a> 
             and <a href="https://ecds.emory.edu/" className="text-blue-300 font-bold">Emory's Center for Digital Scholarship</a>, 
             The Georgia Coast Atlas project attempts to redefine the concept of a traditional atlas, instead using digital scholarship to explore the ecological and geographic dimensions of the Georgia coast.
             Through this atlas, we plan to combine various forms of digital media with scholarly content to produce a website that we anticipate will be of great value to educators, conservationists, students, and the general public.
@@ -59,7 +59,7 @@ const About = () => {
               <ul className="list-none text-center space-y-2">
                 <li>Cassiel Chen</li>
                 <li>Dana Kahn</li>
-                <li>Chidalla Veda Varshith Sai</li>
+                <li>Veda Varshith Sai Chidalla </li>
               </ul>
             </div>
 
