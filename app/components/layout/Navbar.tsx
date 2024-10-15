@@ -33,7 +33,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#4A5D41] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-10">
+    <nav className="bg-[#4A5D41] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-50">
       <ul className="flex flex-row space-x-6 items-center ml-6">
         <li>
           <NavLink to="/explore">
@@ -70,7 +70,7 @@ const Navbar = () => {
           </button>
 
           {isExploreDropdownOpen && (
-            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max z-100">
+            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max z-10">
               <ul className="text-black text-lg font-sans">
                 <li className="p-2 hover:bg-gray-100">
                   <Link to="/explore">Islands</Link>
