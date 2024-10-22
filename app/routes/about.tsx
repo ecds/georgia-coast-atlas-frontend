@@ -22,11 +22,19 @@ const About = () => {
     <div>
       <Navbar />
       <div
-        className="elementor-kit-40" // Class for WordPress CSS
-        dangerouslySetInnerHTML={{
-          __html: wpData?.content.rendered,
+        className="bg-cover bg-center h-screen w-screen"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(64, 62, 62, 0.9),rgba(73, 103, 76, 0.6)), url(/images/ossabaw.jpeg)",
         }}
-      />
+      >
+        <div
+          className="elementor-kit-40" // Class for WordPress CSS
+          dangerouslySetInnerHTML={{
+            __html: wpData?.content.rendered,
+          }}
+        />
+      </div>
     </div>
   );
 };
