@@ -36,7 +36,7 @@ const Navbar = () => {
     <nav className="bg-[#4A5D41] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-50">
       <ul className="flex flex-row space-x-6 items-center ml-6">
         <li>
-          <NavLink to="/explore">
+          <NavLink to="/">
             <img
               src={gcaLogo}
               alt="Georgia Coast Atlas Logo"
