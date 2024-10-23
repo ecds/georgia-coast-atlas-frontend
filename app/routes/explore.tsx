@@ -4,15 +4,14 @@ import { useLoaderData, defer, Link, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { fetchPlacesByType } from "~/data/coredata";
 import { placesToFeatureCollection } from "~/utils/toFeatureCollection";
-import type { TPlace } from "~/types";
-import type { LoaderFunction } from "@remix-run/node";
-import "maplibre-gl/dist/maplibre-gl.css";
 import IntroModal from "~/components/layout/IntroModal";
 import Loading from "~/components/layout/Loading";
 import Sidebar from "~/components/layout/Sidebar";
 import PlacePopup from "~/components/PlacePopup";
-import type { MapMouseEvent, MapGeoJSONFeature } from "maplibre-gl";
 import { defaultBounds, topBarHeight } from "~/config";
+import type { MapMouseEvent, MapGeoJSONFeature } from "maplibre-gl";
+import type { TPlace } from "~/types";
+import type { LoaderFunction } from "@remix-run/node";
 
 export const loader: LoaderFunction = async () => {
   const islands: TPlace[] = await fetchPlacesByType("Barrier Island");

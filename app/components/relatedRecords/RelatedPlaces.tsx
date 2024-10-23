@@ -11,11 +11,10 @@ import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../PlacePopup";
-import "maplibre-gl/dist/maplibre-gl.css";
-import type { TRelatedPlaceRecord } from "~/types";
 import { orderLayers } from "~/utils/orderLayers";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";
+import type { TRelatedPlaceRecord } from "~/types";
 
 interface Props {
   places: TRelatedPlaceRecord[];

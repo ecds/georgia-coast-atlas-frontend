@@ -15,12 +15,19 @@ import Loading from "./components/layout/Loading";
 import RouteError from "./components/errorResponses/RouteError";
 import CodeError from "./components/errorResponses/CodeError";
 import { MapContext } from "./contexts";
-import type { LinksFunction } from "@remix-run/node";
-import type { Map as TMap } from "maplibre-gl";
 import { ClientOnly } from "remix-utils/client-only";
 import StyleSwitcher from "./components/mapping/StyleSwitcher";
 import Map from "./components/mapping/Map.client";
 import { topBarHeight } from "./config";
+// https://stackoverflow.com/a/59429852/1792144
+// The following import prevents a Font Awesome icon server-side rendering bug,
+// where the icons flash from a very large icon down to a properly sized one:
+import "@fortawesome/fontawesome-svg-core/styles.css";
+// Prevent fontawesome from adding its CSS since we did it manually above:
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false; /* eslint-disable import/first */
+import type { LinksFunction } from "@remix-run/node";
+import type { Map as TMap } from "maplibre-gl";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
