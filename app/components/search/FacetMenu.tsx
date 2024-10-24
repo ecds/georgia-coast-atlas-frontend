@@ -26,7 +26,7 @@ const FacetMenu = () => {
     attribute: "types",
     showMore: true,
     showMoreLimit: Object.keys(PLACE_TYPES).length + 1,
-    operator: "and",
+    operator: "or",
   });
   return (
     <Menu>
@@ -89,7 +89,7 @@ const FacetMenu = () => {
             attribute="county"
             classNames={refinementListClassNames()}
             sortBy={["name:asc"]}
-            operator="and"
+            operator="or"
           />
         </MenuSection>
       </MenuItems>

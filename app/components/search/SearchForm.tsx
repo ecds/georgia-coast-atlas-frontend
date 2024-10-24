@@ -1,4 +1,4 @@
-import { SearchBox } from "react-instantsearch";
+import { CurrentRefinements, SearchBox } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -52,22 +52,25 @@ const LoadingComponent = () => {
 
 const SearchForm = () => {
   return (
-    <div className="flex sticky top-0 bg-white shadow-md">
+    <div className="grid grid-cols-5 sticky top-0 bg-white shadow-md">
       <SearchBox
         resetIconComponent={ResetComponent}
         submitIconComponent={SubmitComponent}
         loadingIconComponent={LoadingComponent}
         placeholder="Search Places"
         classNames={{
-          root: "ps-8 pe-4 grow",
+          root: "ps-8 pe-4 col-span-4",
           form: "max-w-md relative h-16",
           input:
             "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none",
           resetIcon: "hidden",
         }}
       />
-      <div className="py-4 pe-8">
+      <div className="py-4 pe-8 col-span-1">
         <FacetMenu />
+      </div>
+      <div className="col-span-5">
+        <CurrentRefinements />
       </div>
     </div>
   );
