@@ -44,7 +44,7 @@ export const searchClient = Client(sk, {
           ...sr,
           body: {
             ...sr.body,
-            size: 250,
+            size: 50,
           },
         };
       });

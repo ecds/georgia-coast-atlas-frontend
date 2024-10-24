@@ -1,39 +1,37 @@
-import { Link, NavLink, useLocation } from "@remix-run/react";
+import { Link, NavLink } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
-import { useEffect, useState } from "react";
+import { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import type { ReactNode } from "react";
+
+const NavMenuItems = ({ children }: { children: ReactNode }) => {
+  return (
+    <MenuItems
+      anchor="bottom"
+      transition
+      className="w-52 origin-top-right rounded-xl border border-white/5 bg-white p-1 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50"
+    >
+      {children}
+    </MenuItems>
+  );
+};
+
+const MenuLink = ({ children, to }: { children: ReactNode; to: string }) => {
+  return (
+    <Link
+      to={to}
+      className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50"
+    >
+      {children}
+    </Link>
+  );
+};
 
 const Navbar = () => {
-  const [isExploreDropdownOpen, setIsExploreDropdownOpen] =
-    useState<boolean>(false);
-  const [isResourceDropdownOpen, setIsResourceDropdownOpen] =
-    useState<boolean>(false);
-  const location = useLocation();
-
-  useEffect(() => {
-    if (isExploreDropdownOpen) setIsResourceDropdownOpen(false);
-  }, [isExploreDropdownOpen]);
-
-  useEffect(() => {
-    if (isResourceDropdownOpen) setIsExploreDropdownOpen(false);
-  }, [isResourceDropdownOpen]);
-
-  useEffect(() => {
-    setIsExploreDropdownOpen(false);
-    setIsResourceDropdownOpen(false);
-  }, [location]);
-
-  const toggleExploreDropdown = () => {
-    setIsExploreDropdownOpen(!isExploreDropdownOpen);
-  };
-
-  const toggleResourceDropdown = () => {
-    setIsResourceDropdownOpen(!isResourceDropdownOpen);
-  };
-
   return (
-    <nav className="bg-[#4A5D41] fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-50">
+    <nav className="bg-costal-green fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-50">
       <ul className="flex flex-row space-x-6 items-center ml-6">
         <li>
           <NavLink to="/">
@@ -46,47 +44,27 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div
-        className="flex items-center space-x-12 text-white text-lg"
-        style={{ fontFamily: "Barlow, sans-serif" }}
-      >
-        <div className="relative inline-block">
-          <button
-            onClick={toggleExploreDropdown}
-            className="tracking-wide flex items-center space-x-1 font-sans"
-            tabIndex={0}
-            onKeyDown={({ key }) => {
-              if (key === "Enter") {
-                toggleExploreDropdown();
-              }
-            }}
-          >
-            <span>Explore the Coast</span>
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              rotation={isExploreDropdownOpen ? undefined : 180}
-              className="transition-transform duration-400 ml-1"
-            />
-          </button>
-
-          {isExploreDropdownOpen && (
-            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max z-10">
-              <ul className="text-black text-lg font-sans">
-                <li className="p-2 hover:bg-gray-100">
-                  <Link to="/explore">Islands</Link>
-                </li>
-                <li className="p-2 cursor-not-allowed">Inland Counties</li>
-                {/* {islands.map((island) => (
-                  <li key={island.id} className="p-2 hover:bg-gray-100">
-                    <Link to={`/islands/${island.id}-island`}>
-                      {island.label} Island
-                    </Link>
-                  </li>
-                ))} */}
-              </ul>
-            </div>
-          )}
-        </div>
+      <div className="flex items-center space-x-12 text-white text-lg font-barlow">
+        <Menu>
+          <MenuButton as={Fragment}>
+            {({ active }) => (
+              <button>
+                Explore the Coast
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  rotation={active ? undefined : 180}
+                  className="transition-transform duration-100 ease-out ml-1"
+                />
+              </button>
+            )}
+          </MenuButton>
+          <NavMenuItems>
+            <MenuItem>
+              <MenuLink to="/explore">Islands</MenuLink>
+            </MenuItem>
+            <MenuLink to="#">Inland Counties</MenuLink>
+          </NavMenuItems>
+        </Menu>
 
         <NavLink
           to="/search"
@@ -95,38 +73,28 @@ const Navbar = () => {
         >
           Search By Place <FontAwesomeIcon icon={faSearch} className="ml-1" />
         </NavLink>
-
-        <div className="relative inline-block">
-          <button
-            onClick={toggleResourceDropdown}
-            className="tracking-wide flex items-center space-x-1 font-sans"
-            tabIndex={0}
-            onKeyDown={({ key }) => {
-              if (key === "Enter") {
-                toggleResourceDropdown();
-              }
-            }}
-          >
-            <span>Resources</span>
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              rotation={isResourceDropdownOpen ? undefined : 180}
-              className="transition-transform duration-400 ml-1"
-            />
-          </button>
-          {isResourceDropdownOpen && (
-            <div className="absolute right-0 mt-2 bg-white rounded-md shadow-lg w-max z-100">
-              <ul className="text-black text-lg font-sans">
-                <li className="p-2 hover:bg-gray-100">
-                  <Link to="/about">About</Link>
-                </li>
-                <li className="p-2 hover:bg-gray-100">
-                  <Link to="/videos">Videos</Link>
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
+        <Menu>
+          <MenuButton as={Fragment}>
+            {({ active }) => (
+              <button>
+                About
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  rotation={active ? undefined : 180}
+                  className="transition-transform duration-100 ease-out ml-1"
+                />
+              </button>
+            )}
+          </MenuButton>
+          <NavMenuItems>
+            <MenuItem>
+              <MenuLink to="/about">About</MenuLink>
+            </MenuItem>
+            <MenuItem>
+              <MenuLink to="/videos">Videos</MenuLink>
+            </MenuItem>
+          </NavMenuItems>
+        </Menu>
       </div>
     </nav>
   );

@@ -8,6 +8,9 @@ const bgColors = Object.keys(PLACE_TYPES).map(
 const textColors = Object.keys(PLACE_TYPES).map(
   (type) => `text-${PLACE_TYPES[type].textColor}`
 );
+const textBgColors = Object.keys(PLACE_TYPES).map(
+  (type) => `text-${PLACE_TYPES[type].bgColor}`
+);
 
 export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
@@ -51,6 +54,37 @@ export default {
           '[type="search"]::-webkit-search-results-decoration': {
             display: "none",
           },
+          '[type="checkbox"]:checked': {
+            backgroundColor: "currentColor",
+            backgroundPosition: "50%",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "0.55em 0.55em",
+            borderColor: "transparent",
+            backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M1 5.917 5.724 10.5 15 1.5'/%3E%3C/svg%3E")`,
+            "-webkit-print-color-adjust": "exact",
+            printColorAdjust: "exact",
+          },
+          '[type="checkbox"]': {
+            "--tw-shadow": "0 0 #0000",
+            "-webkit-appearance": "none",
+            "-moz-appearance": "none",
+            appearance: "none",
+            backgroundColor: "#fff",
+            backgroundOrigin: "border-box",
+            borderColor: "#6b7280",
+            borderWidth: "1px",
+            display: "inline-block",
+            flexShrink: "0",
+            height: "1rem",
+            padding: "0",
+            "-webkit-print-color-adjust": "exact",
+            printColorAdjust: "exact",
+            "-webkit-user-select": "none",
+            "-moz-user-select": "none",
+            userSelect: "none",
+            verticalAlign: "middle",
+            width: "1rem",
+          },
         },
         "[maplibregl-popup-close-button], button.maplibregl-popup-close-button":
           {
@@ -67,5 +101,6 @@ export default {
     "bg-red-100",
     ...bgColors,
     ...textColors,
+    ...textBgColors,
   ],
 } satisfies Config;

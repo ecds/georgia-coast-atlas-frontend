@@ -52,14 +52,14 @@ const LoadingComponent = () => {
 
 const SearchForm = () => {
   return (
-    <div className="flex">
+    <div className="flex sticky top-0 bg-white shadow-md">
       <SearchBox
         resetIconComponent={ResetComponent}
         submitIconComponent={SubmitComponent}
         loadingIconComponent={LoadingComponent}
         placeholder="Search Places"
         classNames={{
-          root: "ps-8 pe-4 sticky top-0 grow",
+          root: "ps-8 pe-4 grow",
           form: "max-w-md relative h-16",
           input:
             "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none",

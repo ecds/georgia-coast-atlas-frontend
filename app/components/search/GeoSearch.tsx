@@ -30,7 +30,7 @@ const GeoSearch = () => {
     }
 
     timerId = setTimeout(() => {
-      const hits = renderState.georgia_coast?.infiniteHits?.items;
+      const hits = renderState.georgia_coast?.geoSearch?.items;
       if (hits) setGeoJSON(hitsToFeatureCollection(hits));
     }, timeout);
   }, [renderState]);
