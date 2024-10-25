@@ -59,17 +59,12 @@ const GeoSearch = () => {
       const bounds = new LngLatBounds(
         bbox(geojson) as [number, number, number, number]
       );
-      console.log(
-        "🚀 ~ timerId=setTimeout ~ renderState:",
-        bounds,
-        refinementsChanged
-      );
       if (refinementsChanged) map?.fitBounds(bounds);
     }
   }, [geojson, map, refinementsChanged]);
 
   useEffect(() => {
-    if (renderState.georgia_coast.currentRefinements?.items) {
+    if (renderState?.georgia_coast?.currentRefinements?.items) {
       let newRefinements = renderState.georgia_coast.currentRefinements.items
         .map((items) => items.refinements.map((refinement) => refinement.label))
         .flat()
