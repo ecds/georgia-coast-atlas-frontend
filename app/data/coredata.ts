@@ -5,13 +5,12 @@ import {
   keys,
   modelFieldUUIDs,
 } from "~/config";
-import type { TPlaceRecord, TPlace, TESHit } from "~/types";
+import type { TPlaceRecord, TPlace, TESHit, TPlaceGeoJSON } from "~/types";
 
 const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
   esHeaders.append("authorization", `ApiKey ${keys.elasticsearch}`);
   esHeaders.append("Content-Type", "application/json");
-  esHeaders.append("ApiKey", keys.elasticsearch);
   return esHeaders;
 };
 
@@ -143,7 +142,6 @@ export const fetchPlacesByType = async (type: string) => {
         "location",
         "types",
         "identifier",
-        "geojson",
         "slug",
       ],
     },
@@ -160,5 +158,44 @@ export const fetchPlacesByType = async (type: string) => {
 
   const data = await response.json();
   const places: TPlace[] = data.hits.hits.map((hit: TESHit) => hit._source);
+  return places;
+};
+
+export const fetchPlacesGeoJSON = async (type: string) => {
+  const body = {
+    query: {
+      bool: {
+        filter: [
+          {
+            term: {
+              types: "Barrier Island",
+            },
+          },
+        ],
+        must: {
+          match_all: {},
+        },
+      },
+    },
+    size: 250,
+    from: 0,
+    _source: {
+      includes: ["geojson"],
+    },
+  };
+
+  const response = await fetch(
+    `${dataHosts.elasticSearch}/${indexCollection}/_search`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
+    }
+  );
+
+  const data = await response.json();
+  const places: TPlaceGeoJSON[] = data.hits.hits.map(
+    (hit: TESHit) => hit._source
+  );
   return places;
 };

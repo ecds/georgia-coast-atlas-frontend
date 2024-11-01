@@ -63,26 +63,6 @@ const PlacePopup = ({
     }
   }, [navigation, onClose]);
 
-  // useEffect(() => {
-  //   if (!map || !place.place_geometry || !place.place_geometry.geometry_json)
-  //     return;
-
-  //   switch (place.place_geometry.geometry_json.type) {
-  //     case "GeometryCollection":
-  //       setCoordinates(
-  //         place.place_geometry.geometry_json.geometries.find(
-  //           (geom) => geom.type === "Point"
-  //         )?.coordinates as [number, number]
-  //       );
-  //       break;
-  //     default:
-  //       setCoordinates(
-  //         place.place_geometry.geometry_json.coordinates as [number, number]
-  //       );
-  //       break;
-  //   }
-  // }, [map, place]);
-
   useEffect(() => {
     if (!map) return;
     if (location) setCoordinates([location.lon, location.lat]);

@@ -487,7 +487,7 @@ export type TTypeColors = {
 };
 
 export type TPlace = {
-  geojson: FeatureCollection;
+  geojson?: FeatureCollection;
   identifier: string;
   types: string[];
   name: string;
@@ -499,6 +499,10 @@ export type TPlace = {
   };
   uuid: string;
   slug: string;
+};
+
+export type TPlaceGeoJSON = {
+  geojson: FeatureCollection;
 };
 
 export type TESHit = {

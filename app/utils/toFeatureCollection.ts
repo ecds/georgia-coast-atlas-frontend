@@ -2,7 +2,7 @@ import { feature, featureCollection } from "@turf/turf";
 import { PLACE_TYPES } from "~/config";
 import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "tailwind.config";
-import type { TPlace, TPlaceRecord, TRelatedPlaceRecord } from "~/types";
+import type { TPlaceGeoJSON, TPlaceRecord, TRelatedPlaceRecord } from "~/types";
 import type { Hit } from "instantsearch.js";
 import type { FeatureCollection } from "geojson";
 
@@ -62,7 +62,7 @@ export const hitsToFeatureCollection = (hits: Hit[]) => {
   return featureCollection;
 };
 
-export const placesToFeatureCollection = (places: TPlace[]) => {
+export const placesToFeatureCollection = (places: TPlaceGeoJSON[]) => {
   return {
     type: "FeatureCollection",
     features: places.map((place) => place.geojson.features).flat(),

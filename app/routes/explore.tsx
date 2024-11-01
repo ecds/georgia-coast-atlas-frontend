@@ -2,7 +2,7 @@ import { useContext, useState, useEffect, useCallback, Suspense } from "react";
 import { MapContext } from "~/contexts";
 import { useLoaderData, defer, Link, useNavigation } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { fetchPlacesByType } from "~/data/coredata";
+import { fetchPlacesByType, fetchPlacesGeoJSON } from "~/data/coredata";
 import { placesToFeatureCollection } from "~/utils/toFeatureCollection";
 import IntroModal from "~/components/layout/IntroModal";
 import Loading from "~/components/layout/Loading";
@@ -12,11 +12,11 @@ import { defaultBounds, topBarHeight } from "~/config";
 import type { MapMouseEvent, MapGeoJSONFeature } from "maplibre-gl";
 import type { TPlace } from "~/types";
 import type { LoaderFunction } from "@remix-run/node";
+import type { FeatureCollection } from "geojson";
 
 export const loader: LoaderFunction = async () => {
   const islands: TPlace[] = await fetchPlacesByType("Barrier Island");
-  const geojson = placesToFeatureCollection(islands);
-  return defer({ islands, geojson });
+  return defer({ islands });
 };
 
 export const HydrateFallback = () => {
@@ -26,16 +26,25 @@ export const HydrateFallback = () => {
 const Explore = () => {
   const { map, mapLoaded } = useContext(MapContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
+  const [geojson, setGeojson] = useState<FeatureCollection>();
   const [activeIsland, setActiveIsland] = useState<TPlace | undefined>(
     undefined
   );
-  const { islands, geojson } = useLoaderData<typeof loader>();
+  const { islands } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   useEffect(() => {
     if (!map) return;
     if (navigation.state === "idle") map.fitBounds(defaultBounds());
   }, [map, navigation]);
+
+  useEffect(() => {
+    const fetchGeoJSON = async () => {
+      const islandGeoJSON = await fetchPlacesGeoJSON("Barrier Island");
+      setGeojson(placesToFeatureCollection(islandGeoJSON) as FeatureCollection);
+    };
+    fetchGeoJSON();
+  }, [islands]);
 
   const handleMouseEnter = useCallback(() => {
     if (map) map.getCanvas().style.cursor = "pointer";
