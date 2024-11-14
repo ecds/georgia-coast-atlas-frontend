@@ -6,3 +6,5 @@ export * from "./baseWithLabels";
 export * from "./usgs";
 export * from "./usgsWithLabels";
 export * from "./combined";
+export * from "./counties";
+export * from "./islands";

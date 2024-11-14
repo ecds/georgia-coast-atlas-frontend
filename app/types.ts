@@ -512,3 +512,19 @@ export type TESHit = {
   _score: number;
   _source: TPlace;
 };
+
+export type TCounty = {
+  name: string;
+  id: string;
+};
+
+export type TSearchFilter = {
+  term: {
+    types: string;
+  };
+};
+
+export type TSearchOptions = {
+  collection?: string;
+  filter?: TSearchFilter[] | Array<undefined>;
+};

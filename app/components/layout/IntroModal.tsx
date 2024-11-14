@@ -1,4 +1,9 @@
-import { Dialog, Transition } from "@headlessui/react";
+import {
+  Dialog,
+  DialogPanel,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +33,7 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
   return (
     <Transition appear show={true} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -37,12 +42,12 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/25" />
-        </Transition.Child>
+          <div className="fixed inset-0 " />
+        </TransitionChild>
 
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -51,7 +56,7 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-none bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white/60 p-6 text-left align-middle shadow-xl transition-all">
                 <h1 className="text-4xl font-bold leading-tight text-gray-900 mb-6 text-center">
                   <span>WELCOME TO THE</span>
                   <br />
@@ -60,7 +65,7 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
                 </h1>
                 <hr className="border-gray-300 mb-4" />
                 <div className="mt-2 text-center">
-                  <p className="text-base text-gray-500">
+                  <p className="text-base text-gray-700">
                     The Georgia coast, approximately 100 miles long, is defined
                     by its barrier islands and their back-barrier environments.
                     With a variety of life in maritime forests, salt marshes,
@@ -108,8 +113,8 @@ export default function IntroModal({ setIsOpen }: IntroModalProps) {
                     </button>
                   </div>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>

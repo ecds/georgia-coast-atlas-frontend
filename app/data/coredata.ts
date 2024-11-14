@@ -5,7 +5,13 @@ import {
   keys,
   modelFieldUUIDs,
 } from "~/config";
-import type { TPlaceRecord, TPlace, TESHit, TPlaceGeoJSON } from "~/types";
+import type {
+  TPlaceRecord,
+  TPlace,
+  TESHit,
+  TPlaceGeoJSON,
+  TSearchOptions,
+} from "~/types";
 
 const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
@@ -161,17 +167,14 @@ export const fetchPlacesByType = async (type: string) => {
   return places;
 };
 
-export const fetchPlacesGeoJSON = async (type: string) => {
+export const fetchPlacesGeoJSON = async ({
+  collection = indexCollection,
+  filter = [],
+}: TSearchOptions) => {
   const body = {
     query: {
       bool: {
-        filter: [
-          {
-            term: {
-              types: "Barrier Island",
-            },
-          },
-        ],
+        filter,
         must: {
           match_all: {},
         },
@@ -185,7 +188,7 @@ export const fetchPlacesGeoJSON = async (type: string) => {
   };
 
   const response = await fetch(
-    `${dataHosts.elasticSearch}/${indexCollection}/_search`,
+    `${dataHosts.elasticSearch}/${collection}/_search`,
     {
       method: "POST",
       body: JSON.stringify(body),

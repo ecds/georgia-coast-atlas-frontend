@@ -1,4 +1,6 @@
 import { base } from "./base";
+import { counties } from "./counties";
+import { islands } from "./islands";
 import { labels } from "./labels";
 import { satellite } from "./satellite";
 import { usgs } from "./usgs";
@@ -15,6 +17,8 @@ export const combined: StyleSpecification = {
     ...satellite.sources,
     ...usgs.sources,
     ...labels.sources,
+    ...islands.sources,
+    ...counties.sources,
   },
   layers: [
     {
@@ -31,6 +35,8 @@ export const combined: StyleSpecification = {
     ...base.layers,
     ...satellite.layers,
     ...usgs.layers,
+    ...islands.layers,
+    ...counties.layers,
     ...labels.layers,
   ],
 };
