@@ -45,26 +45,7 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center space-x-12 text-white text-lg font-barlow">
-        <Menu>
-          <MenuButton as={Fragment}>
-            {({ active }) => (
-              <button>
-                Explore the Coast
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  rotation={active ? undefined : 180}
-                  className="transition-transform duration-100 ease-out ml-1"
-                />
-              </button>
-            )}
-          </MenuButton>
-          <NavMenuItems>
-            <MenuItem>
-              <MenuLink to="/explore">Islands</MenuLink>
-            </MenuItem>
-            <MenuLink to="#">Inland Counties</MenuLink>
-          </NavMenuItems>
-        </Menu>
+        <NavLink to="/explore">Explore the Coast</NavLink>
 
         <NavLink
           to="/search"
