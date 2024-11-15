@@ -1,5 +1,7 @@
 import { NavLink } from "@remix-run/react";
 import { useEffect } from "react";
+import { ClientOnly } from "remix-utils/client-only";
+import LoopVideoGB from "~/components/layout/LoopVideoBG.client";
 
 export default function Index() {
   useEffect(() => {
@@ -11,16 +13,7 @@ export default function Index() {
 
   return (
     <div className="relative w-full h-screen">
-      <video
-        autoPlay
-        loop
-        muted
-        className="absolute top-0 left-0 w-full h-full object-cover z-1"
-      >
-        <source src="/videos/stcatherinesflyover2.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
+      <ClientOnly>{() => <LoopVideoGB />}</ClientOnly>
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-1"></div>
 
       <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
