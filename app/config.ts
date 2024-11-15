@@ -465,10 +465,10 @@ export const defaultBounds = () => {
 };
 
 export const counties: TCounty[] = [
-  { name: "Bryan", id: "8fa8c48f-4eb6-5471-9d9f-dad09d0e7cb3" },
-  { name: "Camden", id: "66bc87d3-4ae2-5b56-b2b4-f9146acce491" },
-  { name: "Chatham", id: "43214e18-2a16-5d8a-a5a4-8db55479e3e2" },
-  { name: "Glynn", id: "d6375cd7-a126-534d-a661-951fc482ce63" },
-  { name: "Liberty", id: "2f0676be-462b-509e-8bb2-1cf287840f6f" },
-  { name: "McIntosh", id: "4ca467df-916d-5a9e-86a4-263fc35b2a7b" },
+  { name: "Bryan", uuid: "8fa8c48f-4eb6-5471-9d9f-dad09d0e7cb3" },
+  { name: "Camden", uuid: "66bc87d3-4ae2-5b56-b2b4-f9146acce491" },
+  { name: "Chatham", uuid: "43214e18-2a16-5d8a-a5a4-8db55479e3e2" },
+  { name: "Glynn", uuid: "d6375cd7-a126-534d-a661-951fc482ce63" },
+  { name: "Liberty", uuid: "2f0676be-462b-509e-8bb2-1cf287840f6f" },
+  { name: "McIntosh", uuid: "4ca467df-916d-5a9e-86a4-263fc35b2a7b" },
 ];

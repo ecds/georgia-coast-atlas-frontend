@@ -515,7 +515,11 @@ export type TESHit = {
 
 export type TCounty = {
   name: string;
-  id: string;
+  uuid: string;
+  location?: {
+    lon: number;
+    lat: number;
+  };
 };
 
 export type TSearchFilter = {

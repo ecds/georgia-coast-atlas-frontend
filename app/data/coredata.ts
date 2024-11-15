@@ -1,5 +1,6 @@
 import {
   coreDataRelatedEndpoints,
+  countyIndexCollection,
   dataHosts,
   indexCollection,
   keys,
@@ -11,6 +12,7 @@ import type {
   TESHit,
   TPlaceGeoJSON,
   TSearchOptions,
+  TCounty,
 } from "~/types";
 
 const elasticSearchHeaders = () => {
@@ -119,6 +121,26 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
   const data = await response.json();
   const place: TPlace = data.hits.hits.map((hit: TESHit) => hit._source)[0];
   return place;
+};
+
+export const fetchCounties = async () => {
+  const body = {
+    _source: {
+      includes: ["name", "location"],
+    },
+  };
+  const response = await fetch(
+    `${dataHosts.elasticSearch}/${countyIndexCollection}/_search`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
+    }
+  );
+
+  const data = await response.json();
+  const counties: TCounty[] = data.hits.hits.map((hit: TESHit) => hit._source);
+  return counties;
 };
 
 export const fetchPlacesByType = async (type: string) => {

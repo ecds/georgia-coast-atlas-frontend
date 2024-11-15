@@ -24,6 +24,12 @@ const Islands = ({ islands }: Props) => {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
           for (const feature of features) {
+            if (hoveredId.current !== feature.id) {
+              map.setFeatureState(
+                { source: "islands", id: hoveredId.current },
+                { hovered: false }
+              );
+            }
             hoveredId.current = feature.properties.uuid;
             map.setFeatureState(
               { source: "islands", id: feature.properties.uuid },
@@ -37,6 +43,7 @@ const Islands = ({ islands }: Props) => {
   );
 
   const handleMouseLeave = useCallback(() => {
+    console.log("leave island");
     if (map) {
       map.getCanvas().style.cursor = "";
       map.setFeatureState(
@@ -71,7 +78,7 @@ const Islands = ({ islands }: Props) => {
       map.setLayoutProperty(islandLayer.id, "visibility", "visible");
     }
 
-    map.on("mouseenter", "islands-fill", handleMouseEnter);
+    map.on("mousemove", "islands-fill", handleMouseEnter);
     map.on("mouseleave", "islands-fill", handleMouseLeave);
     map.on("click", "islands-fill", handleClick);
 
@@ -79,7 +86,7 @@ const Islands = ({ islands }: Props) => {
       for (const islandLayer of islandStyle.layers) {
         map.setLayoutProperty(islandLayer.id, "visibility", "none");
       }
-      map.off("mouseenter", "islands-fill", handleMouseEnter);
+      map.off("mousemove", "islands-fill", handleMouseEnter);
       map.off("mouseleave", "islands-fill", handleMouseLeave);
       map.off("click", "islands-fill", handleClick);
     };

@@ -1,18 +1,19 @@
 import { useContext, useState, useEffect, Suspense } from "react";
 import { MapContext } from "~/contexts";
 import { useLoaderData, defer, useNavigation } from "@remix-run/react";
-import { fetchPlacesByType } from "~/data/coredata";
+import { fetchCounties, fetchPlacesByType } from "~/data/coredata";
 import IntroModal from "~/components/layout/IntroModal";
 import Loading from "~/components/layout/Loading";
 import { defaultBounds, topBarHeight } from "~/config";
-import type { TPlace } from "~/types";
+import type { TCounty, TPlace } from "~/types";
 import type { LoaderFunction } from "@remix-run/node";
 import Counties from "~/components/mapping/Counties";
 import Islands from "~/components/mapping/Islands";
 
 export const loader: LoaderFunction = async () => {
   const islands: TPlace[] = await fetchPlacesByType("Barrier Island");
-  return defer({ islands });
+  const counties: TCounty[] = await fetchCounties();
+  return defer({ islands, counties });
 };
 
 export const HydrateFallback = () => {
@@ -22,7 +23,7 @@ export const HydrateFallback = () => {
 const Explore = () => {
   const { map } = useContext(MapContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
-  const { islands } = useLoaderData<typeof loader>();
+  const { islands, counties } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -36,7 +37,7 @@ const Explore = () => {
     >
       {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
       <Suspense fallback={<Loading />}>
-        <Counties />
+        <Counties counties={counties} />
         <Islands islands={islands} />
       </Suspense>
     </div>
