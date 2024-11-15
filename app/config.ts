@@ -459,8 +459,8 @@ export const countyIndexCollection = "georgia_coast_counties";
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
-    new maplibregl.LngLat(-82.01409567385569, 30.679059125170696),
-    new maplibregl.LngLat(-80.92207334522604, 32.11595891326837)
+    new maplibregl.LngLat(-81.93612670899995, 30.71087651700003),
+    new maplibregl.LngLat(-80.85723315099995, 32.241012160000025)
   );
 };
 
