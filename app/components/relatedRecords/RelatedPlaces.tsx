@@ -10,7 +10,7 @@ import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import PlacePopup from "../PlacePopup";
+import PlacePopup from "../mapping/PlacePopup";
 import { orderLayers } from "~/utils/orderLayers";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";

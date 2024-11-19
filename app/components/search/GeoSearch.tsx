@@ -15,10 +15,9 @@ let timeout = 200;
 const GeoSearch = () => {
   const [geojson, setGeoJSON] = useState<FeatureCollection>();
   const previousRefinements = useRef<string>();
-  const [refinementsChanged, setRefinementsChanged] = useState<boolean>(false);
   const { map, mapLoaded } = useContext(MapContext);
   const { refine } = useGeoSearch();
-  const { renderState } = useInstantSearch();
+  const { renderState, indexRenderState } = useInstantSearch();
 
   const handleBoundsChange = useCallback(
     (event: MapLibreEvent) => {
@@ -47,7 +46,9 @@ const GeoSearch = () => {
 
   useEffect(() => {
     if (!mapLoaded || !map) return;
-    map.on("moveend", handleBoundsChange);
+    // Only listen once to avoid a loop where there is a slight difference between
+    // the viewable bounds and the query bounds.
+    map.once("moveend", handleBoundsChange);
 
     return () => {
       map.off("moveend", handleBoundsChange);
@@ -55,13 +56,15 @@ const GeoSearch = () => {
   }, [map, mapLoaded, handleBoundsChange]);
 
   useEffect(() => {
-    if (geojson) {
+    if (geojson && map) {
       const bounds = new LngLatBounds(
         bbox(geojson) as [number, number, number, number]
       );
-      if (refinementsChanged) map?.fitBounds(bounds);
+      if (indexRenderState.searchBox?.query !== "")
+        map?.fitBounds(bounds, { padding: 20 });
     }
-  }, [geojson, map, refinementsChanged]);
+    map?.once("moveend", handleBoundsChange);
+  }, [geojson, map, indexRenderState, handleBoundsChange]);
 
   useEffect(() => {
     if (renderState?.georgia_coast?.currentRefinements?.items) {
@@ -71,7 +74,7 @@ const GeoSearch = () => {
         .sort()
         .toLocaleString();
       newRefinements += renderState.georgia_coast.pagination?.currentRefinement;
-      setRefinementsChanged(newRefinements !== previousRefinements.current);
+      // setRefinementsChanged(newRefinements !== previousRefinements.current);
       previousRefinements.current = newRefinements;
     }
   }, [renderState]);

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import { largeCluster } from "~/mapStyles/geoJSON";
-import PlacePopup from "~/components/PlacePopup";
+import PlacePopup from "~/components/mapping/PlacePopup";
 import { ClientOnly } from "remix-utils/client-only";
 import type { FeatureCollection } from "geojson";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
