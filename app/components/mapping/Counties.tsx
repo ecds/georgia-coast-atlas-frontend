@@ -1,8 +1,13 @@
+// TODO: We need to bring this inline with the Islands component.
+// We will need to update the shape file on the GeoServer so that
+// the properties line up with what is expected from Core Data.
+// Specifically, COUNTYNAME needs to be name.
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
-import PlacePopup from "../PlacePopup";
+import PlacePopup from "./PlacePopup";
 import { counties as countyStyle } from "~/mapStyles";
+import PlaceTooltip from "./PlaceTooltip";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { TCounty } from "~/types";
 
@@ -12,38 +17,47 @@ const Counties = ({ counties }: { counties: TCounty[] }) => {
   const [activeCounty, setActiveCounty] = useState<string | undefined>(
     undefined
   );
+  const [hoveredCounty, setHoveredCounty] = useState<string | undefined>(
+    undefined
+  );
   const [popupLocation, setPopupLocation] = useState<{
+    lat: number;
+    lon: number;
+  }>({ lat: 0, lon: 0 });
+  const [tooltipLocation, setTooltipLocation] = useState<{
     lat: number;
     lon: number;
   }>({ lat: 0, lon: 0 });
 
   const handleMouseEnter = useCallback(
-    ({ features }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+    ({
+      features,
+      lngLat,
+    }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
           for (const feature of features) {
-            if (hoveredId.current !== feature.id) {
+            if (hoveredId.current && hoveredId.current !== feature.id) {
               map.setFeatureState(
                 { source: "counties", id: hoveredId.current },
                 { hovered: false }
               );
             }
-            // setActiveCounty((county) => {
-            //   if (feature && county !== feature.properties.name)
-            //     return undefined;
-            //   return county;
-            // });
             hoveredId.current = feature.properties.uuid;
             map.setFeatureState(
               { source: "counties", id: feature.id },
               { hovered: true }
             );
+            const hoveredCountyName = feature.properties.COUNTYNAME;
+            setTooltipLocation({ lon: lngLat.lng, lat: lngLat.lat });
+            if (activeCounty != hoveredCountyName)
+              setHoveredCounty(hoveredCountyName);
           }
         }
       }
     },
-    [map]
+    [map, activeCounty]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -54,7 +68,7 @@ const Counties = ({ counties }: { counties: TCounty[] }) => {
         { hovered: false }
       );
       hoveredId.current = undefined;
-      setActiveCounty(undefined);
+      setHoveredCounty(undefined);
     }
   }, [map]);
 
@@ -63,10 +77,13 @@ const Counties = ({ counties }: { counties: TCounty[] }) => {
       features,
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+      setHoveredCounty(undefined);
       setPopupLocation({ lon: lngLat.lng, lat: lngLat.lat });
       if (!map) return;
-      if (features && features.length > 0)
-        setActiveCounty(features[0].properties.name);
+      if (features && features.length > 0) {
+        setActiveCounty(features[0].properties.COUNTYNAME);
+        setHoveredCounty(undefined);
+      }
     },
     [map]
   );
@@ -90,20 +107,36 @@ const Counties = ({ counties }: { counties: TCounty[] }) => {
       map.off("click", "counties-fill", handleClick);
     };
   }, [map, handleMouseEnter, handleMouseLeave, handleClick]);
+
+  useEffect(() => {
+    if (hoveredCounty) setActiveCounty(undefined);
+  }, [hoveredCounty]);
+
   return (
     <>
       {counties.map((county) => {
         return (
           <ClientOnly key={county.uuid}>
             {() => (
-              <PlacePopup
-                show={activeCounty === county.name}
-                onClose={() => setActiveCounty(undefined)}
-                zoomToFeature={false}
-                location={popupLocation}
-              >
-                <h4 className="text-xl">{county.name}</h4>
-              </PlacePopup>
+              <>
+                <PlacePopup
+                  show={activeCounty === county.name}
+                  onClose={() => setActiveCounty(undefined)}
+                  zoomToFeature={false}
+                  location={popupLocation}
+                >
+                  <h4 className="text-xl">{county.name}</h4>
+                </PlacePopup>
+                <PlaceTooltip
+                  show={hoveredCounty == county.name}
+                  location={tooltipLocation}
+                  onClose={() => setActiveCounty(undefined)}
+                  zoomToFeature={false}
+                  anchor="right"
+                >
+                  <h4 className="text-white">{county.name} County</h4>
+                </PlaceTooltip>
+              </>
             )}
           </ClientOnly>
         );
