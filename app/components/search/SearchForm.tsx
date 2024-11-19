@@ -1,4 +1,4 @@
-import { CurrentRefinements, SearchBox } from "react-instantsearch";
+import { SearchBox } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -6,8 +6,9 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import FacetMenu from "./FacetMenu";
+import CurrentRefinements from "./CurrentRefinements";
 import { topBarHeight } from "~/config";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 const ButtonComponent = ({
   children,
@@ -24,6 +25,7 @@ const ButtonComponent = ({
     </span>
   );
 };
+
 const SubmitComponent = () => {
   return (
     <ButtonComponent className="start-0">
@@ -59,7 +61,7 @@ const SearchForm = () => {
         loadingIconComponent={LoadingComponent}
         placeholder="Search Places"
         classNames={{
-          root: "ps-8 pe-4 col-span-4",
+          root: "px-4 col-span-4",
           form: "max-w-md relative h-16",
           input:
             "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none",

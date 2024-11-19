@@ -126,7 +126,7 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
 export const fetchCounties = async () => {
   const body = {
     _source: {
-      includes: ["name", "location"],
+      includes: ["name", "location", "uuid"],
     },
   };
   const response = await fetch(

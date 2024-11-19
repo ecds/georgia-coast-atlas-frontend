@@ -22,20 +22,23 @@ export const HydrateFallback = () => {
 
 const Explore = () => {
   const { map } = useContext(MapContext);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Modal state
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
   const { islands, counties } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   useEffect(() => {
     if (!map) return;
-    if (navigation.state === "idle") map.fitBounds(defaultBounds());
+    if (navigation.state === "idle") {
+      map.fitBounds(defaultBounds());
+      setIsModalOpen(true);
+    }
   }, [map, navigation]);
 
   return (
     <div
       className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})] max-screen`}
     >
-      {isModalOpen && <IntroModal setIsOpen={setIsModalOpen} />}{" "}
+      <IntroModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
       <Suspense fallback={<Loading />}>
         <Counties counties={counties} />
         <Islands islands={islands} />
