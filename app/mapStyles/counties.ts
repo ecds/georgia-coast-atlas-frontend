@@ -6,7 +6,7 @@ export const counties: StyleSpecification = {
   sources: {
     counties: {
       type: "geojson",
-      data: "/geojson/counties",
+      data: "https://geoserver.ecds.emory.edu/CoastalGeorgia/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=CoastalGeorgia:InlandCounties&maxFeatures=500&outputFormat=application%2Fjson",
       promoteId: "uuid",
     },
   },

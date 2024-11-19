@@ -16,9 +16,9 @@ export const combined: StyleSpecification = {
     ...base.sources,
     ...satellite.sources,
     ...usgs.sources,
-    ...labels.sources,
     ...islands.sources,
     ...counties.sources,
+    ...labels.sources,
   },
   layers: [
     {

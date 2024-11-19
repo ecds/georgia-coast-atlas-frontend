@@ -14,6 +14,7 @@ const textBgColors = Object.keys(PLACE_TYPES).map(
 
 export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  important: true,
   theme: {
     extend: {
       fontFamily: {
@@ -89,6 +90,17 @@ export default {
         "[maplibregl-popup-close-button], button.maplibregl-popup-close-button":
           {
             paddingRight: ".5rem !important",
+          },
+        "[maplibregl-popup-content], .tooltip .maplibregl-popup-content": {
+          background: "black",
+        },
+        "[maplibregl-popup-tip-left], .tooltip.maplibregl-popup-anchor-left .maplibregl-popup-tip":
+          {
+            borderRightColor: "black",
+          },
+        "[maplibregl-popup-tip-right], .tooltip.maplibregl-popup-anchor-right .maplibregl-popup-tip":
+          {
+            borderLeftColor: "black",
           },
       });
     }),

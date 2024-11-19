@@ -26,7 +26,8 @@ import type {
 import RelatedMapLayers from "~/components/relatedRecords/RelatedMapLayers";
 import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
 import Heading from "~/components/layout/Heading";
-import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
+// import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
+import { islands as islandStyle } from "~/mapStyles";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 
@@ -75,12 +76,20 @@ const IslandPage = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (navigation.state === "idle") topRef.current?.scrollIntoView();
-    if (navigation.state === "loading") {
-      if (map?.getLayer(`${place.uuid}-outline`))
-        map.removeLayer(`${place.uuid}-outline`);
-      if (map?.getLayer(`${place.uuid}-fill`))
-        map.removeLayer(`${place.uuid}-fill`);
+    if (navigation.state === "idle" && map) {
+      for (const islandLayer of islandStyle.layers) {
+        map.setFilter(islandLayer.id, ["==", ["get", "uuid"], place.uuid]);
+        map.setLayoutProperty(islandLayer.id, "visibility", "visible");
+      }
+
+      topRef.current?.scrollIntoView();
+    }
+
+    if (navigation.state === "loading" && map) {
+      for (const islandLayer of islandStyle.layers) {
+        map.setFilter(islandLayer.id, undefined);
+        map.setLayoutProperty(islandLayer.id, "visibility", "none");
+      }
     }
   }, [navigation, place, map]);
 
@@ -142,7 +151,7 @@ const IslandPage = () => {
           {related.places?.topoQuads && (
             <RelatedTopoQuads quads={related.places.topoQuads} />
           )}
-          {place.geojson && <PlaceGeoJSON />}
+          {/* {place.geojson && <PlaceGeoJSON />} */}
         </Suspense>
       </div>
     </PlaceContext.Provider>
