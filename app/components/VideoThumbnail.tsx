@@ -1,34 +1,14 @@
-import { useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlayCircle } from "@fortawesome/free-solid-svg-icons";
-import type { TVideoItem } from "../types";
+import type { ESVideo } from "~/esTypes";
 
 interface Props {
-  video: TVideoItem;
+  video: ESVideo;
   imgClassName?: string;
   figClassName?: string;
 }
 
 const VideoThumbnail = ({ video, imgClassName, figClassName }: Props) => {
-  const [thumbnailSrc, setThumbnailSrc] = useState<string | undefined>(
-    undefined,
-  );
-
-  useMemo(() => {
-    switch (video.provider) {
-      case "Vimeo":
-        setThumbnailSrc(`https://vumbnail.com/${video.embed_id}.jpg`);
-        break;
-      case "YouTube":
-        setThumbnailSrc(
-          `https://img.youtube.com/vi/${video.embed_id}/hqdefault.jpg`,
-        );
-      default:
-        break;
-    }
-    return;
-  }, [video]);
-
   return (
     <figure className={`${figClassName ?? ""}`}>
       <div className="relative">
@@ -38,11 +18,13 @@ const VideoThumbnail = ({ video, imgClassName, figClassName }: Props) => {
             className="drop-shadow-2xl opacity-80"
           />
         </span>
-        <img className={`${imgClassName ?? ""}`} src={thumbnailSrc} alt="" />
+        <img
+          className={`${imgClassName ?? ""}`}
+          src={video.thumbnail_url}
+          alt=""
+        />
       </div>
-      <figcaption className="md:w-32 text-left">
-        {video.source_titles.find((t) => t.primary)?.name.name}
-      </figcaption>
+      <figcaption className="md:w-32 text-left">{video.name}</figcaption>
     </figure>
   );
 };

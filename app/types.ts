@@ -10,6 +10,7 @@ import type {
 import type { LabeledIIIFExternalWebResource } from "@samvera/clover-iiif/image";
 import type { ImageService } from "@iiif/presentation-3";
 import type { SourceSpecification } from "maplibre-gl";
+import { ESPlace } from "./esTypes";
 
 export type Geometry =
   | Point
@@ -111,7 +112,7 @@ export type TCoreDataPlace = {
   user_defined: TUserDefinedField;
 };
 
-export type TPlaceRecord = TCoreDataPlace & {
+export type TPlaceRecord = {
   uuid: string;
   name: string;
   place_names: TNames[];
@@ -172,6 +173,9 @@ type TCoreDataItem = {
 export type TVideoItem = TCoreDataItem & {
   embed_id: string;
   provider: "Vimeo" | "YouTube";
+  name: string;
+  thumbnail_url: string;
+  embed_url: string;
 };
 
 type TThumbnail = {
@@ -243,7 +247,7 @@ export type TIslandConfig = {
 
 export type TIslandServerData = {
   island: TIslandConfig;
-  place: TPlaceRecord;
+  place: ESPlace;
 };
 
 export type TRelatedPlaceRecord = {

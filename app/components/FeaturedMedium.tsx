@@ -1,19 +1,16 @@
+import type { ESPlace } from "~/esTypes";
 import VideoEmbed from "./VideoEmbed";
-import type { TRelatedCoreDataRecords } from "~/types";
 
 interface Props {
-  record: TRelatedCoreDataRecords;
+  record: ESPlace;
 }
 
 const FeaturedMedium = ({ record }: Props) => {
-  if (!record.items || !record.media_contents) return null;
-  if (record.items?.videos) {
-    return <VideoEmbed video={record.items.videos[0]} />;
+  if (record.featured_video) {
+    return <VideoEmbed video={record.featured_video} />;
   }
-  if (record.media_contents?.photographs) {
-    return (
-      <img src={record.media_contents.photographs[0].content_url} alt="" />
-    );
+  if (record.featured_photograph) {
+    return <img src={record.featured_photograph} alt="" />;
   }
   return <></>;
 };

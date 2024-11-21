@@ -6,6 +6,7 @@ import {
   keys,
   modelFieldUUIDs,
 } from "~/config";
+import { ESPlace } from "~/esTypes";
 import type {
   TPlaceRecord,
   TPlace,
@@ -95,16 +96,20 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
     from: 0,
     _source: {
       includes: [
-        "name",
-        "description",
         "county",
-        "uuid",
-        "location",
-        "types",
+        "description",
+        "featured_photograph",
+        "featured_video",
         "identifier",
-        "geojson",
+        "manifests",
+        "name",
+        "location",
+        "photographs",
+        "places",
         "slug",
-        "manifest",
+        "types",
+        "uuid",
+        "videos",
       ],
     },
   };
@@ -119,7 +124,7 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
   );
 
   const data = await response.json();
-  const place: TPlace = data.hits.hits.map((hit: TESHit) => hit._source)[0];
+  const place: ESPlace = data.hits.hits.map((hit: TESHit) => hit._source)[0];
   return place;
 };
 

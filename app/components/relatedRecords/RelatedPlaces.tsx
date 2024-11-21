@@ -1,110 +1,95 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import type {
-  MapLayerMouseEvent,
-  GeoJSONSource,
-  SourceSpecification,
-} from "maplibre-gl";
-import { LngLatBounds } from "maplibre-gl";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
-import { pulsingDot } from "~/utils/pulsingDot";
 import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../mapping/PlacePopup";
-import { orderLayers } from "~/utils/orderLayers";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";
-import type { TRelatedPlaceRecord } from "~/types";
+import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
+import type { ESRelatedPlace } from "~/esTypes";
 
-interface Props {
-  places: TRelatedPlaceRecord[];
-}
-
-const RelatedPlaces = ({ places }: Props) => {
+const RelatedPlaces = () => {
   const { map } = useContext(MapContext);
   const { place, setLayerSources, setActiveLayers } = useContext(PlaceContext);
-  const [activePlace, setActivePlace] = useState<
-    TRelatedPlaceRecord | undefined
-  >(undefined);
-
-  const handleUnclusteredPointClick = useCallback(
-    (e: MapLayerMouseEvent) => {
-      if (!e.features || !e.features.length) return;
-      const feature = e.features[0];
-      const clickedPlace = places.find(
-        (place) => place.identifier === feature.properties.identifier
-      );
-
-      setActivePlace(clickedPlace);
-    },
-    [places]
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>(
+    undefined
+  );
+  const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>(
+    undefined
   );
 
-  const handleClusterClick = useCallback(
-    async (e: MapLayerMouseEvent) => {
+  const handleClick = useCallback(
+    async ({ features, lngLat, ...rest }: MapLayerMouseEvent) => {
       if (!map) return;
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: [`${place.uuid}-clusters`],
-      });
-      if (
-        features.length > 0 &&
-        features[0].properties &&
-        features[0].geometry
-      ) {
-        const clusterId = features[0].properties.cluster_id;
-        const source = map.getSource(`${place.uuid}-places`) as GeoJSONSource;
-        if (source) {
-          try {
-            const zoom = await source.getClusterExpansionZoom(clusterId);
-            const geometry = features[0].geometry;
-            if (geometry.type === "Point") {
-              map.easeTo({
-                center: geometry.coordinates as [number, number],
-                zoom: zoom,
-              });
-            }
-          } catch (err) {
-            console.error("Error expanding cluster:", err);
-          }
-        }
+
+      if (features && features[0].id) {
+        const clickedPlace = place.places.find(
+          (relatedPlaces) => relatedPlaces.uuid === features[0].id
+        );
+        setActivePlace(clickedPlace);
+      }
+      if (features && features[0].properties.cluster) {
+        const source: GeoJSONSource | undefined = map.getSource(
+          features[0].layer.source
+        );
+        if (!source) return;
+        const zoom = await source.getClusterExpansionZoom(
+          features[0].properties.cluster_id
+        );
+        map.easeTo({
+          center: lngLat,
+          zoom,
+        });
       }
     },
     [map, place]
   );
 
+  const handleMouseEnter = useCallback(() => {
+    if (!map) return;
+    map.getCanvas().style.cursor = "pointer";
+  }, [map]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!map) return;
+    map.getCanvas().style.cursor = "";
+  }, [map]);
+
+  useEffect(() => {
+    if (!placeBounds || !map) return;
+    if (!activePlace) map.fitBounds(placeBounds);
+  }, [map, placeBounds, activePlace]);
+
   useEffect(() => {
     if (!map) return;
+    if (place.places.length === 0) return;
 
-    const geoJSON = toFeatureCollection(places);
+    const geojson = toFeatureCollection(place.places);
 
     const bounds = new LngLatBounds(
-      bbox(geoJSON) as [number, number, number, number]
+      bbox(geojson) as [number, number, number, number]
     );
 
-    // Extend the island bounds if related places are beyond the island bounds.
+    // // Extend the island bounds if related places are beyond the island bounds.
     const newBounds = map.getBounds().extend(bounds);
+
+    setPlaceBounds(newBounds);
 
     map.fitBounds(newBounds, { maxZoom: 14 });
 
-    if (!map.getImage("pulsing-dot")) {
-      const dot = pulsingDot(map);
-      if (dot) {
-        map.addImage("pulsing-dot", dot, { pixelRatio: 2 });
-      }
-    }
-
     const placesSource: SourceSpecification = {
       type: "geojson",
-      data: geoJSON,
+      data: geojson,
       cluster: true,
       clusterMaxZoom: 14,
       clusterRadius: 50,
+      promoteId: "uuid",
     };
 
-    if (map.getSource(`${place.uuid}-places`)) {
+    if (map.getSource(`${place.uuid}-places`))
       map.removeSource(`${place.uuid}-places`);
-    }
-
     map.addSource(`${place.uuid}-places`, placesSource);
 
     const clusterLayer = cluster(
@@ -134,68 +119,50 @@ const RelatedPlaces = ({ places }: Props) => {
       map.addLayer(unclusteredLayer);
     }
 
-    // Clear active place when clicking outside of a point
-    map.on("click", () => {
-      setActivePlace(undefined);
-    });
-
-    map.on("click", clusterLayer.id, handleClusterClick);
-    map.on("click", unclusteredLayer.id, handleUnclusteredPointClick);
-
-    map.on("mouseenter", clusterLayer.id, () => {
-      map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", clusterLayer.id, () => {
-      map.getCanvas().style.cursor = "";
-    });
-
-    map.on("mouseenter", unclusteredLayer.id, () => {
-      map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", unclusteredLayer.id, () => {
-      map.getCanvas().style.cursor = "";
-    });
-
-    if (setLayerSources)
-      setLayerSources((layerSources) => {
-        return { ...layerSources, [`${place.uuid}-places`]: placesSource };
-      });
-
-    orderLayers(map, place.uuid);
+    map.on("mouseenter", clusterLayer.id, handleMouseEnter);
+    map.on("mouseenter", unclusteredLayer.id, handleMouseEnter);
+    map.on("mouseleave", clusterLayer.id, handleMouseLeave);
+    map.on("mouseleave", unclusteredLayer.id, handleMouseLeave);
+    map.on("click", clusterLayer.id, handleClick);
+    map.on("click", unclusteredLayer.id, handleClick);
 
     return () => {
-      try {
-        if (map.getImage("pulsing-dot")) map.removeImage("pulsing-dot");
-        if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
-        if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-        if (map.getLayer(unclusteredLayer.id))
-          map.removeLayer(unclusteredLayer.id);
-        if (map.getSource(`${place.uuid}-places`))
-          map.removeSource(`${place.uuid}-places`);
-        if (map.getSource(`${place.uuid}-places`))
-          map.removeSource(`${place.uuid}-places`);
-        map.off("click", clusterLayer.id, handleClusterClick);
-        map.off("click", unclusteredLayer.id, handleUnclusteredPointClick);
-      } catch {}
+      map.off("mouseenter", clusterLayer.id, handleMouseEnter);
+      map.off("mouseleave", clusterLayer.id, handleMouseLeave);
+      map.off("mouseenter", unclusteredLayer.id, handleMouseEnter);
+      map.off("mouseleave", unclusteredLayer.id, handleMouseLeave);
+      map.off("click", clusterLayer.id, handleClick);
+      map.off("click", unclusteredLayer.id, handleClick);
+      if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
+      if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+      if (map.getLayer(unclusteredLayer.id))
+        map.removeLayer(unclusteredLayer.id);
+      if (map.getSource(`${place.uuid}-places`))
+        map.removeSource(`${place.uuid}-places`);
+      if (map.getSource(`${place.uuid}-places`))
+        map.removeSource(`${place.uuid}-places`);
     };
   }, [
     map,
     place,
-    handleClusterClick,
-    handleUnclusteredPointClick,
+    handleClick,
     setActiveLayers,
     setLayerSources,
-    places,
+    handleMouseEnter,
+    handleMouseLeave,
   ]);
+
+  if (place.places.length === 0) {
+    return null;
+  }
 
   return (
     <RelatedSection title="Related Places">
       <div className="grid grid-cols-1 md:grid-cols-2">
-        {places.map((relatedPlace) => {
+        {place.places.map((relatedPlace) => {
           return (
-            <div key={relatedPlace.uuid}>
+            <div key={`related-place-${relatedPlace.uuid}`}>
               <button
-                key={relatedPlace.uuid}
                 className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
                 onClick={() => {
                   setActivePlace(relatedPlace);
@@ -205,20 +172,20 @@ const RelatedPlaces = ({ places }: Props) => {
               </button>
               <PlacePopup
                 location={{
-                  lat: relatedPlace.place_geometry.geometry_json.coordinates[1],
-                  lon: relatedPlace.place_geometry.geometry_json.coordinates[0],
+                  lat: relatedPlace.location.lat,
+                  lon: relatedPlace.location.lon,
                 }}
-                show={activePlace === relatedPlace}
+                show={activePlace?.uuid === relatedPlace.uuid}
                 onClose={() => setActivePlace(undefined)}
               >
                 <h4 className="text-xl">{relatedPlace.name}</h4>
-                <div
+                {/* <div
                   dangerouslySetInnerHTML={{
                     __html: relatedPlace.description ?? "",
                   }}
-                />
+                /> */}
                 <Link
-                  to={`/places/${relatedPlace.name.replaceAll(" ", "-")}`}
+                  to={`/places/${relatedPlace.slug}`}
                   state={{ backTo: place.name }}
                   className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
                 >

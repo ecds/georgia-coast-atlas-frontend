@@ -1,8 +1,9 @@
 import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
-import type { TPlaceRecord, TPlaceSource } from "./types";
+import type { TPlaceSource } from "./types";
 import type { FeatureCollection } from "geojson";
+import type { ESPlace } from "./esTypes";
 
 type TMapContext = {
   map: Map | undefined;
@@ -12,12 +13,13 @@ type TMapContext = {
 };
 
 type TPlaceContext = {
-  place: TPlaceRecord;
+  place: ESPlace;
   activeLayers: string[];
   setActiveLayers: Dispatch<SetStateAction<string[]>>;
   geoJSON?: FeatureCollection;
   layerSources: TPlaceSource;
   setLayerSources: Dispatch<SetStateAction<TPlaceSource>>;
+  manifestLabel: "photographs" | "combined";
 };
 
 export const MapContext = createContext<TMapContext>({
@@ -33,17 +35,33 @@ export const MapContext = createContext<TMapContext>({
 
 export const PlaceContext = createContext<TPlaceContext>({
   place: {
-    uuid: "",
     name: "",
-    place_names: [],
-    place_layers: [],
-    web_identifiers: [],
-    place_geometry: { geometry_json: { type: "Point", coordinates: [0, 0] } },
-    user_defined: { key: { label: "", value: "" } },
-    iiif_manifest: "",
+    description: "",
+    featured_photograph: "",
+    featured_video: {
+      featured: false,
+      embed_url: "",
+      provider: "",
+      embed_id: "",
+      name: "",
+      thumbnail_url: "",
+      uuid: "",
+    },
+    identifier: "",
+    types: [],
+    county: "",
+    places: [],
+    videos: [],
+    photographs: [],
+    location: { lat: 0, lon: 0 },
+    uuid: "",
+    slug: "",
+    manifests: [],
+    geojson: { type: "FeatureCollection", features: [] },
   },
   activeLayers: [],
   layerSources: {},
+  manifestLabel: "photographs",
   setActiveLayers: (_: SetStateAction<string[]>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?"

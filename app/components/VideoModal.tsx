@@ -9,13 +9,12 @@ import {
 } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import VideoEmbed from "./VideoEmbed";
-import type { TVideoItem } from "~/types";
 import type { ReactNode } from "react";
+import type { ESVideo } from "~/esTypes";
 
 interface Props {
   children: ReactNode;
-  video: TVideoItem;
+  video: ESVideo;
 }
 
 const VideoModal = ({ children, video }: Props) => {
@@ -47,14 +46,21 @@ const VideoModal = ({ children, video }: Props) => {
                 <DialogPanel className="w-full max-w-md md:max-w-4xl rounded-xl bg-white p-6">
                   <DialogTitle as="div" className="flex justify-between">
                     <h3 className="text-base/7 font-medium text-black">
-                      {video.primary_name.name.name}
+                      {video.name}
                     </h3>
 
                     <Button onClick={close}>
                       <FontAwesomeIcon icon={faCircleXmark} /> Close
                     </Button>
                   </DialogTitle>
-                  <VideoEmbed video={video} />
+                  <div className="relative pb-[56.25%] h-0 overflow-hidden max-w-full">
+                    <iframe
+                      className="absolute t-0 l-0 h-full w-full"
+                      src={video.embed_url}
+                      title={video.name}
+                      allowFullScreen
+                    />
+                  </div>
                 </DialogPanel>
               </TransitionChild>
             </div>

@@ -31,7 +31,7 @@
     "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
-    "@allmaps/maplibre": "^1.0.0-beta.25",
+    "@allmaps/maplibre": "^1.0.0-beta.30",
     "@iiif/presentation-3": "^2.2.3",
     "@remix-run/dev": "^2.9.2",
     "@remix-run/eslint-config": "^2.9.2",

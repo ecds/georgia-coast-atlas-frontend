@@ -1,19 +1,21 @@
-import type { TVideoItem } from "~/types";
 import RelatedSection from "./RelatedSection";
 import VideoThumbnail from "../VideoThumbnail";
 import VideoModal from "../VideoModal";
+import { useContext } from "react";
+import { PlaceContext } from "~/contexts";
 
-interface Props {
-  videos: TVideoItem[];
-}
+const RelatedVideos = () => {
+  const { place } = useContext(PlaceContext);
 
-const RelatedVideos = ({ videos }: Props) => {
+  if (place.videos.length === 0) {
+    return null;
+  }
   return (
     <RelatedSection title="Videos">
       <div className="flex flex-wrap justify-around md:justify-start">
-        {videos.map((video) => {
+        {place.videos.map((video) => {
           return (
-            <VideoModal key={video.uuid} video={video}>
+            <VideoModal key={video.embed_id} video={video}>
               <VideoThumbnail
                 video={video}
                 figClassName="md:my-8 md:mr-8 max-w-xs"

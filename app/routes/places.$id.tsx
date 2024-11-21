@@ -7,27 +7,22 @@ import {
 } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { fetchPlaceBySlug, fetchRelatedRecords } from "~/data/coredata";
+import { fetchPlaceBySlug } from "~/data/coredata";
 import { PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import PlaceContent from "~/components/layout/PlaceContent";
-import RelatedRecords from "~/components/layout/RelatedRecords";
 import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
 import Loading from "~/components/layout/Loading";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import type {
-  TPlaceRecord,
-  TPlaceSource,
-  TRelatedCoreDataRecords,
-} from "~/types";
+import type { TPlaceRecord, TPlaceSource } from "~/types";
 // import { faArrowCircleLeft, faArrowLeft, faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.id) {
     throw new Response(null, {
       status: 404,
-      statusText: "You must provide an identifier for a place.",
+      statusText: "You must provide a place in the address, eg. sapelo-island.",
     });
   }
 
@@ -38,14 +33,11 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       statusText: `${params.id} not found.`,
     });
   }
-  const related: TRelatedCoreDataRecords | {} = await fetchRelatedRecords(
-    place.uuid
-  );
 
-  return defer({ place, related });
+  return defer({ place });
 };
 const PlacePage = () => {
-  const { place, related } = useLoaderData<TPlaceRecord>();
+  const { place } = useLoaderData<TPlaceRecord>();
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
   const [layerSources, setLayerSources] = useState<TPlaceSource>({});
   const [backTo, setBackTo] = useState<boolean>(false);
@@ -67,6 +59,7 @@ const PlacePage = () => {
         layerSources,
         setLayerSources,
         geoJSON: place.geojson,
+        manifestLabel: "photographs",
       }}
     >
       <Suspense fallback={<Loading />}>
@@ -86,7 +79,7 @@ const PlacePage = () => {
             {place.name}
           </Heading>
           <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-            <FeaturedMedium record={related} />
+            <FeaturedMedium record={place} />
           </div>
           <div
             className="relative px-4 -mt-12 primary-content"
@@ -95,7 +88,7 @@ const PlacePage = () => {
             }}
           />
         </PlaceContent>
-        <RelatedRecords related={related} />
+        {/* <RelatedRecords /> */}
         {place.geojson && <PlaceGeoJSON />}
       </Suspense>
     </PlaceContext.Provider>

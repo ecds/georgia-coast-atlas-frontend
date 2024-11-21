@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import RelatedSection from "./RelatedSection";
 import PhotographModal from "../PhotographModal";
 import type { TIIIFManifest, TIIIFBody, TPhotograph } from "~/types";
+import type { ESManifests } from "~/esTypes";
 
 interface Props {
-  manifest: string;
+  manifest?: ESManifests;
 }
 
 const RelatedPhotographs = ({ manifest }: Props) => {
@@ -13,7 +14,8 @@ const RelatedPhotographs = ({ manifest }: Props) => {
 
   useEffect(() => {
     const fetchIIIF = async () => {
-      const response = await fetch(manifest);
+      if (!manifest) return;
+      const response = await fetch(manifest.identifier);
       const data: TIIIFManifest = await response.json();
       setPhotographs(
         data.items.map((item) => {
@@ -23,7 +25,7 @@ const RelatedPhotographs = ({ manifest }: Props) => {
             body: item.items[0].items[0].body,
             name: item.label.en[0],
           };
-        }),
+        })
       );
     };
     fetchIIIF();
@@ -34,39 +36,43 @@ const RelatedPhotographs = ({ manifest }: Props) => {
     setActivePhotograph(photographs[0].body);
   }, [photographs]);
 
-  return (
-    <RelatedSection title="Photographs">
-      <div className="flex flex-wrap justify-around md:justify-start">
-        {photographs && (
-          <>
-            {photographs.map((photo) => {
-              return (
-                <PhotographModal
-                  key={photo.thumb}
-                  activePhotograph={activePhotograph}
-                  photographs={photographs}
-                  setActivePhotograph={setActivePhotograph}
-                  photograph={photo}
-                >
-                  <figure className="md:my-8 md:mr-8 max-w-xs">
-                    <img
-                      src={photo.thumb}
-                      alt=""
-                      className="drop-shadow-md h-auto md:h-32 w-full md:w-auto m-auto"
-                    />
-                    <span className="sr-only">Select image</span>
-                    {/* <figcaption className="md:w-32 text-left break-words text-sm pt-1">
-                      {photo.name}
-                    </figcaption> */}
-                  </figure>
-                </PhotographModal>
-              );
-            })}
-          </>
-        )}
-      </div>
-    </RelatedSection>
-  );
+  if (photographs) {
+    return (
+      <RelatedSection title="Photographs">
+        <div className="flex flex-wrap justify-around md:justify-start">
+          {photographs && (
+            <>
+              {photographs.map((photo) => {
+                return (
+                  <PhotographModal
+                    key={photo.name}
+                    activePhotograph={activePhotograph}
+                    photographs={photographs}
+                    setActivePhotograph={setActivePhotograph}
+                    photograph={photo}
+                  >
+                    <figure className="md:my-8 md:mr-8 max-w-xs">
+                      <img
+                        src={photo.thumb}
+                        alt=""
+                        className="drop-shadow-md h-auto md:h-32 w-full md:w-auto m-auto"
+                      />
+                      <span className="sr-only">Select image</span>
+                      {/* <figcaption className="md:w-32 text-left break-words text-sm pt-1">
+                        {photo.name}
+                      </figcaption> */}
+                    </figure>
+                  </PhotographModal>
+                );
+              })}
+            </>
+          )}
+        </div>
+      </RelatedSection>
+    );
+  }
+
+  return null;
 };
 
 export default RelatedPhotographs;

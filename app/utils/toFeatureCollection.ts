@@ -1,10 +1,11 @@
-import { feature, featureCollection } from "@turf/turf";
+import { featureCollection, point } from "@turf/turf";
 import { PLACE_TYPES } from "~/config";
 import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "tailwind.config";
-import type { TPlaceGeoJSON, TPlaceRecord, TRelatedPlaceRecord } from "~/types";
+import type { TPlaceGeoJSON } from "~/types";
 import type { Hit } from "instantsearch.js";
 import type { FeatureCollection } from "geojson";
+import type { ESRelatedPlace } from "~/esTypes";
 
 // TODO: Maybe use Tailwind config to keep things constant.
 const DEFAULT_COLOR = "#ea580c";
@@ -19,15 +20,13 @@ const getColor = (type: string) => {
   return DEFAULT_COLOR;
 };
 
-export const toFeatureCollection = (
-  places: TPlaceRecord[] | TRelatedPlaceRecord[]
-) => {
+export const toFeatureCollection = (places: ESRelatedPlace[]) => {
   return featureCollection(
     places.map((place) => {
-      // @ts-ignore
-      const placeFeature = feature(place.place_geometry.geometry_json);
-      placeFeature.properties = place;
-      placeFeature.properties.hexColor = DEFAULT_COLOR;
+      const placeFeature = point([place.location.lon, place.location.lat], {
+        ...place,
+        hexColor: getColor(place.type),
+      });
       return placeFeature;
     })
   );
