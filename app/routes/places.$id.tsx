@@ -1,9 +1,9 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
-  defer,
   useNavigate,
   useLocation,
+  Await
 } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -34,7 +34,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     });
   }
 
-  return defer({ place });
+  return { place };
 };
 const PlacePage = () => {
   const { place } = useLoaderData<TPlaceRecord>();
@@ -63,33 +63,39 @@ const PlacePage = () => {
       }}
     >
       <Suspense fallback={<Loading />}>
-        <PlaceContent>
-          {backTo && (
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-2 rounded-lg text-left w-max m-4 text-xs"
-            >
-              <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo}
-            </button>
+        <Await resolve={place}>
+          {(resolvedPlace) => (
+            <>
+              <PlaceContent>
+                {backTo && (
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-2 rounded-lg text-left w-max m-4 text-xs"
+                  >
+                    <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo}
+                  </button>
+                )}
+                <Heading
+                  as="h1"
+                  className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+                >
+                  {resolvedPlace.name}
+                </Heading>
+                <div ref={topRef} className="relative -top-12 z-10 min-h-10">
+                  <FeaturedMedium record={resolvedPlace} />
+                </div>
+                <div
+                  className="relative px-4 -mt-12 primary-content"
+                  dangerouslySetInnerHTML={{
+                    __html: resolvedPlace.description,
+                  }}
+                />
+              </PlaceContent>
+              {/* <RelatedRecords /> */}
+              {resolvedPlace.geojson && <PlaceGeoJSON />}
+            </>
           )}
-          <Heading
-            as="h1"
-            className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
-          >
-            {place.name}
-          </Heading>
-          <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-            <FeaturedMedium record={place} />
-          </div>
-          <div
-            className="relative px-4 -mt-12 primary-content"
-            dangerouslySetInnerHTML={{
-              __html: place.description,
-            }}
-          />
-        </PlaceContent>
-        {/* <RelatedRecords /> */}
-        {place.geojson && <PlaceGeoJSON />}
+        </Await>
       </Suspense>
     </PlaceContext.Provider>
   );

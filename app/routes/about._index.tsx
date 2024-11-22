@@ -1,5 +1,4 @@
 import Navbar from "~/components/layout/Navbar";
-import { defer } from "@remix-run/node";
 import { dataHosts } from "~/config";
 import { useLoaderData } from "@remix-run/react";
 import "~/styles/about.css";
@@ -13,11 +12,12 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  return defer({ wpData: wpData[0] });
+  return { wpData: wpData[0] };
 };
 
 const About = () => {
   const { wpData } = useLoaderData<{ wpData: TWordPressData }>();
+
   return (
     <div>
       <Navbar />
