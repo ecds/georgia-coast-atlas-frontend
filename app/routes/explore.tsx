@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect, Suspense } from "react";
 import { MapContext } from "~/contexts";
-import { useLoaderData, defer, useNavigation } from "@remix-run/react";
+import { useLoaderData, useNavigation, Await } from "@remix-run/react";
 import { fetchCounties, fetchPlacesByType } from "~/data/coredata";
 import IntroModal from "~/components/layout/IntroModal";
 import Loading from "~/components/layout/Loading";
@@ -13,7 +13,7 @@ import Islands from "~/components/mapping/Islands";
 export const loader: LoaderFunction = async () => {
   const islands: TPlace[] = await fetchPlacesByType("Barrier Island");
   const counties: TCounty[] = await fetchCounties();
-  return defer({ islands, counties });
+  return { islands, counties };
 };
 
 export const HydrateFallback = () => {
@@ -40,8 +40,18 @@ const Explore = () => {
     >
       <IntroModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
       <Suspense fallback={<Loading />}>
-        <Counties counties={counties} />
-        <Islands islands={islands} />
+      <Await resolve={islands}>
+          {(resolvedIslands) => (
+            <Await resolve={counties}>
+              {(resolvedCounties) => (
+                <>
+                  <Counties counties={resolvedCounties} />
+                  <Islands islands={resolvedIslands} />
+                </>
+              )}
+            </Await>
+          )}
+        </Await>
       </Suspense>
     </div>
   );

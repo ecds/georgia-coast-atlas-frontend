@@ -16,7 +16,11 @@ installGlobals();
 
 export default defineConfig({
   plugins: [
-    remix(),
+    remix({
+      future: {
+        v3_singleFetch: true, 
+      },
+    }),
     tsconfigPaths(),
     SiteMap({
       hostname: "https://georgiacoastatlas.org",

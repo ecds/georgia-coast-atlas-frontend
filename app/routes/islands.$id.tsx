@@ -4,7 +4,7 @@ import {
   useNavigation,
   useRouteError,
   isRouteErrorResponse,
-  defer,
+  Await
 } from "@remix-run/react";
 import { dataHosts } from "~/config.ts";
 import { fetchPlaceBySlug } from "~/data/coredata";
@@ -36,7 +36,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   const wpData: TWordPressData[] = await wpResponse.json();
 
-  return defer({ place, wpData: wpData[0] });
+  return { place, wpData: wpData[0] };
 };
 
 // export const clientLoader = async ({
@@ -103,23 +103,27 @@ const IslandPage = () => {
       }}
     >
       <Suspense fallback={<HydrateFallback />}>
-        <PlaceContent>
-          <Heading
-            as="h1"
-            className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
-          >
-            {place.name}
-          </Heading>
-          <div ref={topRef} className="relative -top-12 z-10 min-h-10">
-            <FeaturedMedium record={place} />
-          </div>
-          <div
-            className="relative px-4 -mt-12 primary-content"
-            dangerouslySetInnerHTML={{
-              __html: wpData?.content.rendered ?? place.description,
-            }}
-          />
-        </PlaceContent>
+      <Await resolve={wpData}>
+          {(resolvedWpData) => (
+            <PlaceContent>
+              <Heading
+                as="h1"
+                className="text-2xl px-4 pt-4 sticky top-0 z-10 bg-white"
+              >
+                {place.name}
+              </Heading>
+              <div className="relative -top-12 z-10 min-h-10">
+                <FeaturedMedium record={place} />
+              </div>
+              <div
+                className="relative px-4 -mt-12 primary-content"
+                dangerouslySetInnerHTML={{
+                  __html: resolvedWpData?.content.rendered ?? place.description,
+                }}
+              />
+            </PlaceContent>
+          )}
+        </Await>
       </Suspense>
     </PlaceContext.Provider>
   );
