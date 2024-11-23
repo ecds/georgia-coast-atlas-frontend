@@ -6,7 +6,6 @@ import {
   keys,
   modelFieldUUIDs,
 } from "~/config";
-import { ESPlace } from "~/esTypes";
 import type {
   TPlaceRecord,
   TPlace,
@@ -15,12 +14,34 @@ import type {
   TSearchOptions,
   TCounty,
 } from "~/types";
+import type { ESPlace } from "~/esTypes";
 
 const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
   esHeaders.append("authorization", `ApiKey ${keys.elasticsearch}`);
   esHeaders.append("Content-Type", "application/json");
   return esHeaders;
+};
+
+const elasticSearchPost = async ({
+  body,
+  collection,
+}: {
+  body: {};
+  collection: string;
+}) => {
+  const response = await fetch(
+    `${dataHosts.elasticSearch}/${collection}/_search`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
+    }
+  );
+
+  const data = await response.json();
+  const results = data.hits.hits.map((hit: TESHit) => hit._source);
+  return results;
 };
 
 export const fetchRelatedRecord = async (id: string, endpoint: string) => {
@@ -102,11 +123,13 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
         "featured_video",
         "identifier",
         "manifests",
+        "map_layers",
         "name",
         "location",
         "photographs",
         "places",
         "slug",
+        "topos",
         "types",
         "uuid",
         "videos",
@@ -214,18 +237,26 @@ export const fetchPlacesGeoJSON = async ({
     },
   };
 
-  const response = await fetch(
-    `${dataHosts.elasticSearch}/${collection}/_search`,
-    {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: elasticSearchHeaders(),
-    }
-  );
+  return await elasticSearchPost({ body, collection });
+};
 
-  const data = await response.json();
-  const places: TPlaceGeoJSON[] = data.hits.hits.map(
-    (hit: TESHit) => hit._source
-  );
-  return places;
+export const fetchPlaceGeoJSON = async ({
+  uuid,
+  collection = indexCollection,
+}: TSearchOptions) => {
+  const body = {
+    query: {
+      simple_query_string: { query: uuid, fields: ["uuid"] },
+    },
+    size: 1,
+    from: 0,
+    _source: {
+      includes: ["geojson"],
+    },
+  };
+
+  const response = await elasticSearchPost({ body, collection });
+  console.log("🚀 ~ response:", response);
+
+  return response[0].geojson;
 };

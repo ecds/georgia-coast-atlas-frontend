@@ -12,7 +12,7 @@ const RelatedVideos = () => {
   }
   return (
     <RelatedSection title="Videos">
-      <div className="flex flex-wrap justify-around md:justify-start">
+      <div className="flex flex-wrap justify-around">
         {place.videos.map((video) => {
           return (
             <VideoModal key={video.embed_id} video={video}>

@@ -454,7 +454,7 @@ export const PLACE_TYPES: TTypeColors = {
   },
 };
 
-export const indexCollection = "georgia_coast";
+export const indexCollection = "georgia_coast_places";
 export const countyIndexCollection = "georgia_coast_counties";
 
 export const defaultBounds = () => {

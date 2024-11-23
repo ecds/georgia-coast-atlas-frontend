@@ -51,6 +51,8 @@ export const PlaceContext = createContext<TPlaceContext>({
     types: [],
     county: "",
     places: [],
+    map_layers: [],
+    topos: [],
     videos: [],
     photographs: [],
     location: { lat: 0, lon: 0 },

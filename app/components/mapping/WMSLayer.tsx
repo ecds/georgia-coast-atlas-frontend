@@ -1,13 +1,6 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import { fetchPlaceRecord, fetchRelatedRecord } from "~/data/coredata";
-import type {
-  TCoreDataImage,
-  TPlaceRecord,
-  TRelatedPlaceRecord,
-} from "~/types";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
-import { bbox } from "@turf/turf";
 import AddLayerButton from "./AddLayerButton";
 import LayerOpacity from "./LayerOpacity";
 import {
@@ -15,110 +8,64 @@ import {
   PlaceLayerContainer,
   PlaceLayerTitle,
 } from "../relatedRecords/PlaceLayerContainer";
+import type { ESMapLayer } from "~/esTypes";
 
 interface Props {
-  placeLayer: TRelatedPlaceRecord;
+  placeLayer: ESMapLayer;
 }
 
 const WMSLayer = ({ placeLayer }: Props) => {
   const { map } = useContext(MapContext);
-  const { activeLayers, place, setActiveLayers, setLayerSources } =
-    useContext(PlaceContext);
-  const [placeRecord, setPlaceRecord] = useState<TPlaceRecord>();
-  const [thumbnails, setThumbnails] = useState<TCoreDataImage[]>([]);
+  const { activeLayers, place, setActiveLayers } = useContext(PlaceContext);
   const [opacity, setOpacity] = useState<number>(100);
-  const [active, setActive] = useState<boolean>(false);
-  const layerRef = useRef<AddLayerObject>();
 
   useEffect(() => {
-    if (layerRef.current) setActive(activeLayers.includes(layerRef.current.id));
-  }, [activeLayers]);
+    if (!map) return;
 
-  useEffect(() => {
-    if (!placeLayer) return;
-
-    let ignore = false;
-
-    const fetchLayerRecord = async () => {
-      const record = await fetchPlaceRecord(placeLayer.uuid);
-      if (record && !ignore) {
-        setPlaceRecord(record);
-      }
+    const source: SourceSpecification = {
+      type: "raster",
+      tiles: [placeLayer.wms_resource],
+      tileSize: 256,
     };
 
-    const fetchRelatedMediaRecord = async () => {
-      const record = await fetchRelatedRecord(
-        placeLayer.uuid,
-        "media_contents"
-      );
-      if (record && !ignore) setThumbnails(record.media_contents);
+    const layer: AddLayerObject = {
+      id: placeLayer.uuid,
+      source: placeLayer.uuid,
+      type: "raster",
+      paint: {
+        "raster-opacity": 0,
+      },
     };
 
-    fetchLayerRecord();
-    fetchRelatedMediaRecord();
+    if (!map.getSource(placeLayer.uuid)) map.addSource(placeLayer.uuid, source);
+    if (!map.getLayer(placeLayer.uuid))
+      map.addLayer(layer, `clusters-${place.uuid}`);
 
     return () => {
-      ignore = true;
-      setPlaceRecord(undefined);
+      if (map.getLayer(placeLayer.uuid)) map.removeLayer(placeLayer.uuid);
+      if (map.getSource(placeLayer.uuid)) map.removeSource(placeLayer.uuid);
     };
-  }, [placeLayer]);
+  }, [map, placeLayer, place]);
 
   useEffect(() => {
-    if (!map || !placeRecord) return;
-
-    layerRef.current = {
-      id: placeRecord.uuid,
-      type: "raster",
-      source: placeRecord.uuid,
-      paint: {},
-    };
-
-    if (!map.getSource(placeRecord.uuid)) {
-      const source: SourceSpecification = {
-        type: "raster",
-        tiles: placeRecord.place_layers.map((layer) => layer.url),
-        tileSize: 256,
-      };
-      setLayerSources((layerSources) => {
-        return { ...layerSources, [placeRecord.uuid]: source };
-      });
-      map.addSource(placeRecord.uuid, source);
-    }
-  }, [map, placeRecord, active, setLayerSources]);
-
-  useEffect(() => {
-    if (active && placeRecord && map?.getLayer(placeRecord.uuid)) {
-      map?.setPaintProperty(placeRecord.uuid, "raster-opacity", opacity * 0.01);
-    }
-  }, [map, opacity, activeLayers, active, placeRecord]);
-
-  useEffect(() => {
-    if (!map || !placeRecord) return;
-
-    if (active && placeRecord) {
-      if (map && layerRef.current && !map.getLayer(placeRecord.uuid)) {
-        map.addLayer(layerRef.current);
-        map.moveLayer(layerRef.current.id, `${place.uuid}-outline`);
-        const layerBounds = bbox(placeLayer.place_geometry.geometry_json);
-        const newBounds = map
-          .getBounds()
-          .extend(layerBounds as [number, number, number, number]);
-        map.fitBounds(newBounds, { padding: 20 });
-      }
+    if (
+      activeLayers.includes(placeLayer.uuid) &&
+      map &&
+      map.getLayer(placeLayer.uuid)
+    ) {
+      map.setPaintProperty(placeLayer.uuid, "raster-opacity", opacity * 0.01);
     } else {
-      if (map.getLayer(placeRecord.uuid)) map.removeLayer(placeRecord.uuid);
+      map?.setPaintProperty(placeLayer.uuid, "raster-opacity", 0);
     }
-  }, [map, active, place, placeLayer, placeRecord, activeLayers]);
+  }, [activeLayers, map, placeLayer, opacity]);
 
   const handleClick = () => {
-    if (placeRecord && layerRef.current) {
-      if (activeLayers.includes(layerRef.current.id)) {
-        setActiveLayers(
-          activeLayers.filter((layer) => layer !== layerRef.current?.id)
-        );
-      } else {
-        setActiveLayers([...activeLayers, layerRef.current.id]);
-      }
+    if (activeLayers.includes(placeLayer.uuid)) {
+      setActiveLayers(
+        activeLayers.filter((layer) => layer !== placeLayer.uuid)
+      );
+    } else {
+      setActiveLayers([...activeLayers, placeLayer.uuid]);
     }
   };
 
@@ -126,31 +73,23 @@ const WMSLayer = ({ placeLayer }: Props) => {
     setOpacity(parseInt(newValue));
   };
 
-  if (placeRecord) {
+  if (place) {
+    const active = activeLayers.includes(placeLayer.uuid);
     return (
-      <>
-        {thumbnails?.map((thumbNail) => {
-          return (
-            <PlaceLayerContainer key={thumbNail.uuid}>
-              <AddLayerButton
-                onClick={handleClick}
-                image={thumbNail.content_thumbnail_url}
-              >
-                {active ? "remove" : "add"}
-              </AddLayerButton>
-              <PlaceLayerBody>
-                <PlaceLayerTitle>{thumbNail.name}</PlaceLayerTitle>
-                <LayerOpacity
-                  id={placeLayer.uuid}
-                  opacity={opacity}
-                  handleChange={handleOpacityChange}
-                  disabled={!active}
-                />
-              </PlaceLayerBody>
-            </PlaceLayerContainer>
-          );
-        })}
-      </>
+      <PlaceLayerContainer key={placeLayer.uuid}>
+        <AddLayerButton onClick={handleClick} image={placeLayer.preview}>
+          {active ? "remove" : "add"}
+        </AddLayerButton>
+        <PlaceLayerBody>
+          <PlaceLayerTitle>{placeLayer.name}</PlaceLayerTitle>
+          <LayerOpacity
+            id={placeLayer.uuid}
+            opacity={opacity}
+            handleChange={handleOpacityChange}
+            disabled={!active}
+          />
+        </PlaceLayerBody>
+      </PlaceLayerContainer>
     );
   }
 

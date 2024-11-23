@@ -6,19 +6,20 @@ import {
   isRouteErrorResponse,
   Await
 } from "@remix-run/react";
-import { dataHosts } from "~/config.ts";
-import { fetchPlaceBySlug } from "~/data/coredata";
+import { dataHosts, indexCollection } from "~/config.ts";
+import { fetchPlaceBySlug, fetchPlaceGeoJSON } from "~/data/coredata";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import { PlaceContext, MapContext } from "~/contexts";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
 import Heading from "~/components/layout/Heading";
-// import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
 import { islands as islandStyle } from "~/mapStyles";
 import PlaceContent from "~/components/layout/PlaceContent";
 import type { TWordPressData, TIslandClientData, TPlaceSource } from "~/types";
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import { LngLatBounds } from "maplibre-gl";
+import { bbox } from "@turf/turf";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const place = await fetchPlaceBySlug(params.id);
@@ -38,18 +39,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   return { place, wpData: wpData[0] };
 };
-
-// export const clientLoader = async ({
-//   serverLoader,
-// }: ClientLoaderFunctionArgs) => {
-//   const serverData = await serverLoader<TIslandServerData>();
-//   const relatedRecords: TRelatedCoreDataRecords | {} =
-//     await fetchRelatedRecords(serverData.place.uuid);
-
-//   return { ...serverData, ...relatedRecords };
-// };
-
-// clientLoader.hydrate = true;
 
 export const HydrateFallback = () => {
   return <Loading />;
@@ -82,14 +71,23 @@ const IslandPage = () => {
   }, [navigation, place, map]);
 
   useEffect(() => {
-    if (
-      !mapLoaded ||
-      !map ||
-      !place.geojson ||
-      map.getLayer(`${place.uuid}-fill`)
-    )
-      return;
-  }, [map, mapLoaded, place.geojson, place, activeLayers]);
+    const fetchGeoJSON = async () => {
+      if (!map || !mapLoaded) return;
+
+      const geojson = await fetchPlaceGeoJSON({
+        uuid: place.uuid,
+        collection: indexCollection,
+      });
+
+      const bounds = new LngLatBounds(
+        bbox(geojson) as [number, number, number, number]
+      );
+
+      map.fitBounds(bounds);
+    };
+
+    if (place) fetchGeoJSON();
+  }, [place, map, mapLoaded]);
 
   return (
     <PlaceContext.Provider

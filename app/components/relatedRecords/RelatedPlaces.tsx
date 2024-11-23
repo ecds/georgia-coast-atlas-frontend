@@ -1,22 +1,21 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
-import { bbox } from "@turf/turf";
 import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../mapping/PlacePopup";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";
-import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
+import type {
+  GeoJSONSource,
+  MapLayerMouseEvent,
+  SourceSpecification,
+} from "maplibre-gl";
 import type { ESRelatedPlace } from "~/esTypes";
 
 const RelatedPlaces = () => {
   const { map } = useContext(MapContext);
   const { place, setLayerSources, setActiveLayers } = useContext(PlaceContext);
   const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>(
-    undefined
-  );
-  const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>(
     undefined
   );
 
@@ -58,26 +57,10 @@ const RelatedPlaces = () => {
   }, [map]);
 
   useEffect(() => {
-    if (!placeBounds || !map) return;
-    if (!activePlace) map.fitBounds(placeBounds);
-  }, [map, placeBounds, activePlace]);
-
-  useEffect(() => {
     if (!map) return;
     if (place.places.length === 0) return;
 
     const geojson = toFeatureCollection(place.places);
-
-    const bounds = new LngLatBounds(
-      bbox(geojson) as [number, number, number, number]
-    );
-
-    // // Extend the island bounds if related places are beyond the island bounds.
-    const newBounds = map.getBounds().extend(bounds);
-
-    setPlaceBounds(newBounds);
-
-    map.fitBounds(newBounds, { maxZoom: 14 });
 
     const placesSource: SourceSpecification = {
       type: "geojson",

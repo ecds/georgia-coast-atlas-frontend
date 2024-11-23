@@ -17,5 +17,5 @@ export const PlaceLayerBody = ({ children }: Props) => {
 };
 
 export const PlaceLayerTitle = ({ children }: Props) => {
-  return <div className="text-xl pb-6">{children}</div>;
+  return <div className="text-xl pb-6 overflow-hidden">{children}</div>;
 };
