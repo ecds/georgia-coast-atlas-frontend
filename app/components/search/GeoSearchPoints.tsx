@@ -1,11 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
-import PlacePopup from "~/components/mapping/PlacePopup";
-import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
-import type { FeatureCollection } from "geojson";
+import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { ClientOnly } from "remix-utils/client-only";
 import { useNavigate } from "@remix-run/react";
+import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
+import type { FeatureCollection } from "geojson";
 
 interface Props {
   geojson: FeatureCollection;

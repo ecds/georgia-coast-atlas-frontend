@@ -6,11 +6,12 @@ type TLonLat = {
 };
 
 export type ESRelatedPlace = {
-  name: string;
+  description: string;
   location: TLonLat;
+  name: string;
+  slug: string;
   type: string;
   uuid: string;
-  slug: string;
 };
 
 export type ESVideo = {
@@ -53,6 +54,7 @@ export type ESMapLayer = {
 };
 
 export type ESPlace = {
+  bbox: [number, number, number, number];
   county: string;
   description: string;
   featured_photograph: string;
@@ -65,6 +67,7 @@ export type ESPlace = {
   location: TLonLat;
   photographs: ESPhotograph[];
   places: ESRelatedPlace[];
+  related_videos?: ESVideo[];
   slug: string;
   topos: ESTopo[];
   types: string[];

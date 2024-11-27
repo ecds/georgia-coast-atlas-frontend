@@ -64,7 +64,7 @@ const SearchForm = () => {
           root: "px-4 col-span-4",
           form: "max-w-md relative h-16",
           input:
-            "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none",
+            "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-200 focus:ring-blue-500 focus:border-blue-500 appearance-none",
           resetIcon: "hidden",
         }}
       />

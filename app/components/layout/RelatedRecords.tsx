@@ -7,16 +7,12 @@ import RelatedMapLayers from "../relatedRecords/RelatedMapLayers";
 import RelatedTopoQuads from "../relatedRecords/RelatedTopoQuads";
 
 const RelatedRecords = () => {
-  const { place, manifestLabel } = useContext(PlaceContext);
+  const { full } = useContext(PlaceContext);
   return (
     <>
-      <RelatedPlaces />
+      {full && <RelatedPlaces />}
       <RelatedVideos />
-      <RelatedPhotographs
-        manifest={place.manifests.find(
-          (manifest) => manifest.label === manifestLabel
-        )}
-      />
+      <RelatedPhotographs />
       <RelatedMapLayers />
       <RelatedTopoQuads />
     </>

@@ -94,28 +94,6 @@ const PlacePopup = ({
     };
   }, [show, map, coordinates, zoomToFeature, onClose]);
 
-  useEffect(() => {
-    if (!map || !popupRef.current || !show) return;
-    // Detect clicks outside the popup and close it
-    const handleOutsideClick = (e: MouseEvent) => {
-      const popupEl = popupRef.current?._container;
-
-      if (popupEl && !popupEl.contains(e.target as Node) && map.getCanvas().contains(e.target as Node)) {
-        onClose();
-
-        if (coordinates) {
-          map.flyTo({ center: coordinates, zoom: 15 });
-        }
-      }
-    };
-
-    map.getCanvas().addEventListener("click", handleOutsideClick);
-
-    return () => {
-      map.getCanvas().removeEventListener("click", handleOutsideClick);
-    };
-  }, [map, show, coordinates, onClose]);
-  
   if (map && popContainerRef.current) {
     return (
       <>

@@ -5,8 +5,9 @@ import {
 } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import type { ReactNode } from "react";
+import { useContext, type ReactNode } from "react";
 import Heading from "../layout/Heading";
+import { PlaceContext } from "~/contexts";
 
 interface Props {
   children: ReactNode;
@@ -21,13 +22,16 @@ const RelatedSection = ({
   defaultOpen = true,
   nested = false,
 }: Props) => {
+  const { relatedClosed } = useContext(PlaceContext);
+
   return (
     <div className={`w-full ${nested ? "" : "px-4"}`}>
       <div className={`mx-auto w-full border-t-2`}>
         <Disclosure
           as="div"
           className={nested ? "py-4" : "p-6"}
-          defaultOpen={defaultOpen}
+          // TODO: There has to be a better way.
+          defaultOpen={relatedClosed ? false : defaultOpen}
         >
           <DisclosureButton className="group flex w-full items-center justify-between">
             <Heading

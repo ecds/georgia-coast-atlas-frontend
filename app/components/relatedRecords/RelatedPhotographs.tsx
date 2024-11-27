@@ -1,16 +1,24 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { PlaceContext } from "~/contexts";
 import RelatedSection from "./RelatedSection";
 import PhotographModal from "../PhotographModal";
 import type { TIIIFManifest, TIIIFBody, TPhotograph } from "~/types";
 import type { ESManifests } from "~/esTypes";
 
-interface Props {
-  manifest?: ESManifests;
-}
-
-const RelatedPhotographs = ({ manifest }: Props) => {
+const RelatedPhotographs = () => {
+  const { place, full } = useContext(PlaceContext);
+  const [manifest, setManifest] = useState<ESManifests>();
   const [photographs, setPhotographs] = useState<TPhotograph[]>();
   const [activePhotograph, setActivePhotograph] = useState<TIIIFBody>();
+
+  useEffect(() => {
+    const manifestLabel = full ? "combined" : "photographs";
+    setManifest(
+      place.manifests.find(
+        (placeManifest) => placeManifest.label === manifestLabel
+      )
+    );
+  }, [place, full]);
 
   useEffect(() => {
     const fetchIIIF = async () => {
@@ -28,10 +36,11 @@ const RelatedPhotographs = ({ manifest }: Props) => {
         })
       );
     };
-    fetchIIIF();
+    if (manifest) fetchIIIF();
   }, [manifest]);
 
   useEffect(() => {
+    console.log("🚀 ~ useEffect ~ photographs:", photographs);
     if (!photographs) return;
     setActivePhotograph(photographs[0].body);
   }, [photographs]);

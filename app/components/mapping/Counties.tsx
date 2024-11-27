@@ -5,13 +5,14 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
-import PlacePopup from "./PlacePopup";
+import PlacePopup from "./PlacePopup.client";
 import { counties as countyStyle } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
+import { Link } from "@remix-run/react";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
-import type { TCounty } from "~/types";
+import type { ESPlace } from "~/esTypes";
 
-const Counties = ({ counties }: { counties: TCounty[] }) => {
+const Counties = ({ counties }: { counties: ESPlace[] }) => {
   const { map } = useContext(MapContext);
   const hoveredId = useRef<string | undefined>(undefined);
   const [activeCounty, setActiveCounty] = useState<string | undefined>(
@@ -126,6 +127,12 @@ const Counties = ({ counties }: { counties: TCounty[] }) => {
                   location={popupLocation}
                 >
                   <h4 className="text-xl">{county.name}</h4>
+                  <Link
+                    to={`/counties/${county.slug}`}
+                    className="text-blue-700 underline underline-offset-2 text-l block mt-2"
+                  >
+                    Explore
+                  </Link>
                 </PlacePopup>
                 <PlaceTooltip
                   show={hoveredCounty == county.name}

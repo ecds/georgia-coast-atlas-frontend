@@ -1,22 +1,23 @@
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useContext, useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
   useLocation,
-  Await
+  Await,
+  useNavigation,
 } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { fetchPlaceBySlug } from "~/data/coredata";
-import { PlaceContext } from "~/contexts";
+import { MapContext, PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import PlaceContent from "~/components/layout/PlaceContent";
 import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
 import Loading from "~/components/layout/Loading";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { TPlaceRecord, TPlaceSource } from "~/types";
-// import { faArrowCircleLeft, faArrowLeft, faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
+import type { TPlaceRecord } from "~/types";
+import { indexCollection } from "~/config";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.id) {
@@ -26,7 +27,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     });
   }
 
-  const place = await fetchPlaceBySlug(params.id);
+  const place = await fetchPlaceBySlug(params.id, indexCollection);
   if (!place) {
     throw new Response(null, {
       status: 404,
@@ -36,35 +37,39 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
   return { place };
 };
+
 const PlacePage = () => {
   const { place } = useLoaderData<TPlaceRecord>();
+  const { map } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  const [layerSources, setLayerSources] = useState<TPlaceSource>({});
   const [backTo, setBackTo] = useState<boolean>(false);
   const topRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const navigation = useNavigation();
   const location = useLocation();
 
   useEffect(() => {
-    // setBackToSearch(location.state == "fromSearch");
     setBackTo(location.state?.backTo ?? undefined);
   }, [location]);
 
+  useEffect(() => {
+    if (navigation.state === "loading" && map) {
+      if (map && map.getLayer(`place-${place.uuid}`))
+        map.removeLayer(`place-${place.uuid}`);
+    }
+  }, [navigation, map, place]);
+
   return (
-    <PlaceContext.Provider
-      value={{
-        place,
-        activeLayers,
-        setActiveLayers,
-        layerSources,
-        setLayerSources,
-        geoJSON: place.geojson,
-        manifestLabel: "photographs",
-      }}
-    >
-      <Suspense fallback={<Loading />}>
-        <Await resolve={place}>
-          {(resolvedPlace) => (
+    <Suspense fallback={<Loading />}>
+      <Await resolve={place}>
+        {(resolvedPlace) => (
+          <PlaceContext.Provider
+            value={{
+              place: resolvedPlace,
+              activeLayers,
+              setActiveLayers,
+            }}
+          >
             <>
               <PlaceContent>
                 {backTo && (
@@ -91,13 +96,12 @@ const PlacePage = () => {
                   }}
                 />
               </PlaceContent>
-              {/* <RelatedRecords /> */}
-              {resolvedPlace.geojson && <PlaceGeoJSON />}
+              <PlaceGeoJSON />
             </>
-          )}
-        </Await>
-      </Suspense>
-    </PlaceContext.Provider>
+          </PlaceContext.Provider>
+        )}
+      </Await>
+    </Suspense>
   );
 };
 

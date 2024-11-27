@@ -6,15 +6,22 @@ import { PlaceContext } from "~/contexts";
 const RelatedMapLayers = () => {
   const { place } = useContext(PlaceContext);
 
-  return (
-    <RelatedSection title="Map Layers">
-      {place.map_layers.map((mapLayer) => {
-        return (
-          <WMSLayer key={`map-layer-${mapLayer.uuid}`} placeLayer={mapLayer} />
-        );
-      })}
-    </RelatedSection>
-  );
+  if (place.map_layers?.length > 0) {
+    return (
+      <RelatedSection title="Map Layers">
+        {place.map_layers.map((mapLayer) => {
+          return (
+            <WMSLayer
+              key={`map-layer-${mapLayer.uuid}`}
+              placeLayer={mapLayer}
+            />
+          );
+        })}
+      </RelatedSection>
+    );
+  }
+
+  return null;
 };
 
 export default RelatedMapLayers;

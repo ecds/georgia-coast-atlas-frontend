@@ -1,14 +1,13 @@
 import { bbox } from "@turf/turf";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { useGeoSearch, useInstantSearch } from "react-instantsearch";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 import GeoSearchClusters from "./GeoSearchClusters";
 import GeoSearchPoints from "./GeoSearchPoints";
 import { LngLatBounds } from "maplibre-gl";
+// import { indexCollection } from "~/config";
 import type { FeatureCollection } from "geojson";
-import type { MapLibreEvent } from "maplibre-gl";
-import { indexCollection } from "~/config";
 
 let timerId: NodeJS.Timeout | undefined = undefined;
 let timeout = 200;
@@ -16,23 +15,23 @@ let timeout = 200;
 const GeoSearch = () => {
   const [geojson, setGeoJSON] = useState<FeatureCollection>();
   const previousRefinements = useRef<string>();
-  const { map, mapLoaded } = useContext(MapContext);
-  const { refine } = useGeoSearch();
-  const { renderState, indexRenderState } = useInstantSearch();
+  const { map } = useContext(MapContext);
+  const { items } = useGeoSearch();
+  const { renderState } = useInstantSearch();
 
-  const handleBoundsChange = useCallback(
-    (event: MapLibreEvent) => {
-      if (!mapLoaded || !map) return;
+  // const handleBoundsChange = useCallback(
+  //   (event: MapLibreEvent) => {
+  //     if (!mapLoaded || !map) return;
 
-      if (event.originalEvent && event.originalEvent instanceof MouseEvent) {
-        refine({
-          northEast: map.getBounds().getNorthEast(),
-          southWest: map.getBounds().getSouthWest(),
-        });
-      }
-    },
-    [map, mapLoaded, refine]
-  );
+  //     if (event.originalEvent && event.originalEvent instanceof MouseEvent) {
+  //       refine({
+  //         northEast: map.getBounds().getNorthEast(),
+  //         southWest: map.getBounds().getSouthWest(),
+  //       });
+  //     }
+  //   },
+  //   [map, mapLoaded, refine]
+  // );
 
   useEffect(() => {
     if (timerId) {
@@ -40,32 +39,33 @@ const GeoSearch = () => {
     }
 
     timerId = setTimeout(() => {
-      const hits = renderState[indexCollection]?.geoSearch?.items;
+      const hits = items;
       if (hits) setGeoJSON(hitsToFeatureCollection(hits));
     }, timeout);
-  }, [renderState]);
+  }, [items]);
+
+  // useEffect(() => {
+  //   if (map) {
+  //     map.on("moveend", handleBoundsChange);
+  //   }
+  //   return () => {
+  //     map?.off("moveend", handleBoundsChange);
+  //   };
+  // }, [map, handleBoundsChange]);
 
   useEffect(() => {
-    if (!mapLoaded || !map) return;
-    // Only listen once to avoid a loop where there is a slight difference between
-    // the viewable bounds and the query bounds.
-    map.once("moveend", handleBoundsChange);
-
-    return () => {
-      map.off("moveend", handleBoundsChange);
-    };
-  }, [map, mapLoaded, handleBoundsChange]);
-
-  useEffect(() => {
-    if (geojson && map) {
+    if (geojson && geojson.features.length > 0 && map) {
       const bounds = new LngLatBounds(
         bbox(geojson) as [number, number, number, number]
       );
-      if (indexRenderState.searchBox?.query !== "")
-        map?.fitBounds(bounds, { padding: 20 });
+      const mapBounds = map.getBounds();
+      if (
+        !mapBounds.contains(bounds.getNorthEast()) ||
+        !mapBounds.contains(bounds.getSouthEast())
+      )
+        map.fitBounds(bounds);
     }
-    map?.once("moveend", handleBoundsChange);
-  }, [geojson, map, indexRenderState, handleBoundsChange]);
+  }, [geojson, map]);
 
   useEffect(() => {
     if (renderState?.georgia_coast_places?.currentRefinements?.items) {
@@ -82,6 +82,10 @@ const GeoSearch = () => {
       // setRefinementsChanged(newRefinements !== previousRefinements.current);
       previousRefinements.current = newRefinements;
     }
+
+    return () => {
+      console.log("return renderstate");
+    };
   }, [renderState]);
 
   if (geojson) {

@@ -5,12 +5,12 @@ import tailwindConfig from "tailwind.config";
 import type { TPlaceGeoJSON } from "~/types";
 import type { Hit } from "instantsearch.js";
 import type { FeatureCollection } from "geojson";
-import type { ESRelatedPlace } from "~/esTypes";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 // TODO: Maybe use Tailwind config to keep things constant.
 const DEFAULT_COLOR = "#ea580c";
 
-const getColor = (type: string) => {
+export const getColor = (type: string) => {
   const tailwindColors = resolveConfig(tailwindConfig).theme.colors;
   const typeColors = PLACE_TYPES[type];
   if (typeColors && typeColors.bgColor) {
@@ -66,4 +66,25 @@ export const placesToFeatureCollection = (places: TPlaceGeoJSON[]) => {
     type: "FeatureCollection",
     features: places.map((place) => place.geojson.features).flat(),
   };
+};
+
+export const locationToFeatureCollection = (place: ESPlace) => {
+  const featureCollection: FeatureCollection = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: {
+          ...place,
+          hexColor: getColor(place.types[0]),
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [place.location.lon, place.location.lat],
+        },
+      },
+    ],
+  };
+
+  return featureCollection;
 };

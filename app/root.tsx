@@ -66,7 +66,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   useEffect(() => {
-    const mapRoutes = ["/search", "/places", "/island", "/explore"];
+    const mapRoutes = [
+      "/search",
+      "/places",
+      "/island",
+      "/explore",
+      "/counties",
+    ];
     setIsMapRoute(
       mapRoutes.some((route) => location.pathname.startsWith(route))
     );

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import { largeCluster } from "~/mapStyles/geoJSON";
-import PlacePopup from "~/components/mapping/PlacePopup";
+import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { ClientOnly } from "remix-utils/client-only";
 import type { FeatureCollection } from "geojson";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
@@ -65,7 +65,6 @@ const GeoSearchClusters = ({ geojson }: Props) => {
       const list = titles.map((title: string, index: number) => {
         return { title, slug: slugs[index] };
       });
-      console.log("🚀 ~ list ~ list:", list);
       setClusterList(list);
       setPopupTitle(undefined);
       setShowPopup(true);
@@ -90,7 +89,8 @@ const GeoSearchClusters = ({ geojson }: Props) => {
 
     if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
 
-    if (!map.getLayer(layerId)) map.addLayer(largeCluster(layerId, sourceId));
+    if (!map.getLayer(layerId))
+      map.addLayer(largeCluster({ id: layerId, source: sourceId }));
     map.on("click", layerId, handleClick);
     map.on("mouseenter", layerId, mouseenter);
     // map.on("mouseleave", layerId, mouseleave);
