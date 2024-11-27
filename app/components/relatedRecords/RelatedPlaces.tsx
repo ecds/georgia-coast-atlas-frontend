@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import PlacePopup from "../mapping/PlacePopup";
+import PlacePopup from "../mapping/PlacePopup.client";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";
 import type {
@@ -11,10 +11,12 @@ import type {
   SourceSpecification,
 } from "maplibre-gl";
 import type { ESRelatedPlace } from "~/esTypes";
+import { ClientOnly } from "remix-utils/client-only";
 
 const RelatedPlaces = () => {
   const { map } = useContext(MapContext);
-  const { place, setLayerSources, setActiveLayers } = useContext(PlaceContext);
+  const { place, clusterFillColor, clusterTextColor } =
+    useContext(PlaceContext);
   const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>(
     undefined
   );
@@ -58,7 +60,7 @@ const RelatedPlaces = () => {
 
   useEffect(() => {
     if (!map) return;
-    if (place.places.length === 0) return;
+    if (!place.places || place.places.length === 0) return;
 
     const geojson = toFeatureCollection(place.places);
 
@@ -75,19 +77,21 @@ const RelatedPlaces = () => {
       map.removeSource(`${place.uuid}-places`);
     map.addSource(`${place.uuid}-places`, placesSource);
 
-    const clusterLayer = cluster(
-      `clusters-${place.uuid}`,
-      `${place.uuid}-places`
-    );
+    const clusterLayer = cluster({
+      id: `clusters-${place.uuid}`,
+      source: `${place.uuid}-places`,
+      fillColor: clusterFillColor ?? "#1d4ed8",
+    });
 
     if (!map.getLayer(clusterLayer.id)) {
       map.addLayer(clusterLayer);
     }
 
-    const countLayer = clusterCount(
-      `counts-${place.uuid}`,
-      `${place.uuid}-places`
-    );
+    const countLayer = clusterCount({
+      id: `counts-${place.uuid}`,
+      source: `${place.uuid}-places`,
+      textColor: clusterTextColor ?? "white",
+    });
 
     if (!map.getLayer(countLayer.id)) {
       map.addLayer(countLayer);
@@ -125,62 +129,58 @@ const RelatedPlaces = () => {
       if (map.getSource(`${place.uuid}-places`))
         map.removeSource(`${place.uuid}-places`);
     };
-  }, [
-    map,
-    place,
-    handleClick,
-    setActiveLayers,
-    setLayerSources,
-    handleMouseEnter,
-    handleMouseLeave,
-  ]);
+  }, [map, place, handleClick, handleMouseEnter, handleMouseLeave]);
 
-  if (place.places.length === 0) {
-    return null;
+  if (place.places?.length > 0) {
+    return (
+      <RelatedSection title="Related Places">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {place.places.map((relatedPlace) => {
+            return (
+              <div key={`related-place-${relatedPlace.uuid}`}>
+                <button
+                  className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
+                  onClick={() => {
+                    setActivePlace(relatedPlace);
+                  }}
+                >
+                  {relatedPlace.name}
+                </button>
+                <ClientOnly>
+                  {() => (
+                    <PlacePopup
+                      location={{
+                        lat: relatedPlace.location.lat,
+                        lon: relatedPlace.location.lon,
+                      }}
+                      show={activePlace?.uuid === relatedPlace.uuid}
+                      onClose={() => setActivePlace(undefined)}
+                    >
+                      <h4 className="text-xl">{relatedPlace.name}</h4>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: relatedPlace.description ?? "",
+                        }}
+                      />
+                      <Link
+                        to={`/places/${relatedPlace.slug}`}
+                        state={{ backTo: place.name }}
+                        className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+                      >
+                        Read More
+                      </Link>
+                    </PlacePopup>
+                  )}
+                </ClientOnly>
+              </div>
+            );
+          })}
+        </div>
+      </RelatedSection>
+    );
   }
 
-  return (
-    <RelatedSection title="Related Places">
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        {place.places.map((relatedPlace) => {
-          return (
-            <div key={`related-place-${relatedPlace.uuid}`}>
-              <button
-                className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
-                onClick={() => {
-                  setActivePlace(relatedPlace);
-                }}
-              >
-                {relatedPlace.name}
-              </button>
-              <PlacePopup
-                location={{
-                  lat: relatedPlace.location.lat,
-                  lon: relatedPlace.location.lon,
-                }}
-                show={activePlace?.uuid === relatedPlace.uuid}
-                onClose={() => setActivePlace(undefined)}
-              >
-                <h4 className="text-xl">{relatedPlace.name}</h4>
-                {/* <div
-                  dangerouslySetInnerHTML={{
-                    __html: relatedPlace.description ?? "",
-                  }}
-                /> */}
-                <Link
-                  to={`/places/${relatedPlace.slug}`}
-                  state={{ backTo: place.name }}
-                  className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                >
-                  Read More
-                </Link>
-              </PlacePopup>
-            </div>
-          );
-        })}
-      </div>
-    </RelatedSection>
-  );
+  return null;
 };
 
 export default RelatedPlaces;

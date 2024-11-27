@@ -1,6 +1,13 @@
 import type { AddLayerObject } from "maplibre-gl";
 
-export const cluster = (id: string, source: string) => {
+type ClusterOptions = {
+  id: string;
+  source: string;
+  fillColor?: string;
+  textColor?: string;
+};
+
+export const cluster = ({ id, source, fillColor }: ClusterOptions) => {
   const layer: AddLayerObject = {
     id,
     type: "circle",
@@ -9,19 +16,20 @@ export const cluster = (id: string, source: string) => {
     paint: {
       "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
       "circle-stroke-width": 1,
-      "circle-color": [
+      "circle-color": fillColor,
+      "circle-stroke-color": "lightgray",
+      "circle-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
-        "#3b62ff",
-        "#ff623b",
+        1,
+        0.75,
       ],
-      "circle-stroke-color": "#8d260c",
     },
   };
   return layer;
 };
 
-export const largeCluster = (id: string, source: string) => {
+export const largeCluster = ({ id, source, fillColor }: ClusterOptions) => {
   const layer: AddLayerObject = {
     id,
     type: "circle",
@@ -38,20 +46,20 @@ export const largeCluster = (id: string, source: string) => {
         16,
       ],
       "circle-stroke-width": 1,
-      "circle-color": [
+      "circle-color": fillColor ?? "#1d4ed8",
+      "circle-stroke-color": "lightgray",
+      "circle-opacity": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
-        "#ca8a04",
-        "#fef08a",
+        1,
+        0.75,
       ],
-      "circle-stroke-color": "#8d260c",
-      "circle-opacity": 0.7,
     },
   };
   return layer;
 };
 
-export const clusterCount = (id: string, source: string) => {
+export const clusterCount = ({ id, source, textColor }: ClusterOptions) => {
   const count: AddLayerObject = {
     id,
     type: "symbol",
@@ -59,22 +67,27 @@ export const clusterCount = (id: string, source: string) => {
     filter: ["has", "point_count"],
     layout: {
       "text-field": "{point_count_abbreviated}",
-      "text-font": ["Noto Sans Regular"],
+      "text-font": ["Noto Sans Bold"],
       "text-size": 12,
+    },
+    paint: {
+      "text-color": textColor ?? "white",
     },
   };
   return count;
 };
 
-export const singlePoint = (id: string, source: string) => {
+export const singlePoint = (id: string, source: string, size?: number) => {
   const point: AddLayerObject = {
     id,
     type: "circle",
     source,
     filter: ["!", ["has", "point_count"]],
     paint: {
-      "circle-radius": 6,
+      "circle-radius": size ?? 6,
       "circle-color": ["string", ["get", "hexColor"]],
+      "circle-stroke-color": "gray",
+      "circle-stroke-width": 2,
     },
   };
   return point;

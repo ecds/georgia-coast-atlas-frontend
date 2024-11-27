@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import PlacePopup from "~/components/mapping/PlacePopup";
+import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";

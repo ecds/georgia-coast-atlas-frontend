@@ -5,14 +5,14 @@ import { fetchCounties, fetchPlacesByType } from "~/data/coredata";
 import IntroModal from "~/components/layout/IntroModal";
 import Loading from "~/components/layout/Loading";
 import { defaultBounds, topBarHeight } from "~/config";
-import type { TCounty, TPlace } from "~/types";
 import type { LoaderFunction } from "@remix-run/node";
 import Counties from "~/components/mapping/Counties";
 import Islands from "~/components/mapping/Islands";
+import type { ESPlace } from "~/esTypes";
 
 export const loader: LoaderFunction = async () => {
-  const islands: TPlace[] = await fetchPlacesByType("Barrier Island");
-  const counties: TCounty[] = await fetchCounties();
+  const islands: ESPlace[] = await fetchPlacesByType("Barrier Island");
+  const counties: ESPlace[] = await fetchCounties();
   return { islands, counties };
 };
 
@@ -40,7 +40,7 @@ const Explore = () => {
     >
       <IntroModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
       <Suspense fallback={<Loading />}>
-      <Await resolve={islands}>
+        <Await resolve={islands}>
           {(resolvedIslands) => (
             <Await resolve={counties}>
               {(resolvedCounties) => (

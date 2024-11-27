@@ -1,8 +1,6 @@
 import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
-import type { TPlaceSource } from "./types";
-import type { FeatureCollection } from "geojson";
 import type { ESPlace } from "./esTypes";
 
 type TMapContext = {
@@ -14,12 +12,12 @@ type TMapContext = {
 
 type TPlaceContext = {
   place: ESPlace;
-  activeLayers: string[];
-  setActiveLayers: Dispatch<SetStateAction<string[]>>;
-  geoJSON?: FeatureCollection;
-  layerSources: TPlaceSource;
-  setLayerSources: Dispatch<SetStateAction<TPlaceSource>>;
-  manifestLabel: "photographs" | "combined";
+  activeLayers?: string[];
+  setActiveLayers?: Dispatch<SetStateAction<string[]>>;
+  full?: boolean;
+  relatedClosed?: boolean;
+  clusterFillColor?: string;
+  clusterTextColor?: string;
 };
 
 export const MapContext = createContext<TMapContext>({
@@ -35,6 +33,7 @@ export const MapContext = createContext<TMapContext>({
 
 export const PlaceContext = createContext<TPlaceContext>({
   place: {
+    bbox: [0, 0, 0, 0],
     name: "",
     description: "",
     featured_photograph: "",
@@ -62,16 +61,9 @@ export const PlaceContext = createContext<TPlaceContext>({
     geojson: { type: "FeatureCollection", features: [] },
   },
   activeLayers: [],
-  layerSources: {},
-  manifestLabel: "photographs",
   setActiveLayers: (_: SetStateAction<string[]>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?"
-    );
-  },
-  setLayerSources: (_: SetStateAction<TPlaceSource>) => {
-    console.error(
-      "setLayerSources not implemented. Did you pass it to context?"
     );
   },
 });

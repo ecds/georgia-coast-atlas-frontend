@@ -25,7 +25,6 @@ const sk = new Searchkit({
       "location",
       "types",
       "identifier",
-      "geojson",
       "slug",
     ],
     facet_attributes: [
@@ -44,7 +43,7 @@ export const searchClient = Client(sk, {
           ...sr,
           body: {
             ...sr.body,
-            size: 50,
+            size: 500,
           },
         };
       });

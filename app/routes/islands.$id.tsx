@@ -4,10 +4,10 @@ import {
   useNavigation,
   useRouteError,
   isRouteErrorResponse,
-  Await
+  Await,
 } from "@remix-run/react";
 import { dataHosts, indexCollection } from "~/config.ts";
-import { fetchPlaceBySlug, fetchPlaceGeoJSON } from "~/data/coredata";
+import { fetchPlaceBySlug } from "~/data/coredata";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import { PlaceContext, MapContext } from "~/contexts";
 import RouteError from "~/components/errorResponses/RouteError";
@@ -16,13 +16,13 @@ import Loading from "~/components/layout/Loading";
 import Heading from "~/components/layout/Heading";
 import { islands as islandStyle } from "~/mapStyles";
 import PlaceContent from "~/components/layout/PlaceContent";
-import type { TWordPressData, TIslandClientData, TPlaceSource } from "~/types";
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import { LngLatBounds } from "maplibre-gl";
-import { bbox } from "@turf/turf";
+import type { TWordPressData } from "~/types";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ESPlace } from "~/esTypes";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const place = await fetchPlaceBySlug(params.id);
+  const place: ESPlace = await fetchPlaceBySlug(params.id, indexCollection);
 
   if (!place) {
     throw new Response(null, {
@@ -45,10 +45,9 @@ export const HydrateFallback = () => {
 };
 
 const IslandPage = () => {
-  const { wpData, place } = useLoaderData<TIslandClientData>();
+  const { wpData, place } = useLoaderData<typeof loader>();
   const { map, mapLoaded } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  const [layerSources, setLayerSources] = useState<TPlaceSource>({});
   const topRef = useRef<HTMLDivElement>(null);
   const navigation = useNavigation();
 
@@ -71,22 +70,8 @@ const IslandPage = () => {
   }, [navigation, place, map]);
 
   useEffect(() => {
-    const fetchGeoJSON = async () => {
-      if (!map || !mapLoaded) return;
-
-      const geojson = await fetchPlaceGeoJSON({
-        uuid: place.uuid,
-        collection: indexCollection,
-      });
-
-      const bounds = new LngLatBounds(
-        bbox(geojson) as [number, number, number, number]
-      );
-
-      map.fitBounds(bounds);
-    };
-
-    if (place) fetchGeoJSON();
+    const bounds = new LngLatBounds(place.bbox);
+    map?.fitBounds(bounds);
   }, [place, map, mapLoaded]);
 
   return (
@@ -95,13 +80,13 @@ const IslandPage = () => {
         place,
         activeLayers,
         setActiveLayers,
-        layerSources,
-        setLayerSources,
-        manifestLabel: "combined",
+        full: true,
+        clusterFillColor: "#ea580c",
+        clusterTextColor: "black",
       }}
     >
       <Suspense fallback={<HydrateFallback />}>
-      <Await resolve={wpData}>
+        <Await resolve={wpData}>
           {(resolvedWpData) => (
             <PlaceContent>
               <Heading

@@ -6,15 +6,7 @@ import {
   keys,
   modelFieldUUIDs,
 } from "~/config";
-import type {
-  TPlaceRecord,
-  TPlace,
-  TESHit,
-  TPlaceGeoJSON,
-  TSearchOptions,
-  TCounty,
-} from "~/types";
-import type { ESPlace } from "~/esTypes";
+import type { TPlaceRecord, TESHit, TSearchOptions } from "~/types";
 
 const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
@@ -107,7 +99,10 @@ export const fetchPlaceRecord = async (id: string) => {
   return placeData;
 };
 
-export const fetchPlaceBySlug = async (slug: string | undefined) => {
+export const fetchPlaceBySlug = async (
+  slug: string | undefined,
+  collection: string
+) => {
   if (!slug) return undefined;
   const body = {
     query: {
@@ -117,6 +112,7 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
     from: 0,
     _source: {
       includes: [
+        "bbox",
         "county",
         "description",
         "featured_photograph",
@@ -128,6 +124,7 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
         "location",
         "photographs",
         "places",
+        "related_videos",
         "slug",
         "topos",
         "types",
@@ -138,7 +135,7 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
   };
 
   const response = await fetch(
-    `${dataHosts.elasticSearch}/${indexCollection}/_search`,
+    `${dataHosts.elasticSearch}/${collection}/_search`,
     {
       method: "POST",
       body: JSON.stringify(body),
@@ -147,14 +144,14 @@ export const fetchPlaceBySlug = async (slug: string | undefined) => {
   );
 
   const data = await response.json();
-  const place: ESPlace = data.hits.hits.map((hit: TESHit) => hit._source)[0];
+  const place = data.hits.hits.map((hit: TESHit) => hit._source)[0];
   return place;
 };
 
 export const fetchCounties = async () => {
   const body = {
     _source: {
-      includes: ["name", "location", "uuid"],
+      includes: ["name", "location", "uuid", "slug"],
     },
   };
   const response = await fetch(
@@ -167,7 +164,7 @@ export const fetchCounties = async () => {
   );
 
   const data = await response.json();
-  const counties: TCounty[] = data.hits.hits.map((hit: TESHit) => hit._source);
+  const counties = data.hits.hits.map((hit: TESHit) => hit._source);
   return counties;
 };
 
@@ -213,7 +210,7 @@ export const fetchPlacesByType = async (type: string) => {
   );
 
   const data = await response.json();
-  const places: TPlace[] = data.hits.hits.map((hit: TESHit) => hit._source);
+  const places = data.hits.hits.map((hit: TESHit) => hit._source);
   return places;
 };
 
@@ -256,7 +253,6 @@ export const fetchPlaceGeoJSON = async ({
   };
 
   const response = await elasticSearchPost({ body, collection });
-  console.log("🚀 ~ response:", response);
 
   return response[0].geojson;
 };

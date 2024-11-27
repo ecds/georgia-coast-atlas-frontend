@@ -6,7 +6,8 @@ import type { ESTopoLayer } from "~/esTypes";
 
 const RelatedTopoQuads = () => {
   const [visibleLayers, setVisibleLayers] = useState<ESTopoLayer[]>([]);
-  const { place, activeLayers, setActiveLayers } = useContext(PlaceContext);
+  const { place, activeLayers, setActiveLayers, full } =
+    useContext(PlaceContext);
 
   // useEffect(() => {
   //   const fetchRecords = async () => {
@@ -63,7 +64,7 @@ const RelatedTopoQuads = () => {
     }
   };
 
-  if (place.topos.length > 0) {
+  if (full && place.topos?.length > 0) {
     return (
       <RelatedSection title="Topo Quads">
         {place.topos.map((topo) => {

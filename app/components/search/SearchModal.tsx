@@ -7,9 +7,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faSearch, faFilter } from "@fortawesome/free-solid-svg-icons";
-import { useLocation, useNavigate } from "@remix-run/react";
+import { Form, useLocation } from "@remix-run/react";
 import type { FormEvent } from "react";
-import { indexCollection } from "~/config";
+import { useSearchBox } from "react-instantsearch";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -17,14 +17,20 @@ interface SearchModalProps {
 }
 
 export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
-  const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
   const [hasQuery, setHasQuery] = useState<boolean>(false);
+  const { query, refine } = useSearchBox();
+  const location = useLocation();
 
   useEffect(() => {
-    setIsOpen(location.search === "");
-  }, [location, setIsOpen]);
+    console.log("🚀 ~ SearchModal ~ query:", query);
+    setIsOpen(Boolean(!query) && Boolean(!location.search));
+
+    // return () => {
+    //   refine("");
+    // };
+    console.log("🚀 ~ SearchModal ~ location:", location);
+  }, [setIsOpen, query, location]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -38,12 +44,18 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   // };
 
   const navigateToSearch = () => {
-    if (searchInputRef.current)
-      navigate(
-        encodeURI(
-          `/search?${indexCollection}[query]=${searchInputRef.current.value}`
-        )
-      );
+    if (searchInputRef.current) {
+      refine(searchInputRef.current.value);
+      setIsOpen(false);
+      // navigate(
+      //   encodeURI(
+      //     `/search?${indexCollection}[query]=${searchInputRef.current.value}`
+      //   ),
+      //   {
+      //     replace: true,
+      //   }
+      // );
+    }
   };
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -60,14 +72,14 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-in origin-center data-[closed]:opacity-0"
+      className="fixed inset-0 flex w-screen items-center justify-center bg-black/60 z-50 p-4 transition duration-300 ease-in origin-center data-[closed]:opacity-0"
       transition
       open={isOpen}
-      onClose={() => navigateToSearch()}
+      onClose={navigateToSearch}
     >
       <DialogPanel
         transition
-        className={`w-full max-w-2xl space-y-4 bg-white/60 rounded-md text-center transition-transform origin-center duration-300 ease-in data-[closed]:scale-95`}
+        className={`w-full max-w-2xl space-y-4 bg-white rounded-md text-center transition-transform origin-center duration-300 ease-in data-[closed]:scale-95`}
       >
         <div className="flex w-full items-end flex-row-reverse pt-2 pr-2">
           <button
@@ -91,12 +103,12 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
             next to the search bar to refine by type. Click any place on the map
             or in the results to learn more.{" "}
           </Description>
-          <form onSubmit={handleSearch} className="">
+          <Form reloadDocument onSubmit={handleSearch} className="mt-4">
             <input
               ref={searchInputRef}
               type="search"
               onChange={handleChange}
-              className="p-2"
+              className="p-2 border-2 rounded-sm border-black/50"
               placeholder="Search Places"
             />{" "}
             <button
@@ -113,7 +125,7 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
                 </>
               )}
             </button>
-          </form>
+          </Form>
         </div>
       </DialogPanel>
     </Dialog>
