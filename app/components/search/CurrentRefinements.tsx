@@ -8,7 +8,6 @@ const CurrentRefinements = () => {
   const { items, refine } = useCurrentRefinements();
   // Docs for useGeoSearch function: https://www.algolia.com/doc/api-reference/widgets/geo-search/js/#create-a-render-function
   // const { isRefinedWithMap } = useGeoSearch();
-  // console.log("🚀 ~ CurrentRefinements ~ isRefineWithMap:", isRefinedWithMap());
 
   return (
     <ul className="list-none flex flex-wrap space-x-3 ps-4 mb-4">

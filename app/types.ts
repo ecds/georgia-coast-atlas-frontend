@@ -535,4 +535,5 @@ export type TSearchFilter = {
 export type TSearchOptions = {
   collection?: string;
   filter?: TSearchFilter[] | Array<undefined>;
+  uuid?: string;
 };

@@ -1,15 +1,14 @@
-import type { TRelatedPlaceRecord } from "~/types";
+import { useContext } from "react";
 import WMSLayer from "../mapping/WMSLayer";
 import RelatedSection from "./RelatedSection";
+import { PlaceContext } from "~/contexts";
 
-interface Props {
-  layers: TRelatedPlaceRecord[];
-}
+const RelatedMapLayers = () => {
+  const { place } = useContext(PlaceContext);
 
-const RelatedMapLayers = ({ layers }: Props) => {
   return (
     <RelatedSection title="Map Layers">
-      {layers.map((mapLayer) => {
+      {place.map_layers.map((mapLayer) => {
         return (
           <WMSLayer key={`map-layer-${mapLayer.uuid}`} placeLayer={mapLayer} />
         );

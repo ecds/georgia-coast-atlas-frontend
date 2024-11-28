@@ -34,20 +34,40 @@ export type ESManifests = {
   label: "combined" | "photographs";
 };
 
-export type ESPlace = {
+export type ESTopoLayer = {
   name: string;
+  url: string;
+  uuid: string;
+};
+
+export type ESTopo = {
+  year: string;
+  layers: ESTopoLayer[];
+};
+
+export type ESMapLayer = {
+  preview: string;
+  wms_resource: string;
+  uuid: string;
+  name: string;
+};
+
+export type ESPlace = {
+  county: string;
   description: string;
   featured_photograph: string;
   featured_video: ESVideo;
-  identifier: string;
-  types: string[];
-  county: string;
-  places: ESRelatedPlace[];
-  videos: ESVideo[];
-  photographs: ESPhotograph[];
-  location: TLonLat;
-  uuid: string;
-  slug: string;
-  manifests: ESManifests[];
   geojson: FeatureCollection;
+  identifier: string;
+  manifests: ESManifests[];
+  map_layers: ESMapLayer[];
+  name: string;
+  location: TLonLat;
+  photographs: ESPhotograph[];
+  places: ESRelatedPlace[];
+  slug: string;
+  topos: ESTopo[];
+  types: string[];
+  uuid: string;
+  videos: ESVideo[];
 };

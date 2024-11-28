@@ -8,6 +8,7 @@ import GeoSearchPoints from "./GeoSearchPoints";
 import { LngLatBounds } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
 import type { MapLibreEvent } from "maplibre-gl";
+import { indexCollection } from "~/config";
 
 let timerId: NodeJS.Timeout | undefined = undefined;
 let timeout = 200;
@@ -39,7 +40,7 @@ const GeoSearch = () => {
     }
 
     timerId = setTimeout(() => {
-      const hits = renderState.georgia_coast?.geoSearch?.items;
+      const hits = renderState[indexCollection]?.geoSearch?.items;
       if (hits) setGeoJSON(hitsToFeatureCollection(hits));
     }, timeout);
   }, [renderState]);
@@ -67,13 +68,17 @@ const GeoSearch = () => {
   }, [geojson, map, indexRenderState, handleBoundsChange]);
 
   useEffect(() => {
-    if (renderState?.georgia_coast?.currentRefinements?.items) {
-      let newRefinements = renderState.georgia_coast.currentRefinements.items
-        .map((items) => items.refinements.map((refinement) => refinement.label))
-        .flat()
-        .sort()
-        .toLocaleString();
-      newRefinements += renderState.georgia_coast.pagination?.currentRefinement;
+    if (renderState?.georgia_coast_places?.currentRefinements?.items) {
+      let newRefinements =
+        renderState.georgia_coast_places.currentRefinements.items
+          .map((items) =>
+            items.refinements.map((refinement) => refinement.label)
+          )
+          .flat()
+          .sort()
+          .toLocaleString();
+      newRefinements +=
+        renderState.georgia_coast_places.pagination?.currentRefinement;
       // setRefinementsChanged(newRefinements !== previousRefinements.current);
       previousRefinements.current = newRefinements;
     }

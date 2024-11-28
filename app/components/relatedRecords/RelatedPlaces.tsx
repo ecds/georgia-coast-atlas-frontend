@@ -5,6 +5,7 @@ import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../mapping/PlacePopup";
+import PlaceTooltip from "../mapping/PlaceTooltip";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
@@ -12,50 +13,63 @@ import type { ESRelatedPlace } from "~/esTypes";
 
 const RelatedPlaces = () => {
   const { map } = useContext(MapContext);
-  const { place, setLayerSources, setActiveLayers } = useContext(PlaceContext);
-  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>(
-    undefined
+  const { place } = useContext(PlaceContext);
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>(undefined);
+  const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>(undefined);
+  const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>(undefined);
+
+  const handleMouseEnter = useCallback(
+    ({ features }: MapLayerMouseEvent) => {
+      if (!map || !features) return;
+
+      const hovered = place.places.find(
+        (relatedPlace) => relatedPlace.uuid === features[0]?.id
+      );
+      setHoveredPlace(hovered);
+      map.getCanvas().style.cursor = "pointer";
+    },
+    [map, place.places]
   );
-  const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>(
-    undefined
-  );
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredPlace(undefined);
+
+    if (map) {
+      map.getCanvas().style.cursor = "";
+    }
+  }, [map]);
 
   const handleClick = useCallback(
-    async ({ features, lngLat, ...rest }: MapLayerMouseEvent) => {
-      if (!map) return;
+    async ({ features, lngLat }: MapLayerMouseEvent) => {
+      if (!map || !features) return;
 
-      if (features && features[0].id) {
-        const clickedPlace = place.places.find(
-          (relatedPlaces) => relatedPlaces.uuid === features[0].id
-        );
-        setActivePlace(clickedPlace);
-      }
-      if (features && features[0].properties.cluster) {
+      const feature = features[0];
+      if (!feature) return;
+
+      if (feature.properties?.cluster) {
         const source: GeoJSONSource | undefined = map.getSource(
-          features[0].layer.source
+          feature.layer.source
         );
         if (!source) return;
+
         const zoom = await source.getClusterExpansionZoom(
-          features[0].properties.cluster_id
+          feature.properties.cluster_id
         );
         map.easeTo({
           center: lngLat,
           zoom,
         });
+        return; 
       }
+
+      const clickedPlace = place.places.find(
+        (relatedPlace) => relatedPlace.uuid === feature.id
+      );
+      setHoveredPlace(undefined);
+      setActivePlace(clickedPlace);
     },
-    [map, place]
+    [map, place.places]
   );
-
-  const handleMouseEnter = useCallback(() => {
-    if (!map) return;
-    map.getCanvas().style.cursor = "pointer";
-  }, [map]);
-
-  const handleMouseLeave = useCallback(() => {
-    if (!map) return;
-    map.getCanvas().style.cursor = "";
-  }, [map]);
 
   useEffect(() => {
     if (!placeBounds || !map) return;
@@ -68,15 +82,10 @@ const RelatedPlaces = () => {
 
     const geojson = toFeatureCollection(place.places);
 
-    const bounds = new LngLatBounds(
-      bbox(geojson) as [number, number, number, number]
-    );
-
-    // // Extend the island bounds if related places are beyond the island bounds.
+    const bounds = new LngLatBounds(bbox(geojson) as [number, number, number, number]);
     const newBounds = map.getBounds().extend(bounds);
 
     setPlaceBounds(newBounds);
-
     map.fitBounds(newBounds, { maxZoom: 14 });
 
     const placesSource: SourceSpecification = {
@@ -88,113 +97,81 @@ const RelatedPlaces = () => {
       promoteId: "uuid",
     };
 
-    if (map.getSource(`${place.uuid}-places`))
-      map.removeSource(`${place.uuid}-places`);
+    if (map.getSource(`${place.uuid}-places`)) map.removeSource(`${place.uuid}-places`);
     map.addSource(`${place.uuid}-places`, placesSource);
 
-    const clusterLayer = cluster(
-      `clusters-${place.uuid}`,
-      `${place.uuid}-places`
-    );
+    const clusterLayer = cluster(`clusters-${place.uuid}`, `${place.uuid}-places`);
+    if (!map.getLayer(clusterLayer.id)) map.addLayer(clusterLayer);
 
-    if (!map.getLayer(clusterLayer.id)) {
-      map.addLayer(clusterLayer);
-    }
+    const countLayer = clusterCount(`counts-${place.uuid}`, `${place.uuid}-places`);
+    if (!map.getLayer(countLayer.id)) map.addLayer(countLayer);
 
-    const countLayer = clusterCount(
-      `counts-${place.uuid}`,
-      `${place.uuid}-places`
-    );
+    const unclusteredLayer = singlePoint(`points-${place.uuid}`, `${place.uuid}-places`);
+    if (!map.getLayer(unclusteredLayer.id)) map.addLayer(unclusteredLayer);
 
-    if (!map.getLayer(countLayer.id)) {
-      map.addLayer(countLayer);
-    }
-
-    const unclusteredLayer = singlePoint(
-      `points-${place.uuid}`,
-      `${place.uuid}-places`
-    );
-
-    if (!map.getLayer(unclusteredLayer.id)) {
-      map.addLayer(unclusteredLayer);
-    }
-
-    map.on("mouseenter", clusterLayer.id, handleMouseEnter);
     map.on("mouseenter", unclusteredLayer.id, handleMouseEnter);
-    map.on("mouseleave", clusterLayer.id, handleMouseLeave);
     map.on("mouseleave", unclusteredLayer.id, handleMouseLeave);
-    map.on("click", clusterLayer.id, handleClick);
     map.on("click", unclusteredLayer.id, handleClick);
+    map.on("click", clusterLayer.id, handleClick);
 
     return () => {
-      map.off("mouseenter", clusterLayer.id, handleMouseEnter);
-      map.off("mouseleave", clusterLayer.id, handleMouseLeave);
       map.off("mouseenter", unclusteredLayer.id, handleMouseEnter);
       map.off("mouseleave", unclusteredLayer.id, handleMouseLeave);
-      map.off("click", clusterLayer.id, handleClick);
       map.off("click", unclusteredLayer.id, handleClick);
+      map.off("click", clusterLayer.id, handleClick);
       if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
       if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-      if (map.getLayer(unclusteredLayer.id))
-        map.removeLayer(unclusteredLayer.id);
-      if (map.getSource(`${place.uuid}-places`))
-        map.removeSource(`${place.uuid}-places`);
-      if (map.getSource(`${place.uuid}-places`))
-        map.removeSource(`${place.uuid}-places`);
+      if (map.getLayer(unclusteredLayer.id)) map.removeLayer(unclusteredLayer.id);
+      if (map.getSource(`${place.uuid}-places`)) map.removeSource(`${place.uuid}-places`);
     };
-  }, [
-    map,
-    place,
-    handleClick,
-    setActiveLayers,
-    setLayerSources,
-    handleMouseEnter,
-    handleMouseLeave,
-  ]);
+  }, [map, place, handleMouseEnter, handleMouseLeave, handleClick]);
 
-  if (place.places.length === 0) {
-    return null;
-  }
+  if (place.places.length === 0) return null;
 
   return (
     <RelatedSection title="Related Places">
       <div className="grid grid-cols-1 md:grid-cols-2">
-        {place.places.map((relatedPlace) => {
-          return (
-            <div key={`related-place-${relatedPlace.uuid}`}>
-              <button
-                className={`text-black/75 hover:text-black text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
-                onClick={() => {
-                  setActivePlace(relatedPlace);
-                }}
+        {place.places.map((relatedPlace) => (
+          <div key={`related-place-${relatedPlace.uuid}`}>
+            <button
+              className={`text-black/75 text-left md:py-1 ${
+                hoveredPlace?.uuid === relatedPlace.uuid ? "bg-gray-200 font-bold" : ""
+              } ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
+              onClick={() => setActivePlace(relatedPlace)}
+            >
+              {relatedPlace.name}
+            </button>
+            <PlacePopup
+              location={{
+                lat: relatedPlace.location.lat,
+                lon: relatedPlace.location.lon,
+              }}
+              show={activePlace?.uuid === relatedPlace.uuid}
+              onClose={() => setActivePlace(undefined)}
+            >
+              <h4 className="text-xl">{relatedPlace.name}</h4>
+              <Link
+                to={`/places/${relatedPlace.slug}`}
+                state={{ backTo: place.name }}
+                className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
               >
-                {relatedPlace.name}
-              </button>
-              <PlacePopup
-                location={{
-                  lat: relatedPlace.location.lat,
-                  lon: relatedPlace.location.lon,
-                }}
-                show={activePlace?.uuid === relatedPlace.uuid}
-                onClose={() => setActivePlace(undefined)}
-              >
-                <h4 className="text-xl">{relatedPlace.name}</h4>
-                {/* <div
-                  dangerouslySetInnerHTML={{
-                    __html: relatedPlace.description ?? "",
-                  }}
-                /> */}
-                <Link
-                  to={`/places/${relatedPlace.slug}`}
-                  state={{ backTo: place.name }}
-                  className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                >
-                  Read More
-                </Link>
-              </PlacePopup>
-            </div>
-          );
-        })}
+                Read More
+              </Link>
+            </PlacePopup>
+            <PlaceTooltip
+              location={{
+                lat: relatedPlace.location.lat,
+                lon: relatedPlace.location.lon,
+              }}
+              show={hoveredPlace?.uuid === relatedPlace.uuid}
+              onClose={() => {}} 
+              anchor="left"
+              zoomToFeature = {false}
+            >
+              <h4 className="text-white">{relatedPlace.name}</h4>
+            </PlaceTooltip>
+          </div>
+        ))}
       </div>
     </RelatedSection>
   );

@@ -16,6 +16,8 @@ interface Props {
   data: TTopoCoords;
 }
 
+const IIIF_SERVER = "https://iiif.ecds.io/iiif/3/topos";
+
 export const manifest = ({
   imageData,
   id,
@@ -30,6 +32,7 @@ export const manifest = ({
     id: url,
     type: "Manifest",
     items: [
+      thumbnail({ year, id }),
       canvas({
         imageData,
         id,
@@ -40,6 +43,16 @@ export const manifest = ({
         data,
       }),
     ],
+  };
+};
+
+export const thumbnail = ({ id, year }: { id?: string; year: string }) => {
+  return {
+    id: `${IIIF_SERVER}/${year}/${id}.tiff/square/200,/0/default.jpg`,
+    type: "Image",
+    format: "image/jpg",
+    width: 200,
+    height: 200,
   };
 };
 
@@ -155,7 +168,7 @@ export const annotationGeo = ({
     target: {
       type: "SpecificResource",
       source: {
-        id: `https://iip.readux.io/iiif/3/topos/${year}/${id}.tiff`,
+        id: `${IIIF_SERVER}/${year}/${id}.tiff`,
         width: imageData.width,
         height: imageData.height,
         format: "image/jpg",

@@ -44,7 +44,6 @@ const GeoSearchClusters = ({ geojson }: Props) => {
   const mouseleave = useCallback(() => {
     if (!map) return;
     map.getCanvas().style.cursor = "";
-    console.log("🚀 ~ mouseleave ~ clusterList:", clusterList);
     if (!clusterList) setShowPopup(false);
     // setClusterList([]);
   }, [map, clusterList]);

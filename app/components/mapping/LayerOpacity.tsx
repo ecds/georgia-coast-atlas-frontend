@@ -7,7 +7,7 @@ interface Props {
 
 const LayerOpacity = ({ opacity, handleChange, disabled, id }: Props) => {
   return (
-    <div>
+    <div className="w-max">
       <input
         type="range"
         min={0}

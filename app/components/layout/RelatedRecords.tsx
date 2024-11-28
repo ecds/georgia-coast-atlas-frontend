@@ -17,8 +17,8 @@ const RelatedRecords = () => {
           (manifest) => manifest.label === manifestLabel
         )}
       />
-      {/* <RelatedMapLayers layers={place.places.mapLayers} />
-      <RelatedTopoQuads quads={place.places.topoQuads} /> */}
+      <RelatedMapLayers />
+      <RelatedTopoQuads />
     </>
   );
 };

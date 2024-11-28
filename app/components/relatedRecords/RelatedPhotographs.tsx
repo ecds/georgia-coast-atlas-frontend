@@ -39,7 +39,7 @@ const RelatedPhotographs = ({ manifest }: Props) => {
   if (photographs) {
     return (
       <RelatedSection title="Photographs">
-        <div className="flex flex-wrap justify-around md:justify-start">
+        <div className="flex flex-wrap justify-around">
           {photographs && (
             <>
               {photographs.map((photo) => {

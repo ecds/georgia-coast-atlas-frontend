@@ -4,9 +4,9 @@ import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
 import { islands as islandStyle } from "~/mapStyles";
+import PlaceTooltip from "./PlaceTooltip";
 import type { TPlace } from "~/types";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
-import PlaceTooltip from "./PlaceTooltip";
 
 interface Props {
   islands: TPlace[];

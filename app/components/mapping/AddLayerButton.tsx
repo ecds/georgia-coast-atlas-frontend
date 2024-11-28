@@ -15,7 +15,7 @@ const AddLayerButton = ({ onClick, children, image }: Props) => {
         backgroundImage: `url(${image})`,
       }}
     >
-      <span className="text-center w-full bg-black/65 text-white py-2 uppercase text-lg rounded-b-md">
+      <span className="text-center w-32 bg-black/65 text-white py-2 uppercase text-lg rounded-b-md">
         {children}
       </span>
     </button>

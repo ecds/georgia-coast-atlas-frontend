@@ -1,100 +1,86 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { PlaceContext } from "~/contexts";
 import IIIFMapLayer from "~/components/mapping/IIIFMapLayer";
-import { fetchPlaceRecord } from "~/data/coredata";
 import RelatedSection from "./RelatedSection";
-import type {
-  TPlaceRecord,
-  TRelatedPlaceRecord,
-  TCoreDataLayer,
-} from "~/types";
+import type { ESTopoLayer } from "~/esTypes";
 
-type YearGroup = {
-  [key: string]: TCoreDataLayer[];
-};
+const RelatedTopoQuads = () => {
+  const [visibleLayers, setVisibleLayers] = useState<ESTopoLayer[]>([]);
+  const { place, activeLayers, setActiveLayers } = useContext(PlaceContext);
 
-interface Props {
-  quads: TRelatedPlaceRecord[];
-}
+  // useEffect(() => {
+  //   const fetchRecords = async () => {
+  //     const quadData = [];
+  //     for (const quad of place.topos) {
+  //       const record = await fetchPlaceRecord(quad.uuid);
+  //       record?.place_layers.forEach((layer) => (layer.placeName = quad.name));
+  //       if (record) quadData.push(record);
+  //     }
 
-const RelatedTopoQuads = ({ quads }: Props) => {
-  const [quadRecords, setQuadRecords] = useState<TPlaceRecord[]>();
-  const [quadGroups, setQuadGroups] = useState<YearGroup>();
-  const [yearGroups, setYearGroups] = useState<string[]>();
-  const [visibleLayers, setVisibleLayers] = useState<TCoreDataLayer[]>([]);
-  const { activeLayers, setActiveLayers } = useContext(PlaceContext);
+  //     setQuadRecords(quadData);
+  //   };
 
-  useEffect(() => {
-    const fetchRecords = async () => {
-      const quadData = [];
-      for (const quad of quads) {
-        const record = await fetchPlaceRecord(quad.uuid);
-        record?.place_layers.forEach((layer) => (layer.placeName = quad.name));
-        if (record) quadData.push(record);
-      }
+  //   fetchRecords();
+  // }, [quads]);
 
-      setQuadRecords(quadData);
-    };
-
-    fetchRecords();
-  }, [quads]);
-
-  useEffect(() => {
-    if (!quadRecords) return;
-    const years: string[] = [
-      ...new Set(
-        quadRecords.map((pl) => pl.place_layers.map((l) => l.name)).flat(),
-      ),
-    ].sort();
-    setYearGroups(years);
-    const groups: YearGroup = {};
-    for (const year of years) {
-      groups[year] = quadRecords
-        .map((l) => l.place_layers.filter((l) => l.name == year))
-        .flat();
-    }
-    setQuadGroups(groups);
-  }, [quadRecords]);
+  // useEffect(() => {
+  //   if (!quadRecords) return;
+  //   const years: string[] = [
+  //     ...new Set(
+  //       quadRecords.map((pl) => pl.place_layers.map((l) => l.name)).flat()
+  //     ),
+  //   ].sort();
+  //   setYearGroups(years);
+  //   const groups: YearGroup = {};
+  //   for (const year of years) {
+  //     groups[year] = quadRecords
+  //       .map((l) => l.place_layers.filter((l) => l.name == year))
+  //       .flat();
+  //   }
+  //   setQuadGroups(groups);
+  // }, [quadRecords]);
 
   const removeFromActiveLayers = (id: string) => {
     setActiveLayers(activeLayers.filter((l) => l !== id));
   };
 
-  const handleClick = (layer: TCoreDataLayer, isActive: boolean) => {
+  const handleClick = (layer: ESTopoLayer, isActive: boolean) => {
     if (isActive) {
-      removeFromActiveLayers(layer.id);
-      setVisibleLayers(visibleLayers.filter((l) => l.id !== layer.id));
+      removeFromActiveLayers(layer.uuid);
+      setVisibleLayers(visibleLayers.filter((l) => l.uuid !== layer.uuid));
     } else {
-      const otherVersion = visibleLayers.find(
-        (l) => l.placeName === layer.placeName,
-      );
-      if (otherVersion && activeLayers.map((l) => l).includes(otherVersion.id))
-        removeFromActiveLayers(otherVersion.id);
+      const otherVersion = visibleLayers.find((l) => l.name === layer.name);
+      if (
+        otherVersion &&
+        activeLayers.map((l) => l).includes(otherVersion.uuid)
+      )
+        removeFromActiveLayers(otherVersion.uuid);
       setVisibleLayers([
-        ...visibleLayers.filter((l) => l.placeName !== layer.placeName),
+        ...visibleLayers.filter((l) => l.name !== layer.name),
         layer,
       ]);
-      setActiveLayers([...activeLayers, layer.id]);
+      setActiveLayers([...activeLayers, layer.uuid]);
     }
   };
 
-  if (quadGroups && yearGroups) {
+  if (place.topos.length > 0) {
     return (
       <RelatedSection title="Topo Quads">
-        {yearGroups.map((year) => {
+        {place.topos.map((topo) => {
           return (
             <RelatedSection
-              key={`quads-for-${year}`}
-              title={year}
+              key={`quads-for-${topo.year}`}
+              title={topo.year}
               defaultOpen={false}
               nested
             >
-              {quadGroups[year].map((layer) => {
+              {topo.layers.map((layer) => {
                 const isActive = visibleLayers.includes(layer);
                 return (
                   <IIIFMapLayer
-                    key={`quad-place-layer-${layer.id}`}
+                    key={`quad-place-layer-${layer.name}`}
                     layer={layer}
+                    year={topo.year}
                     show={isActive}
                     onClick={() => handleClick(layer, isActive)}
                   />
