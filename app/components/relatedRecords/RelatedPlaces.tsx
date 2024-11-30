@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
+import { LngLatBounds } from "maplibre-gl";
 import { bbox } from "@turf/turf";
 import RelatedSection from "./RelatedSection";
 import { MapContext, PlaceContext } from "~/contexts";
@@ -8,7 +8,7 @@ import PlacePopup from "../mapping/PlacePopup";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { Link } from "@remix-run/react";
-import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
+import type { MapLayerMouseEvent, SourceSpecification , GeoJSONSource} from "maplibre-gl";
 import type { ESRelatedPlace } from "~/esTypes";
 
 const RelatedPlaces = () => {
@@ -148,6 +148,7 @@ const RelatedPlaces = () => {
               }}
               show={activePlace?.uuid === relatedPlace.uuid}
               onClose={() => setActivePlace(undefined)}
+              zoomToFeature = {false}
             >
               <h4 className="text-xl">{relatedPlace.name}</h4>
               <Link

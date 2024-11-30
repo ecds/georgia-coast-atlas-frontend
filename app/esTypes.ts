@@ -1,4 +1,4 @@
-import { FeatureCollection } from "geojson";
+import type { FeatureCollection } from "geojson";
 
 type TLonLat = {
   lon: number;

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { pulsingDot } from "~/utils/pulsingDot";
 import type {

@@ -10,7 +10,7 @@ import type {
 import type { LabeledIIIFExternalWebResource } from "@samvera/clover-iiif/image";
 import type { ImageService } from "@iiif/presentation-3";
 import type { SourceSpecification } from "maplibre-gl";
-import { ESPlace } from "./esTypes";
+import type { ESPlace } from "./esTypes";
 
 export type Geometry =
   | Point

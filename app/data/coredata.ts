@@ -10,7 +10,6 @@ import type {
   TPlaceRecord,
   TPlace,
   TESHit,
-  TPlaceGeoJSON,
   TSearchOptions,
   TCounty,
 } from "~/types";
