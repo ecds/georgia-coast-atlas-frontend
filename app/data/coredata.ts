@@ -126,6 +126,7 @@ export const fetchPlaceBySlug = async (
         "places",
         "related_videos",
         "slug",
+        "short_description",
         "topos",
         "types",
         "uuid",

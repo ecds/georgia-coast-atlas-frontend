@@ -5,6 +5,7 @@ import {
   useRouteError,
   isRouteErrorResponse,
   Await,
+  MetaFunction,
 } from "@remix-run/react";
 import { dataHosts, indexCollection } from "~/config.ts";
 import { fetchPlaceBySlug } from "~/data/coredata";
@@ -17,9 +18,14 @@ import Heading from "~/components/layout/Heading";
 import { islands as islandStyle } from "~/mapStyles";
 import PlaceContent from "~/components/layout/PlaceContent";
 import { LngLatBounds } from "maplibre-gl";
+import { pageMetadata } from "~/utils/pageMetadata";
 import type { TWordPressData } from "~/types";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ESPlace } from "~/esTypes";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return pageMetadata(data?.place);
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const place: ESPlace = await fetchPlaceBySlug(params.id, indexCollection);

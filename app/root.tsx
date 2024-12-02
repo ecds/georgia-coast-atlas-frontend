@@ -18,6 +18,7 @@ import { MapContext } from "./contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import StyleSwitcher from "./components/mapping/StyleSwitcher";
 import Map from "./components/mapping/Map.client";
+import { pageMetadata } from "./utils/pageMetadata";
 import { topBarHeight } from "./config";
 // https://stackoverflow.com/a/59429852/1792144
 // The following import prevents a Font Awesome icon server-side rendering bug,
@@ -26,10 +27,17 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 // Prevent fontawesome from adding its CSS since we did it manually above:
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import type { Map as TMap } from "maplibre-gl";
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: styles },
+  { rel: "icon", href: "/images/gca_favicon.jpg" },
+];
+
+export const meta: MetaFunction = () => {
+  return pageMetadata();
+};
 
 const ChildContent = ({
   children,
