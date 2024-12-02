@@ -125,6 +125,16 @@ const RelatedPlaces = () => {
     if (!map.getLayer(clusterLayer.id)) map.addLayer(clusterLayer);
     if (!map.getLayer(countLayer.id)) map.addLayer(countLayer);
 
+    const countLayer = clusterCount({
+      id: `counts-${place.uuid}`,
+      source: `${place.uuid}-places`,
+      textColor: clusterTextColor ?? "white",
+    });
+
+    if (!map.getLayer(countLayer.id)) {
+      map.addLayer(countLayer);
+    }
+
     const unclusteredLayer = singlePoint(
       `points-${place.uuid}`,
       `${place.uuid}-places`
@@ -158,11 +168,13 @@ const RelatedPlaces = () => {
             return (
               <div key={`related-place-${relatedPlace.uuid}`}>
                 <button
+
                   className={`text-black/75 text-left md:py-1 ${
                     hoveredPlace?.uuid === relatedPlace.uuid
                       ? "bg-gray-200 font-bold"
                       : ""
                   } ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
+
                   onClick={() => {
                     setActivePlace(relatedPlace);
                   }}

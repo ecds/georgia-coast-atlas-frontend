@@ -40,6 +40,7 @@ const RelatedPhotographs = () => {
   }, [manifest]);
 
   useEffect(() => {
+    console.log("🚀 ~ useEffect ~ photographs:", photographs);
     if (!photographs) return;
     setActivePhotograph(photographs[0].body);
   }, [photographs]);

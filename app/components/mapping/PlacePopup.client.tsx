@@ -6,7 +6,7 @@ import { useNavigation } from "@remix-run/react";
 import { createPortal } from "react-dom";
 import { MapContext } from "~/contexts";
 import type { ReactNode } from "react";
-import type { Popup } from "maplibre-gl";
+import type { Popup, LngLatBounds } from "maplibre-gl";
 
 interface Props {
   location: { lat: number; lon: number };
@@ -46,6 +46,7 @@ const PlacePopup = ({
   showCloseButton = true,
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
+  const previousBounds = useRef<LngLatBounds | undefined>(undefined);
   const { map } = useContext(MapContext);
 
   const [coordinates, setCoordinates] = useState<
@@ -79,6 +80,7 @@ const PlacePopup = ({
 
       popupRef.current?.addTo(map);
       if (zoomToFeature) {
+        previousBounds.current = map.getBounds();
         map.flyTo({ center: coordinates, zoom: 15 });
       }
     }
@@ -93,6 +95,22 @@ const PlacePopup = ({
       if (popupRef.current) popupRef.current.remove();
     };
   }, [show, map, coordinates, zoomToFeature, onClose]);
+
+  useEffect(() => {
+    // Zoom out to previous bounds only if previous bounds are larger than bounds
+    // when zoomed into active feature. This could maybe be accomplished by comparing
+    // zoom levels ¯\_(ツ)_/¯
+    if (
+      zoomToFeature &&
+      previousBounds.current &&
+      !show &&
+      map &&
+      !map.getBounds().contains(previousBounds.current.getSouthEast())
+    ) {
+      map.fitBounds(previousBounds.current);
+      previousBounds.current = undefined;
+    }
+  }, [zoomToFeature, show, map]);
 
   if (map && popContainerRef.current) {
     return (
