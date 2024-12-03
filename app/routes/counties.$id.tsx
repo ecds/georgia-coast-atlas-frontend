@@ -4,11 +4,16 @@ import { useContext, useEffect } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
 import { counties as countyStyle } from "~/mapStyles";
-import { countyIndexCollection } from "~/config";
+import { countyIndexCollection, defaultBounds } from "~/config";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import { LngLatBounds } from "maplibre-gl";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace } from "~/esTypes";
+import { pageMetadata } from "~/utils/pageMetadata";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return pageMetadata(data?.place);
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const place: ESPlace = await fetchPlaceBySlug(
@@ -50,9 +55,19 @@ const CountyPage = () => {
   }, [navigation, place, map]);
 
   useEffect(() => {
-    const bounds = new LngLatBounds(place.bbox);
+    if (!place || !place.bbox || !map) return;
+    const fitBounds = () => {
+      const bounds = new LngLatBounds(place.bbox);
+      map.fitBounds(bounds);
+      map.fitBounds(bounds);
+    };
+    map.on("resize", fitBounds);
+    fitBounds();
 
-    map?.fitBounds(bounds);
+    return () => {
+      map.fitBounds(defaultBounds());
+      map.off("resize", fitBounds);
+    };
   }, [place, map]);
 
   return (

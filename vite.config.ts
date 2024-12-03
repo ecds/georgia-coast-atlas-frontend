@@ -5,7 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import SiteMap from "vite-plugin-sitemap";
 import { islands } from "./app/config";
 
-const ISLANDS = islands.map((island) => `/${island.slug}-island`);
+const ISLANDS = islands.map((island) => `/${island.id}-island`);
 
 const robotOption = {
   userAgent: "*",
@@ -18,12 +18,11 @@ export default defineConfig({
   plugins: [
     remix({
       future: {
-
         v3_singleFetch: true,
-        v3_fetcherPersist: true, 
-        v3_lazyRouteDiscovery: true, 
-        v3_relativeSplatPath: true, 
-        v3_throwAbortReason: true,  
+        v3_fetcherPersist: true,
+        v3_lazyRouteDiscovery: true,
+        v3_relativeSplatPath: true,
+        v3_throwAbortReason: true,
       },
     }),
     tsconfigPaths(),

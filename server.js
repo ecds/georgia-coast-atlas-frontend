@@ -5,7 +5,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 
-installGlobals();
+installGlobals({ nativeFetch: true });
 
 const viteDevServer =
   process.env.NODE_ENV === "production"

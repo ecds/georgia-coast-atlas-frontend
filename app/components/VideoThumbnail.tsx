@@ -12,7 +12,7 @@ const VideoThumbnail = ({ video, imgClassName, figClassName }: Props) => {
   return (
     <figure className={`${figClassName ?? ""}`}>
       <div className="relative">
-        <span className="text-white absolute w-32 z-10 text-6xl h-full flex items-center justify-center">
+        <span className="text-white absolute w-32 z-[2] text-6xl h-full flex items-center justify-center">
           <FontAwesomeIcon
             icon={faPlayCircle}
             className="drop-shadow-2xl opacity-80"

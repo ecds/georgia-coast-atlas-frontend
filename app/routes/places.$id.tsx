@@ -15,9 +15,15 @@ import FeaturedMedium from "~/components/FeaturedMedium";
 import PlaceContent from "~/components/layout/PlaceContent";
 import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
 import Loading from "~/components/layout/Loading";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { TPlaceRecord } from "~/types";
 import { indexCollection } from "~/config";
+import { pageMetadata } from "~/utils/pageMetadata";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { ESPlace } from "~/esTypes";
+import AsyncError from "~/components/errorResponses/AsyncError";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return pageMetadata(data?.place);
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.id) {
@@ -27,7 +33,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     });
   }
 
-  const place = await fetchPlaceBySlug(params.id, indexCollection);
+  const place: ESPlace = await fetchPlaceBySlug(params.id, indexCollection);
   if (!place) {
     throw new Response(null, {
       status: 404,
@@ -39,7 +45,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 const PlacePage = () => {
-  const { place } = useLoaderData<TPlaceRecord>();
+  const { place } = useLoaderData<typeof loader>();
   const { map } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
   const [backTo, setBackTo] = useState<boolean>(false);
@@ -61,7 +67,7 @@ const PlacePage = () => {
 
   return (
     <Suspense fallback={<Loading />}>
-      <Await resolve={place}>
+      <Await resolve={place} errorElement={<AsyncError />}>
         {(resolvedPlace) => (
           <PlaceContext.Provider
             value={{
