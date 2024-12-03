@@ -156,7 +156,11 @@ const RelatedPlaces = () => {
         <div className="grid grid-cols-1 md:grid-cols-2">
           {place.places.map((relatedPlace) => {
             return (
-              <div key={`related-place-${relatedPlace.uuid}`}>
+              <div
+                key={`related-place-${relatedPlace.uuid}`}
+                onMouseEnter={() => setHoveredPlace(relatedPlace)}
+                onMouseLeave={() => setHoveredPlace(undefined)}
+              >
                 <button
                   className={`text-black/75 text-left md:py-1 ${
                     hoveredPlace?.uuid === relatedPlace.uuid
@@ -179,6 +183,7 @@ const RelatedPlaces = () => {
                         }}
                         show={activePlace?.uuid === relatedPlace.uuid}
                         onClose={() => setActivePlace(undefined)}
+                        zoomToFeature = {false}
                       >
                         <h4 className="text-xl">{relatedPlace.name}</h4>
                         <div
