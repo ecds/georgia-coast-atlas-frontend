@@ -126,6 +126,7 @@ export const fetchPlaceBySlug = async (
         "places",
         "related_videos",
         "slug",
+        "short_description",
         "topos",
         "types",
         "uuid",
@@ -193,6 +194,7 @@ export const fetchPlacesByType = async (type: string) => {
         "county",
         "uuid",
         "location",
+        "short_description",
         "types",
         "identifier",
         "slug",
@@ -255,4 +257,21 @@ export const fetchPlaceGeoJSON = async ({
   const response = await elasticSearchPost({ body, collection });
 
   return response[0].geojson;
+};
+
+export const fetchTopicBySlug = async (
+  slug: string | undefined,
+  collection: string
+) => {
+  if (!slug) return undefined;
+  const body = {
+    query: {
+      simple_query_string: { query: slug, fields: ["slug"] },
+    },
+    size: 1,
+    from: 0,
+  };
+
+  const hits = await elasticSearchPost({ body, collection });
+  return hits[0];
 };

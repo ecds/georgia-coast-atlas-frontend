@@ -68,6 +68,7 @@ export type ESPlace = {
   photographs: ESPhotograph[];
   places: ESRelatedPlace[];
   related_videos?: ESVideo[];
+  short_description: string;
   slug: string;
   topos: ESTopo[];
   types: string[];

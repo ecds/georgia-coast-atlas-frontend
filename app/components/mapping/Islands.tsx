@@ -5,20 +5,20 @@ import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
 import { islands as islandStyle } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
-import type { TPlace } from "~/types";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
+import type { ESPlace } from "~/esTypes";
 
 interface Props {
-  islands: TPlace[];
+  islands: ESPlace[];
 }
 
 const Islands = ({ islands }: Props) => {
   const { map } = useContext(MapContext);
   const hoveredId = useRef<string | undefined>(undefined);
-  const [activeIsland, setActiveIsland] = useState<TPlace | undefined>(
+  const [activeIsland, setActiveIsland] = useState<ESPlace | undefined>(
     undefined
   );
-  const [hoveredIsland, setHoveredIsland] = useState<TPlace | undefined>(
+  const [hoveredIsland, setHoveredIsland] = useState<ESPlace | undefined>(
     undefined
   );
 
@@ -39,7 +39,7 @@ const Islands = ({ islands }: Props) => {
               { source: "islands", id: feature.properties.uuid },
               { hovered: true }
             );
-            const currentIsland = islands.find((island: TPlace) => {
+            const currentIsland = islands.find((island) => {
               if (features) return island.name === features[0].properties.name;
               return undefined;
             });
@@ -70,7 +70,7 @@ const Islands = ({ islands }: Props) => {
       }
     ) => {
       if (!map && !event.features) return;
-      const clickedIsland = islands.find((island: TPlace) => {
+      const clickedIsland = islands.find((island) => {
         if (event.features)
           return island.name === event.features[0].properties.name;
         return undefined;
@@ -108,7 +108,7 @@ const Islands = ({ islands }: Props) => {
 
   return (
     <>
-      {islands.map((island: TPlace) => {
+      {islands.map((island) => {
         return (
           <ClientOnly key={`popup-${island.uuid}`}>
             {() => (
@@ -120,6 +120,7 @@ const Islands = ({ islands }: Props) => {
                   zoomToFeature={false}
                 >
                   <h4 className="text-xl ">{island.name}</h4>
+                  <p>{island.short_description}</p>
                   <Link
                     to={`/islands/${island.slug}`}
                     className="text-blue-700 underline underline-offset-2 text-l block mt-2"

@@ -26,10 +26,18 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 // Prevent fontawesome from adding its CSS since we did it manually above:
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
-import type { LinksFunction } from "@remix-run/node";
+import { pageMetadata } from "~/utils/pageMetadata";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import type { Map as TMap } from "maplibre-gl";
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const meta: MetaFunction = () => {
+  return pageMetadata();
+};
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: styles },
+  { rel: "icon", href: "/images/gca_favicon.jpg" },
+];
 
 const ChildContent = ({
   children,
@@ -62,7 +70,7 @@ const ChildContent = ({
 export function Layout({ children }: { children: React.ReactNode }) {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [isMapRoute, setIsMapRoute] = useState<boolean>(false);
+  const [isMapRoute, setIsMapRoute] = useState<boolean>(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -83,8 +91,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Meta />
+        {/*
+          It's important that Links comes before Meta
+          https://github.com/remix-run/remix/issues/9242#issuecomment-2466234861
+        */}
         <Links />
+        <Meta />
       </head>
       <body className="font-inter bg-white">
         <a href="#main" className="sr-only">
