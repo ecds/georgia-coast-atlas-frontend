@@ -40,12 +40,11 @@ const RelatedPhotographs = () => {
   }, [manifest]);
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ photographs:", photographs);
-    if (!photographs) return;
+    if (!photographs || photographs.length === 0) return;
     setActivePhotograph(photographs[0].body);
   }, [photographs]);
 
-  if (photographs) {
+  if (photographs && photographs.length > 0) {
     return (
       <RelatedSection title="Photographs">
         <div className="flex flex-wrap justify-around">
