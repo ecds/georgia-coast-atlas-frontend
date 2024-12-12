@@ -77,6 +77,9 @@ const Navbar = () => {
             <MenuItem>
               <MenuLink to="/videos">Videos</MenuLink>
             </MenuItem>
+            <MenuItem>
+              <MenuLink to="/contact">Contact Us</MenuLink>
+            </MenuItem>
           </NavMenuItems>
         </Menu>
       </div>
