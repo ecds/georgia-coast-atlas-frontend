@@ -276,7 +276,6 @@ export const fetchDataBySlugFromTopics = async (slug: string) => {
 
   try {
     const response = await elasticSearchPost({ body, collection });
-    console.log("Full Data Response:", response); // Log the raw response
 
     if (response && response.length > 0) {
       return response[0]; // Return the first result
