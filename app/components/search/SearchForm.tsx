@@ -1,4 +1,4 @@
-import { SearchBox } from "react-instantsearch";
+import { SearchBox, SortBy } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FacetMenu from "./FacetMenu";
 import CurrentRefinements from "./CurrentRefinements";
-import { topBarHeight } from "~/config";
+import { indexCollection, topBarHeight } from "~/config";
 import { type ReactNode } from "react";
 
 const ButtonComponent = ({
@@ -73,6 +73,15 @@ const SearchForm = () => {
       </div>
       <div className="col-span-5">
         <CurrentRefinements />
+        <SortBy
+          items={[
+            {
+              label: "Name",
+              value: indexCollection,
+            },
+            { label: "Relevance", value: `${indexCollection}_score` },
+          ]}
+        />
       </div>
     </div>
   );
