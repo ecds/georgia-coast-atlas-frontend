@@ -3,9 +3,9 @@ import { MapContext } from "~/contexts";
 import { largeCluster } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { ClientOnly } from "remix-utils/client-only";
+import { Link } from "@remix-run/react";
 import type { FeatureCollection } from "geojson";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
-import { Link } from "@remix-run/react";
 
 interface Props {
   geojson: FeatureCollection;
@@ -25,7 +25,7 @@ const GeoSearchClusters = ({ geojson }: Props) => {
   const [clusterList, setClusterList] =
     useState<{ title: string; slug: string }[]>();
 
-  const mouseenter = useCallback(
+  const mousemove = useCallback(
     (event: MapLayerMouseEvent) => {
       if (!event.features || !map || clusterList) return;
       const features = event.features;
@@ -90,15 +90,17 @@ const GeoSearchClusters = ({ geojson }: Props) => {
     if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
 
     if (!map.getLayer(layerId))
-      map.addLayer(largeCluster({ id: layerId, source: sourceId }));
+      map.addLayer(
+        largeCluster({ id: layerId, source: sourceId, fillColor: "#5D414A" })
+      );
     map.on("click", layerId, handleClick);
-    map.on("mouseenter", layerId, mouseenter);
+    map.on("mousemove", layerId, mousemove);
     // map.on("mouseleave", layerId, mouseleave);
 
     return () => {
       if (map.getLayer(layerId)) {
         map.off("click", layerId, handleClick);
-        map.off("mouseenter", layerId, mouseenter);
+        map.off("mousemove", layerId, mousemove);
         map.off("mouseleave", layerId, mouseleave);
         map.removeLayer(layerId);
       }
@@ -111,7 +113,7 @@ const GeoSearchClusters = ({ geojson }: Props) => {
     mapLoaded,
     handleClick,
     clusterList,
-    mouseenter,
+    mousemove,
     mouseleave,
   ]);
 

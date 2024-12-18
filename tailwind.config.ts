@@ -31,7 +31,7 @@ export default {
   },
   future: {},
   plugins: [
-    plugin(function ({ addBase }) {
+    plugin(({ addBase }) => {
       addBase({
         html: {
           ".primary-content > p": {

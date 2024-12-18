@@ -17,6 +17,7 @@ const sk = new Searchkit({
       },
       "description",
     ],
+    // sorting: { name: { field: "slug", order: "desc" } },
     result_attributes: [
       "name",
       "description",
@@ -44,6 +45,7 @@ export const searchClient = Client(sk, {
           body: {
             ...sr.body,
             size: 500,
+            sort: [{ slug: "asc" }],
           },
         };
       });

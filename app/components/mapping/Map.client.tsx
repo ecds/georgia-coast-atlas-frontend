@@ -1,4 +1,4 @@
-import maplibregl from "maplibre-gl";
+import maplibregl, { AttributionControl } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
 import { defaultBounds, topBarHeight } from "~/config";
@@ -13,6 +13,7 @@ interface Props {
 const Map = ({ children }: Props) => {
   const { setMap, setMapLoaded } = useContext(MapContext);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const hoveredRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!setMap || !mapContainerRef.current) return;
@@ -36,13 +37,12 @@ const Map = ({ children }: Props) => {
         setMap(_map);
         setMapLoaded(true);
       });
+
+      _map.addControl(new AttributionControl({ compact: true }));
     } catch {}
 
     return () => {
       try {
-        // if (_map) {
-        //   _map.remove();
-        // }
         setMap(undefined);
         setMapLoaded(false);
       } catch {}

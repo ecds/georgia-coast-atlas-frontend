@@ -54,7 +54,6 @@ const Search = ({
 
   useEffect(() => {
     if (navigation?.state === "idle" && location.search && map) {
-      console.log("🚀 ~ useEffect ~ location.search:", location.search);
       const previousBounds = getBB(location.search);
       if (previousBounds) {
         map.fitBounds(previousBounds);

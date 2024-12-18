@@ -3,7 +3,7 @@ import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
-import { islands as islandStyle } from "~/mapStyles";
+import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
@@ -11,6 +11,10 @@ import type { ESPlace } from "~/esTypes";
 interface Props {
   islands: ESPlace[];
 }
+
+const islandStyleLayer = masks.layers.find(
+  (layer) => layer.id === "simpleIslandsFill"
+);
 
 const Islands = ({ islands }: Props) => {
   const { map } = useContext(MapContext);
@@ -21,9 +25,16 @@ const Islands = ({ islands }: Props) => {
   const [hoveredIsland, setHoveredIsland] = useState<ESPlace | undefined>(
     undefined
   );
+  const [tooltipLocation, setTooltipLocation] = useState<{
+    lat: number;
+    lon: number;
+  }>({ lat: 0, lon: 0 });
 
   const handleMouseEnter = useCallback(
-    ({ features }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+    ({
+      features,
+      lngLat,
+    }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
@@ -44,6 +55,7 @@ const Islands = ({ islands }: Props) => {
               return undefined;
             });
             if (activeIsland != currentIsland) setHoveredIsland(currentIsland);
+            setTooltipLocation({ lon: lngLat.lng, lat: lngLat.lat });
           }
         }
       }
@@ -82,23 +94,19 @@ const Islands = ({ islands }: Props) => {
   );
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !islandStyleLayer) return;
 
-    for (const islandLayer of islandStyle.layers) {
-      map.setLayoutProperty(islandLayer.id, "visibility", "visible");
-    }
+    map.setLayoutProperty(islandStyleLayer.id, "visibility", "visible");
 
-    map.on("mousemove", "islands-fill", handleMouseEnter);
-    map.on("mouseleave", "islands-fill", handleMouseLeave);
-    map.on("click", "islands-fill", handleClick);
+    map.on("mousemove", islandStyleLayer.id, handleMouseEnter);
+    map.on("mouseleave", islandStyleLayer.id, handleMouseLeave);
+    map.on("click", islandStyleLayer.id, handleClick);
 
     return () => {
-      for (const islandLayer of islandStyle.layers) {
-        map.setLayoutProperty(islandLayer.id, "visibility", "none");
-      }
-      map.off("mousemove", "islands-fill", handleMouseEnter);
-      map.off("mouseleave", "islands-fill", handleMouseLeave);
-      map.off("click", "islands-fill", handleClick);
+      map.setLayoutProperty(islandStyleLayer.id, "visibility", "none");
+      map.off("mousemove", islandStyleLayer.id, handleMouseEnter);
+      map.off("mouseleave", islandStyleLayer.id, handleMouseLeave);
+      map.off("click", islandStyleLayer.id, handleClick);
     };
   }, [map, handleClick, handleMouseEnter, handleMouseLeave]);
 
@@ -130,7 +138,7 @@ const Islands = ({ islands }: Props) => {
                 </PlacePopup>
                 <PlaceTooltip
                   show={hoveredIsland == island}
-                  location={island.location}
+                  location={tooltipLocation}
                   onClose={() => setActiveIsland(undefined)}
                   zoomToFeature={false}
                   anchor="left"

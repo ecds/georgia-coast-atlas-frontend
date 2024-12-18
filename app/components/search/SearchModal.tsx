@@ -23,13 +23,11 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("🚀 ~ SearchModal ~ query:", query);
     setIsOpen(Boolean(!query) && Boolean(!location.search));
 
     // return () => {
     //   refine("");
     // };
-    console.log("🚀 ~ SearchModal ~ location:", location);
   }, [setIsOpen, query, location]);
 
   useEffect(() => {

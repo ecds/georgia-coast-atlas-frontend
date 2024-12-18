@@ -6,11 +6,15 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import PlacePopup from "./PlacePopup.client";
-import { counties as countyStyle } from "~/mapStyles";
+import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import { Link } from "@remix-run/react";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
+
+const countyStyleLayer = masks.layers.find(
+  (layer) => layer.id === "simpleCounties"
+);
 
 const Counties = ({ counties }: { counties: ESPlace[] }) => {
   const { map } = useContext(MapContext);
@@ -90,22 +94,18 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
   );
 
   useEffect(() => {
-    if (!map) return;
-    for (const countyLayer of countyStyle.layers) {
-      map.setLayoutProperty(countyLayer.id, "visibility", "visible");
-    }
+    if (!map || !countyStyleLayer) return;
+    map.setLayoutProperty(countyStyleLayer.id, "visibility", "visible");
 
-    map.on("mousemove", "counties-fill", handleMouseEnter);
-    map.on("mouseleave", "counties-fill", handleMouseLeave);
-    map.on("click", "counties-fill", handleClick);
+    map.on("mousemove", countyStyleLayer.id, handleMouseEnter);
+    map.on("mouseleave", countyStyleLayer.id, handleMouseLeave);
+    map.on("click", countyStyleLayer.id, handleClick);
 
     return () => {
-      for (const countyLayer of countyStyle.layers) {
-        map.setLayoutProperty(countyLayer.id, "visibility", "none");
-      }
-      map.off("mousemove", "counties-fill", handleMouseEnter);
-      map.off("mouseleave", "counties-fill", handleMouseLeave);
-      map.off("click", "counties-fill", handleClick);
+      map.setLayoutProperty(countyStyleLayer.id, "visibility", "none");
+      map.off("mousemove", countyStyleLayer.id, handleMouseEnter);
+      map.off("mouseleave", countyStyleLayer.id, handleMouseLeave);
+      map.off("click", countyStyleLayer.id, handleClick);
     };
   }, [map, handleMouseEnter, handleMouseLeave, handleClick]);
 

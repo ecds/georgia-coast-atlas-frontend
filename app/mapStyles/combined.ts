@@ -1,7 +1,9 @@
 import { base } from "./base";
+import { costalLabels } from "./costalLabels";
 import { counties } from "./counties";
 import { islands } from "./islands";
 import { labels } from "./labels";
+import { masks } from "./masks";
 import { satellite } from "./satellite";
 import { usgs } from "./usgs";
 
@@ -12,13 +14,13 @@ export const combined: StyleSpecification = {
   name: "Combined",
   glyphs:
     "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=uXfXuebPlkoPXiY3TPcv",
+
   sources: {
+    ...masks.sources,
     ...base.sources,
     ...satellite.sources,
     ...usgs.sources,
-    ...islands.sources,
-    ...counties.sources,
-    ...labels.sources,
+    ...costalLabels.sources,
   },
   layers: [
     {
@@ -29,14 +31,14 @@ export const combined: StyleSpecification = {
         visibility: "visible",
       },
       paint: {
-        "background-color": "rgb(123 162 141)",
+        "background-color": "#9DA19C",
       },
     },
+    ...masks.layers,
     ...base.layers,
     ...satellite.layers,
     ...usgs.layers,
-    ...islands.layers,
-    ...counties.layers,
-    ...labels.layers,
+    // ...labels.layers,
+    ...costalLabels.layers,
   ],
 };

@@ -34,6 +34,7 @@ const PlaceTooltip = ({
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const { map } = useContext(MapContext);
+  console.log("🚀 ~ map:", map);
 
   const [coordinates, setCoordinates] = useState<
     [number, number] | undefined

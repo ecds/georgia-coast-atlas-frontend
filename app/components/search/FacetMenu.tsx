@@ -54,7 +54,6 @@ const FacetMenu = () => {
         <MenuSection className="mb-4 pb-4 border-b-2">
           <ul>
             {items.map((type, index) => {
-              // console.log("🚀 ~ {items.map ~ type:", type);
               return (
                 <li key={type.label} className="flex items-center me-4 my-2">
                   <input

@@ -89,6 +89,7 @@ const IslandPage = () => {
     <Suspense fallback={<Loading />}>
       <Await resolve={place} errorElement={<AsyncError />}>
         {(place) => {
+          console.log("🚀 ~ IslandPage ~ place:", place);
           if (place) {
             return (
               <PlaceContext.Provider
