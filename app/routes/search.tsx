@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { renderToString } from "react-dom/server";
 import {
+  Configure,
   Hits,
   InstantSearch,
   InstantSearchSSRProvider,
@@ -87,6 +88,7 @@ const Search = ({
             }),
           }}
         >
+          <Configure hitsPerPage={500} />
           {children}
           <SearchForm />
           <Hits hitComponent={SearchResult} className="" />

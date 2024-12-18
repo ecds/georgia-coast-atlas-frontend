@@ -33,22 +33,17 @@ const sk = new Searchkit({
       { attribute: "county", field: "county", type: "string" },
     ],
     geo_attribute: "location",
-  },
-});
-
-export const searchClient = Client(sk, {
-  hooks: {
-    beforeSearch: async (searchRequests) => {
-      return searchRequests.map((sr) => {
-        return {
-          ...sr,
-          body: {
-            ...sr.body,
-            size: 500,
-            sort: [{ slug: "asc" }],
-          },
-        };
-      });
+    sorting: {
+      default: {
+        field: "slug",
+        order: "asc",
+      },
+      _score: {
+        field: "_score",
+        order: "desc",
+      },
     },
   },
 });
+
+export const searchClient = Client(sk);
