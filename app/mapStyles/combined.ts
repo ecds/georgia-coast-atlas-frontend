@@ -1,8 +1,5 @@
 import { base } from "./base";
 import { costalLabels } from "./costalLabels";
-import { counties } from "./counties";
-import { islands } from "./islands";
-import { labels } from "./labels";
 import { masks } from "./masks";
 import { satellite } from "./satellite";
 import { usgs } from "./usgs";

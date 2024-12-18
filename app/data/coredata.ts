@@ -1,12 +1,10 @@
 import {
-  coreDataRelatedEndpoints,
   countyIndexCollection,
   dataHosts,
   indexCollection,
   keys,
-  modelFieldUUIDs,
 } from "~/config";
-import type { TPlaceRecord, TESHit, TSearchOptions } from "~/types";
+import type { TESHit, TSearchOptions } from "~/types";
 
 const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
@@ -19,7 +17,7 @@ const elasticSearchPost = async ({
   body,
   collection,
 }: {
-  body: {};
+  body: unknown;
   collection: string;
 }) => {
   const response = await fetch(
@@ -42,61 +40,6 @@ export const fetchRelatedRecord = async (id: string, endpoint: string) => {
   );
 
   return await relatedResponse.json();
-};
-
-export const fetchRelatedRecords = async (id: string) => {
-  const relatedRecords = {
-    places: [],
-    media_contents: [],
-    items: [],
-    taxonomies: [],
-  };
-  for (const related of coreDataRelatedEndpoints) {
-    const relatedData = await fetchRelatedRecord(id, related.endpoint);
-    const items = relatedData[related.endpoint];
-
-    for (const item of items) {
-      for (const value of Object.values(item.user_defined)) {
-        // @ts-ignore
-        item[(value.label as string).toLowerCase()] = value.value;
-      }
-    }
-    try {
-      // @ts-ignore
-      relatedRecords[related.endpoint] = Object.groupBy(
-        items,
-        // @ts-ignore
-        ({ project_model_relationship_uuid }) =>
-          // @ts-ignore
-          related.types.find((t) => t.uuid == project_model_relationship_uuid)
-            .type
-      );
-    } catch {
-      // If a record doesn't have any of a type, an error gets thrown.
-    }
-  }
-  return relatedRecords;
-};
-
-export const fetchPlaceRecord = async (id: string) => {
-  if (!id) return null;
-
-  const response = await fetch(
-    `https://${dataHosts.coreData}/core_data/public/v1/places/${id}?project_ids=1`
-  );
-
-  const data: { place: TPlaceRecord } = await response.json();
-  const placeData: TPlaceRecord = data.place;
-
-  if (placeData && placeData.user_defined) {
-    for (const value of Object.values(placeData.user_defined)) {
-      placeData[value.label.toLowerCase()] = value.value;
-    }
-
-    placeData.iiif_manifest = `https://${dataHosts.coreData}/core_data/public/v1/places/${data.place.uuid}/manifests/${modelFieldUUIDs.photographs}`;
-  }
-
-  return placeData;
 };
 
 export const fetchPlaceBySlug = async (
@@ -176,7 +119,7 @@ export const fetchPlacesByType = async (type: string) => {
         filter: [
           {
             term: {
-              types: "Barrier Island",
+              types: type,
             },
           },
         ],
@@ -287,7 +230,6 @@ export const fetchDataBySlugFromTopics = async (slug: string) => {
     throw new Error("Failed to fetch data.");
   }
 };
-
 
 export const fetchTopicBySlug = async (
   slug: string | undefined,

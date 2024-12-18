@@ -6,7 +6,7 @@ import { Link } from "@remix-run/react";
 import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
-import type { ESPlace } from "~/esTypes";
+import { ESPlace } from "~/esTypes";
 
 interface Props {
   islands: ESPlace[];

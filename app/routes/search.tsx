@@ -19,13 +19,13 @@ import SearchResult from "~/components/search/SearchResult";
 import SearchModal from "~/components/search/SearchModal";
 import type { ReactNode } from "react";
 import type { LoaderFunction } from "@remix-run/node";
-import type { Navigation } from "@remix-run/react";
+import type { Navigation, Location } from "@remix-run/react";
 import type { InstantSearchServerState } from "react-instantsearch";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
   serverUrl?: string;
-  location?: any;
+  location?: Location;
   modalOpen?: boolean;
   navigation?: Navigation;
   children?: ReactNode;
@@ -53,7 +53,7 @@ const Search = ({
   const { map } = useContext(MapContext);
 
   useEffect(() => {
-    if (navigation?.state === "idle" && location.search && map) {
+    if (navigation?.state === "idle" && location?.search && map) {
       const previousBounds = getBB(location.search);
       if (previousBounds) {
         map.fitBounds(previousBounds);
@@ -74,11 +74,11 @@ const Search = ({
           future={{ preserveSharedStateOnUnmount: true }}
           routing={{
             router: history({
+              /* @ts-expect-error This seems to be a bug in */
               getLocation() {
                 if (typeof window === "undefined") {
-                  const urlToReturn = new URL(
-                    serverUrl!
-                  ) as unknown as Location;
+                  /* @ts-expect-error Not sure what more we can do here */
+                  const urlToReturn = new URL(serverUrl) as unknown as Location;
                   return urlToReturn;
                 }
                 return window.location;

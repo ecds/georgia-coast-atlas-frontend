@@ -9,7 +9,7 @@
     "dev": "node ./server.js",
     "start": "cross-env NODE_ENV=production node ./server.js",
     "typecheck": "tsc",
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix ./app/"
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix ./"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -36,7 +36,8 @@
     "@allmaps/maplibre": "^1.0.0-beta.30",
     "@iiif/presentation-3": "^2.2.3",
     "@remix-run/dev": "*",
-    "@remix-run/eslint-config": "*",
+    "@remix-run/fs-routes": "^2.15.1",
+    "@remix-run/route-config": "^2.15.1",
     "@samvera/clover-iiif": "^2.9.0",
     "@searchkit/api": "^4.13.0",
     "@searchkit/instantsearch-client": "^4.14.0",

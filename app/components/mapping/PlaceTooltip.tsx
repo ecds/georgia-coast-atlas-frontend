@@ -19,7 +19,7 @@ interface PopupProps extends Props {
   anchor: PositionAnchor;
 }
 
-const TooltipContent = ({ onClose, children }: Props) => {
+const TooltipContent = ({ children }: Props) => {
   return <div className="text-lg">{children}</div>;
 };
 
@@ -34,7 +34,6 @@ const PlaceTooltip = ({
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const { map } = useContext(MapContext);
-  console.log("🚀 ~ map:", map);
 
   const [coordinates, setCoordinates] = useState<
     [number, number] | undefined

@@ -13,7 +13,7 @@ const SearchResult = ({ hit }: { hit: Hit }) => {
         <h4 className="text-lg">{hit.name}</h4>
       </Link>
       <div className="col-span-2 flex flex-wrap flex-row-reverse">
-        {hit.types?.map((type: string, index: number) => {
+        {hit.types?.map((type: string) => {
           return (
             <span
               key={`${type}${hit.name}`}

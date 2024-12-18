@@ -8,11 +8,10 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import GeoSearchClusters from "./GeoSearchClusters";
 import GeoSearchPoints from "./GeoSearchPoints";
 import { LngLatBounds } from "maplibre-gl";
-// import { indexCollection } from "~/config";
 import type { FeatureCollection } from "geojson";
 
 let timerId: NodeJS.Timeout | undefined = undefined;
-let timeout = 200;
+const timeout = 200;
 
 const GeoSearch = () => {
   const [geojson, setGeoJSON] = useState<FeatureCollection>();
@@ -22,15 +21,10 @@ const GeoSearch = () => {
   const { items, refine } = useGeoSearch();
   const { renderState } = useInstantSearch();
 
-  const handleBoundsChange = useCallback( ()=> {
-      if (!map) return;
-      // if (event.originalEvent && event.originalEvent instanceof MouseEvent) {
-      //   refine({
-      //     northEast: map.getBounds().getNorthEast(),
-      //     southWest: map.getBounds().getSouthWest(),
-      //   });
-      setShowSearchButton(true);
-    },[map]);
+  const handleBoundsChange = useCallback(() => {
+    if (!map) return;
+    setShowSearchButton(true);
+  }, [map]);
 
   useEffect(() => {
     if (timerId) {
@@ -45,7 +39,10 @@ const GeoSearch = () => {
 
   useEffect(() => {
     if (map) {
-      map.on("moveend", handleBoundsChange);
+      // This might seem a bit silly, but this prevents it from showing on initial render.
+      map.once("moveend", () => {
+        map.on("moveend", handleBoundsChange);
+      });
     }
     return () => {
       map?.off("moveend", handleBoundsChange);
@@ -81,10 +78,6 @@ const GeoSearch = () => {
       // setRefinementsChanged(newRefinements !== previousRefinements.current);
       previousRefinements.current = newRefinements;
     }
-
-    return () => {
-      console.log("return renderstate");
-    };
   }, [renderState]);
 
   const updateSearchResults = () => {
@@ -99,7 +92,7 @@ const GeoSearch = () => {
   };
 
   const searchByAreaButton = showSearchButton ? (
-    <div className="absolute top-[10%] left-1/2 -translate-x-1/2 z-10">
+    <div className="absolute top-4 left-3/4 -translate-x-3/4 z-10">
       <button
         onClick={updateSearchResults}
         className="flex items-center px-3 py-2 text-sm bg-white rounded-full shadow-md hover:bg-gray-100"
@@ -110,17 +103,17 @@ const GeoSearch = () => {
     </div>
   ) : null;
 
-    return (
-      <>
+  return (
+    <>
       {searchByAreaButton}
       {geojson ? (
         <>
           <GeoSearchClusters geojson={geojson} />
           <GeoSearchPoints geojson={geojson} />
         </>
-        ) : null}
-      </>
-    );
-  }
+      ) : null}
+    </>
+  );
+};
 
 export default GeoSearch;

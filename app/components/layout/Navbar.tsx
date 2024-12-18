@@ -2,7 +2,7 @@ import { Link, NavLink } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
 import { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { ReactNode } from "react";
 
@@ -52,7 +52,7 @@ const Navbar = () => {
           className="tracking-wide"
           style={{ fontFamily: "Barlow, sans-serif", fontWeight: 500 }}
         >
-          Search By Place <FontAwesomeIcon icon={faSearch} className="ml-1" />
+          Search By Place
         </NavLink>
         <Menu>
           <MenuButton as={Fragment}>
@@ -72,7 +72,7 @@ const Navbar = () => {
               <MenuLink to="/about">About</MenuLink>
             </MenuItem>
             <MenuItem>
-              <MenuLink to="/about/bibliography">Bibliography</MenuLink> 
+              <MenuLink to="/about/bibliography">Bibliography</MenuLink>
             </MenuItem>
             <MenuItem>
               <MenuLink to="/videos">Videos</MenuLink>
