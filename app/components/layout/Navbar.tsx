@@ -72,7 +72,13 @@ const Navbar = () => {
               <MenuLink to="/about">About</MenuLink>
             </MenuItem>
             <MenuItem>
+              <MenuLink to="/about/bibliography">Bibliography</MenuLink> 
+            </MenuItem>
+            <MenuItem>
               <MenuLink to="/videos">Videos</MenuLink>
+            </MenuItem>
+            <MenuItem>
+              <MenuLink to="/contact">Contact Us</MenuLink>
             </MenuItem>
           </NavMenuItems>
         </Menu>

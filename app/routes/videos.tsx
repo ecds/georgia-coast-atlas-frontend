@@ -1,13 +1,44 @@
 import Navbar from "~/components/layout/Navbar";
-import backgroundImage from "~/images/wassaw.jpeg"; // Import the new background image
+import { useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node";
+import { fetchDataBySlugFromTopics } from "~/data/coredata.ts";
+
+// Define the video type
+type Video = {
+  embed_url: string; // Video URL
+  name: string;      // Video title
+};
+
+export const loader: LoaderFunction = async () => {
+  const topic = "interviews"; // Topic slug to fetch
+  try {
+    const data = await fetchDataBySlugFromTopics(topic);
+
+    if (!data || !data.videos) {
+      throw new Error("No video data available.");
+    }
+
+    console.log("Videos Data:", data.videos);
+
+    return { videos: data.videos };
+  } catch (error) {
+    console.error(error);
+    throw new Response("Error loading interviews data", { status: 500 });
+  }
+};
 
 const Videos = () => {
+  const { videos } = useLoaderData<{ videos: Video[] }>();
+
   return (
     <div
       className="relative min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(64, 62, 62, 0.8), rgba(73, 103, 76, 0.7)), url(/images/wassaw.jpeg)",
+      }}
     >
-      {/* Grey Overlay to lighten the background */}
+      {/* Grey Overlay */}
       <div className="absolute inset-0 bg-gray-800 bg-opacity-50"></div>
 
       {/* Navbar */}
@@ -24,74 +55,22 @@ const Videos = () => {
           provide an introduction to the industry, culture, and ecology of this dynamic environment.
         </p>
 
-        {/* Video Grid - Reducing the video size */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src="https://player.vimeo.com/video/160137732"
-              width="480" // Reduced width
-              height="270" // Reduced height
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="William Boyd interview excerpt"
-            ></iframe>
-            <p className="text-center mt-2">William Boyd interview excerpt - ECDS</p>
-          </div>
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src="https://player.vimeo.com/video/160137451"
-              width="480"
-              height="270"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="Max Edelson interview excerpt"
-            ></iframe>
-            <p className="text-center mt-2">Max Edelson interview excerpt - ECDS</p>
-          </div>
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src="https://player.vimeo.com/video/160137347"
-              width="480"
-              height="270"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="Edda Fields-Black interview excerpt"
-            ></iframe>
-            <p className="text-center mt-2">Edda Fields-Black interview excerpt - ECDS</p>
-          </div>
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src="https://player.vimeo.com/video/160137193"
-              width="480"
-              height="270"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="Tiya Miles interview excerpt"
-            ></iframe>
-            <p className="text-center mt-2">Tiya Miles interview excerpt - ECDS</p>
-          </div>
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src="https://player.vimeo.com/video/160136752"
-              width="480"
-              height="270"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="Janisse Ray interview excerpt"
-            ></iframe>
-            <p className="text-center mt-2">Janisse Ray interview excerpt - ECDS</p>
-          </div>
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src="https://player.vimeo.com/video/160137071"
-              width="480"
-              height="270"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              title="Mart Stewart interview excerpt"
-            ></iframe>
-            <p className="text-center mt-2">Mart Stewart interview excerpt - ECDS</p>
-          </div>
+        {/* Video Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {videos.map((video, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <iframe
+                src={video.embed_url} // Dynamically use embed_url
+                width="480"
+                height="270"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+                title={video.name} // Use video title as iframe title
+                className="rounded-md"
+              ></iframe>
+              <p className="text-center mt-2 text-lg">{video.name}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
