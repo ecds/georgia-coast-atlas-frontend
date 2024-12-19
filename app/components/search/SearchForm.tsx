@@ -1,4 +1,5 @@
-import { SearchBox, SortBy } from "react-instantsearch";
+import { useState } from "react";
+import { SearchBox, useSortBy } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -53,6 +54,28 @@ const LoadingComponent = () => {
 };
 
 const SearchForm = () => {
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Usng the Algolia useSortBy hook
+  const { currentRefinement, refine } = useSortBy({
+    items: [
+      { label: "Name", value: indexCollection },
+      { label: "Relevance", value: `${indexCollection}_score` },
+    ],
+  });
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value.trim();
+    if (query !== "" && !hasSearched) {
+      // Switch to relevance sorting on input and Switch back to alphabetical if input is cleared
+      setHasSearched(true);
+      refine(`${indexCollection}_score`);
+    } else if (query === "" && hasSearched) {
+      setHasSearched(false);
+      refine(indexCollection);
+    }
+  };
+
   return (
     <div className="grid grid-cols-5 sticky top-0 bg-white shadow-md">
       <SearchBox
@@ -67,21 +90,16 @@ const SearchForm = () => {
             "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-200 focus:ring-blue-500 focus:border-blue-500 appearance-none",
           resetIcon: "hidden",
         }}
+        onInput={handleInputChange} // Detect input change
       />
       <div className="py-4 pe-8 col-span-1">
         <FacetMenu />
       </div>
       <div className="col-span-5">
-        <CurrentRefinements />
-        <SortBy
-          items={[
-            {
-              label: "Name",
-              value: indexCollection,
-            },
-            { label: "Relevance", value: `${indexCollection}_score` },
-          ]}
-        />
+      <CurrentRefinements />
+        <div className="py-2">
+          <span>Sorting by: {currentRefinement === `${indexCollection}_score` ? 'Relevance' : 'Name'}</span>
+        </div>
       </div>
     </div>
   );

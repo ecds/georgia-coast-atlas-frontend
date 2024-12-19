@@ -20,7 +20,7 @@ const GeoSearch = () => {
   const previousRefinements = useRef<string>();
   const { map } = useContext(MapContext);
   // Use the clearMapRefinement function to remove the bounds refinement.
-  const { items, refine /*, clearMapRefinement */ } = useGeoSearch();
+  const { items, refine , clearMapRefinement } = useGeoSearch();
   const { renderState } = useInstantSearch();
 
   const handleBoundsChange = useCallback(
@@ -92,6 +92,10 @@ const GeoSearch = () => {
     }
   };
 
+  const clearBounds = () => {
+    clearMapRefinement();
+  };
+
   const searchByAreaButton = showSearchButton ? (
     <div className="absolute top-4 left-3/4 -translate-x-3/4 z-10">
       <button
@@ -100,6 +104,12 @@ const GeoSearch = () => {
       >
         <FontAwesomeIcon icon={faSearch} className="mr-2 text-gray-600" />
         Search This Area
+      </button>
+      <button
+        onClick={clearBounds}
+        className="flex items-center px-3 py-2 text-sm bg-white rounded-full shadow-md hover:bg-gray-100 mt-2"
+      >
+        Clear Bounds
       </button>
     </div>
   ) : null;
