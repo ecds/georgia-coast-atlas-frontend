@@ -19,7 +19,8 @@ const GeoSearch = () => {
   const [showSearchButton, setShowSearchButton] = useState(false);
   const previousRefinements = useRef<string>();
   const { map } = useContext(MapContext);
-  const { items, refine } = useGeoSearch();
+  // Use the clearMapRefinement function to remove the bounds refinement.
+  const { items, refine /*, clearMapRefinement */ } = useGeoSearch();
   const { renderState } = useInstantSearch();
 
   const handleBoundsChange = useCallback(
@@ -36,8 +37,7 @@ const GeoSearch = () => {
     }
 
     timerId = setTimeout(() => {
-      const hits = items;
-      if (hits) setGeoJSON(hitsToFeatureCollection(hits));
+      if (items) setGeoJSON(hitsToFeatureCollection(items));
     }, timeout);
   }, [items]);
 

@@ -1,10 +1,17 @@
 import { PLACE_TYPES } from "~/config";
 import { Link } from "@remix-run/react";
 import type { Hit } from "instantsearch.js";
+import { useContext } from "react";
+import { SearchContext } from "~/contexts";
 
 const SearchResult = ({ hit }: { hit: Hit }) => {
+  const { setActiveResult } = useContext(SearchContext);
   return (
-    <div className="flex border-b-2 py-2 pl-4 w-full">
+    <div
+      className="flex border-b-2 py-2 pl-4 w-full"
+      onMouseEnter={() => setActiveResult(hit.identifier)}
+      onMouseLeave={() => setActiveResult(undefined)}
+    >
       <Link
         state={{ backTo: "Search Results" }}
         className="grow min-w-[75%] cursor-pointer"

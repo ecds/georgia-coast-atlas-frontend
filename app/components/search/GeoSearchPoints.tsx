@@ -1,11 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { MapContext } from "~/contexts";
+import { MapContext, SearchContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { ClientOnly } from "remix-utils/client-only";
 import { useNavigate } from "@remix-run/react";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
-import type { FeatureCollection } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 
 interface Props {
   geojson: FeatureCollection;
@@ -16,6 +16,8 @@ const layerId = "hits-layer";
 
 const GeoSearchPoints = ({ geojson }: Props) => {
   const { map, mapLoaded } = useContext(MapContext);
+  const { activeResult } = useContext(SearchContext);
+  const [activeFeature, setActiveFeature] = useState<Feature | undefined>();
   const [clickedLocation, setClickedLocation] = useState<{
     lat: number;
     lon: number;
@@ -42,14 +44,11 @@ const GeoSearchPoints = ({ geojson }: Props) => {
       if (!event.features) return;
       const features = event.features;
       map.getCanvas().style.cursor = "pointer";
-      setClickedLocation({ lat: event.lngLat.lat, lon: event.lngLat.lng });
-      setPopupTitle(features[0].properties.name);
-      setShowPopup(true);
+      setActiveFeature(features[0]);
     };
 
     const mouseleave = () => {
-      map.getCanvas().style.cursor = "";
-      setShowPopup(false);
+      setActiveFeature(undefined);
     };
 
     const layerSource: SourceSpecification = {
@@ -78,6 +77,29 @@ const GeoSearchPoints = ({ geojson }: Props) => {
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
   }, [geojson, map, mapLoaded, handleClick]);
+
+  useEffect(() => {
+    setActiveFeature(
+      geojson.features.find(
+        (feature) => feature?.properties?.identifier === activeResult
+      )
+    );
+  }, [activeResult, geojson]);
+
+  useEffect(() => {
+    if (!map) return;
+    if (activeFeature) {
+      setClickedLocation({
+        lat: activeFeature.geometry.coordinates[1],
+        lon: activeFeature.geometry.coordinates[0],
+      });
+      setPopupTitle(activeFeature.properties?.name);
+      setShowPopup(true);
+    } else {
+      map.getCanvas().style.cursor = "";
+      setShowPopup(false);
+    }
+  }, [map, activeFeature, geojson]);
 
   return (
     <ClientOnly>

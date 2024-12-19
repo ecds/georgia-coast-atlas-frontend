@@ -57,11 +57,26 @@ export const PlaceContext = createContext<TPlaceContext>({
     location: { lat: 0, lon: 0 },
     uuid: "",
     slug: "",
+    short_description: "",
     manifests: [],
     geojson: { type: "FeatureCollection", features: [] },
   },
   activeLayers: [],
   setActiveLayers: (_: SetStateAction<string[]>) => {
+    console.error(
+      "setActiveLayers not implemented. Did you pass it to context?"
+    );
+  },
+});
+
+type TSearchContext = {
+  activeResult: string | undefined;
+  setActiveResult: Dispatch<SetStateAction<string | undefined>>;
+};
+
+export const SearchContext = createContext<TSearchContext>({
+  activeResult: undefined,
+  setActiveResult: (_: SetStateAction<string | undefined>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?"
     );

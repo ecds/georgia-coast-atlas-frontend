@@ -14,7 +14,7 @@ import SearchForm from "~/components/search/SearchForm";
 import { history } from "instantsearch.js/es/lib/routers";
 import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
 import { defaultBounds, indexCollection } from "~/config";
-import { MapContext } from "~/contexts";
+import { MapContext, SearchContext } from "~/contexts";
 import { getBB } from "~/utils/getBB";
 import SearchResult from "~/components/search/SearchResult";
 import SearchModal from "~/components/search/SearchModal";
@@ -52,7 +52,6 @@ const Search = ({
   children,
 }: SearchProps) => {
   const { map } = useContext(MapContext);
-
   useEffect(() => {
     if (navigation?.state === "idle" && location?.search && map) {
       const previousBounds = getBB(location.search);
@@ -78,8 +77,10 @@ const Search = ({
               /* @ts-expect-error This seems to be a bug in */
               getLocation() {
                 if (typeof window === "undefined") {
-                  /* @ts-expect-error Not sure what more we can do here */
-                  const urlToReturn = new URL(serverUrl) as unknown as Location;
+                  const urlToReturn = new URL(
+                    /* @ts-expect-error Not sure what more we can do here */
+                    serverUrl
+                  ) as unknown as Location;
                   return urlToReturn;
                 }
                 return window.location;
@@ -113,19 +114,22 @@ const Search = ({
 
 const SearchPage = () => {
   const { serverState, serverUrl } = useLoaderData() as SearchProps;
+  const [activeResult, setActiveResult] = useState<string | undefined>();
   const [modalOpen, setModalOpen] = useState<boolean>(true);
   const location = useLocation();
   const navigation = useNavigation();
   return (
-    <Search
-      modalOpen={modalOpen}
-      serverState={serverState}
-      serverUrl={serverUrl}
-      location={location}
-      navigation={navigation}
-    >
-      <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} />
-    </Search>
+    <SearchContext.Provider value={{ activeResult, setActiveResult }}>
+      <Search
+        modalOpen={modalOpen}
+        serverState={serverState}
+        serverUrl={serverUrl}
+        location={location}
+        navigation={navigation}
+      >
+        <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} />
+      </Search>
+    </SearchContext.Provider>
   );
 };
 
