@@ -8,6 +8,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import GeoSearchClusters from "./GeoSearchClusters";
 import GeoSearchPoints from "./GeoSearchPoints";
 import { LngLatBounds } from "maplibre-gl";
+import type { MapLibreEvent } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
 
 let timerId: NodeJS.Timeout | undefined = undefined;
@@ -21,10 +22,13 @@ const GeoSearch = () => {
   const { items, refine } = useGeoSearch();
   const { renderState } = useInstantSearch();
 
-  const handleBoundsChange = useCallback(() => {
-    if (!map) return;
-    setShowSearchButton(true);
-  }, [map]);
+  const handleBoundsChange = useCallback(
+    ({ originalEvent }: MapLibreEvent) => {
+      if (!map) return;
+      setShowSearchButton(Boolean(originalEvent));
+    },
+    [map]
+  );
 
   useEffect(() => {
     if (timerId) {
@@ -39,10 +43,7 @@ const GeoSearch = () => {
 
   useEffect(() => {
     if (map) {
-      // This might seem a bit silly, but this prevents it from showing on initial render.
-      map.once("moveend", () => {
-        map.on("moveend", handleBoundsChange);
-      });
+      map.on("moveend", handleBoundsChange);
     }
     return () => {
       map?.off("moveend", handleBoundsChange);
