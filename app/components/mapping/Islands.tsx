@@ -4,10 +4,10 @@ import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
 import PlaceTooltip from "./PlaceTooltip";
+import { islandLayerID } from "~/config";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
 import type { Dispatch, SetStateAction } from "react";
-import { islandLayerID } from "~/config";
 
 interface Props {
   islands: ESPlace[];
