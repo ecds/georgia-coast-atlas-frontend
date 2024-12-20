@@ -12,14 +12,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { ClientOnly } from "remix-utils/client-only";
 import IIIFPhoto from "./IIIFPhoto.client";
-import type { ReactNode } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { TIIIFBody, TPhotograph } from "~/types";
 
 interface Props {
   children: ReactNode;
   photographs: TPhotograph[];
   activePhotograph: TIIIFBody | undefined;
-  setActivePhotograph: any;
+  setActivePhotograph: Dispatch<SetStateAction<TIIIFBody | undefined>>;
   photograph: TPhotograph;
 }
 

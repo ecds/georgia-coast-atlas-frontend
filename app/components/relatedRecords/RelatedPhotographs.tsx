@@ -53,7 +53,7 @@ const RelatedPhotographs = () => {
               {photographs.map((photo) => {
                 return (
                   <PhotographModal
-                    key={photo.name}
+                    key={photo.thumb}
                     activePhotograph={activePhotograph}
                     photographs={photographs}
                     setActivePhotograph={setActivePhotograph}

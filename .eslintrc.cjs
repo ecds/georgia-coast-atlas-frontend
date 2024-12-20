@@ -27,7 +27,16 @@ module.exports = {
   rules: {
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-console": "warn",
+    "no-console": ["warn", { allow: ["error"] }],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        vars: "all",
+        args: "after-used",
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
   },
 
   overrides: [
