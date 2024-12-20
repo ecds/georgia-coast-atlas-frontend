@@ -93,7 +93,8 @@ const GeoSearchClusters = ({ geojson }: Props) => {
 
     if (!map.getLayer(layerId))
       map.addLayer(
-        largeCluster({ id: layerId, source: sourceId, fillColor: "#5D414A" })
+        largeCluster({ id: layerId, source: sourceId, fillColor: "#5D414A" }),
+        "countySeats"
       );
     map.on("click", layerId, handleClick);
     map.on("mousemove", layerId, mousemove);

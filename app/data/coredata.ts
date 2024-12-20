@@ -34,14 +34,6 @@ const elasticSearchPost = async ({
   return results;
 };
 
-export const fetchRelatedRecord = async (id: string, endpoint: string) => {
-  const relatedResponse = await fetch(
-    `https://${dataHosts.coreData}/core_data/public/v1/places/${id}/${endpoint}?project_ids=${keys.coreDataProject}&per_page=2000`
-  );
-
-  return await relatedResponse.json();
-};
-
 export const fetchPlaceBySlug = async (
   slug: string | undefined,
   collection: string

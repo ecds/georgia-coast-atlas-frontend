@@ -28,7 +28,16 @@ module.exports = {
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "no-console": ["warn", { allow: ["error"] }],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        vars: "all",
+        args: "after-used",
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
   },
 
   overrides: [

@@ -60,7 +60,8 @@ const GeoSearchPoints = ({ geojson }: Props) => {
 
     if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
 
-    if (!map.getLayer(layerId)) map.addLayer(singlePoint(layerId, sourceId));
+    if (!map.getLayer(layerId))
+      map.addLayer(singlePoint(layerId, sourceId), "countySeats");
 
     map.on("click", layerId, handleClick);
     map.on("mouseenter", layerId, mouseenter);
