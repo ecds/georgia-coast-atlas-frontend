@@ -6,15 +6,11 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import PlacePopup from "./PlacePopup.client";
-import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import { Link } from "@remix-run/react";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
-
-const countyStyleLayer = masks.layers.find(
-  (layer) => layer.id === "simpleCounties"
-);
+import { countyLayerID } from "~/config";
 
 interface Props {
   counties: ESPlace[];
@@ -104,18 +100,18 @@ const Counties = ({ counties, hoveredIsland }: Props) => {
   }, [hoveredIsland]);
 
   useEffect(() => {
-    if (!map || !countyStyleLayer) return;
-    map.setLayoutProperty(countyStyleLayer.id, "visibility", "visible");
+    if (!map) return;
+    map.setLayoutProperty(countyLayerID, "visibility", "visible");
 
-    map.on("mousemove", countyStyleLayer.id, handleMouseEnter);
-    map.on("mouseleave", countyStyleLayer.id, handleMouseLeave);
-    map.on("click", countyStyleLayer.id, handleClick);
+    map.on("mousemove", countyLayerID, handleMouseEnter);
+    map.on("mouseleave", countyLayerID, handleMouseLeave);
+    map.on("click", countyLayerID, handleClick);
 
     return () => {
-      map.setLayoutProperty(countyStyleLayer.id, "visibility", "none");
-      map.off("mousemove", countyStyleLayer.id, handleMouseEnter);
-      map.off("mouseleave", countyStyleLayer.id, handleMouseLeave);
-      map.off("click", countyStyleLayer.id, handleClick);
+      map.setLayoutProperty(countyLayerID, "visibility", "none");
+      map.off("mousemove", countyLayerID, handleMouseEnter);
+      map.off("mouseleave", countyLayerID, handleMouseLeave);
+      map.off("click", countyLayerID, handleClick);
     };
   }, [map, handleMouseEnter, handleMouseLeave, handleClick]);
 
