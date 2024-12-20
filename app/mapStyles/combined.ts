@@ -1,10 +1,13 @@
-import { base } from "./base";
+import { roads } from "./roads";
+import { water } from "./water";
 import { costalLabels } from "./costalLabels";
+import { islands } from "./islands";
 import { masks } from "./masks";
 import { satellite } from "./satellite";
 import { usgs } from "./usgs";
 
 import type { StyleSpecification } from "maplibre-gl";
+import { counties } from "./counties";
 
 export const combined: StyleSpecification = {
   version: 8,
@@ -13,8 +16,10 @@ export const combined: StyleSpecification = {
     "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=uXfXuebPlkoPXiY3TPcv",
 
   sources: {
+    ...counties.sources,
     ...masks.sources,
-    ...base.sources,
+    ...islands.sources,
+    ...water.sources,
     ...satellite.sources,
     ...usgs.sources,
     ...costalLabels.sources,
@@ -31,11 +36,13 @@ export const combined: StyleSpecification = {
         "background-color": "#9DA19C",
       },
     },
+    ...counties.layers,
     ...masks.layers,
-    ...base.layers,
+    ...islands.layers,
+    ...water.layers,
+    ...roads.layers,
     ...satellite.layers,
     ...usgs.layers,
-    // ...labels.layers,
     ...costalLabels.layers,
   ],
 };

@@ -6,11 +6,6 @@ import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { mapLayers } from "~/config";
 import type { ReactNode } from "react";
 import type { TBaseStyleName } from "~/types";
-// import { labels } from "~/mapStyles";
-
-// const defaultLabelColor = "#000000";
-// const rasterLabelColor = "hsl(25.71deg 63.64% 97.84%)";
-// const labelLayers = labels.layers.filter((layer) => layer.id.includes("label"));
 
 const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
   const { map } = useContext(MapContext);
@@ -28,25 +23,6 @@ const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
           map.setLayoutProperty(layer, "visibility", "none")
         );
       }
-
-      // switch (activeStyle) {
-      //   case "default":
-      //     for (const label of labelLayers) {
-      //       map.setPaintProperty(label.id, "text-color", defaultLabelColor)
-      //       map.setPaintProperty(label.id, "text-halo-color", rasterLabelColor)
-      //     }
-      //     break
-      //   case "satellite":
-      //   case "usgs":
-      //     for (const label of labelLayers) {
-      //       map.setPaintProperty(label.id, "text-color", rasterLabelColor)
-      //       map.setPaintProperty(label.id, "text-halo-color", defaultLabelColor)
-      //     }
-      //     break;
-
-      //   default:
-      //     break;
-      // }
     }
   }, [map, activeStyle]);
 

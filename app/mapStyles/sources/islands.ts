@@ -6,10 +6,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "e7547f1c-f07d-5541-a771-83e36720cc0a",
         name: "Blackbeard Island",
-        description:
-          '<p>Blackbeard Island is northeast of Sapelo Island. It is named after Edward Teach (d. 1718), nicknamed "Blackbeard," an early pirate who used this land. Edward Teach established headquarters on the island in 1716. Now, it is federally owned and contains the Blackbeard Island National Wildlife Refuge.</p>',
-        uuid: "c4e43063-179b-5807-a191-6e1438170486",
       },
       geometry: {
         type: "Polygon",
@@ -21,13 +19,13 @@ export const simpleIslandShapes: FeatureCollection = {
             [-81.233948129856273, 31.441991376778606],
             [-81.235992896748925, 31.443925615731114],
             [-81.234003393826342, 31.448015149516419],
-            [-81.231019139442466, 31.452933642852795],
-            [-81.227813829178316, 31.453983658284159],
-            [-81.223724295393012, 31.454646825925018],
-            [-81.22167952850036, 31.45575210532645],
-            [-81.220406169433076, 31.458200399733123],
-            [-81.221305846521332, 31.462364042072508],
-            [-81.225067720876424, 31.466125916427597],
+            [-81.234008666452283, 31.449521194545497],
+            [-81.231470887157656, 31.453683152588688],
+            [-81.22720741794268, 31.455155064579571],
+            [-81.222893193141815, 31.455611864852603],
+            [-81.221455267204945, 31.458503589266432],
+            [-81.22254881788021, 31.462890444625014],
+            [-81.227312116822191, 31.465237728783404],
             [-81.228761961306645, 31.469195405672181],
             [-81.22800095380552, 31.470548307896408],
             [-81.223716763428797, 31.474776127347123],
@@ -109,10 +107,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "eb7fbddb-4fd9-5706-a57e-270e36b9a331",
         name: "Cumberland Island",
-        description:
-          "<p>Located off Georgia's southeastern coast and accessible only by boat, Cumberland Island is home to wildlife, including wild horses, loggerhead sea turtles, and a range of bird species. The island’s history spans Indigenous Timucua settlements, Spanish missions, and English colonial outposts, with significant remnants from the 19th century, when the Carnegie family built opulent estates like the now-ruined Dungeness mansion.</p>",
-        uuid: "ab536bff-55c5-50d5-b06f-2be190dd88a4",
       },
       geometry: {
         type: "Polygon",
@@ -173,10 +169,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "fb60385b-7302-53cf-9277-fd259b127991",
         name: "Tybee Island",
-        description:
-          "<p>Tybee belongs to the ancestral land of the Yuchi (Euchee) tribe now based in Oklahoma. Following occupation by the Spanish and French, it became a military outpost, its positioning along the Savannah River making it a strategic location during the Revolutionary War, Spanish-American War, Civil War, and World Wars I and II. Within the past two centuries it has developed into a popular tourist destination and features one of the oldest operating lighthouses in the country.</p>",
-        uuid: "532b46db-0bf7-486b-b055-3b852ee6d21f",
       },
       geometry: {
         type: "Polygon",
@@ -186,14 +180,7 @@ export const simpleIslandShapes: FeatureCollection = {
             [-80.855592853844598, 32.028389474560882],
             [-80.86082140259802, 32.023204497047075],
             [-80.876724905056321, 32.017540235897542],
-            [-80.882196545280408, 32.017327621859963],
-            [-80.883532193072412, 32.016035527800312],
-            [-80.883662854269446, 32.014119163577007],
-            [-80.882244588404404, 32.011593548263406],
-            [-80.881607314353374, 32.011726710005412],
-            [-80.882001762239881, 32.013749868850873],
-            [-80.881085298494853, 32.013817470811823],
-            [-80.880493338572961, 32.013922419005283],
+            [-80.882567419312551, 32.017248516601683],
             [-80.878729850916187, 32.014742755568555],
             [-80.878449426634916, 32.014818614059813],
             [-80.878453070035405, 32.015315675254719],
@@ -250,10 +237,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "900ff925-71a0-570d-a7ad-3754dd6d3957",
         name: "Ossabaw Island",
-        description:
-          "<p>An ancestral home of several Native American tribes, including the Creek and the Guale, Ossabaw Island has supported migratory and permanent settlements for 4,000 years. Violence and pressure from European settlers forced indigenous residents to relocate further inland, but their material legacy is captured - partially - in the many archaeological sites on Ossabaw. By the 19th century the island was developed as a cotton and indigo plantation. Sweetfield Church in Pin Point, GA, originated from the historic Hinder Me Not Baptist Church established on Ossabaw by the African American community residing there in 1878.</p>",
-        uuid: "79b2c613-a9f7-4e1e-b795-0faeed53c827",
       },
       geometry: {
         type: "Polygon",
@@ -263,22 +248,10 @@ export const simpleIslandShapes: FeatureCollection = {
             [-81.096348142316131, 31.743579563883852],
             [-81.120758608844724, 31.725388529309921],
             [-81.14009498624398, 31.719163805078654],
-            [-81.151352466236702, 31.745387111414626],
-            [-81.17043814955538, 31.755503469101729],
-            [-81.171878830054979, 31.757639650532177],
-            [-81.168401325400765, 31.767326984926065],
-            [-81.157888411159092, 31.78422827780323],
-            [-81.161943859817413, 31.789983192417097],
-            [-81.16620019325579, 31.791840350499751],
-            [-81.177580289858909, 31.792194779386605],
-            [-81.180653262158401, 31.794252825055068],
-            [-81.178933525366944, 31.798453493611248],
-            [-81.174960744040135, 31.806924688282265],
-            [-81.175191317099504, 31.816245665546131],
-            [-81.174240957175925, 31.817736747495211],
-            [-81.158690534255683, 31.822630777687611],
-            [-81.155944516564148, 31.837417026795883],
-            [-81.140718340716973, 31.849381998565047],
+            [-81.167621735, 31.755433522],
+            [-81.175795531430836, 31.806919215463996],
+            [-81.175795531430836, 31.81810384588092],
+            [-81.160014428811735, 31.821052801377313],
             [-81.131336150907586, 31.852722973472776],
             [-81.125186638493574, 31.850844839015011],
             [-81.112684246892869, 31.851411549718929],
@@ -297,10 +270,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "2a32d4cb-819f-5919-a9b2-64b921978bc9",
         name: "Sea Island",
-        description:
-          "<p>Sea Island is a private-owned unincorporated place, and it is part of the Golden Isles of Georgia.</p>",
-        uuid: "3a1c0b63-b2b4-45df-a5e1-33cc8a0c5469",
       },
       geometry: {
         type: "Polygon",
@@ -352,10 +323,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "aeedc9ef-293f-5d33-88a6-9445b775a2ee",
         name: "Little Tybee Island",
-        description:
-          "<p>Little Tybee Island is owned by the State of Georgia and covers approximately 6,780 acres, of which only 600 acres are upland. Despite its name, it is twice the area of Tybee Island to the north and includes salt marshes and sand dunes. It receives relatively few visitors due to a lack of road access and permanent structures, though camping and recreation are permitted for those who reach the island by boat. Many bird species nest in Little Tybee's marshes and forests.</p>",
-        uuid: "e2cc0661-11c1-47d3-88a4-708721a59f3e",
       },
       geometry: {
         type: "MultiPolygon",
@@ -435,10 +404,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "f88d2ceb-41d7-5002-b8ad-732c1ea4d5d9",
         name: "Wolf Island",
-        description:
-          "<p>One of three islands contained by the Wolf Island National Wildlife Refuge. Though its waterways are open for recreation, most of the island is closed to the public to provide habitats for local wildlife, including loggerhead turtles, ducks, and a variety of seabirds.</p>",
-        uuid: "dcec5413-40a6-418a-b5f5-db04e183cf96",
       },
       geometry: {
         type: "Polygon",
@@ -467,10 +434,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "d67c4968-768c-518d-9d95-8cdfb9e5c4cc",
         name: "Jekyll Island",
-        description:
-          "<p>Jekyll Island was originally named Ospo by the Native Americans, Gualdaquini by the Spanish, and Isle de la Somme by the French. In January 1793, General James E. Oglethorpe named the island after Sir Joesph Jekyll (1663-1738) who was a lawyer and statesman who helped finance the colonial venture.</p><p><br></p><p>The Spanish first came on the island around 1556 and maintained a Jesuit mission until around 1742. In 1791, four Frenchmen purchased the island, and the du Bignon family owned Jekyll Island until 1886. The first Englishman to settle here was Major William Horton; he established a brewery to supply the Frederica community on St. Simons Island nearby.</p><p><br></p><p>From 1888 to 1942, millionaires including Astor, Morgan, Pulitzer, Rockefeller, and Vanderbilt maintained cottages here. In 1947, the State of Georgia bought the island for $675,000 to establish the Jekyll Island State Park with 11,000 acres consisting of ten miles of white sandy beach.</p>",
-        uuid: "aa8a4b3b-febb-52fd-acaf-7e5f73ba1426",
       },
       geometry: {
         type: "Polygon",
@@ -501,10 +466,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "787337dc-0847-50ff-aa4f-7699f29175f2",
         name: "Saint Simons Island",
-        description:
-          "<p>Saint Simons Island is famous for beaches, which is also a great place for relaxation and adventure.</p>",
-        uuid: "8c113813-f475-42b9-bcfa-4915d24009a9",
       },
       geometry: {
         type: "Polygon",
@@ -640,10 +603,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "8492f499-9262-5d2f-b58d-3e752f7e7e19",
         name: "Little Saint Simons Island",
-        description:
-          "<p>Little Saint Simons Island is an island on the Georgia Coast, one of the most protected conservation areas in the state. This 8,840-acre island lies north and northeast of St. Simons Island and is separated from the larger island by the Hampton River. Little St. Simons is only accessible by water and is privately owned.</p><p><br></p><p>In 1760, the island was given to Samuel Ougspourger, a Swiss colonist, as a crown grant. Years later, the island was bought by two brothers named John and James Graham who planned to develop small-scale agriculture. Major Pierce Butler acquired Little St. Simons in 1774 and established an extensive plantation. During WWII, the island was a patrol station for the U.S. Coast Guard who observed German submarines off the cost. Since the 1970s, the island has had a lodge that accommodates paid guests.</p>",
-        uuid: "e0a98bec-543b-47c7-a00b-b3f509dde77f",
       },
       geometry: {
         type: "Polygon",
@@ -736,10 +697,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "d8aa478d-3eef-5801-a9d0-214dfeb7561c",
         name: "Sapelo Island",
-        description:
-          "<p>Sapelo Island is home to the Gullah/Geechee people, many of whom reside at Hog Hammock on the southern half of the island. The rest of Sapelo is state-owned and managed. Its ecosystem and long history of occupation make Sapelo a site of great ecological, archaeological, cultural, and historical significance.</p>",
-        uuid: "75fc9ef3-7a0b-4856-83dd-ea8c574eef5f",
       },
       geometry: {
         type: "Polygon",
@@ -866,10 +825,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "cae31c6c-e2a9-5c24-8182-3fb7fcb792c4",
         name: "Saint Catherines Island",
-        description:
-          "<p>Saint Catherines Island is a sea island, located 42 miles away from Savannah. The island is owned by St Catherines Island Foundation as a private nature preserve and research site, and it is not open to public.</p>",
-        uuid: "643bf294-badc-486b-8644-84209c49735b",
       },
       geometry: {
         type: "Polygon",
@@ -911,10 +868,8 @@ export const simpleIslandShapes: FeatureCollection = {
     {
       type: "Feature",
       properties: {
+        uuid: "ca01d647-5f22-50b9-8c9a-4c43292cd3a0",
         name: "Wassaw Island",
-        description:
-          "<p>One of the islands protected by the Wassaw National Wildlife Refuge, known to support bottle-nose dolphins, loggerhead sea turtles, and many species of birds. Historical structures of interest include a housing compound built by George Parsons, who took ownership of the island in 1866, and Fort Morgan, constructed by local civilians during the Spanish-American War.</p>",
-        uuid: "46c9700b-2dfa-4aed-81e6-50d81c168401",
       },
       geometry: {
         type: "Polygon",

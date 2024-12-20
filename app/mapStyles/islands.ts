@@ -16,15 +16,14 @@ export const islands: StyleSpecification = {
       type: "fill",
       source: "islands",
       layout: {
-        visibility: "none",
+        visibility: "visible",
       },
       paint: {
-        "fill-color": "#2563eb",
-        "fill-opacity": [
+        "fill-color": [
           "case",
           ["boolean", ["feature-state", "hovered"], false],
-          0.65,
-          0.25,
+          "#4A5D41",
+          "#68825C",
         ],
       },
     },
@@ -35,12 +34,12 @@ export const islands: StyleSpecification = {
       layout: {
         "line-join": "round",
         "line-cap": "round",
-        visibility: "none",
+        visibility: "visible",
       },
       paint: {
-        "line-color": "#2563eb",
+        "line-color": "#8191B2",
         "line-width": 1,
-        "line-opacity": 0.5,
+        "line-opacity": 1,
       },
     },
   ],

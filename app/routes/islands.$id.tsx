@@ -1,12 +1,18 @@
 import { useContext, useEffect, useState, Suspense } from "react";
 import {
   useLoaderData,
-  // useNavigation,
+  useNavigation,
   useRouteError,
   isRouteErrorResponse,
   Await,
 } from "@remix-run/react";
-import { dataHosts, defaultBounds, indexCollection } from "~/config.ts";
+import {
+  countyLayerID,
+  dataHosts,
+  defaultBounds,
+  indexCollection,
+  islandLayerID,
+} from "~/config.ts";
 import { fetchPlaceBySlug } from "~/data/coredata";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import { PlaceContext, MapContext } from "~/contexts";
@@ -14,7 +20,6 @@ import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
 import Heading from "~/components/layout/Heading";
-// import { islands as islandStyle } from "~/mapStyles";
 import PlaceContent from "~/components/layout/PlaceContent";
 import { LngLatBounds } from "maplibre-gl";
 import { pageMetadata } from "~/utils/pageMetadata";
@@ -51,23 +56,22 @@ const IslandPage = () => {
   const { wpData, place } = useLoaderData<typeof loader>();
   const { map, mapLoaded } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
 
-  // useEffect(() => {
-  //   if (navigation.state === "idle" && map && place) {
-  //     for (const islandLayer of islandStyle.layers) {
-  //       map.setFilter(islandLayer.id, ["==", ["get", "uuid"], place.uuid]);
-  //       map.setLayoutProperty(islandLayer.id, "visibility", "visible");
-  //     }
-  //   }
+  useEffect(() => {
+    if (navigation.state === "idle" && map && place) {
+      map.setFeatureState(
+        { source: "islands", id: place.uuid },
+        { hovered: true }
+      );
+      map.setLayoutProperty(countyLayerID, "visibility", "none");
+    }
 
-  //   if (navigation.state === "loading" && map && place) {
-  //     for (const islandLayer of islandStyle.layers) {
-  //       map.setFilter(islandLayer.id, undefined);
-  //       map.setLayoutProperty(islandLayer.id, "visibility", "none");
-  //     }
-  //   }
-  // }, [navigation, place, map]);
+    if (navigation.state === "loading" && map && place) {
+      map.setFilter(islandLayerID, undefined);
+      map.setLayoutProperty(islandLayerID, "visibility", "none");
+    }
+  }, [navigation, place, map]);
 
   useEffect(() => {
     if (!place || !place.bbox || !map) return;

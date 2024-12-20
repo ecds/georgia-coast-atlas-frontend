@@ -60,6 +60,9 @@ export const HydrateFallback = () => {
 const Explore = () => {
   const { map } = useContext(MapContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
+  const [hoveredIsland, setHoveredIsland] = useState<ESPlace | undefined>(
+    undefined
+  );
   const { islands, counties } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
@@ -82,8 +85,15 @@ const Explore = () => {
             <Await resolve={counties}>
               {(resolvedCounties) => (
                 <>
-                  <Counties counties={resolvedCounties} />
-                  <Islands islands={resolvedIslands} />
+                  <Counties
+                    counties={resolvedCounties}
+                    hoveredIsland={hoveredIsland}
+                  />
+                  <Islands
+                    islands={resolvedIslands}
+                    hoveredIsland={hoveredIsland}
+                    setHoveredIsland={setHoveredIsland}
+                  />
                 </>
               )}
             </Await>
