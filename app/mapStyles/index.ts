@@ -1,4 +1,5 @@
-export * from "./base";
+export * from "./water";
+export * from "./roads";
 export * from "./satellite";
 export * from "./labels";
 export * from "./usgs";

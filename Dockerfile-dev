@@ -1,7 +1,10 @@
 FROM node:20.12.1-slim
 WORKDIR /gca
 COPY . .
+RUN rm package-lock.json
+RUN rm -rf node_modules
 RUN npm install
+RUN npm install -g @rollup/rollup-linux-x64-gnu
 RUN npm run build_dev
 EXPOSE 3000
 ENTRYPOINT ["npm", "start"]

@@ -16,7 +16,12 @@ const countyStyleLayer = masks.layers.find(
   (layer) => layer.id === "simpleCounties"
 );
 
-const Counties = ({ counties }: { counties: ESPlace[] }) => {
+interface Props {
+  counties: ESPlace[];
+  hoveredIsland: ESPlace | undefined;
+}
+
+const Counties = ({ counties, hoveredIsland }: Props) => {
   const { map } = useContext(MapContext);
   const hoveredId = useRef<string | undefined>(undefined);
   const [activeCounty, setActiveCounty] = useState<string | undefined>(
@@ -39,6 +44,7 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
       features,
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+      if (hoveredIsland) return;
       if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
@@ -62,7 +68,7 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
         }
       }
     },
-    [map, activeCounty]
+    [map, activeCounty, hoveredIsland]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -92,6 +98,10 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
     },
     [map]
   );
+
+  useEffect(() => {
+    if (hoveredIsland) setHoveredCounty(undefined);
+  }, [hoveredIsland]);
 
   useEffect(() => {
     if (!map || !countyStyleLayer) return;
