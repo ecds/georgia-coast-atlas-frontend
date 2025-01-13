@@ -6,5 +6,4 @@ export * from "./usgs";
 export * from "./combined";
 export * from "./counties";
 export * from "./islands";
-export * from "./masks";
 export * from "./costalLabels";

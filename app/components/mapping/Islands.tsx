@@ -4,10 +4,10 @@ import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
 import PlaceTooltip from "./PlaceTooltip";
-import { islandLayerID } from "~/config";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
 import type { Dispatch, SetStateAction } from "react";
+import { islandLayerID, islandSourceLayer } from "~/mapStyles";
 
 interface Props {
   islands: ESPlace[];
@@ -37,13 +37,21 @@ const Islands = ({ islands, hoveredIsland, setHoveredIsland }: Props) => {
           for (const feature of features) {
             if (hoveredId.current && hoveredId.current !== feature.id) {
               map.setFeatureState(
-                { source: "islands", id: hoveredId.current },
+                {
+                  source: "islands",
+                  id: hoveredId.current,
+                  sourceLayer: islandSourceLayer,
+                },
                 { hovered: false }
               );
             }
             hoveredId.current = feature.properties.uuid;
             map.setFeatureState(
-              { source: "islands", id: feature.id },
+              {
+                source: "islands",
+                id: feature.id,
+                sourceLayer: islandSourceLayer,
+              },
               { hovered: true }
             );
             const currentIsland = islands.find((island) => {
@@ -63,7 +71,11 @@ const Islands = ({ islands, hoveredIsland, setHoveredIsland }: Props) => {
     if (map) {
       map.getCanvas().style.cursor = "";
       map.setFeatureState(
-        { source: "islands", id: hoveredId.current },
+        {
+          source: "islands",
+          id: hoveredId.current,
+          sourceLayer: islandSourceLayer,
+        },
         { hovered: false }
       );
       hoveredId.current = undefined;
@@ -92,14 +104,14 @@ const Islands = ({ islands, hoveredIsland, setHoveredIsland }: Props) => {
   useEffect(() => {
     if (!map || !islandLayerID) return;
 
-    // map.setLayoutProperty(islandLayerID, "visibility", "visible");
+    map.setLayoutProperty(islandLayerID, "visibility", "visible");
 
     map.on("mousemove", islandLayerID, handleMouseEnter);
     map.on("mouseleave", islandLayerID, handleMouseLeave);
     map.on("click", islandLayerID, handleClick);
 
     return () => {
-      // map.setLayoutProperty(islandLayerID, "visibility", "none");
+      map.setLayoutProperty(islandLayerID, "visibility", "none");
       map.off("mousemove", islandLayerID, handleMouseEnter);
       map.off("mouseleave", islandLayerID, handleMouseLeave);
       map.off("click", islandLayerID, handleClick);

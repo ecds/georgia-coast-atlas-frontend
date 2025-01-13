@@ -1,9 +1,8 @@
-import { useContext, useState, useEffect, Suspense } from "react";
+import { useContext, useState, useEffect } from "react";
 import { MapContext } from "~/contexts";
-import { useLoaderData, useNavigation, Await } from "@remix-run/react";
+import { useLoaderData, useNavigation } from "@remix-run/react";
 import { fetchCounties, fetchPlacesByType } from "~/data/coredata";
 import IntroModal from "~/components/layout/IntroModal";
-import Loading from "~/components/layout/Loading";
 import { defaultBounds, topBarHeight } from "~/config";
 import Counties from "~/components/mapping/Counties";
 import Islands from "~/components/mapping/Islands";
@@ -53,10 +52,6 @@ export const loader: LoaderFunction = async () => {
   return { islands, counties };
 };
 
-export const HydrateFallback = () => {
-  return <Loading />;
-};
-
 const Explore = () => {
   const { map } = useContext(MapContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
@@ -79,27 +74,12 @@ const Explore = () => {
       className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})] max-screen`}
     >
       <IntroModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
-      <Suspense fallback={<Loading />}>
-        <Await resolve={islands}>
-          {(resolvedIslands) => (
-            <Await resolve={counties}>
-              {(resolvedCounties) => (
-                <>
-                  <Counties
-                    counties={resolvedCounties}
-                    hoveredIsland={hoveredIsland}
-                  />
-                  <Islands
-                    islands={resolvedIslands}
-                    hoveredIsland={hoveredIsland}
-                    setHoveredIsland={setHoveredIsland}
-                  />
-                </>
-              )}
-            </Await>
-          )}
-        </Await>
-      </Suspense>
+      <Counties counties={counties} hoveredIsland={hoveredIsland} />
+      <Islands
+        islands={islands}
+        hoveredIsland={hoveredIsland}
+        setHoveredIsland={setHoveredIsland}
+      />
     </div>
   );
 };
