@@ -10,7 +10,7 @@ import PlaceTooltip from "./PlaceTooltip";
 import { Link } from "@remix-run/react";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
-import { countyLayerID } from "~/config";
+import { countiesSourceLayer, countyLayerID } from "~/mapStyles";
 
 interface Props {
   counties: ESPlace[];
@@ -35,25 +35,49 @@ const Counties = ({ counties, hoveredIsland }: Props) => {
     lon: number;
   }>({ lat: 0, lon: 0 });
 
+  const handleMouseLeave = useCallback(() => {
+    if (!map || !hoveredId.current) return;
+    map.getCanvas().style.cursor = "";
+    map.setFeatureState(
+      {
+        source: "counties",
+        id: hoveredId.current,
+        sourceLayer: countiesSourceLayer,
+      },
+      { hovered: false }
+    );
+    hoveredId.current = undefined;
+    setHoveredCounty(undefined);
+  }, [map]);
+
   const handleMouseEnter = useCallback(
     ({
       features,
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-      if (hoveredIsland) return;
-      if (map) {
+      if (hoveredIsland) {
+        handleMouseLeave();
+      } else if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
           for (const feature of features) {
             if (hoveredId.current && hoveredId.current !== feature.id) {
               map.setFeatureState(
-                { source: "counties", id: hoveredId.current },
+                {
+                  source: "counties",
+                  id: hoveredId.current,
+                  sourceLayer: countiesSourceLayer,
+                },
                 { hovered: false }
               );
             }
             hoveredId.current = feature.properties.uuid;
             map.setFeatureState(
-              { source: "counties", id: feature.id },
+              {
+                source: "counties",
+                id: feature.id,
+                sourceLayer: countiesSourceLayer,
+              },
               { hovered: true }
             );
             const hoveredCountyName = feature.properties.COUNTYNAME;
@@ -64,20 +88,8 @@ const Counties = ({ counties, hoveredIsland }: Props) => {
         }
       }
     },
-    [map, activeCounty, hoveredIsland]
+    [map, activeCounty, hoveredIsland, handleMouseLeave]
   );
-
-  const handleMouseLeave = useCallback(() => {
-    if (map) {
-      map.getCanvas().style.cursor = "";
-      map.setFeatureState(
-        { source: "counties", id: hoveredId.current },
-        { hovered: false }
-      );
-      hoveredId.current = undefined;
-      setHoveredCounty(undefined);
-    }
-  }, [map]);
 
   const handleClick = useCallback(
     ({

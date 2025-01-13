@@ -7,9 +7,9 @@ import { counties as countyStyle } from "~/mapStyles";
 import { countyIndexCollection, defaultBounds } from "~/config";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import { LngLatBounds } from "maplibre-gl";
+import { pageMetadata } from "~/utils/pageMetadata";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace } from "~/esTypes";
-import { pageMetadata } from "~/utils/pageMetadata";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place);
@@ -43,13 +43,11 @@ const CountyPage = () => {
         map.setLayoutProperty(countyLayer.id, "visibility", "visible");
       }
     }
-  }, [navigation, map, place]);
 
-  useEffect(() => {
     if (navigation.state === "loading" && map) {
-      for (const islandLayer of countyStyle.layers) {
-        map.setFilter(islandLayer.id, undefined);
-        map.setLayoutProperty(islandLayer.id, "visibility", "none");
+      for (const countyLayer of countyStyle.layers) {
+        map.setFilter(countyLayer.id, undefined);
+        map.setLayoutProperty(countyLayer.id, "visibility", "none");
       }
     }
   }, [navigation, place, map]);

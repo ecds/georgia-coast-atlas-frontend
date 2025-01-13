@@ -2,7 +2,6 @@ import { roads } from "./roads";
 import { water } from "./water";
 import { costalLabels } from "./costalLabels";
 import { islands } from "./islands";
-import { masks } from "./masks";
 import { satellite } from "./satellite";
 import { usgs } from "./usgs";
 
@@ -17,7 +16,6 @@ export const combined: StyleSpecification = {
 
   sources: {
     ...counties.sources,
-    ...masks.sources,
     ...islands.sources,
     ...water.sources,
     ...satellite.sources,
@@ -37,7 +35,6 @@ export const combined: StyleSpecification = {
       },
     },
     ...counties.layers,
-    ...masks.layers,
     ...islands.layers,
     ...water.layers,
     ...roads.layers,

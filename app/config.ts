@@ -313,9 +313,6 @@ export const defaultBounds = () => {
   );
 };
 
-export const islandLayerID = "islands-fill";
-export const countyLayerID = "simpleCounties";
-
 export const mapLayers: TBaseStyle[] = [
   {
     name: "default",

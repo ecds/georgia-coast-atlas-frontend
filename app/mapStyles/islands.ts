@@ -1,20 +1,30 @@
 import type { StyleSpecification } from "maplibre-gl";
 
+export const islandLayerID = "islands-fill";
+export const islandSourceLayer = "island_shapes";
+export const islandsStyleSource = "islands";
+
 export const islands: StyleSpecification = {
   version: 8,
   name: "Islands",
   sources: {
     islands: {
-      type: "geojson",
-      data: "/geojson/islands",
+      type: "vector",
+      scheme: "tms",
       promoteId: "uuid",
+      tiles: [
+        `https://geoserver.ecds.emory.edu/gwc/service/tms/1.0.0/CoastalGeorgia:${islandSourceLayer}@EPSG:900913@pbf/{z}/{x}/{y}.pbf`,
+      ],
+      minzoom: 0,
+      maxzoom: 20,
     },
   },
   layers: [
     {
-      id: "islands-fill",
+      id: islandLayerID,
       type: "fill",
-      source: "islands",
+      source: islandsStyleSource,
+      "source-layer": islandSourceLayer,
       layout: {
         visibility: "visible",
       },
@@ -30,7 +40,8 @@ export const islands: StyleSpecification = {
     {
       id: "islands-outline",
       type: "line",
-      source: "islands",
+      source: islandsStyleSource,
+      "source-layer": islandSourceLayer,
       layout: {
         "line-join": "round",
         "line-cap": "round",
