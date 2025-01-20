@@ -54,6 +54,11 @@ const Navbar = () => {
         >
           Search By Place
         </NavLink>
+        
+        <NavLink to="/topics" className="tracking-wide hover:underline">
+          Topics
+        </NavLink>
+
         <Menu>
           <MenuButton as={Fragment}>
             {({ active }) => (
