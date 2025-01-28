@@ -42,10 +42,13 @@ const GeoSearchClusters = ({ geojson }: Props) => {
   );
 
   const mouseleave = useCallback(() => {
-    if (!map) return;
+    if (!map || clusterList) return;
     map.getCanvas().style.cursor = "";
-    if (!clusterList) setShowPopup(false);
-    // setClusterList([]);
+    if (!clusterList) {
+      setShowPopup(false);
+    } else {
+      setClusterList(undefined);
+    }
   }, [map, clusterList]);
 
   const handleClick = useCallback(
@@ -57,7 +60,6 @@ const GeoSearchClusters = ({ geojson }: Props) => {
         !event.features[0].properties.point_count
       )
         return;
-      map.off("mouseleave", layerId, mouseleave);
       const properties = event.features[0].properties;
       const slugs = properties.slugs.split("|");
       const titles = properties.names.split("|");
@@ -69,7 +71,7 @@ const GeoSearchClusters = ({ geojson }: Props) => {
       setPopupTitle(undefined);
       setShowPopup(true);
     },
-    [map, mouseleave]
+    [map]
   );
 
   useEffect(() => {
@@ -96,7 +98,7 @@ const GeoSearchClusters = ({ geojson }: Props) => {
       );
     map.on("click", layerId, handleClick);
     map.on("mousemove", layerId, mousemove);
-    // map.on("mouseleave", layerId, mouseleave);
+    map.on("mouseleave", layerId, mouseleave);
 
     return () => {
       if (map.getLayer(layerId)) {
@@ -117,13 +119,6 @@ const GeoSearchClusters = ({ geojson }: Props) => {
     mousemove,
     mouseleave,
   ]);
-
-  useEffect(() => {
-    if (!showPopup && map) {
-      map.on("mouseleave", layerId, mouseleave);
-      setClusterList(undefined);
-    }
-  }, [showPopup, map, mouseleave]);
 
   return (
     <ClientOnly>

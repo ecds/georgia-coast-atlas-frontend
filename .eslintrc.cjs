@@ -25,6 +25,7 @@ module.exports = {
   extends: ["eslint:recommended"],
 
   rules: {
+    "no-console": ["warn", { allow: ["warn", "error"] }],
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "no-console": ["warn", { allow: ["error"] }],

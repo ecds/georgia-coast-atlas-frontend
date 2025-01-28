@@ -9,6 +9,20 @@ import {
 import { PLACE_TYPES } from "~/config";
 import type { RefinementListClassNames } from "node_modules/react-instantsearch/dist/es/ui/RefinementList";
 
+const bgColor = (
+  typeColors: { bgColor: string; textColor: string } | undefined
+) => {
+  if (!typeColors) {
+    return "green-800";
+  }
+  const shade = parseInt(typeColors.textColor.split("-")[1]);
+  if (shade < 500) {
+    return typeColors.bgColor;
+  }
+
+  return typeColors.textColor;
+};
+
 const refinementListClassNames = () => {
   const classNames: Partial<RefinementListClassNames> = {
     checkbox: "w-6 h-6 border-gray-300 rounded focus:ring-2 me-2",
@@ -29,7 +43,7 @@ const FacetMenu = () => {
   });
   return (
     <Menu>
-      <MenuButton className="w-full h-14 bg-blue-100 text-blue-800 font-medium mx-2 px-2.5 py-0.5 rounded">
+      <MenuButton className="w-full h-14 bg-activeCounty/50 text-county font-medium mx-2 px-2.5 py-0.5 rounded">
         <FontAwesomeIcon icon={faFilter} />{" "}
         <span className="hidden md:block text-xs">Filter</span>
       </MenuButton>
@@ -58,7 +72,7 @@ const FacetMenu = () => {
                 <li key={type.label} className="flex items-center me-4 my-2">
                   <input
                     type="checkbox"
-                    className={`w-6 h-6 text-${PLACE_TYPES[type.value]?.bgColor ?? "green-800"} checked:bg-${PLACE_TYPES[type.value]?.textColor ?? "green-800"} border-gray-300 rounded focus:ring-${PLACE_TYPES[type.value]?.bgColor ?? "green-800"} focus:ring-2`}
+                    className={`w-6 h-6 text-${bgColor(PLACE_TYPES[type.value])} checked:bg-${bgColor(PLACE_TYPES[type.value])} border-gray-700 rounded focus:ring-${PLACE_TYPES[type.value]?.bgColor ?? "green-800"} focus:ring-2`}
                     checked={type.isRefined}
                     onChange={() => refine(type.value)}
                     id={`type-${index}`}

@@ -14,7 +14,7 @@ import SearchForm from "~/components/search/SearchForm";
 import { history } from "instantsearch.js/es/lib/routers";
 import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
 import { defaultBounds, indexCollection } from "~/config";
-import { MapContext } from "~/contexts";
+import { MapContext, SearchContext } from "~/contexts";
 import { getBB } from "~/utils/getBB";
 import SearchResult from "~/components/search/SearchResult";
 import SearchModal from "~/components/search/SearchModal";
@@ -52,7 +52,6 @@ const Search = ({
   children,
 }: SearchProps) => {
   const { map } = useContext(MapContext);
-
   useEffect(() => {
     if (navigation?.state === "idle" && location?.search && map) {
       const previousBounds = getBB(location.search);
@@ -67,7 +66,7 @@ const Search = ({
   return (
     <InstantSearchSSRProvider {...serverState}>
       <div
-        className={`overflow-auto transition-all w-full md:max-w-1/2 lg:w-2/5 bottom-36`}
+        className={`overflow-auto transition-all w-full md:w-2/3 lg:w-2/5 bottom-36`}
       >
         <InstantSearch
           indexName={indexCollection}
@@ -78,8 +77,10 @@ const Search = ({
               /* @ts-expect-error This seems to be a bug in */
               getLocation() {
                 if (typeof window === "undefined") {
-                  /* @ts-expect-error Not sure what more we can do here */
-                  const urlToReturn = new URL(serverUrl) as unknown as Location;
+                  const urlToReturn = new URL(
+                    /* @ts-expect-error Not sure what more we can do here */
+                    serverUrl
+                  ) as unknown as Location;
                   return urlToReturn;
                 }
                 return window.location;
@@ -97,11 +98,11 @@ const Search = ({
           <div className="h-16"></div>
           <Pagination
             classNames={{
-              root: "w-full, px-2 py-4 fixed bottom-0 bg-white md:max-w-1/2 lg:w-2/5",
-              list: "flex flex-row width-full items-stretch justify-center",
+              root: "px-2 py-4 fixed bottom-0 bg-white w-full md:w-2/3 lg:w-2/5",
+              list: "flex flex-row items-stretch justify-center",
               pageItem:
-                "bg-blue-400 text-blue-100 mx-4 text-center rounded-md min-w-6 max-w-8",
-              selectedItem: "bg-blue-800 text-blue-100",
+                "bg-activeCounty/70 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+              selectedItem: "bg-county text-white",
             }}
             padding={2}
           />
@@ -113,19 +114,22 @@ const Search = ({
 
 const SearchPage = () => {
   const { serverState, serverUrl } = useLoaderData() as SearchProps;
+  const [activeResult, setActiveResult] = useState<string | undefined>();
   const [modalOpen, setModalOpen] = useState<boolean>(true);
   const location = useLocation();
   const navigation = useNavigation();
   return (
-    <Search
-      modalOpen={modalOpen}
-      serverState={serverState}
-      serverUrl={serverUrl}
-      location={location}
-      navigation={navigation}
-    >
-      <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} />
-    </Search>
+    <SearchContext.Provider value={{ activeResult, setActiveResult }}>
+      <Search
+        modalOpen={modalOpen}
+        serverState={serverState}
+        serverUrl={serverUrl}
+        location={location}
+        navigation={navigation}
+      >
+        <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} />
+      </Search>
+    </SearchContext.Provider>
   );
 };
 

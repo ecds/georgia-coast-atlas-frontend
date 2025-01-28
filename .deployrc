@@ -1,0 +1,5 @@
+export BRANCH=dev
+export AWS_ECR=310867200447.dkr.ecr.us-east-1.amazonaws.com
+export AWS_ECS_CLUSTER=GeorgiaCoastAtlas-DEV
+export AWS_ECS_SERVICE=Georgia-Coast-Atlas-DEV
+export AWS_REGION=us-east-1

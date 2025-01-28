@@ -1,4 +1,5 @@
-import { SearchBox } from "react-instantsearch";
+import { useState } from "react";
+import { SearchBox, useSortBy } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -7,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FacetMenu from "./FacetMenu";
 import CurrentRefinements from "./CurrentRefinements";
-import { topBarHeight } from "~/config";
+import { indexCollection, topBarHeight } from "~/config";
 import { type ReactNode } from "react";
 
 const ButtonComponent = ({
@@ -53,27 +54,47 @@ const LoadingComponent = () => {
 };
 
 const SearchForm = () => {
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const { refine } = useSortBy({
+    items: [
+      { label: "Name", value: indexCollection },
+      { label: "Relevance", value: `${indexCollection}_score` },
+    ],
+  });
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value.trim();
+    if (query !== "" && !hasSearched) {
+      // Switch to relevance sorting on input and Switch back to alphabetical if input is cleared
+      setHasSearched(true);
+      refine(`${indexCollection}_score`);
+    } else if (query === "" && hasSearched) {
+      setHasSearched(false);
+      refine(indexCollection);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-5 sticky top-0 bg-white shadow-md">
+    <div className="grid grid-cols-12 sticky top-0 bg-white shadow-md">
       <SearchBox
         resetIconComponent={ResetComponent}
         submitIconComponent={SubmitComponent}
         loadingIconComponent={LoadingComponent}
         placeholder="Search Places"
         classNames={{
-          root: "px-4 col-span-4",
-          form: "max-w-md relative h-16",
+          root: "px-4 col-span-9 xl:col-span-10",
+          form: "relative h-16",
           input:
             "block w-full p-4 mt-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-200 focus:ring-blue-500 focus:border-blue-500 appearance-none",
           resetIcon: "hidden",
         }}
+        onInput={handleInputChange} // Detect input change
       />
-      <div className="py-4 pe-8 col-span-1">
+      <div className="py-4 pe-8 col-span-3 xl:col-span-2">
         <FacetMenu />
       </div>
-      <div className="col-span-5">
-        <CurrentRefinements />
-      </div>
+      <CurrentRefinements />
     </div>
   );
 };

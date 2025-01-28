@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, Suspense } from "react";
 import {
   useLoaderData,
-  useNavigation,
+  // useNavigation,
   useRouteError,
   isRouteErrorResponse,
+  Await,
 } from "@remix-run/react";
 import { dataHosts, defaultBounds, indexCollection } from "~/config.ts";
 import { fetchPlaceBySlug } from "~/data/coredata";
@@ -11,14 +12,17 @@ import FeaturedMedium from "~/components/FeaturedMedium";
 import { PlaceContext, MapContext } from "~/contexts";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
+import Loading from "~/components/layout/Loading";
 import Heading from "~/components/layout/Heading";
+// import { islands as islandStyle } from "~/mapStyles";
 import PlaceContent from "~/components/layout/PlaceContent";
 import { LngLatBounds } from "maplibre-gl";
 import { pageMetadata } from "~/utils/pageMetadata";
+import AsyncError from "~/components/errorResponses/AsyncError";
+import NoRecord from "~/components/errorResponses/NoRecord";
 import type { TWordPressData } from "~/types";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace } from "~/esTypes";
-import { islandLayerID, islandSourceLayer } from "~/mapStyles";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place);
@@ -47,30 +51,23 @@ const IslandPage = () => {
   const { wpData, place } = useLoaderData<typeof loader>();
   const { map, mapLoaded } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
-  useEffect(() => {
-    if (!map || !place) return;
-    if (navigation.state === "idle") {
-      map.removeFeatureState(
-        { source: "islands", sourceLayer: islandSourceLayer },
-        "hovered"
-      );
-      map.setFeatureState(
-        { source: "islands", id: place.uuid, sourceLayer: islandSourceLayer },
-        { hovered: true }
-      );
-      map.setLayoutProperty(islandLayerID, "visibility", "visible");
-    }
+  // useEffect(() => {
+  //   if (navigation.state === "idle" && map && place) {
+  //     for (const islandLayer of islandStyle.layers) {
+  //       map.setFilter(islandLayer.id, ["==", ["get", "uuid"], place.uuid]);
+  //       map.setLayoutProperty(islandLayer.id, "visibility", "visible");
+  //     }
+  //   }
 
-    if (navigation.state === "loading") {
-      map.setFilter(islandLayerID, undefined);
-      map.setFeatureState(
-        { source: "islands", id: place.uuid, sourceLayer: islandSourceLayer },
-        { hovered: false }
-      );
-    }
-  }, [navigation, place, map]);
+  //   if (navigation.state === "loading" && map && place) {
+  //     for (const islandLayer of islandStyle.layers) {
+  //       map.setFilter(islandLayer.id, undefined);
+  //       map.setLayoutProperty(islandLayer.id, "visibility", "none");
+  //     }
+  //   }
+  // }, [navigation, place, map]);
 
   useEffect(() => {
     if (!place || !place.bbox || !map) return;
@@ -89,37 +86,48 @@ const IslandPage = () => {
   }, [place, map, mapLoaded]);
 
   return (
-    <PlaceContext.Provider
-      value={{
-        place,
-        activeLayers,
-        setActiveLayers,
-        full: true,
-        clusterFillColor: "#ea580c",
-        clusterTextColor: "black",
-      }}
-    >
-      <PlaceContent>
-        <Heading
-          as="h1"
-          className="text-2xl px-4 py-2 sticky top-0 z-10 bg-white drop-shadow-md"
-        >
-          {place.name}
-        </Heading>
-        <div className="relative -top-12 z-10 min-h-10">
-          <FeaturedMedium record={place} />
-        </div>
-        <div
-          className="relative px-4 -mt-12 primary-content"
-          dangerouslySetInnerHTML={{
-            __html:
-              wpData?.content.rendered ??
-              place.description ??
-              `<p>${place.short_description}</p>`,
-          }}
-        />
-      </PlaceContent>
-    </PlaceContext.Provider>
+    <Suspense fallback={<Loading />}>
+      <Await resolve={place} errorElement={<AsyncError />}>
+        {(place) => {
+          if (place) {
+            return (
+              <PlaceContext.Provider
+                value={{
+                  place,
+                  activeLayers,
+                  setActiveLayers,
+                  full: true,
+                  clusterFillColor: "#ea580c",
+                  clusterTextColor: "black",
+                }}
+              >
+                <PlaceContent>
+                  <Heading
+                    as="h1"
+                    className="text-2xl px-4 py-2 sticky top-0 z-10 bg-white drop-shadow-md"
+                  >
+                    {place.name}
+                  </Heading>
+                  <div className="relative -top-12 z-10 min-h-10">
+                    <FeaturedMedium record={place} />
+                  </div>
+                  <div
+                    className="relative px-4 -mt-12 primary-content"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        wpData?.content.rendered ??
+                        place.description ??
+                        `<p>${place.short_description}</p>`,
+                    }}
+                  />
+                </PlaceContent>
+              </PlaceContext.Provider>
+            );
+          }
+          return <NoRecord>Island not found.</NoRecord>;
+        }}
+      </Await>
+    </Suspense>
   );
 };
 

@@ -83,7 +83,7 @@ const PhotographModal = ({
                           {photographs.map((photograph) => {
                             return (
                               <button
-                                key={photograph.thumb}
+                                key={`thumb-${photograph.thumb}-${activePhotograph?.id}`}
                                 onClick={() =>
                                   setActivePhotograph(photograph.body)
                                 }

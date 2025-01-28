@@ -4,12 +4,14 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faSearch, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Form, useLocation } from "@remix-run/react";
 import type { FormEvent } from "react";
 import { useSearchBox } from "react-instantsearch";
+import { SearchModalContext } from "~/contexts";
+
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -20,6 +22,7 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [hasQuery, setHasQuery] = useState<boolean>(false);
   const { query, refine } = useSearchBox();
+  const { searchModalOpen, setSearchModalOpen } = useContext(SearchModalContext);
   const location = useLocation();
 
   useEffect(() => {
@@ -31,11 +34,11 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   }, [setIsOpen, query, location]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!searchModalOpen) {
       setHasQuery(false);
       if (searchInputRef.current) searchInputRef.current.value = "";
     }
-  }, [isOpen]);
+  }, [searchModalOpen]);
 
   // const closeModal = () => {
   //   setIsOpen(false);
@@ -44,7 +47,7 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   const navigateToSearch = () => {
     if (searchInputRef.current) {
       refine(searchInputRef.current.value);
-      setIsOpen(false);
+      setSearchModalOpen(false);
       // navigate(
       //   encodeURI(
       //     `/search?${indexCollection}[query]=${searchInputRef.current.value}`
@@ -72,8 +75,8 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
       as="div"
       className="fixed inset-0 flex w-screen items-center justify-center bg-black/60 z-50 p-4 transition duration-300 ease-in origin-center data-[closed]:opacity-0"
       transition
-      open={isOpen}
-      onClose={navigateToSearch}
+      open={searchModalOpen}
+      onClose={() => setSearchModalOpen(false)}
     >
       <DialogPanel
         transition
@@ -82,7 +85,7 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
         <div className="flex w-full items-end flex-row-reverse pt-2 pr-2">
           <button
             className="flex flex-col text-black/70 hover:text-black  border border-black/40 px-1 rounded-md items-center text-xs"
-            onClick={() => navigateToSearch()}
+            onClick={() => setSearchModalOpen(false)}
           >
             <FontAwesomeIcon icon={faClose} className="h-4" /> close
           </button>
