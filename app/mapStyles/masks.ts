@@ -1,4 +1,4 @@
-import { simpleIslandShapes } from "./sources";
+import { simpleIslandShapes, inlandCountyShapes } from "./sources";
 import type { StyleSpecification } from "maplibre-gl";
 
 export const landColors = {
@@ -11,7 +11,12 @@ export const landColors = {
 export const masks: StyleSpecification = {
   version: 8,
   sources: {
-    islandMasks: {
+    counties: {
+      type: "geojson",
+      data: inlandCountyShapes,
+      promoteId: "uuid",
+    },
+    islands: {
       type: "geojson",
       data: simpleIslandShapes,
       promoteId: "uuid",
@@ -20,7 +25,7 @@ export const masks: StyleSpecification = {
   layers: [
     {
       id: "simpleIslandsFill",
-      source: "islandMasks",
+      source: "islands",
       type: "fill",
       layout: {
         visibility: "visible",

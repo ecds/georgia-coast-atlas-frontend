@@ -6,18 +6,17 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import PlacePopup from "./PlacePopup.client";
+import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import { Link } from "@remix-run/react";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
-import { countiesSourceLayer, countyLayerID } from "~/mapStyles";
 
-interface Props {
-  counties: ESPlace[];
-  hoveredIsland: ESPlace | undefined;
-}
+const countyStyleLayer = masks.layers.find(
+  (layer) => layer.id === "simpleCounties"
+);
 
-const Counties = ({ counties, hoveredIsland }: Props) => {
+const Counties = ({ counties }: { counties: ESPlace[] }) => {
   const { map } = useContext(MapContext);
   const hoveredId = useRef<string | undefined>(undefined);
   const [activeCounty, setActiveCounty] = useState<string | undefined>(
@@ -35,49 +34,24 @@ const Counties = ({ counties, hoveredIsland }: Props) => {
     lon: number;
   }>({ lat: 0, lon: 0 });
 
-  const handleMouseLeave = useCallback(() => {
-    if (!map || !hoveredId.current) return;
-    map.getCanvas().style.cursor = "";
-    map.setFeatureState(
-      {
-        source: "counties",
-        id: hoveredId.current,
-        sourceLayer: countiesSourceLayer,
-      },
-      { hovered: false }
-    );
-    hoveredId.current = undefined;
-    setHoveredCounty(undefined);
-  }, [map]);
-
   const handleMouseEnter = useCallback(
     ({
       features,
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-      if (hoveredIsland) {
-        handleMouseLeave();
-      } else if (map) {
+      if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
           for (const feature of features) {
             if (hoveredId.current && hoveredId.current !== feature.id) {
               map.setFeatureState(
-                {
-                  source: "counties",
-                  id: hoveredId.current,
-                  sourceLayer: countiesSourceLayer,
-                },
+                { source: "counties", id: hoveredId.current },
                 { hovered: false }
               );
             }
             hoveredId.current = feature.properties.uuid;
             map.setFeatureState(
-              {
-                source: "counties",
-                id: feature.id,
-                sourceLayer: countiesSourceLayer,
-              },
+              { source: "counties", id: feature.id },
               { hovered: true }
             );
             const hoveredCountyName = feature.properties.COUNTYNAME;
@@ -88,8 +62,20 @@ const Counties = ({ counties, hoveredIsland }: Props) => {
         }
       }
     },
-    [map, activeCounty, hoveredIsland, handleMouseLeave]
+    [map, activeCounty]
   );
+
+  const handleMouseLeave = useCallback(() => {
+    if (map) {
+      map.getCanvas().style.cursor = "";
+      map.setFeatureState(
+        { source: "counties", id: hoveredId.current },
+        { hovered: false }
+      );
+      hoveredId.current = undefined;
+      setHoveredCounty(undefined);
+    }
+  }, [map]);
 
   const handleClick = useCallback(
     ({
@@ -108,22 +94,18 @@ const Counties = ({ counties, hoveredIsland }: Props) => {
   );
 
   useEffect(() => {
-    if (hoveredIsland) setHoveredCounty(undefined);
-  }, [hoveredIsland]);
+    if (!map || !countyStyleLayer) return;
+    map.setLayoutProperty(countyStyleLayer.id, "visibility", "visible");
 
-  useEffect(() => {
-    if (!map) return;
-    map.setLayoutProperty(countyLayerID, "visibility", "visible");
-
-    map.on("mousemove", countyLayerID, handleMouseEnter);
-    map.on("mouseleave", countyLayerID, handleMouseLeave);
-    map.on("click", countyLayerID, handleClick);
+    map.on("mousemove", countyStyleLayer.id, handleMouseEnter);
+    map.on("mouseleave", countyStyleLayer.id, handleMouseLeave);
+    map.on("click", countyStyleLayer.id, handleClick);
 
     return () => {
-      map.setLayoutProperty(countyLayerID, "visibility", "none");
-      map.off("mousemove", countyLayerID, handleMouseEnter);
-      map.off("mouseleave", countyLayerID, handleMouseLeave);
-      map.off("click", countyLayerID, handleClick);
+      map.setLayoutProperty(countyStyleLayer.id, "visibility", "none");
+      map.off("mousemove", countyStyleLayer.id, handleMouseEnter);
+      map.off("mouseleave", countyStyleLayer.id, handleMouseLeave);
+      map.off("click", countyStyleLayer.id, handleClick);
     };
   }, [map, handleMouseEnter, handleMouseLeave, handleClick]);
 
