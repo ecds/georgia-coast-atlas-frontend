@@ -10,7 +10,7 @@ export const base: StyleSpecification = {
   sources: {
     openmaptiles: {
       type: "vector",
-      url: "https://d17gef4m69t9r4.cloudfront.net/planet.json",
+      url: "https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
       attribution:
         '<a href="https://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles!</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     },
