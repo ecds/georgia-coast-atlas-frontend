@@ -82,3 +82,15 @@ export const SearchContext = createContext<TSearchContext>({
     );
   },
 });
+
+type TSearchModalContext = {
+  searchModalOpen: boolean;
+  setSearchModalOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const SearchModalContext = createContext<TSearchModalContext>({
+  searchModalOpen: true, // Default to open
+  setSearchModalOpen: (_: SetStateAction<boolean>) => {
+    console.error("setSearchModalOpen not implemented. Did you pass it to context?");
+  },
+});

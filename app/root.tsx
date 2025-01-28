@@ -14,7 +14,7 @@ import Navbar from "./components/layout/Navbar";
 import Loading from "./components/layout/Loading";
 import RouteError from "./components/errorResponses/RouteError";
 import CodeError from "./components/errorResponses/CodeError";
-import { MapContext } from "./contexts";
+import { MapContext, SearchModalContext } from "./contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import StyleSwitcher from "./components/mapping/StyleSwitcher";
 import Map from "./components/mapping/Map.client";
@@ -71,6 +71,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [isMapRoute, setIsMapRoute] = useState<boolean>(true);
+  const [searchModalOpen, setSearchModalOpen] = useState<boolean>(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -103,14 +104,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
           skip to main content
         </a>
         <Navbar />
-        <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
-          <main
-            className={`mx-auto relative mt-20 bg-white overflow-hidden`}
-            id="main"
-          >
-            <ChildContent isMapRoute={isMapRoute}>{children}</ChildContent>
-          </main>
-        </MapContext.Provider>
+        <SearchModalContext.Provider
+          value={{ searchModalOpen, setSearchModalOpen }}
+        >
+          <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
+            <main
+              className={`mx-auto relative mt-20 bg-white overflow-hidden`}
+              id="main"
+            >
+              <ChildContent isMapRoute={isMapRoute}>{children}</ChildContent>
+            </main>
+          </MapContext.Provider>
+        </SearchModalContext.Provider>
         <Loading />
         <ScrollRestoration />
         <Scripts />
