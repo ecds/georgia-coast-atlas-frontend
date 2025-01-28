@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { topBarHeight, PLACE_TYPES } from "./app/config";
+import { landColors } from "./app/mapStyles";
 import plugin from "tailwindcss/plugin";
 
 const bgColors = Object.keys(PLACE_TYPES).map(
@@ -10,6 +11,9 @@ const textColors = Object.keys(PLACE_TYPES).map(
 );
 const textBgColors = Object.keys(PLACE_TYPES).map(
   (type) => `text-${PLACE_TYPES[type].bgColor}`
+);
+const bgTextColors = Object.keys(PLACE_TYPES).map(
+  (type) => `bg-${PLACE_TYPES[type].textColor}`
 );
 
 export default {
@@ -26,6 +30,10 @@ export default {
         black: "#1C1817",
         white: "#FDF9F6",
         "costal-green": "#4A5D41",
+        island: landColors.island,
+        activeIsland: landColors.activeIsland,
+        county: landColors.county,
+        activeCounty: landColors.activeCounty,
       },
     },
   },
@@ -111,8 +119,11 @@ export default {
     "bg-blue-500",
     "text-6xl",
     "bg-red-100",
+    "bg-county",
+    "bg-activeCounty/70",
     ...bgColors,
     ...textColors,
     ...textBgColors,
+    ...bgTextColors,
   ],
 } satisfies Config;
