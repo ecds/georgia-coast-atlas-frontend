@@ -1,56 +1,46 @@
 import type { StyleSpecification } from "maplibre-gl";
 
-export const islandLayerID = "islands-fill";
-export const islandSourceLayer = "island_shapes";
-export const islandsStyleSource = "islands";
-
 export const islands: StyleSpecification = {
   version: 8,
   name: "Islands",
   sources: {
     islands: {
-      type: "vector",
-      scheme: "tms",
+      type: "geojson",
+      data: "/geojson/islands",
       promoteId: "uuid",
-      tiles: [
-        `https://geoserver.ecds.emory.edu/gwc/service/tms/1.0.0/CoastalGeorgia:${islandSourceLayer}@EPSG:900913@pbf/{z}/{x}/{y}.pbf`,
-      ],
-      minzoom: 0,
-      maxzoom: 20,
     },
   },
   layers: [
     {
-      id: islandLayerID,
+      id: "islands-fill",
       type: "fill",
-      source: islandsStyleSource,
-      "source-layer": islandSourceLayer,
+      source: "islands",
       layout: {
-        visibility: "visible",
+        visibility: "none",
       },
       paint: {
-        "fill-color": [
+        "fill-color": "#2563eb",
+        "fill-opacity": [
           "case",
           ["boolean", ["feature-state", "hovered"], false],
-          "#4A5D41",
-          "#68825C",
+          0.65,
+          0.25,
         ],
       },
     },
     {
       id: "islands-outline",
       type: "line",
-      source: islandsStyleSource,
-      "source-layer": islandSourceLayer,
+      source: "islands",
       layout: {
         "line-join": "round",
         "line-cap": "round",
-        visibility: "visible",
+        visibility: "none",
       },
       paint: {
-        "line-color": "#8191B2",
+        "line-color": "#2563eb",
         "line-width": 1,
-        "line-opacity": 1,
+        "line-opacity": 0.5,
       },
     },
   ],

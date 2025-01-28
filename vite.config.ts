@@ -3,7 +3,9 @@ import { installGlobals } from "@remix-run/node";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import SiteMap from "vite-plugin-sitemap";
-import { ISLAND_ROUTES } from "./app/config";
+import { islands } from "./app/config";
+
+const ISLANDS = islands.map((island) => `/${island.id}-island`);
 
 const robotOption = {
   userAgent: "*",
@@ -28,7 +30,7 @@ export default defineConfig({
     SiteMap({
       hostname: "https://georgiacoastatlas.org",
       outDir: "public",
-      dynamicRoutes: [...ISLAND_ROUTES],
+      dynamicRoutes: [...ISLANDS],
       robots: [robotOption],
     }),
   ],

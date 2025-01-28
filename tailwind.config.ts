@@ -114,6 +114,7 @@ export default {
     }),
   ],
   safelist: [
+    "2xl:col-span-11",
     `-top-[${topBarHeight}]`,
     `h-[calc(100vh-${topBarHeight})]`,
     "bg-blue-500",
