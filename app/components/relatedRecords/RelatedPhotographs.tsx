@@ -53,7 +53,7 @@ const RelatedPhotographs = () => {
               {photographs.map((photo) => {
                 return (
                   <PhotographModal
-                    key={photo.name}
+                    key={`related-photo-${photo.name}-${photo.body.id}`}
                     activePhotograph={activePhotograph}
                     photographs={photographs}
                     setActivePhotograph={setActivePhotograph}
@@ -66,9 +66,6 @@ const RelatedPhotographs = () => {
                         className="drop-shadow-md h-auto md:h-32 w-full md:w-auto m-auto"
                       />
                       <span className="sr-only">Select image</span>
-                      {/* <figcaption className="md:w-32 text-left break-words text-sm pt-1">
-                        {photo.name}
-                      </figcaption> */}
                     </figure>
                   </PhotographModal>
                 );

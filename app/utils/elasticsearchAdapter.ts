@@ -12,14 +12,14 @@ const sk = new Searchkit({
   search_settings: {
     search_attributes: [
       {
-        field: "name",
-        weight: 3,
+        field: "names",
+        weight: 10,
       },
       "description",
     ],
-    // sorting: { name: { field: "slug", order: "desc" } },
     result_attributes: [
       "name",
+      "names",
       "description",
       "county",
       "uuid",

@@ -1,6 +1,13 @@
 import { simpleIslandShapes, inlandCountyShapes } from "./sources";
 import type { StyleSpecification } from "maplibre-gl";
 
+export const landColors = {
+  island: "#4A5D41",
+  activeIsland: "#68825C",
+  county: "#414A5D",
+  activeCounty: "#606C87",
+};
+
 export const masks: StyleSpecification = {
   version: 8,
   sources: {
@@ -27,8 +34,8 @@ export const masks: StyleSpecification = {
         "fill-color": [
           "case",
           ["boolean", ["feature-state", "hovered"], false],
-          "#68825C",
-          "#4A5D41",
+          landColors.activeIsland,
+          landColors.island,
         ],
       },
     },
@@ -43,8 +50,8 @@ export const masks: StyleSpecification = {
         "fill-color": [
           "case",
           ["boolean", ["feature-state", "hovered"], false],
-          "#606C87",
-          "#414A5D",
+          landColors.activeCounty,
+          landColors.county,
         ],
       },
     },

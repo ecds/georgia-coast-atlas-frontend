@@ -66,7 +66,7 @@ const Search = ({
   return (
     <InstantSearchSSRProvider {...serverState}>
       <div
-        className={`overflow-auto transition-all w-full md:max-w-1/2 lg:w-2/5 bottom-36`}
+        className={`overflow-auto transition-all w-full md:w-2/3 lg:w-2/5 bottom-36`}
       >
         <InstantSearch
           indexName={indexCollection}
@@ -98,11 +98,11 @@ const Search = ({
           <div className="h-16"></div>
           <Pagination
             classNames={{
-              root: "w-full, px-2 py-4 fixed bottom-0 bg-white md:max-w-1/2 lg:w-2/5",
-              list: "flex flex-row width-full items-stretch justify-center",
+              root: "px-2 py-4 fixed bottom-0 bg-white w-full md:w-2/3 lg:w-2/5",
+              list: "flex flex-row items-stretch justify-center",
               pageItem:
-                "bg-blue-400 text-blue-100 mx-4 text-center rounded-md min-w-6 max-w-8",
-              selectedItem: "bg-blue-800 text-blue-100",
+                "bg-activeCounty/70 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+              selectedItem: "bg-county text-white",
             }}
             padding={2}
           />

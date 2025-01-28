@@ -1,4 +1,3 @@
-import { json } from "@remix-run/node";
 import {
   annotationPainting,
   annotationGeo,
@@ -49,6 +48,5 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       break;
   }
 
-  const response = json(responseData);
-  return await response;
+  return responseData;
 };
