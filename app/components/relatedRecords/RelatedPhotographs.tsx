@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { PlaceContext } from "~/contexts";
+import { GalleryContext, PlaceContext } from "~/contexts";
 import RelatedSection from "./RelatedSection";
 import PhotographModal from "../PhotographModal";
 import type { TIIIFManifest, TIIIFBody, TPhotograph } from "~/types";
@@ -25,12 +25,18 @@ const RelatedPhotographs = () => {
       if (!manifest) return;
       const response = await fetch(manifest.identifier);
       const data: TIIIFManifest = await response.json();
+      console.log("🚀 ~ fetchIIIF ~ data:", data);
       setPhotographs(
         data.items.map((item) => {
           return {
             full: `${item.items[0].items[0].body.service[0].id}/full/max/0/default.jpg`,
             thumb: `${item.items[0].items[0].body.service[0].id}/square/150,/0/default.jpg`,
-            body: item.items[0].items[0].body,
+            body: {
+              ...item.items[0].items[0].body,
+              width: item.width,
+              height: item.height,
+            },
+            item,
             name: item.label.en[0],
           };
         })
@@ -49,14 +55,14 @@ const RelatedPhotographs = () => {
       <RelatedSection title="Photographs">
         <div className="flex flex-wrap justify-around">
           {photographs && (
-            <>
+            <GalleryContext.Provider
+              value={{ activePhotograph, setActivePhotograph }}
+            >
               {photographs.map((photo) => {
                 return (
                   <PhotographModal
                     key={`related-photo-${photo.name}-${photo.body.id}`}
-                    activePhotograph={activePhotograph}
                     photographs={photographs}
-                    setActivePhotograph={setActivePhotograph}
                     photograph={photo}
                   >
                     <figure className="md:my-8 md:mr-8 max-w-xs">
@@ -70,7 +76,7 @@ const RelatedPhotographs = () => {
                   </PhotographModal>
                 );
               })}
-            </>
+            </GalleryContext.Provider>
           )}
         </div>
       </RelatedSection>

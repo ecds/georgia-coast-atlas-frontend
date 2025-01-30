@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Carousel } from "nuka-carousel";
 import {
   Button,
@@ -11,26 +11,20 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { ClientOnly } from "remix-utils/client-only";
-import IIIFPhoto from "./IIIFPhoto.client";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
-import type { TIIIFBody, TPhotograph } from "~/types";
+import { GalleryContext } from "~/contexts";
+import OpenSeadragonViewer from "./OpenseadragonViewer.client";
+import type { ReactNode } from "react";
+import type { TPhotograph } from "~/types";
 
 interface Props {
   children: ReactNode;
   photographs: TPhotograph[];
-  activePhotograph: TIIIFBody | undefined;
-  setActivePhotograph: Dispatch<SetStateAction<TIIIFBody | undefined>>;
   photograph: TPhotograph;
 }
 
-const PhotographModal = ({
-  children,
-  photographs,
-  setActivePhotograph,
-  activePhotograph,
-  photograph,
-}: Props) => {
+const PhotographModal = ({ children, photographs, photograph }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { setActivePhotograph } = useContext(GalleryContext);
 
   const handleClick = () => {
     setActivePhotograph(photograph.body);
@@ -72,18 +66,14 @@ const PhotographModal = ({
                   {photographs && (
                     <div className="flex flex-col justify-between">
                       <div className="h-96">
-                        <ClientOnly>
-                          {() => (
-                            <IIIFPhoto activePhotograph={activePhotograph} />
-                          )}
-                        </ClientOnly>
+                        <ClientOnly>{() => <OpenSeadragonViewer />}</ClientOnly>
                       </div>
                       {photographs.length > 1 && (
                         <Carousel showArrows scrollDistance="slide">
                           {photographs.map((photograph) => {
                             return (
                               <button
-                                key={`thumb-${photograph.thumb}-${activePhotograph?.id}`}
+                                key={`thumb-${photograph.thumb}-${photograph.body.id}`}
                                 onClick={() =>
                                   setActivePhotograph(photograph.body)
                                 }
@@ -110,7 +100,6 @@ const PhotographModal = ({
                       )}
                     </div>
                   )}
-                  {/* </ClientOnly> */}
                 </DialogPanel>
               </TransitionChild>
             </div>

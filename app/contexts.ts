@@ -2,6 +2,7 @@ import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
 import type { ESPlace } from "./esTypes";
+import type { TIIIFBody } from "./types";
 
 type TMapContext = {
   map: Map | undefined;
@@ -91,6 +92,20 @@ type TSearchModalContext = {
 export const SearchModalContext = createContext<TSearchModalContext>({
   searchModalOpen: true, // Default to open
   setSearchModalOpen: (_: SetStateAction<boolean>) => {
-    console.error("setSearchModalOpen not implemented. Did you pass it to context?");
+    console.error(
+      "setSearchModalOpen not implemented. Did you pass it to context?"
+    );
+  },
+});
+
+type TGalleryContext = {
+  activePhotograph: TIIIFBody | undefined;
+  setActivePhotograph: Dispatch<SetStateAction<TIIIFBody | undefined>>;
+};
+
+export const GalleryContext = createContext<TGalleryContext>({
+  activePhotograph: undefined,
+  setActivePhotograph: (_: SetStateAction<TIIIFBody | undefined>) => {
+    console.error("setActivePhotograph not implemented.");
   },
 });
