@@ -57,6 +57,7 @@ export const fetchPlaceBySlug = async (
         "map_layers",
         "name",
         "location",
+        "other_places",
         "photographs",
         "places",
         "related_videos",

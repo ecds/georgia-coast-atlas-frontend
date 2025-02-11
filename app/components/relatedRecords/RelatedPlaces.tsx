@@ -26,9 +26,6 @@ const RelatedPlaces = () => {
   const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>(
     undefined
   );
-  const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>(
-    undefined
-  );
 
   const handleMouseEnter = useCallback(
     ({ features }: MapLayerMouseEvent) => {
@@ -94,7 +91,6 @@ const RelatedPlaces = () => {
     );
     const newBounds = map.getBounds().extend(bounds);
 
-    setPlaceBounds(newBounds);
     map.fitBounds(newBounds, { maxZoom: 14 });
 
     const placesSource: SourceSpecification = {
@@ -148,7 +144,15 @@ const RelatedPlaces = () => {
       if (map.getSource(`${place.uuid}-places`))
         map.removeSource(`${place.uuid}-places`);
     };
-  }, [map, place, handleClick, handleMouseEnter, handleMouseLeave]);
+  }, [
+    map,
+    place,
+    handleClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    clusterFillColor,
+    clusterTextColor,
+  ]);
 
   if (place.places?.length > 0) {
     return (
@@ -183,7 +187,7 @@ const RelatedPlaces = () => {
                         }}
                         show={activePlace?.uuid === relatedPlace.uuid}
                         onClose={() => setActivePlace(undefined)}
-                        zoomToFeature = {false}
+                        zoomToFeature={false}
                       >
                         <h4 className="text-xl">{relatedPlace.name}</h4>
                         <div
