@@ -15,6 +15,8 @@ import type {
 } from "maplibre-gl";
 import type { ESRelatedPlace } from "~/esTypes";
 import { ClientOnly } from "remix-utils/client-only";
+import { indexCollection } from "~/config.ts";
+import { fetchPlaceBySlug } from "~/data/coredata";
 
 const RelatedPlaces = () => {
   const { map } = useContext(MapContext);
@@ -26,18 +28,49 @@ const RelatedPlaces = () => {
   const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>(
     undefined
   );
+  const [otherPlaces, setOtherPlaces] = useState<ESRelatedPlace[]>([]);
+
+  const [loading, setLoading] = useState(false);
+  const [hasLoadedMore, setHasLoadedMore] = useState(false);
+
+  const loadMorePlaces = async () => {
+    if (hasLoadedMore) return;
+    setLoading(true);
+  
+    try {
+      const fetchedPlace = await fetchPlaceBySlug(place.slug, indexCollection);
+      if (fetchedPlace?.other_places?.length > 0) {
+        setOtherPlaces((prev) => [...prev, ...fetchedPlace.other_places]); 
+        updateMapData([...place.places, ...fetchedPlace.other_places]);
+        setHasLoadedMore(true);
+      }
+    } catch (error) {
+      console.error("Error loading more places:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const updateMapData = (places: ESRelatedPlace[]) => {
+    if (!map) return;
+    const geojson = toFeatureCollection(places);  
+    if (map.getSource(`${place.uuid}-places`)) {
+      (map.getSource(`${place.uuid}-places`) as GeoJSONSource).setData(geojson);
+    }
+  };
 
   const handleMouseEnter = useCallback(
     ({ features }: MapLayerMouseEvent) => {
       if (!map || !features) return;
 
-      const hovered = place.places.find(
+      const allPlaces = [...place.places, ...otherPlaces];
+      const hovered = allPlaces.find(
         (relatedPlace) => relatedPlace.uuid === features[0]?.id
       );
       setHoveredPlace(hovered);
       map.getCanvas().style.cursor = "pointer";
     },
-    [map, place.places]
+    [map, place.places, otherPlaces]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -71,20 +104,22 @@ const RelatedPlaces = () => {
         return;
       }
 
-      const clickedPlace = place.places.find(
+      const allPlaces = [...place.places, ...otherPlaces];
+      const clickedPlace = allPlaces.find(
         (relatedPlace) => relatedPlace.uuid === feature.id
       );
       setHoveredPlace(undefined);
       setActivePlace(clickedPlace);
     },
-    [map, place.places]
+    [map, place.places, otherPlaces]
   );
 
   useEffect(() => {
     if (!map) return;
     if (!place.places || place.places.length === 0) return;
 
-    const geojson = toFeatureCollection(place.places);
+    const allPlaces = [...place.places, ...otherPlaces];
+    const geojson = toFeatureCollection(allPlaces);
 
     const bounds = new LngLatBounds(
       bbox(geojson) as [number, number, number, number]
@@ -146,6 +181,7 @@ const RelatedPlaces = () => {
     };
   }, [
     map,
+    otherPlaces,
     place,
     handleClick,
     handleMouseEnter,
@@ -154,11 +190,11 @@ const RelatedPlaces = () => {
     clusterTextColor,
   ]);
 
-  if (place.places?.length > 0) {
+  if (place.places?.length > 0 || otherPlaces.length > 0) {
     return (
       <RelatedSection title="Related Places">
         <div className="grid grid-cols-1 md:grid-cols-2">
-          {place.places.map((relatedPlace) => {
+          {[...place.places, ...otherPlaces].map((relatedPlace) => {
             return (
               <div
                 key={`related-place-${relatedPlace.uuid}`}
@@ -222,6 +258,16 @@ const RelatedPlaces = () => {
             );
           })}
         </div>
+
+        {!hasLoadedMore && (
+        <button 
+          onClick={loadMorePlaces} 
+          className="mt-4 p-2 bg-blue-500 text-white rounded" 
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Load More"}
+        </button>
+        )}
       </RelatedSection>
     );
   }
