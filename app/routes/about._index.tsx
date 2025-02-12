@@ -1,11 +1,9 @@
-import Navbar from "~/components/layout/Navbar";
 import { dataHosts } from "~/config";
 import { useLoaderData } from "@remix-run/react";
 import "~/styles/about.css";
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { TWordPressData } from "~/types";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async () => {
   const wpResponse = await fetch(
     `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=about`
   );
@@ -20,9 +18,8 @@ const About = () => {
 
   return (
     <div>
-      <Navbar />
       <div
-        className="bg-cover bg-center h-screen w-screen"
+        className="bg-cover bg-center h-screen w-screen overflow-y-scroll"
         style={{
           backgroundImage:
             "linear-gradient(rgba(64, 62, 62, 0.9),rgba(73, 103, 76, 0.6)), url(/images/ossabaw.jpeg)",
