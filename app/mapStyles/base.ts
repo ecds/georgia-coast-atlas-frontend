@@ -1,3 +1,4 @@
+import { landColors } from "./masks";
 import type { StyleSpecification } from "maplibre-gl";
 
 export const base: StyleSpecification = {
@@ -136,7 +137,7 @@ export const base: StyleSpecification = {
         ["!=", ["get", "brunnel"], "tunnel"],
         ["!=", ["get", "class"], "swimming_pool"],
       ],
-      paint: { "fill-color": "#8191B2" },
+      paint: { "fill-color": landColors.water },
     },
     {
       id: "waterway-tunnel",
@@ -149,7 +150,7 @@ export const base: StyleSpecification = {
         ["==", ["get", "brunnel"], "tunnel"],
       ],
       paint: {
-        "line-color": "#8191B2",
+        "line-color": landColors.water,
         "line-dasharray": [3, 3],
         "line-gap-width": ["interpolate", ["linear"], ["zoom"], 12, 0, 20, 6],
         "line-opacity": 1,
@@ -175,7 +176,7 @@ export const base: StyleSpecification = {
         ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
       ],
       paint: {
-        "line-color": "#8191B2",
+        "line-color": landColors.water,
         "line-opacity": 1,
         "line-width": [
           "interpolate",

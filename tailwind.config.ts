@@ -34,6 +34,7 @@ export default {
         activeIsland: landColors.activeIsland,
         county: landColors.county,
         activeCounty: landColors.activeCounty,
+        water: landColors.water,
       },
     },
   },
