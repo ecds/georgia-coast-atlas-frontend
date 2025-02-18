@@ -4,3 +4,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.maplibregl-popup {
+  z-index: 2;
+  max-width: 33vw !important;
+}

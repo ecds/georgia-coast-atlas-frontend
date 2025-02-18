@@ -34,7 +34,7 @@ const elasticSearchPost = async ({
   return results;
 };
 
-export const fetchPlaceBySlug = async (
+export const fetchBySlug = async (
   slug: string | undefined,
   collection: string
 ) => {
@@ -128,12 +128,13 @@ export const fetchPlacesByType = async (type: string) => {
         "name",
         "description",
         "county",
-        "uuid",
+        "featured_photograph",
+        "identifier",
         "location",
         "short_description",
-        "types",
-        "identifier",
         "slug",
+        "types",
+        "uuid",
       ],
     },
   };
@@ -154,17 +155,10 @@ export const fetchPlacesByType = async (type: string) => {
 
 export const fetchPlacesGeoJSON = async ({
   collection = indexCollection,
-  filter = [],
+  query = {},
 }: TSearchOptions) => {
   const body = {
-    query: {
-      bool: {
-        filter,
-        must: {
-          match_all: {},
-        },
-      },
-    },
+    query,
     size: 250,
     from: 0,
     _source: {
@@ -176,12 +170,13 @@ export const fetchPlacesGeoJSON = async ({
 };
 
 export const fetchPlaceGeoJSON = async ({
-  uuid,
+  query,
+  fields = ["uuid"],
   collection = indexCollection,
 }: TSearchOptions) => {
   const body = {
     query: {
-      simple_query_string: { query: uuid, fields: ["uuid"] },
+      simple_query_string: { query, fields },
     },
     size: 1,
     from: 0,

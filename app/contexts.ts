@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
-import type { ESPlace } from "./esTypes";
+import type { ESPlace, ESRelatedPlace } from "./esTypes";
 import type { TIIIFBody } from "./types";
 
 type TMapContext = {
@@ -19,6 +19,10 @@ type TPlaceContext = {
   relatedClosed?: boolean;
   clusterFillColor?: string;
   clusterTextColor?: string;
+  activePlace: ESRelatedPlace | undefined;
+  setActivePlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
+  hoveredPlace: ESRelatedPlace | undefined;
+  setHoveredPlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
 };
 
 export const MapContext = createContext<TMapContext>({
@@ -35,7 +39,7 @@ export const MapContext = createContext<TMapContext>({
 export const PlaceContext = createContext<TPlaceContext>({
   place: {
     bbox: [0, 0, 0, 0],
-    name: "",
+    county: "",
     description: "",
     featured_photograph: "",
     featured_video: {
@@ -47,25 +51,38 @@ export const PlaceContext = createContext<TPlaceContext>({
       thumbnail_url: "",
       uuid: "",
     },
-    identifier: "",
-    types: [],
-    county: "",
-    places: [],
-    map_layers: [],
-    topos: [],
-    videos: [],
-    photographs: [],
-    location: { lat: 0, lon: 0 },
-    uuid: "",
-    slug: "",
-    short_description: "",
-    manifests: [],
     geojson: { type: "FeatureCollection", features: [] },
+    identifier: "",
+    location: { lat: 0, lon: 0 },
+    manifests: [],
+    map_layers: [],
+    name: "",
+    photographs: [],
+    places: [],
+    short_description: "",
+    slug: "",
+    topos: [],
+    types: [],
+    type: "",
+    videos: [],
+    uuid: "",
   },
   activeLayers: [],
   setActiveLayers: (_: SetStateAction<string[]>) => {
     console.error(
       "setActiveLayers not implemented. Did you pass it to context?"
+    );
+  },
+  activePlace: undefined,
+  setActivePlace: (_: SetStateAction<ESRelatedPlace | undefined>) => {
+    console.error(
+      "setActivePlace not implemented. Did you pass it to context?"
+    );
+  },
+  hoveredPlace: undefined,
+  setHoveredPlace: (_: SetStateAction<ESRelatedPlace | undefined>) => {
+    console.error(
+      "setActiveHovered not implemented. Did you pass it to context?"
     );
   },
 });

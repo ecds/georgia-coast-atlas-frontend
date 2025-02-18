@@ -25,7 +25,6 @@ const RelatedPhotographs = () => {
       if (!manifest) return;
       const response = await fetch(manifest.identifier);
       const data: TIIIFManifest = await response.json();
-      console.log("🚀 ~ fetchIIIF ~ data:", data);
       setPhotographs(
         data.items.map((item) => {
           return {

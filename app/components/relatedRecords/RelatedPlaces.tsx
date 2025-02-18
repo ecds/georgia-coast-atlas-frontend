@@ -1,273 +1,30 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { LngLatBounds } from "maplibre-gl";
-import { bbox } from "@turf/turf";
+import { useContext, useState } from "react";
 import RelatedSection from "./RelatedSection";
-import { MapContext, PlaceContext } from "~/contexts";
-import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import PlaceTooltip from "../mapping/PlaceTooltip";
-import PlacePopup from "../mapping/PlacePopup.client";
-import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
-import { Link } from "@remix-run/react";
-import type {
-  MapLayerMouseEvent,
-  SourceSpecification,
-  GeoJSONSource,
-} from "maplibre-gl";
+import RelatedPlacesList from "./RelatedPlacesList";
 import type { ESRelatedPlace } from "~/esTypes";
-import { ClientOnly } from "remix-utils/client-only";
-import { indexCollection } from "~/config.ts";
-import { fetchPlaceBySlug } from "~/data/coredata";
+import { PlaceContext } from "~/contexts";
+import RelatedPlacesMap from "./RelatedPlacesMap";
 
-const RelatedPlaces = () => {
-  const { map } = useContext(MapContext);
-  const { place, clusterFillColor, clusterTextColor } =
-    useContext(PlaceContext);
-  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>(
-    undefined
-  );
-  const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>(
-    undefined
-  );
+interface Props {
+  title?: string;
+  collapsable?: boolean;
+}
+
+const RelatedPlaces = ({ title, collapsable = true }: Props) => {
+  const { place } = useContext(PlaceContext);
   const [otherPlaces, setOtherPlaces] = useState<ESRelatedPlace[]>([]);
-
-  const [loading, setLoading] = useState(false);
-  const [hasLoadedMore, setHasLoadedMore] = useState(false);
-
-  const loadMorePlaces = async () => {
-    if (hasLoadedMore) return;
-    setLoading(true);
-  
-    try {
-      const fetchedPlace = await fetchPlaceBySlug(place.slug, indexCollection);
-      if (fetchedPlace?.other_places?.length > 0) {
-        setOtherPlaces((prev) => [...prev, ...fetchedPlace.other_places]); 
-        updateMapData([...place.places, ...fetchedPlace.other_places]);
-        setHasLoadedMore(true);
-      }
-    } catch (error) {
-      console.error("Error loading more places:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const updateMapData = (places: ESRelatedPlace[]) => {
-    if (!map) return;
-    const geojson = toFeatureCollection(places);  
-    if (map.getSource(`${place.uuid}-places`)) {
-      (map.getSource(`${place.uuid}-places`) as GeoJSONSource).setData(geojson);
-    }
-  };
-
-  const handleMouseEnter = useCallback(
-    ({ features }: MapLayerMouseEvent) => {
-      if (!map || !features) return;
-
-      const allPlaces = [...place.places, ...otherPlaces];
-      const hovered = allPlaces.find(
-        (relatedPlace) => relatedPlace.uuid === features[0]?.id
-      );
-      setHoveredPlace(hovered);
-      map.getCanvas().style.cursor = "pointer";
-    },
-    [map, place.places, otherPlaces]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredPlace(undefined);
-
-    if (map) {
-      map.getCanvas().style.cursor = "";
-    }
-  }, [map]);
-
-  const handleClick = useCallback(
-    async ({ features, lngLat }: MapLayerMouseEvent) => {
-      if (!map || !features) return;
-
-      const feature = features[0];
-      if (!feature) return;
-
-      if (feature.properties?.cluster) {
-        const source: GeoJSONSource | undefined = map.getSource(
-          feature.layer.source
-        );
-        if (!source) return;
-
-        const zoom = await source.getClusterExpansionZoom(
-          feature.properties.cluster_id
-        );
-        map.easeTo({
-          center: lngLat,
-          zoom,
-        });
-        return;
-      }
-
-      const allPlaces = [...place.places, ...otherPlaces];
-      const clickedPlace = allPlaces.find(
-        (relatedPlace) => relatedPlace.uuid === feature.id
-      );
-      setHoveredPlace(undefined);
-      setActivePlace(clickedPlace);
-    },
-    [map, place.places, otherPlaces]
-  );
-
-  useEffect(() => {
-    if (!map) return;
-    if (!place.places || place.places.length === 0) return;
-
-    const allPlaces = [...place.places, ...otherPlaces];
-    const geojson = toFeatureCollection(allPlaces);
-
-    const bounds = new LngLatBounds(
-      bbox(geojson) as [number, number, number, number]
-    );
-    const newBounds = map.getBounds().extend(bounds);
-
-    map.fitBounds(newBounds, { maxZoom: 14 });
-
-    const placesSource: SourceSpecification = {
-      type: "geojson",
-      data: geojson,
-      cluster: true,
-      clusterMaxZoom: 14,
-      clusterRadius: 50,
-      promoteId: "uuid",
-    };
-
-    if (map.getSource(`${place.uuid}-places`))
-      map.removeSource(`${place.uuid}-places`);
-    map.addSource(`${place.uuid}-places`, placesSource);
-
-    const clusterLayer = cluster({
-      id: `clusters-${place.uuid}`,
-      source: `${place.uuid}-places`,
-      fillColor: clusterFillColor ?? "#1d4ed8",
-    });
-
-    const countLayer = clusterCount({
-      id: `counts-${place.uuid}`,
-      source: `${place.uuid}-places`,
-      textColor: clusterTextColor ?? "white",
-    });
-
-    const unclusteredLayer = singlePoint(
-      `points-${place.uuid}`,
-      `${place.uuid}-places`
-    );
-
-    if (!map.getLayer(clusterLayer.id)) map.addLayer(clusterLayer);
-    if (!map.getLayer(countLayer.id)) map.addLayer(countLayer);
-    if (!map.getLayer(unclusteredLayer.id)) map.addLayer(unclusteredLayer);
-
-    map.on("mouseenter", unclusteredLayer.id, handleMouseEnter);
-    map.on("mouseleave", unclusteredLayer.id, handleMouseLeave);
-    map.on("click", unclusteredLayer.id, handleClick);
-    map.on("click", clusterLayer.id, handleClick);
-
-    return () => {
-      map.off("mouseenter", unclusteredLayer.id, handleMouseEnter);
-      map.off("mouseleave", unclusteredLayer.id, handleMouseLeave);
-      map.off("click", unclusteredLayer.id, handleClick);
-      map.off("click", clusterLayer.id, handleClick);
-      if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
-      if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-      if (map.getLayer(unclusteredLayer.id))
-        map.removeLayer(unclusteredLayer.id);
-      if (map.getSource(`${place.uuid}-places`))
-        map.removeSource(`${place.uuid}-places`);
-    };
-  }, [
-    map,
-    otherPlaces,
-    place,
-    handleClick,
-    handleMouseEnter,
-    handleMouseLeave,
-    clusterFillColor,
-    clusterTextColor,
-  ]);
 
   if (place.places?.length > 0 || otherPlaces.length > 0) {
     return (
-      <RelatedSection title="Related Places">
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {[...place.places, ...otherPlaces].map((relatedPlace) => {
-            return (
-              <div
-                key={`related-place-${relatedPlace.uuid}`}
-                onMouseEnter={() => setHoveredPlace(relatedPlace)}
-                onMouseLeave={() => setHoveredPlace(undefined)}
-              >
-                <button
-                  className={`text-black/75 text-left md:py-1 ${
-                    hoveredPlace?.uuid === relatedPlace.uuid
-                      ? "bg-gray-200 font-bold"
-                      : ""
-                  } ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
-                  onClick={() => {
-                    setActivePlace(relatedPlace);
-                  }}
-                >
-                  {relatedPlace.name}
-                </button>
-                <ClientOnly>
-                  {() => (
-                    <>
-                      <PlacePopup
-                        location={{
-                          lat: relatedPlace.location.lat,
-                          lon: relatedPlace.location.lon,
-                        }}
-                        show={activePlace?.uuid === relatedPlace.uuid}
-                        onClose={() => setActivePlace(undefined)}
-                        zoomToFeature={false}
-                      >
-                        <h4 className="text-xl">{relatedPlace.name}</h4>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: relatedPlace.description ?? "",
-                          }}
-                        />
-                        <Link
-                          to={`/places/${relatedPlace.slug}`}
-                          state={{ backTo: place.name }}
-                          className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                        >
-                          Read More
-                        </Link>
-                      </PlacePopup>
-                      <PlaceTooltip
-                        location={{
-                          lat: relatedPlace.location.lat,
-                          lon: relatedPlace.location.lon,
-                        }}
-                        show={hoveredPlace?.uuid === relatedPlace.uuid}
-                        onClose={() => {}}
-                        anchor="left"
-                        zoomToFeature={false}
-                      >
-                        <h4 className="text-white">{relatedPlace.name}</h4>
-                      </PlaceTooltip>
-                    </>
-                  )}
-                </ClientOnly>
-              </div>
-            );
-          })}
-        </div>
-
-        {!hasLoadedMore && (
-        <button 
-          onClick={loadMorePlaces} 
-          className="mt-4 p-2 bg-blue-500 text-white rounded" 
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "Load More"}
-        </button>
-        )}
+      <RelatedSection
+        title={title ?? "Related Places"}
+        collapsable={collapsable}
+      >
+        <RelatedPlacesList
+          otherPlaces={otherPlaces}
+          setOtherPlaces={setOtherPlaces}
+        />
+        <RelatedPlacesMap otherPlaces={otherPlaces} />
       </RelatedSection>
     );
   }

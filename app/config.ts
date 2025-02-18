@@ -1,11 +1,6 @@
 import maplibregl from "maplibre-gl";
 import { base, satellite, usgs } from "./mapStyles";
-import type {
-  TBaseStyle,
-  TCoreDataRelatedEndpoints,
-  TCounty,
-  TTypeColors,
-} from "./types";
+import type { TBaseStyle, TTypeColors } from "./types";
 
 export const islands = [
   {
@@ -79,73 +74,6 @@ export const modelFieldUUIDs = {
   mapLayers: "84c15c15-39ec-4574-b32f-b70fb00ab69c",
 };
 
-export const coreDataRelatedEndpoints: TCoreDataRelatedEndpoints[] = [
-  {
-    endpoint: "media_contents",
-    uiLabel: "Related Media & Documents",
-    types: [
-      {
-        uuid: modelFieldUUIDs.photographs,
-        type: "photographs",
-        uiLabel: "Photographs",
-      },
-    ],
-  },
-  {
-    endpoint: "places",
-    uiLabel: "Related Places",
-    types: [
-      {
-        uuid: modelFieldUUIDs.county,
-        type: "county",
-        uiLabel: "County",
-      },
-      {
-        uuid: modelFieldUUIDs.relatedPlaces,
-        type: "relatedPlaces",
-        uiLabel: "Related Places",
-      },
-      {
-        uuid: modelFieldUUIDs.topoQuads,
-        type: "topoQuads",
-        uiLabel: "Topo Quad",
-      },
-      {
-        uuid: modelFieldUUIDs.mapLayers,
-        type: "mapLayers",
-        uiLabel: "Maps",
-      },
-    ],
-  },
-  {
-    endpoint: "taxonomies",
-    uiLabel: "Taxonomies",
-    types: [
-      {
-        uuid: modelFieldUUIDs.types,
-        type: "type",
-        uiLabel: "Type",
-      },
-    ],
-  },
-  {
-    endpoint: "items",
-    uiLabel: "Items",
-    types: [
-      {
-        uuid: modelFieldUUIDs.topo,
-        type: "topo",
-        uiLabel: "Topo",
-      },
-      {
-        uuid: modelFieldUUIDs.videos,
-        type: "videos",
-        uiLabel: "Videos",
-      },
-    ],
-  },
-];
-
 export const dataHosts = {
   coreData: "coredata.ecdsdev.org",
   wordPress: "wp.georgiacoastatlas.org",
@@ -218,7 +146,7 @@ export const PLACE_TYPES: TTypeColors = {
   },
   Building: {
     bgColor: "red-600",
-    textColor: "red-50",
+    textColor: "red-200",
   },
   Canal: {
     bgColor: "gray-200",
@@ -313,27 +241,27 @@ export const PLACE_TYPES: TTypeColors = {
     textColor: "cyan-100",
   },
   House: {
-    bgColor: "amber-50",
+    bgColor: "amber-200",
     textColor: "amber-700",
   },
   Inlet: {
-    bgColor: "yellow-50",
+    bgColor: "yellow-200",
     textColor: "yellow-700",
   },
   Island: {
-    bgColor: "lime-50",
+    bgColor: "lime-200",
     textColor: "lime-700",
   },
   Lake: {
-    bgColor: "green-50",
+    bgColor: "green-200",
     textColor: "green-700",
   },
   Landing: {
-    bgColor: "emerald-50",
+    bgColor: "emerald-200",
     textColor: "emerald-700",
   },
   Levee: {
-    bgColor: "teal-50",
+    bgColor: "teal-200",
     textColor: "teal-700",
   },
   Library: {
@@ -341,15 +269,15 @@ export const PLACE_TYPES: TTypeColors = {
     textColor: "cyan-700",
   },
   Lighthouse: {
-    bgColor: "sky-50",
+    bgColor: "sky-200",
     textColor: "sky-700",
   },
   Marina: {
-    bgColor: "blue-50",
+    bgColor: "blue-200",
     textColor: "blue-700",
   },
   "Nature Preserve": {
-    bgColor: "indigo-50",
+    bgColor: "indigo-200",
     textColor: "indigo-700",
   },
   Park: {
@@ -361,48 +289,48 @@ export const PLACE_TYPES: TTypeColors = {
     textColor: "emerald-100",
   },
   Plantation: {
-    bgColor: "fuchsia-50",
+    bgColor: "fuchsia-200",
     textColor: "fuchsia-700",
   },
   "Point Bar": {
-    bgColor: "pink-50",
+    bgColor: "pink-200",
     textColor: "pink-700",
   },
   Pond: {
-    bgColor: "rose-50",
+    bgColor: "rose-200",
     textColor: "rose-700",
   },
   "Populated Place": {
     bgColor: "slate-800",
-    textColor: "slate-50",
+    textColor: "slate-200",
   },
   "Post Office": {
     bgColor: "orange-700",
-    textColor: "orange-50",
+    textColor: "orange-200",
   },
   "Rail Station": {
     bgColor: "purple-700",
-    textColor: "purple-50",
+    textColor: "purple-200",
   },
   Reservoir: {
     bgColor: "yellow-700",
-    textColor: "yellow-50",
+    textColor: "yellow-200",
   },
   Ridge: {
     bgColor: "lime-700",
-    textColor: "lime-50",
+    textColor: "lime-200",
   },
   River: {
     bgColor: "green-700",
-    textColor: "green-50",
+    textColor: "green-200",
   },
   Roadway: {
     bgColor: "emerald-700",
-    textColor: "emerald-50",
+    textColor: "emerald-200",
   },
   Santuary: {
     bgColor: "teal-700",
-    textColor: "teal-50",
+    textColor: "teal-200",
   },
   School: {
     bgColor: "blue-400",
@@ -410,39 +338,39 @@ export const PLACE_TYPES: TTypeColors = {
   },
   Shoal: {
     bgColor: "sky-700",
-    textColor: "sky-50",
+    textColor: "sky-200",
   },
   Sound: {
     bgColor: "blue-700",
-    textColor: "blue-50",
+    textColor: "blue-200",
   },
   Spit: {
     bgColor: "indigo-700",
-    textColor: "indigo-50",
+    textColor: "indigo-200",
   },
   Spring: {
     bgColor: "red-700",
-    textColor: "red-50",
+    textColor: "red-200",
   },
   Square: {
     bgColor: "green-900",
-    textColor: "green-50",
+    textColor: "green-200",
   },
   Stream: {
     bgColor: "purple-700",
-    textColor: "purple-50",
+    textColor: "purple-200",
   },
   Summit: {
     bgColor: "fuchsia-700",
-    textColor: "fuchsia-50",
+    textColor: "fuchsia-200",
   },
   Swamp: {
     bgColor: "lime-950",
-    textColor: "lime-50",
+    textColor: "lime-200",
   },
   Tower: {
     bgColor: "rose-700",
-    textColor: "rose-50",
+    textColor: "rose-200",
   },
   Tree: {
     bgColor: "teal-950",
@@ -456,6 +384,7 @@ export const PLACE_TYPES: TTypeColors = {
 
 export const indexCollection = "georgia_coast_places";
 export const countyIndexCollection = "georgia_coast_counties";
+export const topicIndexCollection = "georgia_coast_topics";
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
@@ -463,12 +392,3 @@ export const defaultBounds = () => {
     new maplibregl.LngLat(-80.85723315099995, 32.241012160000025)
   );
 };
-
-export const counties: TCounty[] = [
-  { name: "Bryan", uuid: "8fa8c48f-4eb6-5471-9d9f-dad09d0e7cb3" },
-  { name: "Camden", uuid: "66bc87d3-4ae2-5b56-b2b4-f9146acce491" },
-  { name: "Chatham", uuid: "43214e18-2a16-5d8a-a5a4-8db55479e3e2" },
-  { name: "Glynn", uuid: "d6375cd7-a126-534d-a661-951fc482ce63" },
-  { name: "Liberty", uuid: "2f0676be-462b-509e-8bb2-1cf287840f6f" },
-  { name: "McIntosh", uuid: "4ca467df-916d-5a9e-86a4-263fc35b2a7b" },
-];

@@ -14,6 +14,7 @@ interface Props {
   title: string;
   defaultOpen?: boolean;
   nested?: boolean;
+  collapsable?: boolean;
 }
 
 const RelatedSection = ({
@@ -21,6 +22,7 @@ const RelatedSection = ({
   title,
   defaultOpen = true,
   nested = false,
+  collapsable = true,
 }: Props) => {
   const { relatedClosed } = useContext(PlaceContext);
 
@@ -33,7 +35,10 @@ const RelatedSection = ({
           // TODO: There has to be a better way.
           defaultOpen={relatedClosed ? false : defaultOpen}
         >
-          <DisclosureButton className="group flex w-full items-center justify-between">
+          <DisclosureButton
+            className="group flex w-full items-center justify-between"
+            disabled={!collapsable}
+          >
             <Heading
               as={nested ? "h3" : "h2"}
               className={`font-medium text-black group-data-[hover]:text-black/80`}

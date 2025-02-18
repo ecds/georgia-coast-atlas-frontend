@@ -12,6 +12,7 @@ export type ESRelatedPlace = {
   slug: string;
   type: string;
   uuid: string;
+  preview?: string;
 };
 
 export type ESVideo = {
@@ -71,6 +72,7 @@ export type ESPlace = {
   short_description: string;
   slug: string;
   topos: ESTopo[];
+  type: string;
   types: string[];
   uuid: string;
   videos: ESVideo[];
