@@ -45,7 +45,7 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center space-x-12 text-white text-lg font-barlow">
-        <NavLink to="/explore">Explore the Coast</NavLink>
+        <NavLink to="/islands">Explore the Coast</NavLink>
 
         <NavLink
           to="/search"
@@ -54,7 +54,7 @@ const Navbar = () => {
         >
           Search By Place
         </NavLink>
-        
+
         <NavLink to="/topics" className="tracking-wide hover:underline">
           Topics
         </NavLink>
