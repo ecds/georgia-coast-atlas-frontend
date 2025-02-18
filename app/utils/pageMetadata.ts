@@ -80,6 +80,31 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
         property: "og:image:height",
         content: imageSize,
       },
+      // {
+      //   "@context": "https://schema.org",
+      //   "@type": "Article",
+      //   name: place.name,
+      //   url: `https://georgiacoastatlas.org/islands/${place.slug}`,
+      //   sameAs: "http:\/\/www.wikidata.org\/entity\/Q515603",
+      //   mainEntity: "http:\/\/www.wikidata.org\/entity\/Q515603",
+      //   author: {
+      //     "@type": "Organization",
+      //     name: "Contributors to Wikimedia projects",
+      //   },
+      //   publisher: {
+      //     "@type": "Organization",
+      //     name: "Wikimedia Foundation, Inc.",
+      //     logo: {
+      //       "@type": "ImageObject",
+      //       url: "https:\/\/www.wikimedia.org\/static\/images\/wmf-hor-googpub.png",
+      //     },
+      //   },
+      //   datePublished: "2004-12-19T05:11:06Z",
+      //   dateModified: "2024-12-31T20:29:34Z",
+      //   image:
+      //     "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/0\/08\/RJ_Reynolds_mansion%2C_Sapelo_Island%2C_GA%2C_US.jpg",
+      //   headline: "island in Georgia, United States of America",
+      // }
     ];
   }
 

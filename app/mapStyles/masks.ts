@@ -6,6 +6,7 @@ export const landColors = {
   activeIsland: "#68825C",
   county: "#414A5D",
   activeCounty: "#606C87",
+  water: "#8191B2",
 };
 
 export const masks: StyleSpecification = {

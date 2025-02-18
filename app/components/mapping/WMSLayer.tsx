@@ -49,7 +49,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
 
   useEffect(() => {
     if (
-      activeLayers.includes(placeLayer.uuid) &&
+      activeLayers?.includes(placeLayer.uuid) &&
       map &&
       map.getLayer(placeLayer.uuid)
     ) {
@@ -60,6 +60,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
   }, [activeLayers, map, placeLayer, opacity]);
 
   const handleClick = () => {
+    if (!activeLayers || !setActiveLayers) return;
     if (activeLayers.includes(placeLayer.uuid)) {
       setActiveLayers(
         activeLayers.filter((layer) => layer !== placeLayer.uuid)
@@ -74,7 +75,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
   };
 
   if (place) {
-    const active = activeLayers.includes(placeLayer.uuid);
+    const active = activeLayers?.includes(placeLayer.uuid);
     return (
       <PlaceLayerContainer key={placeLayer.uuid}>
         <AddLayerButton onClick={handleClick} image={placeLayer.preview}>

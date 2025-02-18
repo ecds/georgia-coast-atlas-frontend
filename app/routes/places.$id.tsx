@@ -8,7 +8,7 @@ import {
 } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { fetchPlaceBySlug } from "~/data/coredata";
+import { fetchBySlug } from "~/data/coredata";
 import { MapContext, PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
@@ -17,9 +17,9 @@ import PlaceGeoJSON from "~/components/mapping/PlaceGeoJSON";
 import Loading from "~/components/layout/Loading";
 import { indexCollection } from "~/config";
 import { pageMetadata } from "~/utils/pageMetadata";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import type { ESPlace } from "~/esTypes";
 import AsyncError from "~/components/errorResponses/AsyncError";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place);
@@ -33,7 +33,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     });
   }
 
-  const place: ESPlace = await fetchPlaceBySlug(params.id, indexCollection);
+  const place: ESPlace = await fetchBySlug(params.id, indexCollection);
   if (!place) {
     throw new Response(null, {
       status: 404,
@@ -48,6 +48,10 @@ const PlacePage = () => {
   const { place } = useLoaderData<typeof loader>();
   const { map } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [hoveredPlace, setHoveredPlace] = useState<
+    ESRelatedPlace | undefined
+  >();
   const [backTo, setBackTo] = useState<boolean>(false);
   const topRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -74,6 +78,10 @@ const PlacePage = () => {
               place: resolvedPlace,
               activeLayers,
               setActiveLayers,
+              activePlace,
+              setActivePlace,
+              hoveredPlace,
+              setHoveredPlace,
             }}
           >
             <>

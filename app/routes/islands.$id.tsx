@@ -1,20 +1,18 @@
 import { useContext, useEffect, useState, Suspense } from "react";
 import {
   useLoaderData,
-  // useNavigation,
   useRouteError,
   isRouteErrorResponse,
   Await,
 } from "@remix-run/react";
 import { dataHosts, defaultBounds, indexCollection } from "~/config.ts";
-import { fetchPlaceBySlug } from "~/data/coredata";
+import { fetchBySlug } from "~/data/coredata";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import { PlaceContext, MapContext } from "~/contexts";
 import RouteError from "~/components/errorResponses/RouteError";
 import CodeError from "~/components/errorResponses/CodeError";
 import Loading from "~/components/layout/Loading";
 import Heading from "~/components/layout/Heading";
-// import { islands as islandStyle } from "~/mapStyles";
 import PlaceContent from "~/components/layout/PlaceContent";
 import { LngLatBounds } from "maplibre-gl";
 import { pageMetadata } from "~/utils/pageMetadata";
@@ -22,14 +20,14 @@ import AsyncError from "~/components/errorResponses/AsyncError";
 import NoRecord from "~/components/errorResponses/NoRecord";
 import type { TWordPressData } from "~/types";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import type { ESPlace } from "~/esTypes";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place);
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const place: ESPlace = await fetchPlaceBySlug(params.id, indexCollection);
+  const place: ESPlace = await fetchBySlug(params.id, indexCollection);
 
   if (!place) {
     throw new Response(null, {
@@ -51,6 +49,10 @@ const IslandPage = () => {
   const { wpData, place } = useLoaderData<typeof loader>();
   const { map, mapLoaded } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [hoveredPlace, setHoveredPlace] = useState<
+    ESRelatedPlace | undefined
+  >();
   // const navigation = useNavigation();
 
   // useEffect(() => {
@@ -96,6 +98,10 @@ const IslandPage = () => {
                   place,
                   activeLayers,
                   setActiveLayers,
+                  activePlace,
+                  setActivePlace,
+                  hoveredPlace,
+                  setHoveredPlace,
                   full: true,
                   clusterFillColor: "#ea580c",
                   clusterTextColor: "black",

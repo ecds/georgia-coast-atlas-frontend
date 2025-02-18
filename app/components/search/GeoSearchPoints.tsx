@@ -90,10 +90,12 @@ const GeoSearchPoints = ({ geojson }: Props) => {
   useEffect(() => {
     if (!map) return;
     if (activeFeature) {
-      setClickedLocation({
-        lat: activeFeature.geometry.coordinates[1],
-        lon: activeFeature.geometry.coordinates[0],
-      });
+      if (activeFeature.geometry.type == "Point") {
+        setClickedLocation({
+          lat: activeFeature.geometry.coordinates[1],
+          lon: activeFeature.geometry.coordinates[0],
+        });
+      }
       setPopupTitle(activeFeature.properties?.name);
       setShowPopup(true);
     } else {
@@ -113,6 +115,13 @@ const GeoSearchPoints = ({ geojson }: Props) => {
           showCloseButton={false}
         >
           <div>
+            {activeFeature?.properties?.preview && (
+              <img
+                className="max-h-32 max-w-32"
+                src={activeFeature?.properties.preview}
+                alt=""
+              />
+            )}
             <h4>{popupTitle}</h4>
           </div>
         </PlacePopup>

@@ -83,6 +83,7 @@ const Islands = ({ islands }: Props) => {
     ) => {
       if (!map && !event.features) return;
       const clickedIsland = islands.find((island) => {
+        console.log("🚀 ~ clickedIsland ~ island:", island);
         if (event.features)
           return island.name === event.features[0].properties.name;
         return undefined;
@@ -103,7 +104,7 @@ const Islands = ({ islands }: Props) => {
     map.on("click", islandStyleLayer.id, handleClick);
 
     return () => {
-      map.setLayoutProperty(islandStyleLayer.id, "visibility", "none");
+      // map.setLayoutProperty(islandStyleLayer.id, "visibility", "none");
       map.off("mousemove", islandStyleLayer.id, handleMouseEnter);
       map.off("mouseleave", islandStyleLayer.id, handleMouseLeave);
       map.off("click", islandStyleLayer.id, handleClick);
@@ -127,6 +128,12 @@ const Islands = ({ islands }: Props) => {
                   onClose={() => setActiveIsland(undefined)}
                   zoomToFeature={false}
                 >
+                  {island.featured_photograph && (
+                    <img
+                      src={island.featured_photograph.replace("max", "600,")}
+                      alt=""
+                    />
+                  )}
                   <h4 className="text-xl ">{island.name}</h4>
                   <p>{island.short_description}</p>
                   <Link

@@ -1,14 +1,14 @@
 import { Await, useLoaderData, useNavigation } from "@remix-run/react";
-import { fetchPlaceBySlug } from "~/data/coredata";
-import { useContext, useEffect } from "react";
+import { fetchBySlug } from "~/data/coredata";
+import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
 import { counties as countyStyle } from "~/mapStyles";
 import { countyIndexCollection, defaultBounds } from "~/config";
-import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
+import RelatedPlacesList from "~/components/relatedRecords/RelatedPlacesList";
 import { LngLatBounds } from "maplibre-gl";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import type { ESPlace } from "~/esTypes";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import { pageMetadata } from "~/utils/pageMetadata";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -16,10 +16,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const place: ESPlace = await fetchPlaceBySlug(
-    params.id,
-    countyIndexCollection
-  );
+  const place: ESPlace = await fetchBySlug(params.id, countyIndexCollection);
 
   if (!place) {
     throw new Response(null, {
@@ -35,6 +32,10 @@ const CountyPage = () => {
   const { place } = useLoaderData<typeof loader>();
   const { map } = useContext(MapContext);
   const navigation = useNavigation();
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [hoveredPlace, setHoveredPlace] = useState<
+    ESRelatedPlace | undefined
+  >();
 
   useEffect(() => {
     if (navigation.state === "idle" && map) {
@@ -74,7 +75,15 @@ const CountyPage = () => {
     <Await resolve={place}>
       {(resolvedPlace) => (
         <PlaceContext.Provider
-          value={{ place: resolvedPlace, full: true, relatedClosed: true }}
+          value={{
+            place: resolvedPlace,
+            full: true,
+            relatedClosed: true,
+            activePlace,
+            setActivePlace,
+            hoveredPlace,
+            setHoveredPlace,
+          }}
         >
           <div className="w-full md:w-1/2 lg:w-2/5 overflow-scroll pb-32">
             <div className="flex flex-col">
@@ -94,7 +103,7 @@ const CountyPage = () => {
               />
             </div>
 
-            <RelatedPlaces />
+            <RelatedPlacesList />
           </div>
 
           {/* <PlaceContent>

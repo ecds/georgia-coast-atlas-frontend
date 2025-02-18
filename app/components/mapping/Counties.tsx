@@ -102,7 +102,7 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
     map.on("click", countyStyleLayer.id, handleClick);
 
     return () => {
-      map.setLayoutProperty(countyStyleLayer.id, "visibility", "none");
+      // map.setLayoutProperty(countyStyleLayer.id, "visibility", "none");
       map.off("mousemove", countyStyleLayer.id, handleMouseEnter);
       map.off("mouseleave", countyStyleLayer.id, handleMouseLeave);
       map.off("click", countyStyleLayer.id, handleClick);

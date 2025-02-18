@@ -1,24 +1,25 @@
-import maplibregl, { AttributionControl } from "maplibre-gl";
+import maplibregl, { AttributionControl, LngLatBounds } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
 import { defaultBounds, topBarHeight } from "~/config";
 import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
+import type { Map as TMap } from "maplibre-gl";
 
 interface Props {
   children?: ReactNode;
+  className?: string;
 }
 
-const Map = ({ children }: Props) => {
+const Map = ({ children, className }: Props) => {
   const { setMap, setMapLoaded } = useContext(MapContext);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const hoveredRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!setMap || !mapContainerRef.current) return;
 
-    let _map: any = undefined;
+    let _map: TMap | undefined = undefined;
 
     try {
       _map = new maplibregl.Map({
@@ -29,6 +30,9 @@ const Map = ({ children }: Props) => {
         maxPitch: 0,
         preserveDrawingBuffer: true,
         attributionControl: false,
+        maxBounds: new LngLatBounds([
+          -85.005165, 29.357851, -80.239729, 33.000659,
+        ]),
       });
 
       _map.fitBounds(defaultBounds());
@@ -39,13 +43,17 @@ const Map = ({ children }: Props) => {
       });
 
       _map.addControl(new AttributionControl({ compact: true }));
-    } catch {}
+    } catch (error) {
+      console.error(error);
+    }
 
     return () => {
       try {
         setMap(undefined);
         setMapLoaded(false);
-      } catch {}
+      } catch (error) {
+        console.error(error);
+      }
     };
   }, [setMap, setMapLoaded]);
 
@@ -53,7 +61,7 @@ const Map = ({ children }: Props) => {
     <div className="relative">
       <div
         ref={mapContainerRef}
-        className={`h-[calc(100vh-${topBarHeight})]`}
+        className={className ?? `h-[calc(100vh-${topBarHeight})]`}
       ></div>
       {children}
     </div>

@@ -7,7 +7,7 @@ type ClusterOptions = {
   textColor?: string;
 };
 
-export const cluster = ({ id, source, fillColor }: ClusterOptions) => {
+export const cluster = ({ id, source, fillColor = "blue" }: ClusterOptions) => {
   const layer: AddLayerObject = {
     id,
     type: "circle",

@@ -20,12 +20,13 @@ export const getColor = (type: string) => {
   return DEFAULT_COLOR;
 };
 
-export const toFeatureCollection = (places: ESRelatedPlace[]) => {
+export const toFeatureCollection = (places: ESRelatedPlace[] | ESPlace[]) => {
   return featureCollection(
     places.map((place) => {
+      console.log("🚀 ~ places.map ~ place:", place.type);
       const placeFeature = point([place.location.lon, place.location.lat], {
         ...place,
-        hexColor: getColor(place.type),
+        hexColor: place.type ? getColor(place.type) : "blue",
       });
       return placeFeature;
     })
@@ -50,6 +51,7 @@ export const hitsToFeatureCollection = (hits: Hit[]) => {
           description: hit.description,
           identifier: hit.identifier,
           hexColor,
+          preview: hit.featured_photograph?.replace("max", "600,"),
         },
         geometry: {
           type: "Point",
