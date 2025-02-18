@@ -1,10 +1,10 @@
-import maplibregl from "maplibre-gl";
+import { Popup } from "maplibre-gl";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigation } from "@remix-run/react";
 import { createPortal } from "react-dom";
 import { MapContext } from "~/contexts";
 import type { ReactNode } from "react";
-import type { Popup, PositionAnchor } from "maplibre-gl";
+import type { PositionAnchor } from "maplibre-gl";
 
 interface Props {
   location: { lat: number; lon: number };
@@ -16,7 +16,7 @@ interface Props {
 interface PopupProps extends Props {
   show: boolean;
   zoomToFeature?: boolean;
-  anchor: PositionAnchor;
+  anchor?: PositionAnchor;
 }
 
 const TooltipContent = ({ children }: Props) => {
@@ -57,14 +57,15 @@ const PlaceTooltip = ({
 
   useEffect(() => {
     if (popContainerRef.current && coordinates && show && map) {
-      popupRef.current = new maplibregl.Popup({
+      popupRef.current = new Popup({
         closeButton: false,
         className: "tooltip",
         offset: 20,
         anchor,
       })
         .setLngLat(coordinates)
-        .setDOMContent(popContainerRef.current);
+        .setDOMContent(popContainerRef.current)
+        .trackPointer();
 
       popupRef.current?.addTo(map);
       if (zoomToFeature) {

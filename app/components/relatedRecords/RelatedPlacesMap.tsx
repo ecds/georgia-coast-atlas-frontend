@@ -208,7 +208,7 @@ const RelatedPlacesMap = ({
                     }}
                     show={hoveredPlace?.uuid === relatedPlace.uuid}
                     onClose={() => {}}
-                    anchor="left"
+                    // anchor="left"
                     zoomToFeature={false}
                   >
                     <h4 className="text-white">{relatedPlace.name}</h4>

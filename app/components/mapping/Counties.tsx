@@ -29,16 +29,9 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
     lat: number;
     lon: number;
   }>({ lat: 0, lon: 0 });
-  const [tooltipLocation, setTooltipLocation] = useState<{
-    lat: number;
-    lon: number;
-  }>({ lat: 0, lon: 0 });
 
   const handleMouseEnter = useCallback(
-    ({
-      features,
-      lngLat,
-    }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+    ({ features }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
@@ -55,7 +48,6 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
               { hovered: true }
             );
             const hoveredCountyName = feature.properties.COUNTYNAME;
-            setTooltipLocation({ lon: lngLat.lng, lat: lngLat.lat });
             if (activeCounty != hoveredCountyName)
               setHoveredCounty(hoveredCountyName);
           }
@@ -136,7 +128,7 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
                 </PlacePopup>
                 <PlaceTooltip
                   show={hoveredCounty == county.name}
-                  location={tooltipLocation}
+                  location={county.location}
                   onClose={() => setActiveCounty(undefined)}
                   zoomToFeature={false}
                   anchor="right"

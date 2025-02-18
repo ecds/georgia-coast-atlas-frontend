@@ -111,6 +111,14 @@ export default {
           {
             borderLeftColor: "black",
           },
+        "[maplibregl-popup-tip-top], .tooltip.maplibregl-popup-anchor-top .maplibregl-popup-tip":
+          {
+            borderBottomColor: "black",
+          },
+        "[maplibregl-popup-tip-bottom], .tooltip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip":
+          {
+            borderTopColor: "black",
+          },
       });
     }),
   ],

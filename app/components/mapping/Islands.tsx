@@ -25,16 +25,9 @@ const Islands = ({ islands }: Props) => {
   const [hoveredIsland, setHoveredIsland] = useState<ESPlace | undefined>(
     undefined
   );
-  const [tooltipLocation, setTooltipLocation] = useState<{
-    lat: number;
-    lon: number;
-  }>({ lat: 0, lon: 0 });
 
   const handleMouseEnter = useCallback(
-    ({
-      features,
-      lngLat,
-    }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+    ({ features }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       if (map) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
@@ -55,7 +48,6 @@ const Islands = ({ islands }: Props) => {
               return undefined;
             });
             if (activeIsland != currentIsland) setHoveredIsland(currentIsland);
-            setTooltipLocation({ lon: lngLat.lng, lat: lngLat.lat });
           }
         }
       }
@@ -83,7 +75,6 @@ const Islands = ({ islands }: Props) => {
     ) => {
       if (!map && !event.features) return;
       const clickedIsland = islands.find((island) => {
-        console.log("🚀 ~ clickedIsland ~ island:", island);
         if (event.features)
           return island.name === event.features[0].properties.name;
         return undefined;
@@ -145,7 +136,7 @@ const Islands = ({ islands }: Props) => {
                 </PlacePopup>
                 <PlaceTooltip
                   show={hoveredIsland == island}
-                  location={tooltipLocation}
+                  location={island.location}
                   onClose={() => setActiveIsland(undefined)}
                   zoomToFeature={false}
                   anchor="left"
