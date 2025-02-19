@@ -16,7 +16,7 @@ const TopicMap = ({ geojson }: Props) => {
   useEffect(() => {
     if (!map) return;
 
-    map.scrollZoom.disable();
+    // map.scrollZoom.disable();
 
     const bounds = new LngLatBounds(
       bbox(geojson) as [number, number, number, number]
