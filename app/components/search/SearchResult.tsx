@@ -24,7 +24,7 @@ const SearchResult = ({ hit }: { hit: Hit }) => {
           return (
             <span
               key={`${type}${hit.name}`}
-              className={`bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} text-xs font-medium me-2 px-2.5 py-0.5 rounded h-min w-max`}
+              className={`bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm h-min w-max`}
             >
               {type}
             </span>

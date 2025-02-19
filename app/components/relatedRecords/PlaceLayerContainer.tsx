@@ -10,7 +10,7 @@ export const PlaceLayerContainer = ({ children }: Props) => {
 
 export const PlaceLayerBody = ({ children }: Props) => {
   return (
-    <div className="pt-2 flex flex-col justify-center flex-grow">
+    <div className="pt-2 flex flex-col justify-center grow">
       {children}
     </div>
   );

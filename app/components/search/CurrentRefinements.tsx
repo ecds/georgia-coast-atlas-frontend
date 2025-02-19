@@ -23,7 +23,7 @@ const CurrentRefinements = () => {
     <>
       <div className="col-span-4 px-4 flex flex-col xl:flex-row">
         <label
-          className="block text-sm ps-3 p-0 xl:p-2 font-medium text-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300"
+          className="block text-sm ps-3 p-0 xl:p-2 font-medium text-gray-700 focus:ring-4 focus:outline-hidden focus:ring-blue-300"
           htmlFor="sort-select"
         >
           Sort:

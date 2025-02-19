@@ -101,7 +101,7 @@ const Search = ({
               root: "px-2 py-4 fixed bottom-0 bg-white w-full md:w-2/3 lg:w-2/5",
               list: "flex flex-row items-stretch justify-center",
               pageItem:
-                "bg-activeCounty/70 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+                "bg-active-county/70 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
               selectedItem: "bg-county text-white",
             }}
             padding={2}

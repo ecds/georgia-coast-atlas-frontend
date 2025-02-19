@@ -18,7 +18,7 @@ import { MapContext, SearchModalContext } from "./contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import StyleSwitcher from "./components/mapping/StyleSwitcher";
 import Map from "./components/mapping/Map.client";
-import { topBarHeight } from "./config";
+import { PLACE_TYPES, topBarHeight } from "./config";
 // https://stackoverflow.com/a/59429852/1792144
 // The following import prevents a Font Awesome icon server-side rendering bug,
 // where the icons flash from a very large icon down to a properly sized one:
@@ -52,7 +52,7 @@ const ChildContent = ({
         className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
       >
         {children}
-        <div className="hidden md:block flex-grow">
+        <div className="hidden md:block grow">
           <ClientOnly>
             {() => (
               <Map>
@@ -115,6 +115,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <ChildContent isMapRoute={isMapRoute}>{children}</ChildContent>
             </main>
           </MapContext.Provider>
+          <div className="">
+            {Object.keys(PLACE_TYPES).map((type) => {
+              return (
+                <span
+                  key={type}
+                  className={`bg-${PLACE_TYPES[type].bgColor} text-${PLACE_TYPES[type].textColor}`}
+                ></span>
+              );
+            })}
+          </div>
         </SearchModalContext.Provider>
         <Loading />
         <ScrollRestoration />

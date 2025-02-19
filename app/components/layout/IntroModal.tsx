@@ -29,14 +29,14 @@ export default function IntroModal({ isOpen, setIsOpen }: IntroModalProps) {
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-in origin-center data-[closed]:opacity-0"
+      className="fixed inset-0 flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-in origin-center data-closed:opacity-0"
       transition
       open={isOpen}
       onClose={closeModal}
     >
       <DialogPanel
         transition
-        className={`max-w-xl space-y-4 bg-white/60 p-12 rounded-md text-center transition-transform origin-center duration-300 ease-in data-[closed]:scale-95`}
+        className={`max-w-xl space-y-4 bg-white/60 p-12 rounded-md text-center transition-transform origin-center duration-300 ease-in data-closed:scale-95`}
       >
         <DialogTitle
           as="h2"
@@ -55,7 +55,7 @@ export default function IntroModal({ isOpen, setIsOpen }: IntroModalProps) {
         <div className="flex justify-center items-center mb-4">
           <button
             type="button"
-            className="inline-flex justify-center rounded-full bg-black/80 px-8 py-4 text-base font-medium text-white hover:bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+            className="inline-flex justify-center rounded-full bg-black/80 px-8 py-4 text-base font-medium text-white hover:bg-black focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/75"
             onClick={closeModal}
           >
             Explore the Coast
@@ -77,7 +77,7 @@ export default function IntroModal({ isOpen, setIsOpen }: IntroModalProps) {
             />
             <button
               type="button"
-              className="absolute right-2 inline-flex justify-center items-center rounded-full bg-black/80 p-2 text-base font-medium text-white hover:bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+              className="absolute right-2 inline-flex justify-center items-center rounded-full bg-black/80 p-2 text-base font-medium text-white hover:bg-black focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/75"
               onClick={handleSearch}
               aria-label="Search"
             >

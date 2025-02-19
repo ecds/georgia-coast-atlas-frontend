@@ -1,20 +1,6 @@
 import type { Config } from "tailwindcss";
-import { topBarHeight, PLACE_TYPES } from "./app/config";
-import { landColors } from "./app/mapStyles";
+import { THEME_COLORS } from "./app/config";
 import plugin from "tailwindcss/plugin";
-
-const bgColors = Object.keys(PLACE_TYPES).map(
-  (type) => `bg-${PLACE_TYPES[type].bgColor}`
-);
-const textColors = Object.keys(PLACE_TYPES).map(
-  (type) => `text-${PLACE_TYPES[type].textColor}`
-);
-const textBgColors = Object.keys(PLACE_TYPES).map(
-  (type) => `text-${PLACE_TYPES[type].bgColor}`
-);
-const bgTextColors = Object.keys(PLACE_TYPES).map(
-  (type) => `bg-${PLACE_TYPES[type].textColor}`
-);
 
 export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
@@ -26,16 +12,7 @@ export default {
         barlow: ["Barlow", "sans-serif"],
         "open-sans": ["Open Sans", "sans-serif"],
       },
-      colors: {
-        black: "#1C1817",
-        white: "#FDF9F6",
-        "costal-green": "#4A5D41",
-        island: landColors.island,
-        activeIsland: landColors.activeIsland,
-        county: landColors.county,
-        activeCounty: landColors.activeCounty,
-        water: landColors.water,
-      },
+      colors: THEME_COLORS,
     },
   },
   future: {},
@@ -137,19 +114,5 @@ export default {
           },
       });
     }),
-  ],
-  safelist: [
-    "2xl:col-span-11",
-    `-top-[${topBarHeight}]`,
-    `h-[calc(100vh-${topBarHeight})]`,
-    "bg-blue-500",
-    "text-6xl",
-    "bg-red-100",
-    "bg-county",
-    "bg-activeCounty/70",
-    ...bgColors,
-    ...textColors,
-    ...textBgColors,
-    ...bgTextColors,
   ],
 } satisfies Config;

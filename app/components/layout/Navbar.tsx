@@ -11,7 +11,7 @@ const NavMenuItems = ({ children }: { children: ReactNode }) => {
     <MenuItems
       anchor="bottom"
       transition
-      className="w-52 origin-top-right rounded-xl border border-white/5 bg-white p-1 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50"
+      className="w-52 origin-top-right rounded-xl border border-white/5 bg-white p-1 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 z-50"
     >
       {children}
     </MenuItems>
@@ -22,7 +22,7 @@ const MenuLink = ({ children, to }: { children: ReactNode; to: string }) => {
   return (
     <Link
       to={to}
-      className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50"
+      className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-focus:bg-costal-green/50 hover:bg-costal-green/50"
     >
       {children}
     </Link>

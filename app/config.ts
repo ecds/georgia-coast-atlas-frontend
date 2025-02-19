@@ -1,5 +1,5 @@
 import maplibregl from "maplibre-gl";
-import { base, satellite, usgs } from "./mapStyles";
+import { base, landColors, satellite, usgs } from "./mapStyles";
 import type { TBaseStyle, TTypeColors } from "./types";
 
 export const islands = [
@@ -391,4 +391,15 @@ export const defaultBounds = () => {
     new maplibregl.LngLat(-81.93612670899995, 30.71087651700003),
     new maplibregl.LngLat(-80.85723315099995, 32.241012160000025)
   );
+};
+
+export const THEME_COLORS: { [key: string]: string } = {
+  black: "#1C1817",
+  white: "#FDF9F6",
+  "costal-green": "#4A5D41",
+  island: landColors.island,
+  "active-island": landColors.activeIsland,
+  county: landColors.county,
+  "active-county": landColors.activeCounty,
+  water: landColors.water,
 };

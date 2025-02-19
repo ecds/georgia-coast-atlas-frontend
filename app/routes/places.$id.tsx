@@ -89,7 +89,7 @@ const PlacePage = () => {
                 {backTo && (
                   <button
                     onClick={() => navigate(-1)}
-                    className="bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-2 rounded-lg text-left w-max m-4 text-xs"
+                    className="bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-xs px-6 py-2 rounded-lg text-left w-max m-4 text-xs"
                   >
                     <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo}
                   </button>

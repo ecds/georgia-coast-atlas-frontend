@@ -94,7 +94,7 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
           {!hasLoadedMore && (
             <button
               onClick={loadMorePlaces}
-              className="mt-4 p-2 bg-blue-500 text-white rounded"
+              className="mt-4 p-2 bg-blue-500 text-white rounded-sm"
               disabled={loading}
             >
               {loading ? "Loading..." : "Load More"}
@@ -104,7 +104,7 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
           {hasLoadedMore && (
             <button
               onClick={unloadMorePlaces}
-              className="mt-4 p-2 bg-blue-500 text-white rounded"
+              className="mt-4 p-2 bg-blue-500 text-white rounded-sm"
               disabled={loading}
             >
               Show Less

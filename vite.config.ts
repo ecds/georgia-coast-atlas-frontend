@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import SiteMap from "vite-plugin-sitemap";
 import { islands } from "./app/config";
+import tailwindcss from "@tailwindcss/vite";
 
 const ISLANDS = islands.map((island) => `/${island.id}-island`);
 
@@ -19,6 +20,7 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [
+    tailwindcss(),
     remix({
       future: {
         v3_singleFetch: true,

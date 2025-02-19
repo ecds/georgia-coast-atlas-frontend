@@ -7,7 +7,7 @@ interface Props {
 const NoRecord = ({ children }: Props) => {
   return (
     <section className="bg-white">
-      <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16">
+      <div className="py-8 px-4 mx-auto max-w-(--breakpoint-xl) text-center lg:py-16">
         <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">
           No Record
         </h1>

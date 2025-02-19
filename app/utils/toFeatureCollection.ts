@@ -1,7 +1,5 @@
 import { featureCollection, point } from "@turf/turf";
-import { PLACE_TYPES } from "~/config";
-import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "tailwind.config";
+import { PLACE_TYPES, THEME_COLORS } from "~/config";
 import type { TPlaceGeoJSON } from "~/types";
 import type { Hit } from "instantsearch.js";
 import type { FeatureCollection } from "geojson";
@@ -11,12 +9,18 @@ import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 const DEFAULT_COLOR = "#ea580c";
 
 export const getColor = (type: string) => {
-  const tailwindColors = resolveConfig(tailwindConfig).theme.colors;
-  const typeColors = PLACE_TYPES[type];
-  if (typeColors && typeColors.bgColor) {
-    const parts = typeColors.bgColor.split("-") as ["blue", "700"]; // TODO: Make type for Tailwind colors
-    return tailwindColors[parts[0]][parts[1]];
-  }
+  // if (!getComputedStyle) return;
+  // const styles = getComputedStyle(document.documentElement);
+  // const typeColors = PLACE_TYPES[type];
+  // if (typeColors && typeColors.bgColor) {
+  //   const parts = typeColors.bgColor.split("-") as ["blue", "700"]; // TODO: Make type for Tailwind colors
+  //   console.log("🚀 ~ getColor ~ parts:", parts, THEME_COLORS);
+  //   if (Object.keys(THEME_COLORS).includes(parts[0])) {
+  //     return THEME_COLORS[parts[0]][parts[1]];
+  //   } else {
+  //     return styles.getPropertyValue(`--color-${parts[0]}-${parts[1]}`);
+  //   }
+  // }
   return DEFAULT_COLOR;
 };
 

@@ -19,17 +19,17 @@ const FacetDisclosure = ({ title, children }: Props) => {
         as="summary"
         className="group flex w-full items-center justify-between"
       >
-        <span className="font-medium text-black group-data-[hover]:text-black/80">
+        <span className="font-medium text-black group-data-hover:text-black/80">
           {title}
         </span>
         <FontAwesomeIcon
           icon={faChevronDown}
-          className="size-5 transition-transform fill-black/60 group-data-[hover]:fill-black/50 group-data-[open]:rotate-180"
+          className="size-5 transition-transform fill-black/60 group-data-hover:fill-black/50 group-data-open:rotate-180"
         />
       </DisclosureButton>
       <DisclosurePanel
         transition
-        className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+        className="origin-top transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0"
         unmount={false}
       >
         {children}

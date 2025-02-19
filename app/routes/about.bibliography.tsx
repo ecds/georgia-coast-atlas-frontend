@@ -15,7 +15,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   let heading = "";
   if (wpData[0]?.content?.rendered) {
     // Extract and remove the heading from the content
-    const headingMatch = wpData[0].content.rendered.match(/<h2[^>]*>(.*?)<\/h2>/);
+    const headingMatch =
+      wpData[0].content.rendered.match(/<h2[^>]*>(.*?)<\/h2>/);
     if (headingMatch) {
       heading = headingMatch[1];
       wpData[0].content.rendered = wpData[0].content.rendered.replace(
@@ -69,4 +70,3 @@ const Bibliography = () => {
 };
 
 export default Bibliography;
-

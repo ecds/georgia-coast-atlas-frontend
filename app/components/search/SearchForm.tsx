@@ -20,7 +20,7 @@ const ButtonComponent = ({
 }) => {
   return (
     <span
-      className={`absolute top-2.5 text-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 ${className ?? ""}`}
+      className={`absolute top-2.5 text-gray-700 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 ${className ?? ""}`}
     >
       {children}
     </span>

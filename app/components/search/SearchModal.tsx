@@ -12,7 +12,6 @@ import type { FormEvent } from "react";
 import { useSearchBox } from "react-instantsearch";
 import { SearchModalContext } from "~/contexts";
 
-
 interface SearchModalProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -22,7 +21,8 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [hasQuery, setHasQuery] = useState<boolean>(false);
   const { query, refine } = useSearchBox();
-  const { searchModalOpen, setSearchModalOpen } = useContext(SearchModalContext);
+  const { searchModalOpen, setSearchModalOpen } =
+    useContext(SearchModalContext);
   const location = useLocation();
 
   useEffect(() => {
@@ -73,14 +73,14 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex w-screen items-center justify-center bg-black/60 z-50 p-4 transition duration-300 ease-in origin-center data-[closed]:opacity-0"
+      className="fixed inset-0 flex w-screen items-center justify-center bg-black/60 z-50 p-4 transition duration-300 ease-in origin-center data-closed:opacity-0"
       transition
       open={searchModalOpen}
       onClose={() => setSearchModalOpen(false)}
     >
       <DialogPanel
         transition
-        className={`w-full max-w-2xl space-y-4 bg-white rounded-md text-center transition-transform origin-center duration-300 ease-in data-[closed]:scale-95`}
+        className={`w-full max-w-2xl space-y-4 bg-white rounded-md text-center transition-transform origin-center duration-300 ease-in data-closed:scale-95`}
       >
         <div className="flex w-full items-end flex-row-reverse pt-2 pr-2">
           <button
@@ -92,13 +92,13 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
         </div>
         <div className=" px-12 pb-12 ">
           <DialogTitle className="font-bold leading-tight text-gray-900 mb-6 text-center flex">
-            <span className="text-4xl flex-grow">Search by Place</span>
+            <span className="text-4xl grow">Search by Place</span>
           </DialogTitle>
           <Description>
             The Search by Place section covers thousands of points of interest
             along the entire 100-mile coastline and inland counties. Use the
             Filter button
-            <span className="w-full h-14 bg-blue-100 text-blue-800 font-medium mx-2 px-2.5 py-0.5 rounded">
+            <span className="w-full h-14 bg-blue-100 text-blue-800 font-medium mx-2 px-2.5 py-0.5 rounded-sm">
               <FontAwesomeIcon icon={faFilter} />
             </span>
             next to the search bar to refine by type. Click any place on the map
@@ -109,12 +109,12 @@ export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
               ref={searchInputRef}
               type="search"
               onChange={handleChange}
-              className="p-2 border-2 rounded-sm border-black/50"
+              className="p-2 border-2 rounded-xs border-black/50"
               placeholder="Search Places"
             />{" "}
             <button
               type="submit"
-              className="p-2 bg-costal-green text-gray-100 font-medium rounded uppercase"
+              className="p-2 bg-costal-green text-gray-100 font-medium rounded-sm uppercase"
             >
               {hasQuery ? (
                 <>

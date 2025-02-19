@@ -29,7 +29,7 @@ const VideoModal = ({ children, video }: Props) => {
       <Transition appear show={isOpen}>
         <Dialog
           as="div"
-          className="relative z-10 focus:outline-none"
+          className="relative z-10 focus:outline-hidden"
           onClose={close}
         >
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
