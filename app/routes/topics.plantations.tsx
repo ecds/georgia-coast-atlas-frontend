@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Navbar from "~/components/layout/Navbar";
 import TopicMap from "~/components/topics/TopicMap";
 import { fetchBySlug } from "~/data/coredata";
 import { topicIndexCollection } from "~/config";
@@ -72,8 +71,6 @@ const IndividualPlantations = () => {
       }}
     >
       <div className="min-h-screen bg-gray-100">
-        <Navbar />
-
         <header
           className="bg-cover bg-center text-white py-32 relative"
           style={{

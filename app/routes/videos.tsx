@@ -1,4 +1,3 @@
-import Navbar from "~/components/layout/Navbar";
 import { useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { fetchDataBySlugFromTopics } from "~/data/coredata.ts";
@@ -6,7 +5,7 @@ import { fetchDataBySlugFromTopics } from "~/data/coredata.ts";
 // Define the video type
 type Video = {
   embed_url: string; // Video URL
-  name: string;      // Video title
+  name: string; // Video title
 };
 
 export const loader: LoaderFunction = async () => {
@@ -17,8 +16,6 @@ export const loader: LoaderFunction = async () => {
     if (!data || !data.videos) {
       throw new Error("No video data available.");
     }
-
-    console.log("Videos Data:", data.videos);
 
     return { videos: data.videos };
   } catch (error) {
@@ -41,18 +38,20 @@ const Videos = () => {
       {/* Grey Overlay */}
       <div className="absolute inset-0 bg-gray-800 bg-opacity-50"></div>
 
-      {/* Navbar */}
-      <Navbar />
-
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12 text-white">
-        <h1 className="text-4xl font-bold text-white mb-6">About the Islands</h1>
+        <h1 className="text-4xl font-bold text-white mb-6">
+          About the Islands
+        </h1>
         <p className="text-lg text-gray-200 mb-4 text-center">
-          Interview excerpts from the Coastal Nature, Coastal Culture symposium February 18-20, 2016 Savannah, Georgia.
+          Interview excerpts from the Coastal Nature, Coastal Culture symposium
+          February 18-20, 2016 Savannah, Georgia.
         </p>
         <p className="text-lg text-gray-200 mb-12 text-center max-w-3xl">
-          The team interviewed six presenters with expertise on the environmental histories of the Georgia coast. These excerpts
-          provide an introduction to the industry, culture, and ecology of this dynamic environment.
+          The team interviewed six presenters with expertise on the
+          environmental histories of the Georgia coast. These excerpts provide
+          an introduction to the industry, culture, and ecology of this dynamic
+          environment.
         </p>
 
         {/* Video Grid */}

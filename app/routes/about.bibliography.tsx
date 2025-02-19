@@ -1,11 +1,9 @@
-import Navbar from "~/components/layout/Navbar";
 import { dataHosts } from "~/config";
 import { useLoaderData } from "@remix-run/react";
 import "~/styles/about.css";
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { TWordPressData } from "~/types";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async () => {
   const wpResponse = await fetch(
     `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=bibliography`
   );
@@ -15,7 +13,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   let heading = "";
   if (wpData[0]?.content?.rendered) {
     // Extract and remove the heading from the content
-    const headingMatch = wpData[0].content.rendered.match(/<h2[^>]*>(.*?)<\/h2>/);
+    const headingMatch =
+      wpData[0].content.rendered.match(/<h2[^>]*>(.*?)<\/h2>/);
     if (headingMatch) {
       heading = headingMatch[1];
       wpData[0].content.rendered = wpData[0].content.rendered.replace(
@@ -42,7 +41,6 @@ const Bibliography = () => {
           "linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.8)), url(/images/ossabaw.jpeg)",
       }}
     >
-      <Navbar />
       {heading && (
         <h2
           className="text-white text-5xl font-extrabold mt-10 tracking-wide"
@@ -69,4 +67,3 @@ const Bibliography = () => {
 };
 
 export default Bibliography;
-
