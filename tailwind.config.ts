@@ -119,6 +119,22 @@ export default {
           {
             borderTopColor: "black",
           },
+        "[maplibregl-popup-tip-bottom-right], .tooltip.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip":
+          {
+            borderTopColor: "black",
+          },
+        "[maplibregl-popup-tip-bottom-left], .tooltip.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip":
+          {
+            borderTopColor: "black",
+          },
+        "[maplibregl-popup-tip-top-right], .tooltip.maplibregl-popup-anchor-top-right .maplibregl-popup-tip":
+          {
+            borderBottomColor: "black",
+          },
+        "[maplibregl-popup-tip-top-left], .tooltip.maplibregl-popup-anchor-top-left .maplibregl-popup-tip":
+          {
+            borderBottomColor: "black",
+          },
       });
     }),
   ],

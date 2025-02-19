@@ -68,7 +68,6 @@ const PlaceTooltip = ({
       // .trackPointer();
 
       if (!noTrackMouse) {
-        console.log("🚀 ~ useEffect ~ noTrackMouse:", noTrackMouse);
         popupRef.current.trackPointer();
       }
 

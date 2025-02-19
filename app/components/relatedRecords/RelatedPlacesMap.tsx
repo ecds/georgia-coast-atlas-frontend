@@ -21,7 +21,7 @@ const RelatedPlacesMap = ({
 }: {
   otherPlaces?: ESRelatedPlace[];
 }) => {
-  const { map } = useContext(MapContext);
+  const { map, mapLoaded } = useContext(MapContext);
   const {
     place,
     clusterFillColor,
@@ -88,7 +88,7 @@ const RelatedPlacesMap = ({
   );
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !mapLoaded) return;
     if (!place.places || place.places.length === 0) return;
 
     const allPlaces = [...place.places, ...otherPlaces];
@@ -110,51 +110,50 @@ const RelatedPlacesMap = ({
       promoteId: "uuid",
     };
 
-    if (map.getSource(`${place.uuid}-places`))
-      map.removeSource(`${place.uuid}-places`);
-    map.addSource(`${place.uuid}-places`, placesSource);
+    const sourceId = `${place.uuid}-places`;
 
     const clusterLayer = cluster({
       id: `clusters-${place.uuid}`,
-      source: `${place.uuid}-places`,
+      source: sourceId,
       fillColor: clusterFillColor ?? "#1d4ed8",
     });
 
     const countLayer = clusterCount({
       id: `counts-${place.uuid}`,
-      source: `${place.uuid}-places`,
+      source: sourceId,
       textColor: clusterTextColor ?? "white",
     });
 
-    const unclusteredLayer = singlePoint(
-      `points-${place.uuid}`,
-      `${place.uuid}-places`
-    );
+    const pointLayer = singlePoint(`points-${place.uuid}`, sourceId);
 
-    if (!map.getLayer(clusterLayer.id)) map.addLayer(clusterLayer);
-    if (!map.getLayer(countLayer.id)) map.addLayer(countLayer);
-    if (!map.getLayer(unclusteredLayer.id))
-      map.addLayer(unclusteredLayer, costalLabels.layers[0].id);
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+    if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
+    if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+    if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
 
-    map.on("mouseenter", unclusteredLayer.id, handleMouseEnter);
-    map.on("mouseleave", unclusteredLayer.id, handleMouseLeave);
-    map.on("click", unclusteredLayer.id, handleClick);
+    map.addSource(sourceId, placesSource);
+    map.addLayer(clusterLayer);
+    map.addLayer(countLayer);
+    map.addLayer(pointLayer, costalLabels.layers[0].id);
+
+    map.on("mouseenter", pointLayer.id, handleMouseEnter);
+    map.on("mouseleave", pointLayer.id, handleMouseLeave);
+    map.on("click", pointLayer.id, handleClick);
     map.on("click", clusterLayer.id, handleClick);
 
     return () => {
-      map.off("mouseenter", unclusteredLayer.id, handleMouseEnter);
-      map.off("mouseleave", unclusteredLayer.id, handleMouseLeave);
-      map.off("click", unclusteredLayer.id, handleClick);
+      map.off("mouseenter", pointLayer.id, handleMouseEnter);
+      map.off("mouseleave", pointLayer.id, handleMouseLeave);
+      map.off("click", pointLayer.id, handleClick);
       map.off("click", clusterLayer.id, handleClick);
       if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
       if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-      if (map.getLayer(unclusteredLayer.id))
-        map.removeLayer(unclusteredLayer.id);
-      if (map.getSource(`${place.uuid}-places`))
-        map.removeSource(`${place.uuid}-places`);
+      if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
   }, [
     map,
+    mapLoaded,
     otherPlaces,
     place,
     handleClick,

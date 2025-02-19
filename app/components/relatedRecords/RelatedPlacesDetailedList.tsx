@@ -52,6 +52,7 @@ const RelatedPlacesDetailedList = () => {
                   onMouseEnter={() => handleMouseEnter(relatedPlace)}
                   onMouseLeave={handleMouseLeave}
                   onClick={() => {
+                    setHoveredPlace(undefined);
                     setActivePlace(relatedPlace);
                   }}
                 >

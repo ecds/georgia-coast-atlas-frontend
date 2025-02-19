@@ -17,7 +17,7 @@ const islandStyleLayer = masks.layers.find(
 );
 
 const Islands = ({ islands }: Props) => {
-  const { map } = useContext(MapContext);
+  const { map, mapLoaded } = useContext(MapContext);
   const hoveredId = useRef<string | undefined>(undefined);
   const [activeIsland, setActiveIsland] = useState<ESPlace | undefined>(
     undefined
@@ -28,7 +28,7 @@ const Islands = ({ islands }: Props) => {
 
   const handleMouseEnter = useCallback(
     ({ features }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-      if (map) {
+      if (map && mapLoaded) {
         map.getCanvas().style.cursor = "pointer";
         if (features && features.length > 0) {
           for (const feature of features) {
@@ -52,7 +52,7 @@ const Islands = ({ islands }: Props) => {
         }
       }
     },
-    [map, islands, activeIsland]
+    [map, mapLoaded, islands, activeIsland]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -86,21 +86,31 @@ const Islands = ({ islands }: Props) => {
   );
 
   useEffect(() => {
-    if (!map || !islandStyleLayer) return;
-
-    map.setLayoutProperty(islandStyleLayer.id, "visibility", "visible");
+    if (
+      !map ||
+      !mapLoaded ||
+      !islandStyleLayer ||
+      !map.getLayer(islandStyleLayer.id)
+    )
+      return;
 
     map.on("mousemove", islandStyleLayer.id, handleMouseEnter);
     map.on("mouseleave", islandStyleLayer.id, handleMouseLeave);
     map.on("click", islandStyleLayer.id, handleClick);
 
     return () => {
-      // map.setLayoutProperty(islandStyleLayer.id, "visibility", "none");
       map.off("mousemove", islandStyleLayer.id, handleMouseEnter);
       map.off("mouseleave", islandStyleLayer.id, handleMouseLeave);
       map.off("click", islandStyleLayer.id, handleClick);
     };
-  }, [map, handleClick, handleMouseEnter, handleMouseLeave]);
+  }, [
+    map,
+    mapLoaded,
+    handleClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    islands,
+  ]);
 
   useEffect(() => {
     if (hoveredIsland) setActiveIsland(undefined);
