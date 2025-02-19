@@ -1,9 +1,6 @@
-import Navbar from "~/components/layout/Navbar";
-
 const Topics = () => {
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
       <div className="bg-white h-4"></div>
 
       <header

@@ -1,5 +1,3 @@
-import Navbar from "~/components/layout/Navbar";
-
 const Contact = () => {
   return (
     <div
@@ -9,7 +7,6 @@ const Contact = () => {
           "linear-gradient(rgba(64, 62, 62, 0.8), rgba(73, 103, 76, 0.7)), url(/images/ossabaw.jpeg)",
       }}
     >
-      <Navbar />
       <h2
         className="text-white text-3xl font-bold mt-12 mb-8"
         style={{ fontFamily: "'Barlow', sans-serif" }}
