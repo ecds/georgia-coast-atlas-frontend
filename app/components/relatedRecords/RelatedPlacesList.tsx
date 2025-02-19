@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { indexCollection } from "~/config.ts";
 import { fetchBySlug } from "~/data/coredata";
+import { PlaceContext } from "~/contexts";
 import type { Dispatch, SetStateAction } from "react";
 import type { ESRelatedPlace } from "~/esTypes";
-import { PlaceContext } from "~/contexts";
 
 interface Props {
   otherPlaces?: ESRelatedPlace[];
@@ -11,11 +11,27 @@ interface Props {
 }
 
 const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
-  const { place, activePlace, setHoveredPlace, hoveredPlace, setActivePlace } =
-    useContext(PlaceContext);
+  const {
+    place,
+    activePlace,
+    setHoveredPlace,
+    hoveredPlace,
+    setActivePlace,
+    setNoTrackMouse,
+  } = useContext(PlaceContext);
   const [allPlaces, setAllPlaces] = useState<ESRelatedPlace[]>(place.places);
   const [loading, setLoading] = useState(false);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
+
+  const handleMouseEnter = (place: ESRelatedPlace) => {
+    setHoveredPlace(place);
+    if (setNoTrackMouse) setNoTrackMouse(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredPlace(undefined);
+    if (setNoTrackMouse) setNoTrackMouse(false);
+  };
 
   const loadMorePlaces = async () => {
     if (hasLoadedMore || !setOtherPlaces) return;
@@ -54,17 +70,15 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
         <div className="grid grid-cols-1 md:grid-cols-2">
           {allPlaces.map((relatedPlace) => {
             return (
-              <div
-                key={`related-place-list-${relatedPlace.uuid}`}
-                onMouseEnter={() => setHoveredPlace(relatedPlace)}
-                onMouseLeave={() => setHoveredPlace(undefined)}
-              >
+              <div key={`related-place-list-${relatedPlace.uuid}`}>
                 <button
                   className={`text-black/75 text-left md:py-1 ${
                     hoveredPlace?.uuid === relatedPlace.uuid
                       ? "bg-gray-200 font-bold"
                       : ""
                   } ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
+                  onMouseEnter={() => handleMouseEnter(relatedPlace)}
+                  onMouseLeave={handleMouseLeave}
                   onClick={() => {
                     setActivePlace(relatedPlace);
                   }}

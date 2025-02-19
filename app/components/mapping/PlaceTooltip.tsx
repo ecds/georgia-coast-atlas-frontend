@@ -2,7 +2,7 @@ import { Popup } from "maplibre-gl";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigation } from "@remix-run/react";
 import { createPortal } from "react-dom";
-import { MapContext } from "~/contexts";
+import { MapContext, PlaceContext } from "~/contexts";
 import type { ReactNode } from "react";
 import type { PositionAnchor } from "maplibre-gl";
 
@@ -34,6 +34,7 @@ const PlaceTooltip = ({
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const { map } = useContext(MapContext);
+  const { noTrackMouse } = useContext(PlaceContext);
 
   const [coordinates, setCoordinates] = useState<
     [number, number] | undefined
@@ -61,11 +62,15 @@ const PlaceTooltip = ({
         closeButton: false,
         className: "tooltip",
         offset: 20,
-        anchor,
       })
         .setLngLat(coordinates)
-        .setDOMContent(popContainerRef.current)
-        .trackPointer();
+        .setDOMContent(popContainerRef.current);
+      // .trackPointer();
+
+      if (!noTrackMouse) {
+        console.log("🚀 ~ useEffect ~ noTrackMouse:", noTrackMouse);
+        popupRef.current.trackPointer();
+      }
 
       popupRef.current?.addTo(map);
       if (zoomToFeature) {
@@ -82,7 +87,7 @@ const PlaceTooltip = ({
     return () => {
       if (popupRef.current) popupRef.current.remove();
     };
-  }, [show, map, coordinates, zoomToFeature, onClose, anchor]);
+  }, [show, map, coordinates, zoomToFeature, onClose, anchor, noTrackMouse]);
 
   if (map && popContainerRef.current) {
     return (

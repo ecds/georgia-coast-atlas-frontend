@@ -23,6 +23,8 @@ type TPlaceContext = {
   setActivePlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
   hoveredPlace: ESRelatedPlace | undefined;
   setHoveredPlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
+  noTrackMouse?: boolean;
+  setNoTrackMouse?: Dispatch<SetStateAction<boolean>>;
 };
 
 export const MapContext = createContext<TMapContext>({

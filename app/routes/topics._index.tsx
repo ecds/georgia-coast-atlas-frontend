@@ -41,7 +41,7 @@ const Topics = () => {
               <p className="text-center mb-6">Intro to plantations</p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <a
-                  href="/plantations"
+                  href="/topics/plantations"
                   className="bg-[#94C1E1] hover:bg-blue-400 text-black px-6 py-3 rounded-lg text-center font-bold"
                 >
                   Individal Plantations

@@ -171,7 +171,7 @@ const RelatedPlacesMap = ({
           return (
             <ClientOnly key={`related-place-map-${relatedPlace.uuid}`}>
               {() => (
-                <>
+                <div className="text-black/75">
                   <PlacePopup
                     location={{
                       lat: relatedPlace.location.lat,
@@ -213,7 +213,7 @@ const RelatedPlacesMap = ({
                   >
                     <h4 className="text-white">{relatedPlace.name}</h4>
                   </PlaceTooltip>
-                </>
+                </div>
               )}
             </ClientOnly>
           );

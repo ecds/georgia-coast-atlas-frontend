@@ -53,6 +53,7 @@ const IndividualPlantations = () => {
   const [hoveredPlace, setHoveredPlace] = useState<
     ESRelatedPlace | undefined
   >();
+  const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
 
   const toggleDropdown = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -66,6 +67,8 @@ const IndividualPlantations = () => {
         setActivePlace,
         hoveredPlace,
         setHoveredPlace,
+        noTrackMouse,
+        setNoTrackMouse,
       }}
     >
       <div className="min-h-screen bg-gray-100">
@@ -87,7 +90,7 @@ const IndividualPlantations = () => {
           </div>
         </header>
 
-        <main className="text-white py-16 px-6 lg:px-20 space-y-16 bg-activeIsland">
+        <main className="py-16 px-6 lg:px-20 space-y-16 bg-activeIsland">
           <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[600px] mb-12">
             <div className="bg-white rounded-lg">
               <RelatedPlacesDetailedList />

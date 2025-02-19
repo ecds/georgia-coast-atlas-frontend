@@ -53,6 +53,7 @@ const IslandPage = () => {
   const [hoveredPlace, setHoveredPlace] = useState<
     ESRelatedPlace | undefined
   >();
+  const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
   // const navigation = useNavigation();
 
   // useEffect(() => {
@@ -102,6 +103,8 @@ const IslandPage = () => {
                   setActivePlace,
                   hoveredPlace,
                   setHoveredPlace,
+                  noTrackMouse,
+                  setNoTrackMouse,
                   full: true,
                   clusterFillColor: "#ea580c",
                   clusterTextColor: "black",

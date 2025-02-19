@@ -23,7 +23,6 @@ export const getColor = (type: string) => {
 export const toFeatureCollection = (places: ESRelatedPlace[] | ESPlace[]) => {
   return featureCollection(
     places.map((place) => {
-      console.log("🚀 ~ places.map ~ place:", place.type);
       const placeFeature = point([place.location.lon, place.location.lat], {
         ...place,
         hexColor: place.type ? getColor(place.type) : "blue",
