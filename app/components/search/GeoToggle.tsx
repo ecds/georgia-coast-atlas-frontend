@@ -16,9 +16,9 @@ const GeoToggle = () => {
       setBoundsDiff(
         Boolean(currentRefinement) &&
           (mapBounds.getNorthEast().lat !== currentRefinement?.northEast.lat ||
-            mapBounds.getNorthEast().lng !== currentRefinement?.northEast.lng ||
+            mapBounds.getNorthEast().lon !== currentRefinement?.northEast.lon ||
             mapBounds.getSouthWest().lat !== currentRefinement?.southWest.lat ||
-            mapBounds.getSouthWest().lng !== currentRefinement?.southWest.lng)
+            mapBounds.getSouthWest().lon !== currentRefinement?.southWest.lon)
       );
     };
 

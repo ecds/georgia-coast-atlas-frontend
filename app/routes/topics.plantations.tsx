@@ -1,13 +1,13 @@
 import { useState } from "react";
-import TopicMap from "~/components/topics/TopicMap";
 import { fetchBySlug } from "~/data/coredata";
 import { topicIndexCollection } from "~/config";
 import { useLoaderData } from "@remix-run/react";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import { PlaceContext } from "~/contexts";
 import RelatedPlacesDetailedList from "~/components/relatedRecords/RelatedPlacesDetailedList";
-import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import RelatedPlacesMap from "~/components/relatedRecords/RelatedPlacesMap";
+import Map from "~/components/mapping/Map.client";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 const Dropdown = ({
   title,
@@ -91,10 +91,11 @@ const IndividualPlantations = () => {
           <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[600px] mb-12">
             <div className="bg-white rounded-lg">
               <RelatedPlacesDetailedList />
-              <RelatedPlacesMap />
             </div>
             <div className="relative overflow-hidden rounded-lg lg:col-span-2">
-              <TopicMap geojson={geojson} />
+              <RelatedPlacesMap geojson={geojson}>
+                <Map className="w-full h-[600px] border-0" />
+              </RelatedPlacesMap>
             </div>
           </section>
 

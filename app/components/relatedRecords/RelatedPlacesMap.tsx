@@ -1,105 +1,99 @@
-import { useCallback, useContext, useEffect } from "react";
-import { LngLatBounds } from "maplibre-gl";
-import { bbox } from "@turf/turf";
+import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import { toFeatureCollection } from "~/utils/toFeatureCollection";
-import PlaceTooltip from "../mapping/PlaceTooltip";
-import PlacePopup from "../mapping/PlacePopup.client";
-import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
-import { Link } from "@remix-run/react";
 import { ClientOnly } from "remix-utils/client-only";
+import { bbox } from "@turf/turf";
+import { LngLatBounds } from "maplibre-gl";
 import { costalLabels } from "~/mapStyles";
-import type { ESRelatedPlace } from "~/esTypes";
+import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
+import PlaceTooltip from "../mapping/PlaceTooltip";
 import type {
+  GeoJSONSource,
   MapLayerMouseEvent,
   SourceSpecification,
-  GeoJSONSource,
 } from "maplibre-gl";
+import type { FeatureCollection } from "geojson";
+import type { TLonLat, ESRelatedPlace } from "~/esTypes";
+import type { ReactNode } from "react";
 
-const RelatedPlacesMap = ({
-  otherPlaces = [],
-}: {
-  otherPlaces?: ESRelatedPlace[];
-}) => {
-  const { map, mapLoaded } = useContext(MapContext);
+interface Props {
+  geojson: FeatureCollection;
+  children?: ReactNode;
+}
+
+const RelatedPlacesMap = ({ geojson, children }: Props) => {
+  const { map } = useContext(MapContext);
   const {
-    place,
     clusterFillColor,
     clusterTextColor,
-    activePlace,
-    setActivePlace,
+    place,
     hoveredPlace,
-    setHoveredPlace,
+    setActivePlace,
   } = useContext(PlaceContext);
-
-  const handleMouseEnter = useCallback(
-    ({ features }: MapLayerMouseEvent) => {
-      if (!map || !features) return;
-
-      const allPlaces = [...place.places, ...otherPlaces];
-      const hovered = allPlaces.find(
-        (relatedPlace) => relatedPlace.uuid === features[0]?.id
-      );
-      setHoveredPlace(hovered);
-      map.getCanvas().style.cursor = "pointer";
-    },
-    [map, place.places, otherPlaces, setHoveredPlace]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredPlace(undefined);
-
-    if (map) {
-      map.getCanvas().style.cursor = "";
-    }
-  }, [map, setHoveredPlace]);
-
-  const handleClick = useCallback(
-    async ({ features, lngLat }: MapLayerMouseEvent) => {
-      if (!map || !features) return;
-
-      const feature = features[0];
-      if (!feature) return;
-
-      if (feature.properties?.cluster) {
-        const source: GeoJSONSource | undefined = map.getSource(
-          feature.layer.source
-        );
-        if (!source) return;
-
-        const zoom = await source.getClusterExpansionZoom(
-          feature.properties.cluster_id
-        );
-        map.easeTo({
-          center: lngLat,
-          zoom,
-        });
-        return;
-      }
-
-      const allPlaces = [...place.places, ...otherPlaces];
-      const clickedPlace = allPlaces.find(
-        (relatedPlace) => relatedPlace.uuid === feature.id
-      );
-      setHoveredPlace(undefined);
-      setActivePlace(clickedPlace);
-    },
-    [map, place.places, otherPlaces, setActivePlace, setHoveredPlace]
-  );
-
+  const [tooltipPlace, setTooltipPlace] = useState<
+    ESRelatedPlace | undefined
+  >();
+  const [hoverLocation, setHoverLocation] = useState<TLonLat>({
+    lat: 0,
+    lon: 0,
+  });
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const [clickedPlace, setClickedPlace] = useState<
+    ESRelatedPlace | undefined
+  >();
   useEffect(() => {
-    if (!map || !mapLoaded) return;
-    if (!place.places || place.places.length === 0) return;
+    if (!map) return;
 
-    const allPlaces = [...place.places, ...otherPlaces];
-    const geojson = toFeatureCollection(allPlaces);
+    const handleMouseEnter = async ({ features }: MapLayerMouseEvent) => {
+      map.getCanvas().style.cursor = "pointer";
+      if (features) {
+        setTooltipPlace(
+          place.places.find(
+            (place) => place.uuid === features[0].properties.uuid
+          )
+        );
+      } else {
+        setTooltipPlace(undefined);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      setTooltipPlace(undefined);
+    };
+
+    const handleClick = async ({ features, lngLat }: MapLayerMouseEvent) => {
+      setTooltipPlace(undefined);
+      if (features) {
+        const feature = features[0];
+        if (feature.properties?.cluster) {
+          const source: GeoJSONSource | undefined = map.getSource(
+            feature.layer.source
+          );
+          if (!source) return;
+
+          const zoom = await source.getClusterExpansionZoom(
+            feature.properties.cluster_id
+          );
+          map.easeTo({
+            center: lngLat,
+            zoom,
+          });
+          return;
+        }
+
+        map.getCanvas().style.cursor = "pointer";
+        setClickedPlace(
+          place.places.find((place) => place.uuid === feature.properties.uuid)
+        );
+      } else {
+        setClickedPlace(undefined);
+      }
+    };
 
     const bounds = new LngLatBounds(
       bbox(geojson) as [number, number, number, number]
     );
-    const newBounds = map.getBounds().extend(bounds);
 
-    map.fitBounds(newBounds, { maxZoom: 14 });
+    map.fitBounds(bounds, { padding: 50 });
 
     const placesSource: SourceSpecification = {
       type: "geojson",
@@ -110,7 +104,7 @@ const RelatedPlacesMap = ({
       promoteId: "uuid",
     };
 
-    const sourceId = `${place.uuid}-places`;
+    const sourceId = `place-${place.uuid}`;
 
     const clusterLayer = cluster({
       id: `clusters-${place.uuid}`,
@@ -136,13 +130,15 @@ const RelatedPlacesMap = ({
     map.addLayer(countLayer);
     map.addLayer(pointLayer, costalLabels.layers[0].id);
 
-    map.on("mouseenter", pointLayer.id, handleMouseEnter);
+    map.on("mousemove", pointLayer.id, handleMouseEnter);
+    map.on("mousemove", clusterLayer.id, handleMouseEnter);
     map.on("mouseleave", pointLayer.id, handleMouseLeave);
     map.on("click", pointLayer.id, handleClick);
     map.on("click", clusterLayer.id, handleClick);
 
     return () => {
-      map.off("mouseenter", pointLayer.id, handleMouseEnter);
+      map.off("mousemove", pointLayer.id, handleMouseEnter);
+      map.off("mousemove", clusterLayer.id, handleMouseEnter);
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
       map.off("click", pointLayer.id, handleClick);
       map.off("click", clusterLayer.id, handleClick);
@@ -151,77 +147,44 @@ const RelatedPlacesMap = ({
       if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
-  }, [
-    map,
-    mapLoaded,
-    otherPlaces,
-    place,
-    handleClick,
-    handleMouseEnter,
-    handleMouseLeave,
-    clusterFillColor,
-    clusterTextColor,
-  ]);
+  }, [map, geojson, clusterFillColor, clusterTextColor, place]);
 
-  if (place.places?.length > 0 || otherPlaces.length > 0) {
-    return (
-      <>
-        {[...place.places, ...otherPlaces].map((relatedPlace) => {
-          return (
-            <ClientOnly key={`related-place-map-${relatedPlace.uuid}`}>
-              {() => (
-                <div className="text-black/75">
-                  <PlacePopup
-                    location={{
-                      lat: relatedPlace.location.lat,
-                      lon: relatedPlace.location.lon,
-                    }}
-                    show={activePlace?.uuid === relatedPlace.uuid}
-                    onClose={() => setActivePlace(undefined)}
-                    zoomToFeature={false}
-                  >
-                    {relatedPlace.preview && (
-                      <img
-                        src={relatedPlace.preview.replace("max", "600,")}
-                        alt=""
-                      />
-                    )}
-                    <h4 className="text-xl">{relatedPlace.name}</h4>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: relatedPlace.description ?? "",
-                      }}
-                    />
-                    <Link
-                      to={`/places/${relatedPlace.slug}`}
-                      state={{ backTo: place.name }}
-                      className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                    >
-                      Read More
-                    </Link>
-                  </PlacePopup>
-                  <PlaceTooltip
-                    location={{
-                      lat: relatedPlace.location.lat,
-                      lon: relatedPlace.location.lon,
-                    }}
-                    show={hoveredPlace?.uuid === relatedPlace.uuid}
-                    onClose={() => {}}
-                    // anchor="left"
-                    zoomToFeature={false}
-                  >
-                    <h4 className="text-white">{relatedPlace.name}</h4>
-                  </PlaceTooltip>
-                </div>
-              )}
-            </ClientOnly>
-          );
-        })}
-      </>
-    );
-  }
+  useEffect(() => {
+    setTooltipPlace(hoveredPlace);
+  }, [hoveredPlace]);
 
-  return null;
+  useEffect(() => {
+    if (!map) return;
+    if (tooltipPlace) {
+      setHoverLocation(tooltipPlace.location);
+      setShowTooltip(true);
+    } else {
+      map.getCanvas().style.cursor = "";
+      setShowTooltip(false);
+    }
+  }, [map, tooltipPlace]);
+
+  useEffect(() => {
+    setActivePlace(clickedPlace);
+  }, [setActivePlace, clickedPlace]);
+
+  return (
+    <ClientOnly>
+      {() => (
+        <>
+          {children}
+          <PlaceTooltip
+            location={hoverLocation}
+            show={showTooltip}
+            onClose={() => setTooltipPlace(undefined)}
+            zoomToFeature={false}
+          >
+            <h4 className="text-white">{tooltipPlace?.name}</h4>
+          </PlaceTooltip>
+        </>
+      )}
+    </ClientOnly>
+  );
 };
 
 export default RelatedPlacesMap;
