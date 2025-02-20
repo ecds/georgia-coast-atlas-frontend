@@ -1,6 +1,6 @@
 import type { FeatureCollection } from "geojson";
 
-type TLonLat = {
+export type TLonLat = {
   lon: number;
   lat: number;
 };

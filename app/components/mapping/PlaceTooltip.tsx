@@ -58,6 +58,7 @@ const PlaceTooltip = ({
 
   useEffect(() => {
     if (popContainerRef.current && coordinates && show && map) {
+      if (coordinates.every((cord) => typeof cord !== "number")) return;
       popupRef.current = new Popup({
         closeButton: false,
         className: "tooltip",

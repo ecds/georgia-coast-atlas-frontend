@@ -75,7 +75,7 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       setHoveredCounty(undefined);
-      setPopupLocation({ lon: lngLat.lng, lat: lngLat.lat });
+      setPopupLocation({ lon: lngLat.lon, lat: lngLat.lat });
       if (!map) return;
       if (features && features.length > 0) {
         setActiveCounty(features[0].properties.COUNTYNAME);

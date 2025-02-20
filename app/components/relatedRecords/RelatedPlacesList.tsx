@@ -24,6 +24,7 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
 
   const handleMouseEnter = (place: ESRelatedPlace) => {
+    setActivePlace(undefined);
     setHoveredPlace(place);
     if (setNoTrackMouse) setNoTrackMouse(true);
   };
