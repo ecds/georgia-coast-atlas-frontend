@@ -9,13 +9,13 @@ import RelatedTopoQuads from "../relatedRecords/RelatedTopoQuads";
 const RelatedRecords = () => {
   const { full } = useContext(PlaceContext);
   return (
-    <>
+    <div className="p-6">
       {full && <RelatedPlaces />}
       <RelatedVideos />
       <RelatedPhotographs />
       <RelatedMapLayers />
       <RelatedTopoQuads />
-    </>
+    </div>
   );
 };
 

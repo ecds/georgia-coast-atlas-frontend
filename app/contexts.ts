@@ -12,18 +12,18 @@ type TMapContext = {
 };
 
 type TPlaceContext = {
-  place: ESPlace;
   activeLayers?: string[];
-  setActiveLayers?: Dispatch<SetStateAction<string[]>>;
-  full?: boolean;
-  relatedClosed?: boolean;
+  activePlace: ESRelatedPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  activePlace: ESRelatedPlace | undefined;
-  setActivePlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
+  full?: boolean;
   hoveredPlace: ESRelatedPlace | undefined;
-  setHoveredPlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
   noTrackMouse?: boolean;
+  place: ESPlace;
+  relatedClosed?: boolean;
+  setActiveLayers?: Dispatch<SetStateAction<string[]>>;
+  setActivePlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
+  setHoveredPlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
   setNoTrackMouse?: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -60,6 +60,7 @@ export const PlaceContext = createContext<TPlaceContext>({
     map_layers: [],
     name: "",
     photographs: [],
+    other_places: [],
     places: [],
     short_description: "",
     slug: "",

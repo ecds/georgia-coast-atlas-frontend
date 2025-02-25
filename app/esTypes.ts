@@ -66,6 +66,7 @@ export type ESPlace = {
   map_layers: ESMapLayer[];
   name: string;
   location: TLonLat;
+  other_places: ESRelatedPlace[];
   photographs: ESPhotograph[];
   places: ESRelatedPlace[];
   related_videos?: ESVideo[];

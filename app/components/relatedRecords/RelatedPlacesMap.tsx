@@ -3,7 +3,6 @@ import { MapContext, PlaceContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
-import { costalLabels } from "~/mapStyles";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import type {
@@ -82,7 +81,9 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
 
         map.getCanvas().style.cursor = "pointer";
         setClickedPlace(
-          place.places.find((place) => place.uuid === feature.properties.uuid)
+          [...place.places, ...place.other_places].find(
+            (place) => place.uuid === feature.properties.uuid
+          )
         );
       } else {
         setClickedPlace(undefined);
@@ -128,7 +129,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     map.addSource(sourceId, placesSource);
     map.addLayer(clusterLayer);
     map.addLayer(countLayer);
-    map.addLayer(pointLayer, costalLabels.layers[0].id);
+    map.addLayer(pointLayer);
 
     map.on("mousemove", pointLayer.id, handleMouseEnter);
     map.on("mousemove", clusterLayer.id, handleMouseEnter);

@@ -7,34 +7,8 @@ import { PlaceContext } from "~/contexts";
 import RelatedPlacesDetailedList from "~/components/relatedRecords/RelatedPlacesDetailedList";
 import RelatedPlacesMap from "~/components/relatedRecords/RelatedPlacesMap";
 import Map from "~/components/mapping/Map.client";
+import RelatedSection from "~/components/relatedRecords/RelatedSection";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
-
-const Dropdown = ({
-  title,
-  children,
-  isOpen,
-  toggle,
-}: {
-  title: string;
-  children: React.ReactNode;
-  isOpen: boolean;
-  toggle: () => void;
-}) => {
-  return (
-    <div className={`border-t-0 ${isOpen ? "border-gray-300" : ""}`}>
-      <button
-        onClick={toggle}
-        className={`w-full text-left px-6 py-5 bg-water text-xl font-bold uppercase flex justify-between items-center text-black`}
-      >
-        {isOpen ? "-" : "+"} {title}
-      </button>
-
-      {isOpen && (
-        <div className="bg-white text-black px-6 py-5 text-lg">{children}</div>
-      )}
-    </div>
-  );
-};
 
 export const loader = async () => {
   const plantations: ESPlace = await fetchBySlug(
@@ -47,16 +21,11 @@ export const loader = async () => {
 
 const IndividualPlantations = () => {
   const { plantations, geojson } = useLoaderData<typeof loader>();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
   const [hoveredPlace, setHoveredPlace] = useState<
     ESRelatedPlace | undefined
   >();
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
-
-  const toggleDropdown = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
 
   return (
     <PlaceContext.Provider
@@ -99,28 +68,34 @@ const IndividualPlantations = () => {
             </div>
           </section>
 
-          <section className="border border-gray-300 rounded-lg overflow-hidden">
-            <Dropdown
+          <section className="rounded-lg overflow-hidden bg-white">
+            <RelatedSection
               title="Articles"
-              isOpen={openIndex === 0}
-              toggle={() => toggleDropdown(0)}
+              defaultOpen={false}
+              className=""
+              headerClassName="uppercase bg-water/75 p-6"
+              bodyClassName="bg-white p-6"
             >
-              <p>{/* add text here */}</p>
-            </Dropdown>
-            <Dropdown
+              <p>List of articles.</p>
+            </RelatedSection>
+            <RelatedSection
               title="Monographs"
-              isOpen={openIndex === 1}
-              toggle={() => toggleDropdown(1)}
+              defaultOpen={false}
+              className=""
+              headerClassName="uppercase bg-water/75 p-6"
+              bodyClassName="bg-white p-6"
             >
-              <p>{/* add text here */}</p>
-            </Dropdown>
-            <Dropdown
-              title="Other Media"
-              isOpen={openIndex === 2}
-              toggle={() => toggleDropdown(2)}
+              <p>List of monographs.</p>
+            </RelatedSection>
+            <RelatedSection
+              title="Media"
+              defaultOpen={false}
+              className=""
+              headerClassName="uppercase bg-water/75 p-6"
+              bodyClassName="bg-white p-6"
             >
-              <p>{/* add text here */}</p>
-            </Dropdown>
+              <p>List of media.</p>
+            </RelatedSection>
           </section>
         </main>
       </div>

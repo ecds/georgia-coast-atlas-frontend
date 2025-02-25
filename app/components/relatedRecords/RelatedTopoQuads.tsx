@@ -9,40 +9,9 @@ const RelatedTopoQuads = () => {
   const { place, activeLayers, setActiveLayers, full } =
     useContext(PlaceContext);
 
-  // useEffect(() => {
-  //   const fetchRecords = async () => {
-  //     const quadData = [];
-  //     for (const quad of place.topos) {
-  //       const record = await fetchPlaceRecord(quad.uuid);
-  //       record?.place_layers.forEach((layer) => (layer.placeName = quad.name));
-  //       if (record) quadData.push(record);
-  //     }
-
-  //     setQuadRecords(quadData);
-  //   };
-
-  //   fetchRecords();
-  // }, [quads]);
-
-  // useEffect(() => {
-  //   if (!quadRecords) return;
-  //   const years: string[] = [
-  //     ...new Set(
-  //       quadRecords.map((pl) => pl.place_layers.map((l) => l.name)).flat()
-  //     ),
-  //   ].sort();
-  //   setYearGroups(years);
-  //   const groups: YearGroup = {};
-  //   for (const year of years) {
-  //     groups[year] = quadRecords
-  //       .map((l) => l.place_layers.filter((l) => l.name == year))
-  //       .flat();
-  //   }
-  //   setQuadGroups(groups);
-  // }, [quadRecords]);
-
   const removeFromActiveLayers = (id: string) => {
-    setActiveLayers(activeLayers.filter((l) => l !== id));
+    if (setActiveLayers && activeLayers)
+      setActiveLayers(activeLayers.filter((l) => l !== id));
   };
 
   const handleClick = (layer: ESTopoLayer, isActive: boolean) => {
@@ -53,20 +22,21 @@ const RelatedTopoQuads = () => {
       const otherVersion = visibleLayers.find((l) => l.name === layer.name);
       if (
         otherVersion &&
-        activeLayers.map((l) => l).includes(otherVersion.uuid)
+        activeLayers?.map((l) => l).includes(otherVersion.uuid)
       )
         removeFromActiveLayers(otherVersion.uuid);
       setVisibleLayers([
         ...visibleLayers.filter((l) => l.name !== layer.name),
         layer,
       ]);
-      setActiveLayers([...activeLayers, layer.uuid]);
+      if (setActiveLayers)
+        setActiveLayers([...(activeLayers as []), layer.uuid]);
     }
   };
 
   if (full && place.topos?.length > 0) {
     return (
-      <RelatedSection title="Topo Quads">
+      <RelatedSection title="Topo Quads" headerClassName="mb-2">
         {place.topos.map((topo) => {
           return (
             <RelatedSection
