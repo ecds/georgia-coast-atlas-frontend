@@ -52,7 +52,7 @@ const ChildContent = ({
         className={`flex flex-row overflow-hidden h-[calc(100vh-${topBarHeight})]`}
       >
         {children}
-        <div className="hidden md:block flex-grow">
+        <div className="flex-grow">
           <ClientOnly>
             {() => (
               <Map>

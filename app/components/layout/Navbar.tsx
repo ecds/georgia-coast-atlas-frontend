@@ -1,8 +1,8 @@
 import { Link, NavLink } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { ReactNode } from "react";
 
@@ -30,11 +30,14 @@ const MenuLink = ({ children, to }: { children: ReactNode; to: string }) => {
 };
 
 const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+
   return (
     <nav className="bg-costal-green fixed top-0 w-screen px-6 h-20 flex justify-between items-center z-50 drop-shadow-md">
       <ul className="flex flex-row space-x-6 items-center ml-6">
         <li>
-          <NavLink to="/">
+          <NavLink to="/" className="flex items-center">
             <img
               src={gcaLogo}
               alt="Georgia Coast Atlas Logo"
@@ -44,7 +47,7 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div className="flex items-center space-x-12 text-white text-lg font-barlow">
+      <div className="hidden md:flex items-center space-x-12 text-white text-lg font-barlow">
         <NavLink to="/islands">Explore the Coast</NavLink>
 
         <NavLink
@@ -88,6 +91,113 @@ const Navbar = () => {
           </NavMenuItems>
         </Menu>
       </div>
+
+      <button
+        className="md:hidden text-white text-2xl"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle menu"
+      >
+        <FontAwesomeIcon icon={menuOpen ? faTimes : faBars} />
+      </button>
+
+      {menuOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40" 
+            onClick={() => setMenuOpen(false)}
+            style={{ top: '80px' }} 
+          />
+          <div 
+            className="fixed right-0 w-64 bg-white text-black shadow-lg z-50 rounded-bl-lg"
+            style={{ top: '80px' }}
+          >
+            <div className="p-4">
+              <ul className="space-y-4 text-base font-barlow">
+                <li>
+                  <NavLink 
+                    to="/islands" 
+                    className="block py-2 font-medium" 
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Explore the Coast
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/search" 
+                    className="block py-2 font-medium" 
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Search By Place
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/topics" 
+                    className="block py-2 font-medium" 
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Topics
+                  </NavLink>
+                </li>
+
+                <li>
+                  <button
+                    className="flex items-center w-full py-2 font-medium"
+                    onClick={() => setAboutOpen(!aboutOpen)}
+                  >
+                    About
+                    <FontAwesomeIcon 
+                      icon={faChevronDown} 
+                      className={`ml-2 transition-transform ${aboutOpen ? "rotate-180" : ""}`} 
+                    />
+                  </button>
+                  {aboutOpen && (
+                    <ul className="mt-2 ml-4 space-y-2 border-l-2 border-costal-green/30 pl-2">
+                      <li>
+                        <NavLink 
+                          to="/about" 
+                          className="block py-1 text-sm" 
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          About Us
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink 
+                          to="/about/bibliography" 
+                          className="block py-1 text-sm" 
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Bibliography
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink 
+                          to="/videos" 
+                          className="block py-1 text-sm" 
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Videos
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink 
+                          to="/contact" 
+                          className="block py-1 text-sm" 
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Contact Us
+                        </NavLink>
+                      </li>
+                    </ul>
+                  )}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </>
+      )}
     </nav>
   );
 };

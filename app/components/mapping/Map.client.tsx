@@ -42,6 +42,10 @@ const Map = ({ children, className }: Props) => {
         setMapLoaded(true);
       });
 
+      _map.touchZoomRotate.enable();
+      _map.dragPan.enable();
+      _map.scrollZoom.enable();
+
       _map.addControl(new AttributionControl({ compact: true }));
     } catch (error) {
       console.error(error);
