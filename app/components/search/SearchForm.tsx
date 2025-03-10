@@ -76,7 +76,7 @@ const SearchForm = () => {
   };
 
   return (
-    <div className="grid grid-cols-12 sticky top-0 bg-white shadow-md">
+    <div className="grid grid-cols-12 sticky top-12 bg-white shadow-md">
       <SearchBox
         resetIconComponent={ResetComponent}
         submitIconComponent={SubmitComponent}

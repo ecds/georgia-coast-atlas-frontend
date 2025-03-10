@@ -1,8 +1,8 @@
 import { PLACE_TYPES } from "~/config";
 import { Link } from "@remix-run/react";
-import type { Hit } from "instantsearch.js";
 import { useContext } from "react";
 import { SearchContext } from "~/contexts";
+import type { Hit } from "instantsearch.js";
 
 const SearchResult = ({ hit }: { hit: Hit }) => {
   const { setActiveResult } = useContext(SearchContext);
