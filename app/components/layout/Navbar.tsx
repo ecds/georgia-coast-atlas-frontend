@@ -1,8 +1,5 @@
 import { Link, NavLink } from "@remix-run/react";
 import gcaLogo from "app/images/gca-logo.png";
-import { Fragment } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { ReactNode } from "react";
 
@@ -55,23 +52,24 @@ const Navbar = () => {
           Search By Place
         </NavLink>
 
+        <Menu>
+          <MenuButton>Collections</MenuButton>
+          <NavMenuItems>
+            <MenuItem>
+              <MenuLink to="/collections/maps">Maps</MenuLink>
+            </MenuItem>
+            <MenuItem>
+              <MenuLink to="/collections/panos">Panos</MenuLink>
+            </MenuItem>
+          </NavMenuItems>
+        </Menu>
+
         <NavLink to="/topics" className="tracking-wide hover:underline">
           Topics
         </NavLink>
 
         <Menu>
-          <MenuButton as={Fragment}>
-            {({ active }) => (
-              <button>
-                About
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  rotation={active ? undefined : 180}
-                  className="transition-transform duration-100 ease-out ml-1"
-                />
-              </button>
-            )}
-          </MenuButton>
+          <MenuButton>About</MenuButton>
           <NavMenuItems>
             <MenuItem>
               <MenuLink to="/about">About</MenuLink>

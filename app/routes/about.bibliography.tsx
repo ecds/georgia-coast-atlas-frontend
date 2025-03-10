@@ -28,7 +28,7 @@ const Bibliography = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex flex-col items-center"
+      className="h-topOffset bg-cover bg-top flex flex-col items-center overflow-hidden"
       style={{
         backgroundImage:
           "linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.8)), url(/images/ossabaw.jpeg)",
@@ -37,7 +37,7 @@ const Bibliography = () => {
       <h2 className="text-white text-5xl font-extrabold mt-10 tracking-wide font-barlow uppercase">
         Bibliography
       </h2>
-      <div className="bg-costal-green font-barlow text-white rounded-xl shadow-lg px-12 lg:px-20 py-16 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] xl:w-[55%] mt-10">
+      <div className="bg-costal-green font-barlow text-white rounded-xl shadow-lg px-12 lg:px-20 py-8 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] xl:w-[55%] mt-10 overflow-auto">
         {works.map((work) => {
           return (
             <div

@@ -3,6 +3,7 @@ import Client from "@searchkit/instantsearch-client";
 import { dataHosts, keys } from "~/config";
 import { AllPlacesSearch } from "./searchClients/AllPlaces";
 import { MapsSearch } from "./searchClients/MapCollection";
+import { PanosSearch } from "./searchClients/PanoCollection";
 
 const connection = {
   host: dataHosts.elasticSearch,
@@ -20,4 +21,8 @@ export const allPlacesSearchClient = Client(
 
 export const mapCollection = Client(
   new Searchkit({ connection, search_settings: MapsSearch })
+);
+
+export const panoCollection = Client(
+  new Searchkit({ connection, search_settings: PanosSearch })
 );

@@ -18,15 +18,18 @@ const MapPreview = ({ hit }: { hit: Hit }) => {
         </p>
         <ul className="">
           <li className="">
-            <span className="font-semibold">Date:</span> 1990
+            <span className="font-semibold">Date:</span> {hit.year}
           </li>
           <li className="">
             <span className="font-semibold">Places:</span>{" "}
             {hit.places.join(",")}
           </li>
           {hit.wms_resource && (
-            <li className="">
-              <Link to={hit.slug}>
+            <li className="mt-2">
+              <Link
+                to={hit.slug}
+                className="t text-activeIsland border-2 border-island/50 px-2 py-1 rounded-md"
+              >
                 <FontAwesomeIcon icon={faMap} /> Show on Map
               </Link>
             </li>

@@ -56,6 +56,7 @@ export const fetchBySlug = async (
         "manifests",
         "map_layers",
         "name",
+        "link",
         "location",
         "other_places",
         "photographs",

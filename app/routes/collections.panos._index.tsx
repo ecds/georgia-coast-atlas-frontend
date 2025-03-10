@@ -3,17 +3,20 @@ import {
   Hits,
   InstantSearch,
   InstantSearchSSRProvider,
+  // Pagination,
   RefinementList,
+  // SearchBox,
   getServerState,
+  // useRefinementList,
 } from "react-instantsearch";
 import { history } from "instantsearch.js/es/lib/routers";
 import { renderToString } from "react-dom/server";
-import { mapIndexCollection } from "~/config";
-import { mapCollection } from "~/utils/elasticsearchAdapter";
-import { useLoaderData } from "@remix-run/react";
-import MapPreview from "~/components/mapCollection/MapPreview";
+import { panosIndexCollection } from "~/config";
+import { panoCollection } from "~/utils/elasticsearchAdapter";
+import { Link, useLoaderData } from "@remix-run/react";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
+import type { Hit } from "instantsearch.js";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
@@ -22,10 +25,14 @@ type SearchProps = {
   modalOpen?: boolean;
 };
 
+const PanoPreview = ({ hit }: { hit: Hit }) => {
+  return <Link to={`/collections/panos/${hit.slug}`}>{hit.name}</Link>;
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
-    <MapCollection serverUrl={serverUrl} />,
+    <PanoCollection serverUrl={serverUrl} />,
     {
       renderToString,
     }
@@ -37,13 +44,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
-const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
+const PanoCollection = ({ serverState, serverUrl }: SearchProps) => {
   return (
     <section>
       <InstantSearchSSRProvider {...serverState}>
         <InstantSearch
-          indexName={mapIndexCollection}
-          searchClient={mapCollection}
+          indexName={panosIndexCollection}
+          searchClient={panoCollection}
           future={{ preserveSharedStateOnUnmount: true }}
           routing={{
             router: history({
@@ -87,7 +94,7 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
               />
             </div>
             <Hits
-              hitComponent={MapPreview}
+              hitComponent={PanoPreview}
               classNames={{
                 list: "grid grid-cols-1 xl:grid-cols-3 pe-6 xl:pe-12",
               }}
@@ -99,14 +106,14 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
   );
 };
 
-const MapCollectionPage = () => {
+const PanoCollectionIndex = () => {
   const { serverState, serverUrl } = useLoaderData() as SearchProps;
 
   return (
     <div>
-      <MapCollection serverState={serverState} serverUrl={serverUrl} />
+      <PanoCollection serverState={serverState} serverUrl={serverUrl} />
     </div>
   );
 };
 
-export default MapCollectionPage;
+export default PanoCollectionIndex;
