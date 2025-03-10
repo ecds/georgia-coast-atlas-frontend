@@ -13,7 +13,7 @@ const elasticSearchHeaders = () => {
   return esHeaders;
 };
 
-const elasticSearchPost = async ({
+export const elasticSearchPost = async ({
   body,
   collection,
 }: {

@@ -386,6 +386,7 @@ export const indexCollection = "georgia_coast_places";
 export const countyIndexCollection = "georgia_coast_counties";
 export const topicIndexCollection = "georgia_coast_topics";
 export const mapIndexCollection = "georgia_coast_maps";
+export const worksIndexCollection = "georgia_coast_works";
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
