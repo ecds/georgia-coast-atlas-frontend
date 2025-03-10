@@ -1,37 +1,30 @@
-import { dataHosts } from "~/config";
+import { worksIndexCollection } from "~/config";
 import { useLoaderData } from "@remix-run/react";
-import "~/styles/about.css";
-import type { TWordPressData } from "~/types";
+import { elasticSearchPost } from "~/data/coredata";
+
+type TWork = {
+  citation: string;
+  uuid: string;
+};
 
 export const loader = async () => {
-  const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=bibliography`
-  );
+  const works: TWork[] = await elasticSearchPost({
+    body: {
+      size: 500,
+      from: 0,
+      _source: {
+        includes: ["citation", "uuid"],
+      },
+      sort: [{ author: "asc" }],
+    },
+    collection: worksIndexCollection,
+  });
 
-  const wpData: TWordPressData[] = await wpResponse.json();
-
-  let heading = "";
-  if (wpData[0]?.content?.rendered) {
-    // Extract and remove the heading from the content
-    const headingMatch =
-      wpData[0].content.rendered.match(/<h2[^>]*>(.*?)<\/h2>/);
-    if (headingMatch) {
-      heading = headingMatch[1];
-      wpData[0].content.rendered = wpData[0].content.rendered.replace(
-        headingMatch[0],
-        ""
-      );
-    }
-  }
-
-  return { wpData: wpData[0], heading };
+  return { works };
 };
 
 const Bibliography = () => {
-  const { wpData, heading } = useLoaderData<{
-    wpData: TWordPressData;
-    heading: string;
-  }>();
+  const { works } = useLoaderData<typeof loader>();
 
   return (
     <div
@@ -41,26 +34,21 @@ const Bibliography = () => {
           "linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.8)), url(/images/ossabaw.jpeg)",
       }}
     >
-      {heading && (
-        <h2
-          className="text-white text-5xl font-extrabold mt-10 tracking-wide"
-          style={{ fontFamily: "'Barlow', sans-serif" }}
-        >
-          {heading}
-        </h2>
-      )}
-      <div
-        className="bg-costal-green text-white rounded-xl shadow-lg px-12 lg:px-20 py-16 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] xl:w-[55%] mt-10"
-        style={{
-          fontFamily: "'Barlow', sans-serif", // Use Barlow font
-        }}
-      >
-        <div
-          className="prose prose-xl prose-invert leading-loose tracking-wide custom-links"
-          dangerouslySetInnerHTML={{
-            __html: wpData?.content.rendered,
-          }}
-        />
+      <h2 className="text-white text-5xl font-extrabold mt-10 tracking-wide font-barlow uppercase">
+        Bibliography
+      </h2>
+      <div className="bg-costal-green font-barlow text-white rounded-xl shadow-lg px-12 lg:px-20 py-16 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] xl:w-[55%] mt-10">
+        {works.map((work) => {
+          return (
+            <div
+              key={work.uuid}
+              className="prose prose-xl prose-invert leading-loose tracking-wide custom-links -indent-6"
+              dangerouslySetInnerHTML={{
+                __html: work.citation,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
