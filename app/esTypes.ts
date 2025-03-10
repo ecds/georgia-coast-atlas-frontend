@@ -78,3 +78,14 @@ export type ESPlace = {
   uuid: string;
   videos: ESVideo[];
 };
+
+export type ESMapItem = {
+  name: string;
+  bbox: [number, number, number, number];
+  wms_resource: string;
+  places: ESRelatedPlace[];
+  description: string;
+  date: string;
+  uuid: string;
+  preview: string;
+};

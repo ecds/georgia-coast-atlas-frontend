@@ -1,7 +1,7 @@
 import maplibregl, { AttributionControl, LngLatBounds } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
-import { defaultBounds, topBarHeight } from "~/config";
+import { defaultBounds } from "~/config";
 import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
@@ -59,10 +59,7 @@ const Map = ({ children, className }: Props) => {
 
   return (
     <div className="relative">
-      <div
-        ref={mapContainerRef}
-        className={className ?? `h-[calc(100vh-${topBarHeight})]`}
-      ></div>
+      <div ref={mapContainerRef} className={className ?? "h-topOffset"}></div>
       {children}
     </div>
   );
