@@ -388,6 +388,7 @@ export const topicIndexCollection = "georgia_coast_topics";
 export const mapIndexCollection = "georgia_coast_maps";
 export const panosIndexCollection = "georgia_coast_panos";
 export const worksIndexCollection = "georgia_coast_works";
+export const mapIndexCollection = "georgia_coast_maps";
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
