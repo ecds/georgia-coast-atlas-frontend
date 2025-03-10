@@ -36,6 +36,9 @@ export default {
         activeCounty: landColors.activeCounty,
         water: landColors.water,
       },
+      height: {
+        topOffset: `calc(100vh - ${topBarHeight})`,
+      },
     },
   },
   future: {},
