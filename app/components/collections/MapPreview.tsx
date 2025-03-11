@@ -5,10 +5,12 @@ import type { Hit } from "instantsearch.js";
 
 const MapPreview = ({ hit }: { hit: Hit }) => {
   return (
-    <figure className="flex flex-row xl:flex-col space-x-4 xl:space-x-0 ms-2 mt-12 w-2/3">
-      <img src={hit.preview_link} alt="" className="shadow-md min-w-48 h-48" />
+    <figure className="flex flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0 lg:px-2 mb-6 md:mb-auto md:ms-2 md:mt-12 lg:mt-6 w-full">
+      <img src={hit.preview_link} alt="" className="shadow-md w-48 h-48" />
       <figcaption className="text-sm text-black/75 col-span-2 px-2 xl:px-0 xl:pe-4">
-        <h2 className="text-base text-black mb-2 xl:my-2">{hit.name}</h2>
+        <h2 className="text-lg md:text-base text-black mb-2 xl:my-2 truncate">
+          {hit.name}
+        </h2>
         <p className="tracking-loose my-2">
           Velit quis veniam commodo fugiat proident officia aute exercitation
           dolor duis amet non reprehenderit. Elit dolore ut Lorem dolore

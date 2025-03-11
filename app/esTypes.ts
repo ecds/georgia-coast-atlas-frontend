@@ -1,4 +1,5 @@
 import type { FeatureCollection } from "geojson";
+import type { InstantSearchServerState } from "react-instantsearch";
 
 export type TLonLat = {
   lon: number;
@@ -88,4 +89,11 @@ export type ESMapItem = {
   date: string;
   uuid: string;
   preview: string;
+};
+
+export type ESSearchProps = {
+  serverState?: InstantSearchServerState;
+  serverUrl?: string;
+  location?: Location;
+  modalOpen?: boolean;
 };

@@ -7,7 +7,15 @@ export const PanosSearch: SearchSettingsConfig = {
       weight: 10,
     },
   ],
-  result_attributes: ["name", "places", "link", "uuid", "slug"],
+  result_attributes: [
+    "description",
+    "name",
+    "link",
+    "preview_link",
+    "places",
+    "slug",
+    "uuid",
+  ],
   facet_attributes: [{ attribute: "places", field: "places", type: "string" }],
   sorting: { default: [{ field: "slug", order: "asc" }] },
 };
