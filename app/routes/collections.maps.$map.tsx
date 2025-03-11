@@ -27,7 +27,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const MapDetail = () => {
   const { mapLayer } = useLoaderData<typeof loader>();
-  console.log("🚀 ~ MapDetail ~ mapLayer:", mapLayer);
   const { map } = useContext(MapContext);
   const [opacity, setOpacity] = useState<number>(100);
 

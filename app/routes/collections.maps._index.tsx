@@ -11,7 +11,7 @@ import { renderToString } from "react-dom/server";
 import { mapIndexCollection } from "~/config";
 import { mapCollection } from "~/utils/elasticsearchAdapter";
 import { useLoaderData } from "@remix-run/react";
-import MapPreview from "~/components/mapCollection/MapPreview";
+import MapPreview from "~/components/collections/MapPreview";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
 

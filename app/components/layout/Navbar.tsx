@@ -8,7 +8,7 @@ const NavMenuItems = ({ children }: { children: ReactNode }) => {
     <MenuItems
       anchor="bottom"
       transition
-      className="w-52 origin-top-right rounded-xl border border-white/5 bg-white p-1 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50"
+      className="w-52 origin-top-right rounded-xl border bg-activeIsland border-black/50 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50"
     >
       {children}
     </MenuItems>
@@ -61,6 +61,9 @@ const Navbar = () => {
             <MenuItem>
               <MenuLink to="/collections/panos">Panos</MenuLink>
             </MenuItem>
+            <MenuItem>
+              <MenuLink to="/collections/videos">Videos</MenuLink>
+            </MenuItem>
           </NavMenuItems>
         </Menu>
 
@@ -76,9 +79,6 @@ const Navbar = () => {
             </MenuItem>
             <MenuItem>
               <MenuLink to="/about/bibliography">Bibliography</MenuLink>
-            </MenuItem>
-            <MenuItem>
-              <MenuLink to="/videos">Videos</MenuLink>
             </MenuItem>
             <MenuItem>
               <MenuLink to="/contact">Contact Us</MenuLink>
