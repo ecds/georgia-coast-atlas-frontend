@@ -1,3 +1,4 @@
+import { history } from "instantsearch.js/es/lib/routers";
 import maplibregl from "maplibre-gl";
 import { base, satellite, usgs } from "./mapStyles";
 import type { TBaseStyle, TTypeColors } from "./types";
@@ -382,14 +383,34 @@ export const PLACE_TYPES: TTypeColors = {
   },
 };
 
-export const indexCollection = "georgia_coast_places";
-export const countyIndexCollection = "georgia_coast_counties";
-export const topicIndexCollection = "georgia_coast_topics";
-export const worksIndexCollection = "georgia_coast_works";
+const collectionPrefix = "georgia_coast";
+
+export const indexCollection = `${collectionPrefix}_places`;
+export const countyIndexCollection = `${collectionPrefix}_counties`;
+export const topicIndexCollection = `${collectionPrefix}_topics`;
+export const worksIndexCollection = `${collectionPrefix}_works`;
+export const mapIndexCollection = `${collectionPrefix}_maps`;
+export const panosIndexCollection = `${collectionPrefix}_panos`;
+export const videosIndexCollection = `${collectionPrefix}_videos`;
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
     new maplibregl.LngLat(-81.93612670899995, 30.71087651700003),
     new maplibregl.LngLat(-80.85723315099995, 32.241012160000025)
   );
+};
+
+export const searchRouter = (serverUrl: string | undefined) => {
+  return {
+    router: history({
+      getLocation() {
+        if (typeof window === "undefined") {
+          const urlToReturn = new URL(serverUrl ?? "") as unknown as Location;
+          return urlToReturn;
+        }
+        return window.location;
+      },
+      cleanUrlOnDispose: false,
+    }),
+  };
 };
