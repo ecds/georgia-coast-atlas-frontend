@@ -31,7 +31,7 @@ const PanoDetail = () => {
       <iframe
         title={pano.uuid}
         src={pano.link}
-        className="h-[66vh] bg-black/60"
+        className="h-[66vh] bg-black/60 shadow-lg rounded-md"
       />
       <div>
         <h1 className="text-lg text-black/85">{pano.name}</h1>

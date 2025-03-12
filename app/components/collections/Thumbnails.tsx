@@ -41,11 +41,19 @@ const Thumbnails = ({ collectionType, children }: Props) => {
                       }}
                     />
 
-                    <ul className="">
-                      <li className="">
-                        <span className="font-semibold">Places:</span>{" "}
-                        {item.places.join(",")}
-                      </li>
+                    <ul>
+                      {item.places.length > 0 && (
+                        <li className="">
+                          <span className="font-semibold">Places:</span>{" "}
+                          {item.places.join(",")}
+                        </li>
+                      )}
+                      {item.date && (
+                        <li>
+                          <span className="font-semibold">Date:</span>{" "}
+                          {item.date}
+                        </li>
+                      )}
                     </ul>
                     {children}
                   </figcaption>

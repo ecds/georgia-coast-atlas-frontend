@@ -49,6 +49,7 @@ export const fetchBySlug = async (
       includes: [
         "bbox",
         "county",
+        "date",
         "description",
         "embed_url",
         "featured_photograph",

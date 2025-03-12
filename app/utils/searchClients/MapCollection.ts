@@ -8,12 +8,12 @@ export const MapsSearch: SearchSettingsConfig = {
     },
   ],
   result_attributes: [
+    "date",
     "name",
     "places",
     "thumbnail_url",
     "wms_resource",
     "slug",
-    "year",
   ],
   facet_attributes: [{ attribute: "places", field: "places", type: "string" }],
   sorting: { default: [{ field: "year", order: "asc" }] },
