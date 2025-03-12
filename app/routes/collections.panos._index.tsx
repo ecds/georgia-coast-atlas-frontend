@@ -1,6 +1,5 @@
 import {
   Configure,
-  Hits,
   InstantSearch,
   InstantSearchSSRProvider,
   getServerState,
@@ -10,11 +9,10 @@ import { panosIndexCollection, searchRouter } from "~/config";
 import { panoCollection } from "~/utils/elasticsearchAdapter";
 import { useLoaderData } from "@remix-run/react";
 import PlaceFacets from "~/components/collections/PlaceFacets";
-import PanoPreview from "~/components/collections/PanoPreview";
 import CollectionList from "~/components/collections/CollectionList";
-import CollectionItems from "~/components/collections/CollectionItems";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
+import Thumbnails from "~/components/collections/Thumbnails";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
@@ -50,14 +48,7 @@ const PanoCollection = ({ serverState, serverUrl }: SearchProps) => {
         <Configure hitsPerPage={100} />
         <CollectionList>
           <PlaceFacets />
-          <CollectionItems title="Panos">
-            <Hits
-              hitComponent={PanoPreview}
-              classNames={{
-                list: "flex md:block flex-col md:flex-none md:grid md:grid-cols-1 lg:grid-cols-3 md:pe-6",
-              }}
-            />
-          </CollectionItems>
+          <Thumbnails collectionType="panos" />
         </CollectionList>
       </InstantSearch>
     </InstantSearchSSRProvider>

@@ -1,6 +1,5 @@
 import {
   Configure,
-  Hits,
   InstantSearch,
   InstantSearchSSRProvider,
   getServerState,
@@ -10,9 +9,8 @@ import { searchRouter, videosIndexCollection } from "~/config";
 import { videoCollection } from "~/utils/elasticsearchAdapter";
 import { useLoaderData } from "@remix-run/react";
 import CollectionList from "~/components/collections/CollectionList";
-import CollectionItems from "~/components/collections/CollectionItems";
 import PlaceFacets from "~/components/collections/PlaceFacets";
-import VideoPreview from "~/components/collections/VideoPreview";
+import Thumbnails from "~/components/collections/Thumbnails";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
 
@@ -50,15 +48,7 @@ const VideoCollection = ({ serverState, serverUrl }: SearchProps) => {
         <Configure hitsPerPage={100} />
         <CollectionList>
           <PlaceFacets />
-          <CollectionItems title="Videos">
-            <Hits
-              hitComponent={VideoPreview}
-              classNames={{
-                root: "",
-                list: "flex md:block flex-col md:flex-none md:grid md:grid-cols-1 lg:grid-cols-3 md:pe-6",
-              }}
-            />
-          </CollectionItems>
+          <Thumbnails collectionType="videos" />
         </CollectionList>
       </InstantSearch>
     </InstantSearchSSRProvider>

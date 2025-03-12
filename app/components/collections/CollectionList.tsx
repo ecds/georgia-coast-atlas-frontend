@@ -6,7 +6,7 @@ type Props = {
 
 const CollectionList = ({ children }: Props) => {
   return (
-    <div className="flex flex-col md:flex-row items-end md:items-start mt-6 gap-4">
+    <div className="flex flex-col md:flex-row items-center md:items-start mt-6 gap-4">
       {children}
     </div>
   );

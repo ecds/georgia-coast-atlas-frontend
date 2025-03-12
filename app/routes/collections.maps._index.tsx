@@ -1,6 +1,5 @@
 import {
   Configure,
-  Hits,
   InstantSearch,
   InstantSearchSSRProvider,
   getServerState,
@@ -9,10 +8,9 @@ import { renderToString } from "react-dom/server";
 import { mapIndexCollection, searchRouter } from "~/config";
 import { mapCollection } from "~/utils/elasticsearchAdapter";
 import { useLoaderData } from "@remix-run/react";
-import MapPreview from "~/components/collections/MapPreview";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
-import CollectionItems from "~/components/collections/CollectionItems";
+import Thumbnails from "~/components/collections/Thumbnails";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
 
@@ -53,14 +51,7 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
           /> */}
         <CollectionList>
           <PlaceFacets />
-          <CollectionItems title="Maps">
-            <Hits
-              hitComponent={MapPreview}
-              classNames={{
-                list: "flex md:block flex-col md:flex-none md:grid md:grid-cols-1 lg:grid-cols-3 md:pe-6",
-              }}
-            />
-          </CollectionItems>
+          <Thumbnails collectionType="maps" />
         </CollectionList>
       </InstantSearch>
     </InstantSearchSSRProvider>

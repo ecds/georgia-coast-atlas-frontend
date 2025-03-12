@@ -24,7 +24,7 @@ const PlaceFacets = () => {
         <h2 className="text-lg w-">Filter by Place</h2>
         <PlaceList />
       </div>
-      <div className="md:hidden mx-4">
+      <div className="md:hidden mx-4 self-end">
         <Menu>
           <MenuButton className="w-full h-14 bg-activeCounty/50 text-county font-medium mx-2 px-2.5 py-0.5 rounded">
             <FontAwesomeIcon icon={faFilter} />

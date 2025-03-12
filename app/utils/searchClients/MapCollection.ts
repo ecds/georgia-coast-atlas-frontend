@@ -10,7 +10,7 @@ export const MapsSearch: SearchSettingsConfig = {
   result_attributes: [
     "name",
     "places",
-    "preview_link",
+    "thumbnail_url",
     "wms_resource",
     "slug",
     "year",

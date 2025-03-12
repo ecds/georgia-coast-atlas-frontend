@@ -1,44 +1,46 @@
 import { Link, useLoaderData } from "@remix-run/react";
-import { panosIndexCollection } from "~/config";
+import { videosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const pano = await fetchBySlug(params.pano, panosIndexCollection);
+  const video = await fetchBySlug(params.video, videosIndexCollection);
 
-  if (!pano) {
+  if (!video) {
     throw new Response(null, {
       status: 404,
       statusText: "Pano not found",
     });
   }
 
-  return { pano };
+  return { video };
 };
 
-const PanoDetail = () => {
-  const { pano } = useLoaderData<typeof loader>();
+const VideoDetail = () => {
+  const { video } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex flex-col p-6">
       <Link
-        to="/collections/panos"
+        to="/collections/videos"
         className="text-sm text-activeCounty underline hover:font-semibold"
       >
-        Back to Pano Collection
+        Back to Video Collection
       </Link>
 
-      <iframe
-        title={pano.uuid}
-        src={pano.link}
-        className="h-[66vh] bg-black/60"
-      />
+      <div className="relative pb-[56.2%] h-0 overflow-hidden max-w-full">
+        <iframe
+          title={video.uuid}
+          src={video.embed_url}
+          className="absolute top-0 left-0 w-full h-full bg-black/60"
+        />
+      </div>
       <div>
-        <h1 className="text-lg text-black/85">{pano.name}</h1>
+        <h1 className="text-lg text-black/85">{video.name}</h1>
         <div
           dangerouslySetInnerHTML={{
             __html:
-              pano.description ??
+              video.description ??
               "Velit quis veniam commodo fugiat proident officia aute exercitation dolor duis amet non reprehenderit. Elit dolore ut Lorem dolore adipisicing nostrud cillum irure esse esse ipsum incididunt. In sunt laborum do aliqua magna veniam irure enim id officia. Est non qui commodo esse.",
           }}
         />
@@ -47,4 +49,4 @@ const PanoDetail = () => {
   );
 };
 
-export default PanoDetail;
+export default VideoDetail;

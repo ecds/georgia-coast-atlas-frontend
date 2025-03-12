@@ -50,6 +50,7 @@ export const fetchBySlug = async (
         "bbox",
         "county",
         "description",
+        "embed_url",
         "featured_photograph",
         "featured_video",
         "identifier",
