@@ -54,7 +54,9 @@ export const fetchBySlug = async (
         "embed_url",
         "featured_photograph",
         "featured_video",
+        "full_url",
         "identifier",
+        "manifest",
         "manifests",
         "map_layers",
         "name",
@@ -85,8 +87,8 @@ export const fetchBySlug = async (
   );
 
   const data = await response.json();
-  const place = data.hits.hits.map((hit: TESHit) => hit._source)[0];
-  return place;
+  const result = data.hits.hits.map((hit: TESHit) => hit._source)[0];
+  return result;
 };
 
 export const fetchCounties = async () => {

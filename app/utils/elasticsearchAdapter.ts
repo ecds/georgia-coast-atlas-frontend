@@ -5,6 +5,7 @@ import { AllPlacesSearch } from "./searchClients/AllPlaces";
 import { MapsSearch } from "./searchClients/MapCollection";
 import { PanosSearch } from "./searchClients/PanoCollection";
 import { VideoSearch } from "./searchClients/VideoCollection";
+import { PhotoSearch } from "./searchClients/PhotoCollection";
 
 const connection = {
   host: dataHosts.elasticSearch,
@@ -30,4 +31,8 @@ export const panoCollection = Client(
 
 export const videoCollection = Client(
   new Searchkit({ connection, search_settings: VideoSearch })
+);
+
+export const photoCollection = Client(
+  new Searchkit({ connection, search_settings: PhotoSearch })
 );

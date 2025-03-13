@@ -20,10 +20,10 @@ const VideoDetail = () => {
   const { video } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col p-6">
+    <div className="flex flex-col p-6 justify-center max-w-[755px] mx-auto">
       <Link
         to="/collections/videos"
-        className="text-sm text-activeCounty underline hover:font-semibold"
+        className="text-sm text-activeCounty underline hover:font-semibold mb-6"
       >
         Back to Video Collection
       </Link>
@@ -32,6 +32,7 @@ const VideoDetail = () => {
         <iframe
           title={video.uuid}
           src={video.embed_url}
+          allowFullScreen
           className="absolute top-0 left-0 w-full h-full bg-black/60"
         />
       </div>

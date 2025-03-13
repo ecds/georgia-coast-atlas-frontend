@@ -8,10 +8,13 @@ const PlaceList = () => {
     <RefinementList
       attribute="places"
       operator="or"
+      showMore
       classNames={{
-        root: "text-sm w-52",
+        root: "text-sm w-52 md:mb-24",
         label: "flex flex-row gap-2 my-2",
         labelText: "truncate",
+        showMore:
+          "border text-white capitalize border-island bg-activeIsland hover:bg-activeIsland/40 px-2 py-1 rounded-md",
       }}
     />
   );
@@ -20,7 +23,7 @@ const PlaceList = () => {
 const PlaceFacets = () => {
   return (
     <>
-      <div className="my-4 ms-6 hidden md:block">
+      <div className="my-4 ms-6 hidden md:block overflow-auto h-full min-w-52">
         <h2 className="text-lg w-">Filter by Place</h2>
         <PlaceList />
       </div>

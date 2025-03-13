@@ -26,7 +26,7 @@ export type ESVideo = {
   uuid: string;
 };
 
-export type ESPhotograph = {
+type ESRelatedPhotograph = {
   featured: boolean | null;
   name: string;
   uuid: string;
@@ -68,7 +68,7 @@ export type ESPlace = {
   name: string;
   location: TLonLat;
   other_places: ESRelatedPlace[];
-  photographs: ESPhotograph[];
+  photographs: ESRelatedPhotograph[];
   places: ESRelatedPlace[];
   related_videos?: ESVideo[];
   short_description: string;
@@ -96,4 +96,15 @@ export type ESSearchProps = {
   serverUrl?: string;
   location?: Location;
   modalOpen?: boolean;
+};
+
+export type ESPhotographItem = {
+  description: string;
+  full_url: string;
+  manifest: string;
+  name: string;
+  places: string[];
+  slug: string;
+  thumbnail_rul: string;
+  uuid: string;
 };
