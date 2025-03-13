@@ -9,6 +9,7 @@ export const MapsSearch: SearchSettingsConfig = {
   ],
   result_attributes: [
     "date",
+    "manifest",
     "name",
     "places",
     "thumbnail_url",
@@ -16,5 +17,5 @@ export const MapsSearch: SearchSettingsConfig = {
     "slug",
   ],
   facet_attributes: [{ attribute: "places", field: "places", type: "string" }],
-  sorting: { default: [{ field: "year", order: "asc" }] },
+  sorting: { default: [{ field: "date", order: "asc" }] },
 };
