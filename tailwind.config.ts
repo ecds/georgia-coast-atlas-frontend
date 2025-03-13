@@ -60,10 +60,11 @@ export default {
               fontWeight: "bold",
               padding: "1rem 0.75rem 0rem 0rem",
             },
-
-            a: {
-              color: "#94c1e1",
-              fontWeight: "bold",
+            ".bib": {
+              a: {
+                color: "#94c1e1",
+                fontWeight: "bold",
+              },
             },
           },
           '[type="search"]::-webkit-search-decoration': { display: "none" },

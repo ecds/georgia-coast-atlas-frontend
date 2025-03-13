@@ -42,7 +42,7 @@ const Bibliography = () => {
           return (
             <div
               key={work.uuid}
-              className="prose prose-xl prose-invert leading-loose tracking-wide custom-links -indent-6"
+              className="prose prose-xl prose-invert leading-loose tracking-wide custom-links -indent-6 bib"
               dangerouslySetInnerHTML={{
                 __html: work.citation,
               }}
