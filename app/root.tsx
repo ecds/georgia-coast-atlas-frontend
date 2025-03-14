@@ -70,7 +70,7 @@ const ChildContent = ({
 export function Layout({ children }: { children: React.ReactNode }) {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [isMapRoute, setIsMapRoute] = useState<boolean>(true);
+  const [isMapRoute, setIsMapRoute] = useState<boolean>(false);
   const [searchModalOpen, setSearchModalOpen] = useState<boolean>(true);
   const location = useLocation();
 
@@ -85,6 +85,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
     setIsMapRoute(
       mapRoutes.some((route) => location.pathname.startsWith(route))
     );
+
+    return () => {
+      setIsMapRoute(false);
+    };
   }, [location]);
 
   return (

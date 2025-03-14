@@ -13,7 +13,7 @@ const elasticSearchHeaders = () => {
   return esHeaders;
 };
 
-const elasticSearchPost = async ({
+export const elasticSearchPost = async ({
   body,
   collection,
 }: {
@@ -49,13 +49,18 @@ export const fetchBySlug = async (
       includes: [
         "bbox",
         "county",
+        "date",
         "description",
+        "embed_url",
         "featured_photograph",
         "featured_video",
+        "full_url",
         "identifier",
+        "manifest",
         "manifests",
         "map_layers",
         "name",
+        "link",
         "location",
         "other_places",
         "photographs",
@@ -67,6 +72,7 @@ export const fetchBySlug = async (
         "types",
         "uuid",
         "videos",
+        "wms_resource",
       ],
     },
   };
@@ -81,8 +87,8 @@ export const fetchBySlug = async (
   );
 
   const data = await response.json();
-  const place = data.hits.hits.map((hit: TESHit) => hit._source)[0];
-  return place;
+  const result = data.hits.hits.map((hit: TESHit) => hit._source)[0];
+  return result;
 };
 
 export const fetchCounties = async () => {

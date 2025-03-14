@@ -7,3 +7,4 @@ export * from "./counties";
 export * from "./islands";
 export * from "./masks";
 export * from "./costalLabels";
+export * from "./wms";

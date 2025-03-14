@@ -7,7 +7,7 @@ interface Props {
 
 const LayerOpacity = ({ opacity, handleChange, disabled, id }: Props) => {
   return (
-    <div className="w-max">
+    <div className="w-full">
       <input
         type="range"
         min={0}
@@ -17,7 +17,7 @@ const LayerOpacity = ({ opacity, handleChange, disabled, id }: Props) => {
         onInput={({ target }) =>
           handleChange((target as HTMLInputElement).value)
         }
-        className="cursor-ew-resize w-full"
+        className="cursor-ew-resize w-full accent-activeCounty"
         id={`opacity-${id}`}
         disabled={disabled}
       />
@@ -25,7 +25,7 @@ const LayerOpacity = ({ opacity, handleChange, disabled, id }: Props) => {
         htmlFor={`opacity-${id}`}
         className={disabled ? "text-black/65" : "text-black"}
       >
-        Opacity {opacity}%
+        <span className="text-sm">Opacity {opacity}%</span>
       </label>
     </div>
   );

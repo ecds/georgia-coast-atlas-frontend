@@ -8,7 +8,7 @@ import {
   Pagination,
   getServerState,
 } from "react-instantsearch";
-import { searchClient } from "~/utils/elasticsearchAdapter";
+import { allPlacesSearchClient } from "~/utils/elasticsearchAdapter";
 import GeoSearch from "~/components/search/GeoSearch";
 import SearchForm from "~/components/search/SearchForm";
 import { history } from "instantsearch.js/es/lib/routers";
@@ -84,7 +84,7 @@ const Search = ({
       >
         <InstantSearch
           indexName={indexCollection}
-          searchClient={searchClient}
+          searchClient={allPlacesSearchClient}
           future={{ preserveSharedStateOnUnmount: true }}
           routing={{
             router: history({
@@ -133,6 +133,7 @@ const Search = ({
                 />
               </TabPanel>
               <TabPanel>
+
                 <h3 className="mx-6 text-xl font-semibold">Islands</h3>
                   <ul className="mx-6">
                     {islands.length > 0 ? (

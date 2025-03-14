@@ -1,7 +1,7 @@
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import CloverImage from "@samvera/clover-iiif/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 import { GalleryContext } from "~/contexts";
 import type { Options } from "openseadragon";
 
@@ -16,7 +16,7 @@ const openSeadragonConfig: Options = {
 
 const IIIFPhoto = () => {
   const { activePhotograph } = useContext(GalleryContext);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  // const overlayRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -25,9 +25,9 @@ const IIIFPhoto = () => {
         openSeadragonConfig={openSeadragonConfig}
       />
       {/* <div ref={osdContainerRef} id="viewer" className="h-96 w-96"></div> */}
-      <div ref={overlayRef} className="bg-island">
+      {/* <div ref={overlayRef} className="bg-island">
         hello <FontAwesomeIcon icon={faVolumeHigh} />
-      </div>
+      </div> */}
     </>
   );
 };
