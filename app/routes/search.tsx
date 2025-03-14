@@ -23,6 +23,10 @@ import type { LoaderFunction } from "@remix-run/node";
 import type { Navigation, Location } from "@remix-run/react";
 import type { InstantSearchServerState } from "react-instantsearch";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/react";
+import { fetchPlacesByType, fetchCounties } from "~/data/coredata";
+import type { ESPlace } from "~/esTypes";
+import Islands from "~/components/mapping/Islands";
+import Counties from "~/components/mapping/Counties";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
@@ -31,17 +35,24 @@ type SearchProps = {
   modalOpen?: boolean;
   navigation?: Navigation;
   children?: ReactNode;
+  islands: ESPlace[]; 
+  counties: ESPlace[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
-  const serverState = await getServerState(<Search serverUrl={serverUrl} />, {
+  const serverState = await getServerState(<Search serverUrl={serverUrl} islands={[]} counties={[]} />, {
     renderToString,
   });
+
+  const islands = await fetchPlacesByType("Barrier Island"); 
+  const counties = await fetchCounties(); 
 
   return {
     serverState,
     serverUrl,
+    islands,
+    counties,
   };
 };
 
@@ -51,6 +62,8 @@ const Search = ({
   location,
   navigation,
   children,
+  islands,
+  counties,
 }: SearchProps) => {
   const { map } = useContext(MapContext);
   useEffect(() => {
@@ -120,19 +133,48 @@ const Search = ({
                 />
               </TabPanel>
               <TabPanel>
-                <h3 className="mx-6 text-xl">Islands</h3>
-                <ul className="mx-6">
-                  <li>
-                    <a href="/islands/sapelo-island">Sapelo</a>
-                  </li>
-                  <li>
-                    <a href="/islands/wolf-island">Wolf</a>
-                  </li>
+                <h3 className="mx-6 text-xl font-semibold">Islands</h3>
+                  <ul className="mx-6">
+                    {islands.length > 0 ? (
+                      islands.map((island) => (
+                        <li key={island.uuid} className="py-2">
+                          <a
+                            href={`/islands/${island.slug}`}
+                            className="text-black hover:text-blue-800"
+                          >
+                            {island.name}
+                          </a>
+                        </li>
+                      ))
+                    ) : (
+                      <p className="mx-6 text-gray-500">No islands available.</p>
+                    )}
+                  </ul>
+
+                  <div className="relative h-96 w-full">
+                    <Islands islands={islands} />
+                  </div>
+
+                  <h3 className="mx-6 text-xl font-semibold mt-4">Counties</h3>
+                  <ul className="mx-6">
+                    {counties.length > 0 ? (
+                      counties.map((county) => (
+                        <li key={county.slug} className="py-2">
+                          <a
+                            href={`/counties/${county.slug}`}
+                            className="text-black hover:text-blue-800"
+                          >
+                            {county.name}
+                          </a>
+                        </li>
+                      ))
+                    ) : (
+                      <p className="mx-6 text-gray-500">No counties available.</p>
+                    )}
                 </ul>
-                <h3 className="mx-6 text-xl">Counties</h3>
-                <li>
-                  <a href="/counties/glynn-county">Glynn</a>
-                </li>
+                <div className="relative h-96 w-full">
+                  <Counties counties={counties} />
+                </div>
               </TabPanel>
             </TabPanels>
           </TabGroup>
@@ -143,7 +185,7 @@ const Search = ({
 };
 
 const SearchPage = () => {
-  const { serverState, serverUrl } = useLoaderData() as SearchProps;
+  const { serverState, serverUrl, islands, counties} = useLoaderData() as SearchProps;
   const [activeResult, setActiveResult] = useState<string | undefined>();
   const [modalOpen, setModalOpen] = useState<boolean>(true);
   const location = useLocation();
@@ -156,6 +198,8 @@ const SearchPage = () => {
         serverUrl={serverUrl}
         location={location}
         navigation={navigation}
+        islands={islands}
+        counties={counties}
       >
         <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} />
       </Search>
