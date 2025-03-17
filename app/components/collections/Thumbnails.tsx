@@ -1,3 +1,5 @@
+import { faMap, faTableCells } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@remix-run/react";
 import type { ReactNode } from "react";
 import { Pagination, useHits } from "react-instantsearch";
@@ -15,6 +17,14 @@ const Thumbnails = ({ collectionType, children }: Props) => {
       <h1 className="text-3xl text-black/80 m-4 md:m-auto md:ms-2 capitalize">
         {collectionType}
       </h1>
+      <div className="flex gap-4 md:ms-2 md:my-2">
+        <button className="border border-island px-2 py-1 rounded-md shadow-md hover:shadow-lg text-island">
+          <FontAwesomeIcon icon={faTableCells} /> Grid View
+        </button>
+        <button className="border border-island px-2 py-1 rounded-md shadow-md hover:shadow-lg text-island">
+          <FontAwesomeIcon icon={faMap} /> Map View
+        </button>
+      </div>
       <div>
         <ol className="flex flex-col md:flex-none md:grid md:grid-cols-1 lg:grid-cols-3 md:pe-6">
           {items.map((item) => {
