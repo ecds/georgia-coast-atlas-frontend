@@ -99,12 +99,14 @@ export type ESSearchProps = {
 };
 
 export type ESPhotographItem = {
-  description: string;
+  alt?: string;
+  description?: string;
   full_url: string;
   manifest: string;
   name: string;
   places: string[];
   slug: string;
+  title?: string;
   thumbnail_rul: string;
   uuid: string;
 };

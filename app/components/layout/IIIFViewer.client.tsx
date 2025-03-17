@@ -23,7 +23,7 @@ const IIIFViewer = ({ photo }: Props) => {
       <CloverImage
         src={photo.full_url}
         openSeadragonConfig={openSeadragonConfig}
-        label={photo.name}
+        label={photo.title ?? photo.name}
       />
     </div>
   );
