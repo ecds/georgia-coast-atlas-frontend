@@ -37,12 +37,12 @@ const Bibliography = () => {
       <h2 className="text-white text-5xl font-extrabold mt-10 tracking-wide font-barlow uppercase">
         Bibliography
       </h2>
-      <div className="bg-costal-green font-barlow text-white rounded-xl shadow-lg px-12 lg:px-20 py-8 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] xl:w-[55%] my-10">
+      <div className="bg-costal-green/50 font-barlow text-white rounded-xl shadow-lg px-12 lg:px-20 py-8 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] xl:w-[55%] my-10 text-lg">
         {works.map((work) => {
           return (
             <div
               key={work.uuid}
-              className="prose prose-xl prose-invert leading-loose tracking-wide custom-links -indent-6 bib"
+              className="prose prose-xl prose-invert leading-loose tracking-wide custom-links -indent-6 my-6 bib"
               dangerouslySetInnerHTML={{
                 __html: work.citation,
               }}

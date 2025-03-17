@@ -47,6 +47,7 @@ export const fetchBySlug = async (
     from: 0,
     _source: {
       includes: [
+        "alt",
         "bbox",
         "county",
         "date",
@@ -65,9 +66,11 @@ export const fetchBySlug = async (
         "other_places",
         "photographs",
         "places",
+        "publisher",
         "related_videos",
         "slug",
         "short_description",
+        "title",
         "topos",
         "types",
         "uuid",

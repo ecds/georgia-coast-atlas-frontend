@@ -6,9 +6,10 @@ import { ClearRefinements, RefinementList } from "react-instantsearch";
 const PlaceList = () => {
   return (
     <RefinementList
-      attribute="places"
+      attribute="place_names"
       operator="or"
       showMore
+      showMoreLimit={1000}
       classNames={{
         root: "text-sm w-52 md:mb-24",
         label: "flex flex-row gap-2 my-2",

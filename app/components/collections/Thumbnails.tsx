@@ -26,13 +26,13 @@ const Thumbnails = ({ collectionType, children }: Props) => {
                   >
                     <img
                       src={item.thumbnail_url}
-                      alt=""
+                      alt={item.alt ?? ""}
                       className="shadow-md"
                     />
                   </Link>
                   <figcaption className="text-sm text-black/75 md:col-span-2 md:px-2 lg:px-0 lg:pe-4 w-full">
                     <h2 className="text-lg md:text-base text-black mb-2 xl:my-2 truncate md:text-wrap">
-                      {item.name}
+                      {item.title ?? item.name}
                     </h2>
                     <div
                       className="tracking-loose my-2"
@@ -45,7 +45,7 @@ const Thumbnails = ({ collectionType, children }: Props) => {
                       {item.places.length > 0 && (
                         <li className="">
                           <span className="font-semibold">Places:</span>{" "}
-                          {item.places.join(",")}
+                          {item.place_names.join(",")}
                         </li>
                       )}
                       {item.date && (

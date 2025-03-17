@@ -30,7 +30,7 @@ const PanoDetail = () => {
 
       <iframe
         title={pano.uuid}
-        src={pano.link}
+        src={pano.embed_url}
         className="h-[66vh] bg-black/60 shadow-lg rounded-md"
         allowFullScreen
       />
@@ -38,9 +38,7 @@ const PanoDetail = () => {
         <h1 className="text-lg text-black/85">{pano.name}</h1>
         <div
           dangerouslySetInnerHTML={{
-            __html:
-              pano.description ??
-              "Velit quis veniam commodo fugiat proident officia aute exercitation dolor duis amet non reprehenderit. Elit dolore ut Lorem dolore adipisicing nostrud cillum irure esse esse ipsum incididunt. In sunt laborum do aliqua magna veniam irure enim id officia. Est non qui commodo esse.",
+            __html: pano.description ?? "",
           }}
         />
       </div>
