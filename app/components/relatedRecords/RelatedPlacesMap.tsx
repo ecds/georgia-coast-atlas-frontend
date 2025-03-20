@@ -94,7 +94,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       bbox(geojson) as [number, number, number, number]
     );
 
-    map.fitBounds(bounds, { padding: 50 });
+    map.fitBounds(bounds, { padding: 100, maxZoom: 14 });
 
     const placesSource: SourceSpecification = {
       type: "geojson",
@@ -121,10 +121,10 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
 
     const pointLayer = singlePoint(`points-${place.uuid}`, sourceId);
 
-    if (map.getSource(sourceId)) map.removeSource(sourceId);
-    if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
-    if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-    if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
+    // if (map.getSource(sourceId)) map.removeSource(sourceId);
+    // if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
+    // if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+    // if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
 
     map.addSource(sourceId, placesSource);
     map.addLayer(clusterLayer);
@@ -143,10 +143,10 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
       map.off("click", pointLayer.id, handleClick);
       map.off("click", clusterLayer.id, handleClick);
-      if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
-      if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-      if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
+      map.removeLayer(clusterLayer.id);
+      map.removeLayer(countLayer.id);
+      map.removeLayer(pointLayer.id);
+      map.removeSource(sourceId);
     };
   }, [map, geojson, clusterFillColor, clusterTextColor, place]);
 

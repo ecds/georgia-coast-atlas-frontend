@@ -27,20 +27,21 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center space-x-12 text-white text-lg font-barlow">
-        <NavLink
-          to="/islands"
-          className="tracking-wide text-white hover:text-white/80"
-        >
-          Explore the Coast
-        </NavLink>
-
-        <NavLink
-          to="/search"
-          className="tracking-wide text-white hover:text-white/80"
-          style={{ fontFamily: "Barlow, sans-serif", fontWeight: 500 }}
-        >
-          Search By Place
-        </NavLink>
+        <Menu>
+          <MenuButton>Places</MenuButton>
+          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
+            <MenuItem>
+              <Link className={menuLinkClassName} to="/places/search">
+                Search
+              </Link>
+            </MenuItem>
+            <MenuItem>
+              <Link className={menuLinkClassName} to="/places/explore">
+                Explore
+              </Link>
+            </MenuItem>
+          </MenuItems>
+        </Menu>
 
         <Menu>
           <MenuButton>Collections</MenuButton>

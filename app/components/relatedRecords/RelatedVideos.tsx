@@ -1,21 +1,29 @@
 import RelatedSection from "./RelatedSection";
 import VideoThumbnail from "../VideoThumbnail";
-import VideoModal from "../VideoModal";
+import MediumModal from "../MediumModal";
 import { useContext, useEffect, useState } from "react";
 import { PlaceContext } from "~/contexts";
 import type { ESVideo } from "~/esTypes";
 
 const RelatedVideos = () => {
-  const { place, full } = useContext(PlaceContext);
+  const { place } = useContext(PlaceContext);
   const [videos, setVideos] = useState<ESVideo[]>(place.videos);
 
   useEffect(() => {
-    if (full) {
-      setVideos([...(place.videos ?? []), ...(place.related_videos ?? [])]);
-    }
-  }, [full, place]);
+    if (!place.types) return;
 
-  if (place.videos.length === 0 && place.related_videos?.length === 0) {
+    if (place.types.includes("Barrier Island")) {
+      setVideos([...(place.videos ?? []), ...(place.related_videos ?? [])]);
+    } else {
+      setVideos(place.videos ?? []);
+    }
+
+    return () => {
+      setVideos([]);
+    };
+  }, [place]);
+
+  if (!place.videos || place.videos?.length === 0) {
     return null;
   }
 
@@ -25,13 +33,13 @@ const RelatedVideos = () => {
         <div className="flex flex-wrap justify-around">
           {videos.map((video) => {
             return (
-              <VideoModal key={video.embed_id} video={video}>
+              <MediumModal key={video.embed_id} medium={video}>
                 <VideoThumbnail
                   video={video}
                   figClassName="md:my-8 md:mr-8 max-w-xs"
                   imgClassName="drop-shadow-md md:h-32  md:w-32"
                 />
-              </VideoModal>
+              </MediumModal>
             );
           })}
         </div>

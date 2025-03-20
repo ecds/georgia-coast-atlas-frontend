@@ -396,8 +396,8 @@ export const photosIndexCollection = `${collectionPrefix}_photographs`;
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
-    new maplibregl.LngLat(-81.93612670899995, 30.71087651700003),
-    new maplibregl.LngLat(-80.85723315099995, 32.241012160000025)
+    new maplibregl.LngLat(-85.005165, 29.357851),
+    new maplibregl.LngLat(-80.239729, 33.000659)
   );
 };
 

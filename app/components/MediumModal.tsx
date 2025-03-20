@@ -10,14 +10,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import type { ReactNode } from "react";
-import type { ESVideo } from "~/esTypes";
+import type { ESVideo, ESPano } from "~/esTypes";
 
 interface Props {
   children: ReactNode;
-  video: ESVideo;
+  medium: ESVideo | ESPano;
 }
 
-const VideoModal = ({ children, video }: Props) => {
+const MediumModal = ({ children, medium }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const open = () => setIsOpen(true);
@@ -46,7 +46,7 @@ const VideoModal = ({ children, video }: Props) => {
                 <DialogPanel className="w-full max-w-md md:max-w-4xl rounded-xl bg-white p-6">
                   <DialogTitle as="div" className="flex justify-between">
                     <h3 className="text-base/7 font-medium text-black">
-                      {video.name}
+                      {medium.name}
                     </h3>
 
                     <Button onClick={close}>
@@ -56,8 +56,8 @@ const VideoModal = ({ children, video }: Props) => {
                   <div className="relative pb-[56.25%] h-0 overflow-hidden max-w-full">
                     <iframe
                       className="absolute t-0 l-0 h-full w-full"
-                      src={video.embed_url}
-                      title={video.name}
+                      src={medium.embed_url}
+                      title={medium.name}
                       allowFullScreen
                     />
                   </div>
@@ -71,4 +71,4 @@ const VideoModal = ({ children, video }: Props) => {
   );
 };
 
-export default VideoModal;
+export default MediumModal;

@@ -12,6 +12,7 @@ export type ESRelatedPlace = {
   name: string;
   slug: string;
   type: string;
+  types?: string[];
   uuid: string;
   preview?: string;
 };
@@ -55,6 +56,20 @@ export type ESMapLayer = {
   name: string;
 };
 
+export type ESPano = {
+  description: string;
+  embed_url: string;
+  name: string;
+  places?: ESRelatedPlace[];
+  place_names?: string[];
+  publisher?: string;
+  location?: TLonLat;
+  slug: string;
+  title?: string;
+  thumbnail_url: string;
+  uuid?: string;
+};
+
 export type ESPlace = {
   bbox: [number, number, number, number];
   county: string;
@@ -68,6 +83,7 @@ export type ESPlace = {
   name: string;
   location: TLonLat;
   other_places: ESRelatedPlace[];
+  panos?: ESPano[];
   photographs: ESRelatedPhotograph[];
   places: ESRelatedPlace[];
   related_videos?: ESVideo[];

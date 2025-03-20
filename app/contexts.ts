@@ -16,7 +16,6 @@ type TPlaceContext = {
   activePlace: ESRelatedPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  full?: boolean;
   hoveredPlace: ESRelatedPlace | undefined;
   noTrackMouse?: boolean;
   place: ESPlace;

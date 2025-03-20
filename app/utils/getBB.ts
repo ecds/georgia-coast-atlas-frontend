@@ -1,6 +1,10 @@
 import { LngLat, LngLatBounds } from "maplibre-gl";
 
-export const getBB = (searchParams: string) => {
+export const boundingBoxFromSearchParameters = (
+  searchParams: string | undefined
+) => {
+  if (!searchParams) return;
+
   const regex = /.*boundingBox]=(.*)\d/;
   if (regex.test(decodeURI(searchParams))) {
     const result = regex.exec(decodeURI(searchParams));
@@ -17,4 +21,14 @@ export const getBB = (searchParams: string) => {
     }
   }
   return undefined;
+};
+
+export const boundingBoxFromLngLat = (lngLat: {
+  _sw: { lng: number; lat: number };
+  _ne: { lng: number; lat: number };
+}) => {
+  return new LngLatBounds(
+    Object.values(lngLat._sw) as [number, number],
+    Object.values(lngLat._ne) as [number, number]
+  );
 };

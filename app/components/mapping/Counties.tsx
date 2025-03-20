@@ -1,7 +1,7 @@
 // TODO: We need to bring this inline with the Islands component.
 // We will need to update the shape file on the GeoServer so that
 // the properties line up with what is expected from Core Data.
-// Specifically, COUNTYNAME needs to be name.
+// Specifically, name needs to be name.
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
@@ -47,7 +47,8 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
               { source: "counties", id: feature.id },
               { hovered: true }
             );
-            const hoveredCountyName = feature.properties.COUNTYNAME;
+            const hoveredCountyName = feature.properties.name;
+
             if (activeCounty != hoveredCountyName)
               setHoveredCounty(hoveredCountyName);
           }
@@ -75,10 +76,10 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       setHoveredCounty(undefined);
-      setPopupLocation({ lon: lngLat.lon, lat: lngLat.lat });
+      setPopupLocation({ lon: lngLat.lng, lat: lngLat.lat });
       if (!map) return;
       if (features && features.length > 0) {
-        setActiveCounty(features[0].properties.COUNTYNAME);
+        setActiveCounty(features[0].properties.name);
         setHoveredCounty(undefined);
       }
     },
@@ -120,7 +121,7 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
                 >
                   <h4 className="text-xl">{county.name}</h4>
                   <Link
-                    to={`/counties/${county.slug}`}
+                    to={`/places/${county.slug}`}
                     className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                   >
                     Explore
@@ -128,12 +129,12 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
                 </PlacePopup>
                 <PlaceTooltip
                   show={hoveredCounty == county.name}
-                  location={county.location}
+                  location={county.location ?? { lat: 0, lon: 0 }}
                   onClose={() => setActiveCounty(undefined)}
                   zoomToFeature={false}
                   anchor="right"
                 >
-                  <h4 className="text-white">{county.name} County</h4>
+                  <h4 className="text-white">{county.name}</h4>
                 </PlaceTooltip>
               </>
             )}

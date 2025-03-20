@@ -33,11 +33,10 @@ const RelatedSection = ({
   const { relatedClosed } = useContext(PlaceContext);
 
   return (
-    // <div className={``}>
     <div className={className ?? "w-full mx-auto border-t-2"}>
       <Disclosure
         as="div"
-        className={className ?? "p-6"}
+        className="py-6"
         // TODO: There has to be a better way.
         defaultOpen={relatedClosed ? false : defaultOpen}
       >

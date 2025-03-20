@@ -24,7 +24,9 @@ const VideoThumbnail = ({ video, imgClassName, figClassName }: Props) => {
           alt=""
         />
       </div>
-      <figcaption className="md:w-32 text-left">{video.name}</figcaption>
+      <figcaption className="md:w-32 text-left truncate">
+        {video.name}
+      </figcaption>
     </figure>
   );
 };

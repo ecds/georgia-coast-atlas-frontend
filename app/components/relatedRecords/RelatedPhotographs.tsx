@@ -6,19 +6,23 @@ import type { TIIIFManifest, TIIIFBody, TPhotograph } from "~/types";
 import type { ESManifests } from "~/esTypes";
 
 const RelatedPhotographs = () => {
-  const { place, full } = useContext(PlaceContext);
+  const { place } = useContext(PlaceContext);
   const [manifest, setManifest] = useState<ESManifests>();
-  const [photographs, setPhotographs] = useState<TPhotograph[]>();
+  const [photographs, setPhotographs] = useState<TPhotograph[]>([]);
   const [activePhotograph, setActivePhotograph] = useState<TIIIFBody>();
 
   useEffect(() => {
-    const manifestLabel = full ? "combined" : "photographs";
+    if (!place.types) return;
+
+    const manifestLabel = place.types.includes("Barrier Island")
+      ? "combined"
+      : "photographs";
     setManifest(
       place.manifests.find(
         (placeManifest) => placeManifest.label === manifestLabel
       )
     );
-  }, [place, full]);
+  }, [place]);
 
   useEffect(() => {
     const fetchIIIF = async () => {
@@ -41,7 +45,12 @@ const RelatedPhotographs = () => {
         })
       );
     };
+
     if (manifest) fetchIIIF();
+
+    return () => {
+      setPhotographs([]);
+    };
   }, [manifest]);
 
   useEffect(() => {
@@ -71,6 +80,9 @@ const RelatedPhotographs = () => {
                         className="drop-shadow-md h-auto md:h-32 w-full md:w-auto m-auto"
                       />
                       <span className="sr-only">Select image</span>
+                      <figcaption className="text-sm md:w-32 text-left truncate">
+                        {photo.name}
+                      </figcaption>
                     </figure>
                   </PhotographModal>
                 );

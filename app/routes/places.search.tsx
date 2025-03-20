@@ -1,0 +1,152 @@
+import { useContext, useEffect, useState } from "react";
+import { renderToString } from "react-dom/server";
+import {
+  Configure,
+  Hits,
+  InstantSearch,
+  InstantSearchSSRProvider,
+  Pagination,
+  getServerState,
+} from "react-instantsearch";
+import { allPlacesSearchClient } from "~/utils/elasticsearchAdapter";
+import GeoSearch from "~/components/search/GeoSearch";
+import SearchForm from "~/components/search/SearchForm";
+import { history as searchHistory } from "instantsearch.js/es/lib/routers";
+import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
+import { defaultBounds, indexCollection } from "~/config";
+import { MapContext, SearchContext } from "~/contexts";
+import {
+  boundingBoxFromLngLat,
+  boundingBoxFromSearchParameters,
+} from "~/utils/getBB";
+import SearchResult from "~/components/search/SearchResult";
+// import SearchModal from "~/components/search/SearchModal";
+import type { ReactNode } from "react";
+import type { LoaderFunction } from "@remix-run/node";
+import type { Navigation, Location } from "@remix-run/react";
+import type { InstantSearchServerState } from "react-instantsearch";
+
+type views = "search" | "explore";
+
+type SearchProps = {
+  serverState?: InstantSearchServerState;
+  serverUrl?: string;
+  location?: Location;
+  modalOpen?: boolean;
+  navigation?: Navigation;
+  children?: ReactNode;
+  view?: views;
+};
+
+const views: views[] = ["search", "explore"];
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const serverUrl = request.url;
+  const serverState = await getServerState(<Search serverUrl={serverUrl} />, {
+    renderToString,
+  });
+
+  const url = new URL(request.url);
+  const view = url.searchParams.get("view");
+
+  return {
+    serverState,
+    serverUrl,
+    view,
+  };
+};
+
+const Search = ({
+  serverState,
+  serverUrl,
+  location,
+  navigation,
+  children,
+}: SearchProps) => {
+  const { map } = useContext(MapContext);
+
+  // Return to previously searched bounds.
+  useEffect(() => {
+    if (!map || navigation?.state !== "idle") return;
+
+    if (location?.state?.previousBounds) {
+      const previousBounds = boundingBoxFromLngLat(
+        location.state.previousBounds
+      );
+      map.fitBounds(previousBounds);
+      // location.state.previousBounds = undefined;
+    } else if (location?.search.includes("geoSearch")) {
+      const previousBounds =
+        boundingBoxFromSearchParameters(location?.search) ?? defaultBounds();
+      map.fitBounds(previousBounds, { padding: 50 });
+    }
+  }, [location, map, navigation]);
+
+  return (
+    <InstantSearchSSRProvider {...serverState}>
+      <InstantSearch
+        indexName={indexCollection}
+        searchClient={allPlacesSearchClient}
+        future={{ preserveSharedStateOnUnmount: true }}
+        routing={{
+          router: searchHistory({
+            /* @ts-expect-error This seems to be a bug in */
+            getLocation() {
+              let urlToReturn = undefined;
+              if (typeof window === "undefined" && serverUrl) {
+                urlToReturn = new URL(serverUrl);
+              } else {
+                urlToReturn = new URL(window.location.toString());
+              }
+              return urlToReturn;
+            },
+            cleanUrlOnDispose: false,
+          }),
+        }}
+      >
+        <Configure hitsPerPage={500} />
+        {children}
+        <SearchForm />
+        <Hits hitComponent={SearchResult} />
+        {/* <InfiniteHits hitComponent={SearchResult} /> */}
+        <GeoSearch location={location} />
+        <div className="h-16"></div>
+        <Pagination
+          classNames={{
+            root: "px-2 py-4 fixed bottom-0 bg-white w-full md:w-2/3 lg:w-2/5",
+            list: "flex flex-row items-stretch justify-center",
+            pageItem:
+              "bg-county/70 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+            selectedItem: "bg-county text-white",
+          }}
+          padding={2}
+        />
+      </InstantSearch>
+    </InstantSearchSSRProvider>
+  );
+};
+
+const PlacesSearchPage = () => {
+  const { serverState, serverUrl, view } = useLoaderData() as SearchProps;
+  const [activeResult, setActiveResult] = useState<string | undefined>();
+  // const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const location = useLocation();
+  const navigation = useNavigation();
+
+  return (
+    <SearchContext.Provider value={{ activeResult, setActiveResult }}>
+      <Search
+        // modalOpen={modalOpen}
+        serverState={serverState}
+        serverUrl={serverUrl}
+        location={location}
+        navigation={navigation}
+        view={view}
+      >
+        {/* <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} /> */}
+      </Search>
+    </SearchContext.Provider>
+  );
+};
+
+export default PlacesSearchPage;

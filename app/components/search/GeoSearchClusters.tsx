@@ -140,7 +140,7 @@ const GeoSearchClusters = ({ geojson }: Props) => {
                 return (
                   <li key={place.slug}>
                     <Link
-                      state={{ backTo: "Search Results" }}
+                      state={{ title: "Search Results", slug: "search" }}
                       className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
                       to={`/places/${place.slug}`}
                     >

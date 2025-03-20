@@ -20,54 +20,61 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   const [geojson, setGeojson] = useState<FeatureCollection | undefined>();
 
   useEffect(() => {
-    if (otherPlaces.length === 0) {
+    if (place.places.length == 0) {
+      setGeojson(toFeatureCollection([place]));
+    } else if (!place.other_places || otherPlaces.length === 0) {
       setGeojson(toFeatureCollection(place.places));
     } else {
       setGeojson(toFeatureCollection([...place.places, ...otherPlaces]));
     }
   }, [place, otherPlaces]);
 
-  if (place.places?.length > 0 || otherPlaces.length > 0) {
-    return (
-      <RelatedSection
-        title={title ?? "Related Places"}
-        collapsable={collapsable}
-      >
-        <RelatedPlacesList
-          otherPlaces={otherPlaces}
-          setOtherPlaces={setOtherPlaces}
-        />
-        {geojson && <RelatedPlacesMap geojson={geojson} />}
-        {activePlace && (
-          <PlacePopup
-            location={activePlace.location}
-            show={true}
-            onClose={() => setActivePlace(undefined)}
-            zoomToFeature={false}
-          >
-            {activePlace.preview && (
-              <img src={activePlace.preview.replace("max", "600,")} alt="" />
-            )}
-            <h4 className="text-xl">{activePlace.name}</h4>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: activePlace.description ?? "",
-              }}
-            />
-            <Link
-              to={`/places/${activePlace.slug}`}
-              state={{ backTo: place.name }}
-              className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-            >
-              Read More
-            </Link>
-          </PlacePopup>
-        )}
-      </RelatedSection>
-    );
-  }
+  useEffect(() => {
+    if (!place.other_places) setOtherPlaces([]);
+  }, [place]);
 
-  return null;
+  return (
+    <RelatedSection
+      title={title ?? "Related Places"}
+      collapsable={collapsable}
+      className={
+        place.places.length > 0 || place.other_places?.length > 0
+          ? ""
+          : "hidden"
+      }
+    >
+      <RelatedPlacesList
+        otherPlaces={otherPlaces}
+        setOtherPlaces={setOtherPlaces}
+      />
+      {geojson && <RelatedPlacesMap geojson={geojson} />}
+      {activePlace && (
+        <PlacePopup
+          location={activePlace.location}
+          show={true}
+          onClose={() => setActivePlace(undefined)}
+          zoomToFeature={false}
+        >
+          {activePlace.preview && (
+            <img src={activePlace.preview.replace("max", "600,")} alt="" />
+          )}
+          <h4 className="text-xl">{activePlace.name}</h4>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: activePlace.description ?? "",
+            }}
+          />
+          <Link
+            to={`/places/${activePlace.slug}`}
+            state={{ slug: place.slug, title: place.name }}
+            className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+          >
+            Read More
+          </Link>
+        </PlacePopup>
+      )}
+    </RelatedSection>
+  );
 };
 
 export default RelatedPlaces;

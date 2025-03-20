@@ -1,6 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
-import { Menu, MenuButton, MenuItems, MenuSection } from "@headlessui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuHeading,
+  MenuItems,
+  MenuSection,
+  MenuSeparator,
+} from "@headlessui/react";
 import {
   ClearRefinements,
   RefinementList,
@@ -53,7 +60,7 @@ const FacetMenu = () => {
         transition
         className="w-auto bg-gray-50 p-4 rounded drop-shadow origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 min-w-72"
       >
-        <MenuSection className="mb-2 pb-4 border-b-2">
+        <MenuSection className="">
           <ClearRefinements
             classNames={{
               button:
@@ -65,7 +72,8 @@ const FacetMenu = () => {
             }}
           />
         </MenuSection>
-        <MenuSection className="mb-4 pb-4 border-b-2">
+        <MenuSection className="">
+          <MenuHeading className="text-sm opacity-50">Types</MenuHeading>
           <ul>
             {items.map((type, index) => {
               return (
@@ -99,11 +107,22 @@ const FacetMenu = () => {
             {isShowingMore ? "show less" : "show more"}
           </button>
         </MenuSection>
-        <MenuSection>
+        <MenuSeparator className="my-6 h-px bg-black" />
+        <MenuSection className="">
+          <MenuHeading className="text-sm opacity-50">Counties</MenuHeading>
           <RefinementList
             attribute="county"
             classNames={refinementListClassNames()}
             sortBy={["name:asc"]}
+            operator="or"
+          />
+        </MenuSection>
+        <MenuSeparator className="my-6 h-px bg-black" />
+        <MenuSection>
+          <MenuHeading className="text-sm opacity-50">Media Types</MenuHeading>
+          <RefinementList
+            attribute="media_types"
+            classNames={refinementListClassNames()}
             operator="or"
           />
         </MenuSection>

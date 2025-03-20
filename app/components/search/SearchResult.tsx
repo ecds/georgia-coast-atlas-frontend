@@ -8,12 +8,12 @@ const SearchResult = ({ hit }: { hit: Hit }) => {
   const { setActiveResult } = useContext(SearchContext);
   return (
     <div
-      className="flex border-b-2 py-2 pl-4 w-full"
+      className="flex border-b-2 py-2 w-full px-4"
       onMouseEnter={() => setActiveResult(hit.identifier)}
       onMouseLeave={() => setActiveResult(undefined)}
     >
       <Link
-        state={{ backTo: "Search Results" }}
+        state={{ title: "Search Results", slug: "search" }}
         className="grow min-w-[75%] cursor-pointer"
         to={`/places/${hit.slug}`}
       >

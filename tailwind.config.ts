@@ -39,6 +39,9 @@ export default {
       height: {
         topOffset: `calc(100vh - ${topBarHeight})`,
       },
+      top: {
+        topOffset: `calc(100vh - ${topBarHeight})`,
+      },
     },
   },
   future: {},

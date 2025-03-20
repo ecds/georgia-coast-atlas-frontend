@@ -14,6 +14,7 @@ export const AllPlacesSearch: SearchSettingsConfig = {
     "featured_photograph",
     "identifier",
     "location",
+    "media_types",
     "name",
     "names",
     "slug",
@@ -23,6 +24,7 @@ export const AllPlacesSearch: SearchSettingsConfig = {
   facet_attributes: [
     { attribute: "types", field: "types", type: "string" },
     { attribute: "county", field: "county", type: "string" },
+    { attribute: "media_types", field: "media_types", type: "string" },
   ],
   geo_attribute: "location",
   sorting: {

@@ -138,7 +138,7 @@ const Islands = ({ islands }: Props) => {
                   <h4 className="text-xl ">{island.name}</h4>
                   <p>{island.short_description}</p>
                   <Link
-                    to={`/islands/${island.slug}`}
+                    to={`/places/${island.slug}`}
                     className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                   >
                     Explore

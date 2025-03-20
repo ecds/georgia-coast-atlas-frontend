@@ -35,7 +35,7 @@ const Map = ({ children, className }: Props) => {
         ]),
       });
 
-      _map.fitBounds(defaultBounds());
+      if (!_map.getBounds()) _map.fitBounds(defaultBounds());
 
       _map.on("load", () => {
         setMap(_map);

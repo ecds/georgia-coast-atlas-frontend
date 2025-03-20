@@ -31,10 +31,16 @@ const GeoSearchPoints = ({ geojson }: Props) => {
       if (!event.features || !event.features.length) return;
       const properties = event.features[0].properties;
       navigate(`/places/${properties.slug}`, {
-        state: { backTo: "Search Results" },
+        state: {
+          title: "Search Results",
+          slug: "search",
+          bounds: map?.getBounds(),
+          previous: location.pathname,
+          search: location.search,
+        },
       });
     },
-    [navigate]
+    [navigate, map]
   );
 
   useEffect(() => {
@@ -60,8 +66,8 @@ const GeoSearchPoints = ({ geojson }: Props) => {
 
     if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
 
-    if (!map.getLayer(layerId))
-      map.addLayer(singlePoint(layerId, sourceId), "countySeats");
+    // Add the point on top of the labels.
+    map.addLayer(singlePoint(layerId, sourceId), "countySeats");
 
     map.on("click", layerId, handleClick);
     map.on("mouseenter", layerId, mouseenter);

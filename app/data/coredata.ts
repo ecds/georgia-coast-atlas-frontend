@@ -64,6 +64,7 @@ export const fetchBySlug = async (
         "link",
         "location",
         "other_places",
+        "panos",
         "photographs",
         "places",
         "publisher",
@@ -92,26 +93,6 @@ export const fetchBySlug = async (
   const data = await response.json();
   const result = data.hits.hits.map((hit: TESHit) => hit._source)[0];
   return result;
-};
-
-export const fetchCounties = async () => {
-  const body = {
-    _source: {
-      includes: ["name", "location", "uuid", "slug"],
-    },
-  };
-  const response = await fetch(
-    `${dataHosts.elasticSearch}/${countyIndexCollection}/_search`,
-    {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: elasticSearchHeaders(),
-    }
-  );
-
-  const data = await response.json();
-  const counties = data.hits.hits.map((hit: TESHit) => hit._source);
-  return counties;
 };
 
 export const fetchPlacesByType = async (type: string) => {
@@ -146,6 +127,7 @@ export const fetchPlacesByType = async (type: string) => {
         "uuid",
       ],
     },
+    sort: [{ slug: { order: "asc" } }],
   };
 
   const response = await fetch(
