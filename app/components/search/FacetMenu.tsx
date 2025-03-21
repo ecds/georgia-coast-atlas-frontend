@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faFilter } from "@fortawesome/free-solid-svg-icons";
 import {
   Menu,
   MenuButton,
   MenuHeading,
   MenuItems,
+  MenuItem,
   MenuSection,
   MenuSeparator,
 } from "@headlessui/react";
@@ -13,7 +14,7 @@ import {
   RefinementList,
   useRefinementList,
 } from "react-instantsearch";
-import { PLACE_TYPES } from "~/config";
+import { PLACE_TYPES, topBarHeight } from "~/config";
 import type { RefinementListClassNames } from "node_modules/react-instantsearch/dist/es/ui/RefinementList";
 
 const bgColor = (
@@ -56,24 +57,51 @@ const FacetMenu = () => {
       </MenuButton>
       <MenuItems
         unmount={false}
-        anchor="bottom start"
+        anchor={{
+          to: "right start",
+          offset: 200,
+          padding: topBarHeight,
+          gap: "2rem",
+        }}
         transition
-        className="w-auto bg-gray-50 p-4 rounded drop-shadow origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 min-w-72"
+        portal
+        className="w-auto max-h-topOffset bg-gray-50 rounded drop-shadow origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 min-w-72"
       >
-        <MenuSection className="">
-          <ClearRefinements
-            classNames={{
-              button:
-                "px-3 py-2 text-xs font-medium text-center capitalize inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300",
-              disabledButton: "opacity-50 hover:opacity-40 cursor-not-allowed",
-            }}
-            translations={{
-              resetButtonText: "Clear all",
-            }}
-          />
-        </MenuSection>
-        <MenuSection className="">
-          <MenuHeading className="text-sm opacity-50">Types</MenuHeading>
+        <MenuItem>
+          {({ close }) => {
+            return (
+              <div className="flex flex-row w-full justify-between sticky top-0 bg-white px-4 pb-4 pt-4 z-10">
+                {/* <MenuSection className=""> */}
+                <ClearRefinements
+                  classNames={{
+                    button:
+                      "text-sm bg-island disabled:bg-island/50 disabled:cursor-not-allowed p-2 rounded-md text-white capitalize",
+                    disabledButton:
+                      "bg-sky-200 hover:bg-sky-100 cursor-not-allowed",
+                  }}
+                  translations={{
+                    resetButtonText: "Clear all",
+                  }}
+                />
+                <button
+                  className="border-2 px-2 rounded-md hover:bg-gray-200 drop-shadow-sm hover:drop-shadow-md"
+                  title="Close"
+                  onClick={close}
+                >
+                  <FontAwesomeIcon
+                    icon={faClose}
+                    className="text-black/80 hover:text-black"
+                  />
+                </button>
+              </div>
+            );
+          }}
+        </MenuItem>
+        {/* </MenuSection> */}
+        <MenuSection className="p-4">
+          <MenuHeading className="text-lg text-black/80 mb-1">
+            Types
+          </MenuHeading>
           <ul>
             {items.map((type, index) => {
               return (
@@ -107,9 +135,11 @@ const FacetMenu = () => {
             {isShowingMore ? "show less" : "show more"}
           </button>
         </MenuSection>
-        <MenuSeparator className="my-6 h-px bg-black" />
-        <MenuSection className="">
-          <MenuHeading className="text-sm opacity-50">Counties</MenuHeading>
+        <MenuSeparator className="my-6 h-px bg-black m-4" />
+        <MenuSection className="p-4">
+          <MenuHeading className="text-lg text-black/80 mb-1">
+            Counties
+          </MenuHeading>
           <RefinementList
             attribute="county"
             classNames={refinementListClassNames()}
@@ -117,9 +147,11 @@ const FacetMenu = () => {
             operator="or"
           />
         </MenuSection>
-        <MenuSeparator className="my-6 h-px bg-black" />
-        <MenuSection>
-          <MenuHeading className="text-sm opacity-50">Media Types</MenuHeading>
+        <MenuSeparator className="my-6 h-px bg-black m-4" />
+        <MenuSection className="p-4">
+          <MenuHeading className="text-lg text-black/80 mb-1">
+            Media Types
+          </MenuHeading>
           <RefinementList
             attribute="media_types"
             classNames={refinementListClassNames()}
