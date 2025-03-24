@@ -17,8 +17,8 @@ const layerId = "hits-layer";
 const GeoSearchPoints = ({ geojson }: Props) => {
   const { map, mapLoaded } = useContext(MapContext);
   const { activeResult } = useContext(SearchContext);
-  const [activeFeature, setActiveFeature] = useState<Feature | undefined>();
-  const [clickedLocation, setClickedLocation] = useState<{
+  const [hoveredFeature, setHoveredFeature] = useState<Feature | undefined>();
+  const [hoveredLocation, setHoveredLocation] = useState<{
     lat: number;
     lon: number;
   }>({ lat: 0, lon: 0 });
@@ -47,14 +47,21 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     if (!mapLoaded || !map || !geojson) return;
 
     const mouseenter = (event: MapLayerMouseEvent) => {
-      if (!event.features) return;
-      const features = event.features;
-      map.getCanvas().style.cursor = "pointer";
-      setActiveFeature(features[0]);
+      if (event.features) {
+        const feature = event.features[0];
+        map.getCanvas().style.cursor = "pointer";
+        if (feature.geometry.type == "Point") {
+          const [lon, lat] = feature.geometry.coordinates;
+          setHoveredLocation({ lon, lat });
+        }
+        setHoveredFeature(feature);
+      } else {
+        setHoveredFeature(undefined);
+      }
     };
 
     const mouseleave = () => {
-      setActiveFeature(undefined);
+      setHoveredFeature(undefined);
     };
 
     const layerSource: SourceSpecification = {
@@ -70,13 +77,13 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     map.addLayer(singlePoint(layerId, sourceId), "countySeats");
 
     map.on("click", layerId, handleClick);
-    map.on("mouseenter", layerId, mouseenter);
+    map.on("mousemove", layerId, mouseenter);
     map.on("mouseleave", layerId, mouseleave);
 
     return () => {
       if (map.getLayer(layerId)) {
         map.off("click", layerId, handleClick);
-        map.off("mouseenter", layerId, mouseenter);
+        map.off("mousemove", layerId, mouseenter);
         map.off("mouseleave", layerId, mouseleave);
         map.removeLayer(layerId);
       }
@@ -86,7 +93,7 @@ const GeoSearchPoints = ({ geojson }: Props) => {
   }, [geojson, map, mapLoaded, handleClick]);
 
   useEffect(() => {
-    setActiveFeature(
+    setHoveredFeature(
       geojson.features.find(
         (feature) => feature?.properties?.identifier === activeResult
       )
@@ -95,36 +102,33 @@ const GeoSearchPoints = ({ geojson }: Props) => {
 
   useEffect(() => {
     if (!map) return;
-    if (activeFeature) {
-      if (activeFeature.geometry.type == "Point") {
-        setClickedLocation({
-          lat: activeFeature.geometry.coordinates[1],
-          lon: activeFeature.geometry.coordinates[0],
-        });
-      }
-      setPopupTitle(activeFeature.properties?.name);
+
+    if (hoveredFeature) {
+      setPopupTitle(hoveredFeature.properties?.name);
       setShowPopup(true);
     } else {
-      map.getCanvas().style.cursor = "";
+      setPopupTitle(undefined);
       setShowPopup(false);
+      map.getCanvas().style.cursor = "";
+      setHoveredLocation({ lat: 0, lon: 0 });
     }
-  }, [map, activeFeature, geojson]);
+  }, [map, hoveredFeature]);
 
   return (
     <ClientOnly>
       {() => (
         <PlacePopup
-          location={clickedLocation}
+          location={hoveredLocation}
           show={showPopup}
           onClose={() => setShowPopup(false)}
           zoomToFeature={false}
           showCloseButton={false}
         >
           <div>
-            {activeFeature?.properties?.preview && (
+            {hoveredFeature?.properties?.preview && (
               <img
                 className="max-h-32 max-w-32"
-                src={activeFeature?.properties.preview}
+                src={hoveredFeature?.properties.preview}
                 alt=""
               />
             )}

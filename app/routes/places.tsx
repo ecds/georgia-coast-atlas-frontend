@@ -7,7 +7,7 @@ import { MapContext } from "~/contexts";
 import type { Map as TMap } from "maplibre-gl";
 
 const linkClassNames = ({ isActive }: { isActive: boolean }) => {
-  return `text-center flex-grow py-3 px-3 text-lg tracking-wide font-semibold text-white focus:outline-none ${isActive ? "bg-county" : "bg-county/45"} hover:bg-county/75 focus:outline-1 focus:outline-black`;
+  return `text-center flex-grow py-3 px-3 text-lg tracking-wide font-semibold text-white focus:outline-none ${isActive ? "bg-county" : "bg-ActiveCounty"} hover:bg-county/75 focus:outline-1 focus:outline-black`;
 };
 
 const PlacesRootPage = () => {

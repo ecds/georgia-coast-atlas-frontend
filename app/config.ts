@@ -395,9 +395,25 @@ export const videosIndexCollection = `${collectionPrefix}_videos`;
 export const photosIndexCollection = `${collectionPrefix}_photographs`;
 
 export const defaultBounds = () => {
+  // import { bbox } from "@turf/turf";
+  // import { simpleCounties } from "~/mapStyles";
+  // import { LngLat, LngLatBounds } from "maplibre-gl";
+  // import { inlandCountyShapes, simpleIslandShapes } from "~/mapStyles/sources";
+  // const counties = bbox(inlandCountyShapes);
+  // const islands = bbox(simpleIslandShapes);
+  // const countyBounds = new LngLatBounds(
+  //   new LngLat(counties[0], counties[1]),
+  //   new LngLat(counties[2], counties[3])
+  // );
+  // const islandBounds = new LngLatBounds(
+  //   new LngLat(islands[0], islands[1]),
+  //   new LngLat(islands[2], islands[3])
+  // );
+  // return countyBounds.extend(islandBounds)
+
   return new maplibregl.LngLatBounds(
-    new maplibregl.LngLat(-85.005165, 29.357851),
-    new maplibregl.LngLat(-80.239729, 33.000659)
+    new maplibregl.LngLat(-82.70105718813312, 30.3557685071232),
+    new maplibregl.LngLat(-80.83780307387659, 32.59542857268996)
   );
 };
 

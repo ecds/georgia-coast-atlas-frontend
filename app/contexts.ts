@@ -13,16 +13,20 @@ type TMapContext = {
 
 type TPlaceContext = {
   activeLayers?: string[];
-  activePlace: ESRelatedPlace | undefined;
+  activePlace: ESRelatedPlace | ESPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  hoveredPlace: ESRelatedPlace | undefined;
+  hoveredPlace: ESRelatedPlace | ESPlace | undefined;
   noTrackMouse?: boolean;
   place: ESPlace;
   relatedClosed?: boolean;
   setActiveLayers?: Dispatch<SetStateAction<string[]>>;
-  setActivePlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
-  setHoveredPlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
+  setActivePlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESPlace | undefined>
+  >;
+  setHoveredPlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESPlace | undefined>
+  >;
   setNoTrackMouse?: Dispatch<SetStateAction<boolean>>;
 };
 

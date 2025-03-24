@@ -7,7 +7,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Liberty County",
-        uuid: "2f0676be-462b-509e-8bb2-1cf287840f6f",
+        uuid: "13a28a72-9808-4f16-bce9-b17b91e481cd",
       },
       geometry: {
         type: "MultiPolygon",
@@ -561,7 +561,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Camden County",
-        uuid: "66bc87d3-4ae2-5b56-b2b4-f9146acce491",
+        uuid: "afe2d911-6325-4286-9b72-6ddddd5c789e",
       },
       geometry: {
         type: "MultiPolygon",
@@ -1205,7 +1205,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Bryan County",
-        uuid: "8fa8c48f-4eb6-5471-9d9f-dad09d0e7cb3",
+        uuid: "32000934-5922-4ece-a9b1-7789faf6ae63",
       },
       geometry: {
         type: "MultiPolygon",
@@ -1836,7 +1836,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Chatham County",
-        uuid: "43214e18-2a16-5d8a-a5a4-8db55479e3e2",
+        uuid: "f8e42339-46c8-4a93-9a53-16ace77c3838",
       },
       geometry: {
         type: "MultiPolygon",
@@ -2365,7 +2365,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Glynn County",
-        uuid: "d6375cd7-a126-534d-a661-951fc482ce63",
+        uuid: "b4a36528-d033-4d28-abf2-380e932c50ba",
       },
       geometry: {
         type: "MultiPolygon",
@@ -2810,7 +2810,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "McIntosh County",
-        uuid: "4ca467df-916d-5a9e-86a4-263fc35b2a7b",
+        uuid: "189197a1-1138-42ca-8145-59770dcbf00f",
       },
       geometry: {
         type: "MultiPolygon",
@@ -3299,7 +3299,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Ware County",
-        uuid: "a5c86c22-c2f6-5123-8cce-f5bd8cabec92",
+        uuid: "238d6659-1ff5-49a6-938a-38514aebb8f4",
       },
       geometry: {
         type: "Polygon",
@@ -6089,7 +6089,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Brantley County",
-        uuid: "1349c15d-7560-5847-8bda-e5ceae720acb",
+        uuid: "f6810b02-5aca-4942-a81a-4a080c53c6a5",
       },
       geometry: {
         type: "Polygon",
@@ -10238,7 +10238,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Charlton County",
-        uuid: "d54cf58f-b7af-5147-8793-4c1c224f6b22",
+        uuid: "a4991100-a135-4c1c-8393-21ef4208caf1",
       },
       geometry: {
         type: "Polygon",
@@ -18880,7 +18880,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Pierce County",
-        uuid: "42616d26-7633-5625-bba4-de30a31e8836",
+        uuid: "6673b280-52b7-4fbd-b20a-3d5cb0676de1",
       },
       geometry: {
         type: "Polygon",
@@ -23997,7 +23997,7 @@ export const inlandCountyShapes: FeatureCollection = {
       type: "Feature",
       properties: {
         name: "Effingham County",
-        uuid: "36a037f7-fb43-51b9-945a-036b5d349884",
+        uuid: "9b3ed522-670b-486c-bc3b-de6b116bdd9a",
       },
       geometry: {
         type: "Polygon",

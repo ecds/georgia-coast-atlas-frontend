@@ -56,5 +56,14 @@ export const masks: StyleSpecification = {
         ],
       },
     },
+    // {
+    //   id: "countyBoarder",
+    //   source: "counties",
+    //   type: "line",
+    //   paint: {
+    //     "line-color": landColors.activeCounty,
+    //     "line-width": 2,
+    //   },
+    // },
   ],
 };

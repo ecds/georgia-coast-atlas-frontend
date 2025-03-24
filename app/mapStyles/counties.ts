@@ -1,7 +1,7 @@
 import type { FeatureCollection } from "geojson";
 import type { StyleSpecification } from "maplibre-gl";
 
-const simpleCounties: FeatureCollection = {
+export const simpleCounties: FeatureCollection = {
   type: "FeatureCollection",
   features: [
     {

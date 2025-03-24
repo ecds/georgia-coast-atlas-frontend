@@ -5,9 +5,10 @@ import { createPortal } from "react-dom";
 import { MapContext, PlaceContext } from "~/contexts";
 import type { ReactNode } from "react";
 import type { PositionAnchor } from "maplibre-gl";
+import type { TLonLat } from "~/esTypes";
 
 interface Props {
-  location: { lat: number; lon: number };
+  location: TLonLat;
   onClose: () => void;
   children: ReactNode;
   showCloseButton?: boolean;
@@ -62,7 +63,8 @@ const PlaceTooltip = ({
       popupRef.current = new Popup({
         closeButton: false,
         className: "tooltip",
-        offset: 20,
+        // offset: 20,
+        anchor,
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current);
