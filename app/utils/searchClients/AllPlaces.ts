@@ -13,6 +13,7 @@ export const AllPlacesSearch: SearchSettingsConfig = {
     "description",
     "featured_photograph",
     "identifier",
+    "identifiers",
     "location",
     "media_types",
     "name",

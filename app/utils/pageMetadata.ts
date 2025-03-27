@@ -13,6 +13,32 @@ const metaImage = (place: ESPlace) => {
   return `https://iiif-cloud.ecdsdev.org/iiif/3/34w79u480oxw5gll3iddpa4yfkvg;1/square/${imageSize},/0/default.jpg`;
 };
 
+const associatedMedia = (place: ESPlace) => {
+  const media = [];
+  if (place.photographs) {
+    for (const photo of place.photographs) {
+      media.push({
+        "@type": "ImageObject",
+        contentUrl: photo.full_url,
+        name: photo.name,
+      });
+    }
+  }
+
+  if (place.videos) {
+    for (const video of place.videos) {
+      media.push({
+        "@type": "VideoObject",
+        name: video.name,
+        embedUrl: video.embed_url,
+        thumbnail: video.thumbnail_url,
+      });
+    }
+  }
+
+  return media;
+};
+
 const defaults = [
   {
     title: "Georgia Coast Atlas",
@@ -52,6 +78,10 @@ const defaults = [
 
 export const pageMetadata = (place: ESPlace | undefined = undefined) => {
   if (place) {
+    let identifiers: string[] = [];
+    if (place.identifiers) {
+      identifiers = place.identifiers.map((i) => i.identifier);
+    }
     return [
       {
         title: `${place.name}: Georgia Coast Atlas`,
@@ -80,31 +110,61 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
         property: "og:image:height",
         content: imageSize,
       },
-      // {
-      //   "@context": "https://schema.org",
-      //   "@type": "Article",
-      //   name: place.name,
-      //   url: `https://georgiacoastatlas.org/islands/${place.slug}`,
-      //   sameAs: "http:\/\/www.wikidata.org\/entity\/Q515603",
-      //   mainEntity: "http:\/\/www.wikidata.org\/entity\/Q515603",
-      //   author: {
-      //     "@type": "Organization",
-      //     name: "Contributors to Wikimedia projects",
-      //   },
-      //   publisher: {
-      //     "@type": "Organization",
-      //     name: "Wikimedia Foundation, Inc.",
-      //     logo: {
-      //       "@type": "ImageObject",
-      //       url: "https:\/\/www.wikimedia.org\/static\/images\/wmf-hor-googpub.png",
-      //     },
-      //   },
-      //   datePublished: "2004-12-19T05:11:06Z",
-      //   dateModified: "2024-12-31T20:29:34Z",
-      //   image:
-      //     "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/0\/08\/RJ_Reynolds_mansion%2C_Sapelo_Island%2C_GA%2C_US.jpg",
-      //   headline: "island in Georgia, United States of America",
-      // }
+      {
+        "script:ld+json": {
+          "@context": "https://schema.org",
+          "@type": "ItemPage",
+          identifier: place.identifier,
+          name: place.name,
+          alternateName: place.names.filter((name) => name !== place.name),
+          url: `https://georgiacoastatlas.org/places/${place.slug}`,
+          headline: `Georgia Coast Atlas: ${place.name}`,
+          abstract:
+            place.short_description ??
+            `Short article about ${place.name}, Georgia.`,
+          inLanguage: "en-US",
+          thumbnailUrl: metaImage(place),
+          primaryImageOfPage: {
+            "@type": "ImageObject",
+            contentUrl: place.featured_photograph,
+          },
+          about: {
+            "@type": "Place",
+            name: place.name,
+            sameAs: identifiers,
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: place.location.lat,
+              longitude: place.location.lon,
+            },
+          },
+          contentLocation: {
+            "@type": "Place",
+            name: place.name,
+            sameAs: identifiers,
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: place.location.lat,
+              longitude: place.location.lon,
+            },
+          },
+          author: {
+            "@type": "Organization",
+            name: "Emory Center for Digital Scholarship",
+            url: "https://ecds.emory.edu",
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "Emory Center for Digital Scholarship",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://georgiacoastatlas/images/ecds-logo.jpg",
+            },
+            url: "https://ecds.emory.edu",
+          },
+          associatedMedia: associatedMedia(place),
+        },
+      },
     ];
   }
 

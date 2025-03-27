@@ -1,9 +1,4 @@
-import {
-  countyIndexCollection,
-  dataHosts,
-  indexCollection,
-  keys,
-} from "~/config";
+import { dataHosts, indexCollection, keys } from "~/config";
 import type { TESHit, TSearchOptions } from "~/types";
 
 const elasticSearchHeaders = () => {
@@ -51,16 +46,19 @@ export const fetchBySlug = async (
         "bbox",
         "county",
         "date",
+        "date_modified",
         "description",
         "embed_url",
         "featured_photograph",
         "featured_video",
         "full_url",
         "identifier",
+        "identifiers",
         "manifest",
         "manifests",
         "map_layers",
         "name",
+        "names",
         "link",
         "location",
         "other_places",

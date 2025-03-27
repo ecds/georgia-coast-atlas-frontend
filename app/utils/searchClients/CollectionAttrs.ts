@@ -1,5 +1,6 @@
 const baseAttrs = [
   "description",
+  "identifiers",
   "name",
   "place_names",
   "places",

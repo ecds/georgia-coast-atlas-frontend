@@ -6,7 +6,10 @@ import {
   useNavigate,
 } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faArrowUpRightFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import { fetchBySlug } from "~/data/coredata";
 import { MapContext, PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
@@ -23,6 +26,7 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
 import type { LngLatBounds } from "maplibre-gl";
+import RelatedSection from "~/components/relatedRecords/RelatedSection";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place);
@@ -153,6 +157,20 @@ const PlacePage = () => {
           <RelatedPanos />
           <RelatedMapLayers />
           <RelatedTopoQuads />
+          <RelatedSection title="See Also" defaultOpen={false}>
+            {place.identifiers.map((identifier) => {
+              return (
+                <a
+                  key={identifier.authority}
+                  href={identifier.identifier}
+                  className="block my-2 uppercase text-lg text-county hover:text-activeCounty underline"
+                >
+                  {identifier.authority}{" "}
+                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                </a>
+              );
+            })}
+          </RelatedSection>
         </div>
       </>
     </PlaceContext.Provider>

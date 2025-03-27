@@ -37,13 +37,16 @@ const WMSLayer = ({ placeLayer }: Props) => {
       },
     };
 
-    if (!map.getSource(placeLayer.uuid)) map.addSource(placeLayer.uuid, source);
-    if (!map.getLayer(placeLayer.uuid))
+    map.addSource(placeLayer.uuid, source);
+    if (map.getLayer(`clusters-${place.uuid}`)) {
       map.addLayer(layer, `clusters-${place.uuid}`);
+    } else {
+      map.addLayer(layer);
+    }
 
     return () => {
-      if (map.getLayer(placeLayer.uuid)) map.removeLayer(placeLayer.uuid);
-      if (map.getSource(placeLayer.uuid)) map.removeSource(placeLayer.uuid);
+      map.removeLayer(placeLayer.uuid);
+      map.removeSource(placeLayer.uuid);
     };
   }, [map, placeLayer, place]);
 
@@ -53,11 +56,12 @@ const WMSLayer = ({ placeLayer }: Props) => {
       map &&
       map.getLayer(placeLayer.uuid)
     ) {
+      map.moveLayer(placeLayer.uuid, `clusters-${place.uuid}`);
       map.setPaintProperty(placeLayer.uuid, "raster-opacity", opacity * 0.01);
     } else {
       map?.setPaintProperty(placeLayer.uuid, "raster-opacity", 0);
     }
-  }, [activeLayers, map, placeLayer, opacity]);
+  }, [activeLayers, map, placeLayer, opacity, place]);
 
   const handleClick = () => {
     if (!activeLayers || !setActiveLayers) return;

@@ -31,6 +31,8 @@ type ESRelatedPhotograph = {
   featured: boolean | null;
   name: string;
   uuid: string;
+  full_url: string;
+  thumbnail_url: string;
 };
 
 export type ESManifests = {
@@ -70,23 +72,30 @@ export type ESPano = {
   uuid?: string;
 };
 
+type TWebIdentifier = {
+  authority: "viaf" | "wikidata" | "geonames";
+  identifier: string;
+};
+
 export type ESPlace = {
   bbox: [number, number, number, number];
   county: string;
+  date_modified: string;
   description: string;
   featured_photograph: string;
   featured_video: ESVideo;
   geojson: FeatureCollection;
   identifier: string;
+  identifiers: TWebIdentifier[];
   manifests: ESManifests[];
   map_layers: ESMapLayer[];
   name: string;
+  names: string[];
   location: TLonLat;
   other_places: ESRelatedPlace[];
   panos?: ESPano[];
   photographs: ESRelatedPhotograph[];
   places: ESRelatedPlace[];
-  related_videos?: ESVideo[];
   short_description: string;
   slug: string;
   topos: ESTopo[];
