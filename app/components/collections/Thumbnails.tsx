@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import Map from "~/components/mapping/Map.client";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 import type { FeatureCollection } from "geojson";
+import CollectionMapOverlay from "./CollectionMapOverlay";
 
 interface Props {
   collectionType: string;
@@ -19,7 +20,8 @@ const Thumbnails = ({ collectionType, children }: Props) => {
   const { items } = useHits();
   const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
 
-  const geojson: FeatureCollection = hitsToFeatureCollection(items);
+  const geojson = hitsToFeatureCollection(items);
+  console.log("Items passed to map", items);
 
   const toggleListGrid = () => {
     setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
@@ -124,8 +126,12 @@ const Thumbnails = ({ collectionType, children }: Props) => {
       ) : (
         <div className="h-[700px] mt-6 mx-2 rounded-md overflow-hidden">
           <ClientOnly>
-            {() => <Map className="w-full h-full" geojson={geojson} />}
-          </ClientOnly>
+            {() => (
+              <Map className="w-full h-full">
+                <CollectionMapOverlay geojson={geojson} />
+              </Map>
+            )}
+          </ClientOnly> 
         </div>
       )}
     </div>
