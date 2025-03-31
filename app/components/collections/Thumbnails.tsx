@@ -9,11 +9,13 @@ import Map from "~/components/mapping/Map.client";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 import type { FeatureCollection } from "geojson";
 import CollectionMapOverlay from "./CollectionMapOverlay";
+import { PlaceContext } from "~/contexts";
+import type { ESRelatedPlace } from "~/esTypes";
+
 
 interface Props {
   collectionType: string;
   children?: ReactNode;
-  geojson?: FeatureCollection;
 }
 
 const Thumbnails = ({ collectionType, children }: Props) => {
