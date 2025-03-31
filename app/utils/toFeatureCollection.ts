@@ -30,6 +30,7 @@ export const toFeatureCollection = (places: ESRelatedPlace[] | ESPlace[]) => {
         ...place,
         hexColor: place.type ? getColor(place.type) : "blue",
       });
+
       return placeFeature;
     })
   );

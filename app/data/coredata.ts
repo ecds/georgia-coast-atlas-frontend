@@ -52,6 +52,7 @@ export const fetchBySlug = async (
         "featured_photograph",
         "featured_video",
         "full_url",
+        "geojson",
         "identifier",
         "identifiers",
         "manifest",

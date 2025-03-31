@@ -8,13 +8,14 @@ export type TLonLat = {
 
 export type ESRelatedPlace = {
   description: string;
+  identifiers: TWebIdentifier[];
   location: TLonLat;
   name: string;
+  preview?: string;
   slug: string;
   type: string;
   types?: string[];
   uuid: string;
-  preview?: string;
 };
 
 export type ESVideo = {

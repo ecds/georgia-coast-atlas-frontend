@@ -5,7 +5,7 @@ import { defaultBounds } from "~/config";
 import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
-import type { Map as TMap } from "maplibre-gl";
+import type { MapLibreEvent, Map as TMap } from "maplibre-gl";
 
 interface Props {
   children?: ReactNode;
@@ -18,6 +18,12 @@ const Map = ({ children, className }: Props) => {
 
   useEffect(() => {
     if (!setMap || !mapContainerRef.current) return;
+
+    const initialLayers = ({ target }: MapLibreEvent) => {
+      if (!target.getLayer("buildings")) return;
+      target.on("click", "buildings", (event) => console.log(event));
+      // target.setLayoutProperty("buildings", "visibility", "none");
+    };
 
     let _map: TMap | undefined = undefined;
 
@@ -37,18 +43,21 @@ const Map = ({ children, className }: Props) => {
 
       if (!_map.getBounds()) _map.fitBounds(defaultBounds());
 
-      _map.on("load", () => {
+      _map.once("load", () => {
         setMap(_map);
         setMapLoaded(true);
       });
 
       _map.addControl(new AttributionControl({ compact: true }));
+
+      _map.on("styledata", initialLayers);
     } catch (error) {
       console.error(error);
     }
 
     return () => {
       try {
+        _map?.off("styledata", initialLayers);
         setMap(undefined);
         setMapLoaded(false);
       } catch (error) {

@@ -12,6 +12,7 @@ export const base: StyleSpecification = {
     openmaptiles: {
       type: "vector",
       url: "https://tiles.openfreemap.org/planet",
+      promoteId: "id",
       attribution:
         '<a href="https://openfreemap.org/" target="_blank">&copy; OpenFreeMap!</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     },
@@ -208,18 +209,25 @@ export const base: StyleSpecification = {
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
       },
     },
-    // {
-    //   id: "building",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "building",
-    //   layout: { visibility: "none" },
-    //   paint: {
-    //     "fill-color": "hsl(39,41%,86%)",
-    //     "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.6, 14, 1],
-    //     "fill-outline-color": "hsl(36,45%,80%)",
-    //   },
-    // },
+    {
+      id: "buildings",
+      type: "fill",
+      source: "openmaptiles",
+      "source-layer": "building",
+      layout: {
+        visibility: "none",
+      },
+      filter: [
+        "any",
+        // ["in", 9.144, ["to-number", ["get", "render_height"]]],
+        ["==", 3172249, ["to-number", ["get", "id"]]],
+      ],
+      paint: {
+        "fill-color": "hsl(39,41%,86%)",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.6, 14, 1],
+        "fill-outline-color": "hsl(36,45%,80%)",
+      },
+    },
     {
       id: "road_area_pier",
       type: "fill",
@@ -301,30 +309,30 @@ export const base: StyleSpecification = {
     //     ],
     //   },
     // },
-    // {
-    //   id: "road_minor",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "transportation",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     ["match", ["get", "class"], ["minor", "service"], true, false],
-    //   ],
-    //   layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
-    //   paint: {
-    //     "line-color": "hsl(0,0%,97%)",
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.55],
-    //       ["zoom"],
-    //       4,
-    //       0.25,
-    //       20,
-    //       30,
-    //     ],
-    //   },
-    // },
+    {
+      id: "road_minor",
+      type: "line",
+      source: "openmaptiles",
+      "source-layer": "transportation",
+      filter: [
+        "all",
+        ["==", ["geometry-type"], "LineString"],
+        ["match", ["get", "class"], ["minor"], true, false],
+      ],
+      layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
+      paint: {
+        "line-color": landColors.road,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.85],
+          ["zoom"],
+          4,
+          0.25,
+          20,
+          30,
+        ],
+      },
+    },
     // {
     //   id: "tunnel_minor",
     //   type: "line",
@@ -401,7 +409,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": "#797B77",
+        "line-color": landColors.road,
         "line-width": [
           "interpolate",
           ["exponential", 1.4],

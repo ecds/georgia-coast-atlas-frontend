@@ -1,6 +1,11 @@
-import type { ESPlace } from "~/esTypes";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 const imageSize = 300;
+
+const identifiers = (place: ESPlace | ESRelatedPlace) => {
+  if (!place.identifiers) return;
+  return place.identifiers.map((i) => i.identifier);
+};
 
 const metaImage = (place: ESPlace) => {
   if (place.featured_photograph) {
@@ -37,6 +42,27 @@ const associatedMedia = (place: ESPlace) => {
   }
 
   return media;
+};
+
+const mentions = (place: ESPlace) => {
+  let relatedPlaces = place.places;
+  if (place.other_places?.length === 0) {
+    relatedPlaces = [...relatedPlaces, ...place.other_places];
+  }
+  if (relatedPlaces) {
+    return relatedPlaces.map((relatedPlace) => {
+      return {
+        "@type": "Place",
+        name: relatedPlace.name,
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: relatedPlace.location.lat,
+          longitude: relatedPlace.location.lon,
+        },
+        sameAs: identifiers(relatedPlace),
+      };
+    });
+  }
 };
 
 const defaults = [
@@ -78,10 +104,6 @@ const defaults = [
 
 export const pageMetadata = (place: ESPlace | undefined = undefined) => {
   if (place) {
-    let identifiers: string[] = [];
-    if (place.identifiers) {
-      identifiers = place.identifiers.map((i) => i.identifier);
-    }
     return [
       {
         title: `${place.name}: Georgia Coast Atlas`,
@@ -124,6 +146,7 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
             `Short article about ${place.name}, Georgia.`,
           inLanguage: "en-US",
           thumbnailUrl: metaImage(place),
+          isPartOf: "https://georgiacoastatlas.org",
           primaryImageOfPage: {
             "@type": "ImageObject",
             contentUrl: place.featured_photograph,
@@ -141,7 +164,7 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
           contentLocation: {
             "@type": "Place",
             name: place.name,
-            sameAs: identifiers,
+            sameAs: identifiers(place),
             geo: {
               "@type": "GeoCoordinates",
               latitude: place.location.lat,
@@ -163,6 +186,7 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
             url: "https://ecds.emory.edu",
           },
           associatedMedia: associatedMedia(place),
+          mentions: mentions(place),
         },
       },
     ];

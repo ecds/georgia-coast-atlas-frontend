@@ -156,6 +156,7 @@ const FeaturedPlaces = ({ places, sourceName }: Props) => {
                   <h4 className="text-xl ">{place.name}</h4>
                   <p>{place.short_description}</p>
                   <Link
+                    state={{ title: "Search Results", slug: "search" }}
                     to={`/places/${place.slug}`}
                     className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                   >

@@ -3,7 +3,12 @@ import { MapContext, PlaceContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
-import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
+import {
+  cluster,
+  clusterCount,
+  placePolygon,
+  singlePoint,
+} from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import type {
   GeoJSONSource,
@@ -40,7 +45,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     ESRelatedPlace | undefined
   >();
   useEffect(() => {
-    if (!map) return;
+    if (!map || !place.geojson.features[1]) return;
 
     const handleMouseEnter = async ({ features }: MapLayerMouseEvent) => {
       map.getCanvas().style.cursor = "pointer";
@@ -105,7 +110,16 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       promoteId: "uuid",
     };
 
+    const shapeSource: SourceSpecification = {
+      type: "geojson",
+      data: place.geojson,
+      promoteId: "uuid",
+    };
+
     const sourceId = `place-${place.uuid}`;
+    const shapeSourceId = `place-shape-${place.uuid}`;
+
+    const polyLayer = placePolygon(`polygon-${place.uuid}`, shapeSourceId);
 
     const clusterLayer = cluster({
       id: `clusters-${place.uuid}`,
@@ -121,12 +135,9 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
 
     const pointLayer = singlePoint(`points-${place.uuid}`, sourceId);
 
-    // if (map.getSource(sourceId)) map.removeSource(sourceId);
-    // if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
-    // if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-    // if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
-
     map.addSource(sourceId, placesSource);
+    map.addSource(shapeSourceId, shapeSource);
+    // map.addLayer(polyLayer);
     map.addLayer(clusterLayer);
     map.addLayer(countLayer);
     map.addLayer(pointLayer);
@@ -143,10 +154,12 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
       map.off("click", pointLayer.id, handleClick);
       map.off("click", clusterLayer.id, handleClick);
+      // map.removeLayer(polyLayer.id);
       map.removeLayer(clusterLayer.id);
       map.removeLayer(countLayer.id);
       map.removeLayer(pointLayer.id);
       map.removeSource(sourceId);
+      map.removeSource(shapeSourceId);
     };
   }, [map, geojson, clusterFillColor, clusterTextColor, place]);
 

@@ -20,7 +20,7 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   const [geojson, setGeojson] = useState<FeatureCollection | undefined>();
 
   useEffect(() => {
-    if (place.places.length == 0) {
+    if (place.places.length == 0 || !place.types.includes("Barrier Island")) {
       setGeojson(toFeatureCollection([place]));
     } else if (!place.other_places || otherPlaces.length === 0) {
       setGeojson(toFeatureCollection(place.places));

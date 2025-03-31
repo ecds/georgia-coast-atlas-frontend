@@ -96,14 +96,11 @@ const PlacePage = () => {
   }, [navigation, map, place]);
 
   const navigateBack = () => {
-    // if (backTo?.search) {
-    //   navigate(`${backTo.previous}${backTo.search}`, {
-    //     // state: { previousBounds: backTo?.bounds ?? undefined },
-    //   });
-    // } else {
-    navigate(-1);
-    // }
+    if (backTo) {
+      navigate(-1);
+    }
   };
+
   useEffect(() => {}, [backTo]);
   return (
     <PlaceContext.Provider
@@ -142,7 +139,7 @@ const PlacePage = () => {
           <FeaturedMedium record={place} />
         </div>
         <div
-          className="relative px-4 -mt-16 primary-content min-h-32"
+          className={`relative px-4 ${place.featured_photograph || place.featured_video ? "-mt-16" : "-mt-8"} primary-content min-h-32`}
           dangerouslySetInnerHTML={{
             __html:
               wpData?.content.rendered ??
@@ -157,16 +154,19 @@ const PlacePage = () => {
           <RelatedPanos />
           <RelatedMapLayers />
           <RelatedTopoQuads />
-          <RelatedSection title="See Also" defaultOpen={false}>
+          <RelatedSection title="See Also">
             {place.identifiers.map((identifier) => {
               return (
                 <a
                   key={identifier.authority}
                   href={identifier.identifier}
-                  className="block my-2 uppercase text-lg text-county hover:text-activeCounty underline"
+                  className="block my-2 uppercase text-county hover:text-activeCounty underline"
                 >
                   {identifier.authority}{" "}
-                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                  <FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    className="text-sm"
+                  />
                 </a>
               );
             })}

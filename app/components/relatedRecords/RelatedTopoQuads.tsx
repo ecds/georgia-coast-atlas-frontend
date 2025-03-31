@@ -35,7 +35,11 @@ const RelatedTopoQuads = () => {
 
   if (place.topos?.length > 0) {
     return (
-      <RelatedSection title="Topo Quads" headerClassName="mb-2">
+      <RelatedSection
+        title="Topo Quads"
+        headerClassName="mb-2"
+        defaultOpen={false}
+      >
         {place.topos.map((topo) => {
           return (
             <RelatedSection
