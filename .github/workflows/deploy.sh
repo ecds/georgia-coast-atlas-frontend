@@ -2,7 +2,7 @@
 set -e
 echo "Running deploy script"
 echo $DH_SSH_KEY >.key
-chomd 600 .key
+chmod 600 .key
 
 echo "Building"
 npm run build
