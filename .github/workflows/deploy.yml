@@ -3,8 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main
-      - dev
+      - feature/unified-ui
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -17,23 +16,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Checkout Docker configs
+      - name: Move Bash Scripts
         run: |
-          mv ./.github/workflows/deploy.sh .
+          mv ./.github/workflows/*.sh .
           chmod +x deploy.sh
-
-      - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE }}
-          aws-region: us-east-1
-          role-session-name: GitHub-OIDC-frontend
 
       - name: Run Deploy
         env:
           BRANCH: ${{ github.head_ref || github.ref_name }}
-          AWS_ECR: ${{ secrets.AWS_ECR }}
-          AWS_ECS_CLUSTER: ${{ secrets.AWS_ECS_CLUSTER }}
-          AWS_ECS_SERVICE: ${{ secrets.AWS_ECS_SERVICE }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+          DH_SSH_KEY: ${{ secrets.DH_SSH_KEY }}
         run: ./deploy.sh

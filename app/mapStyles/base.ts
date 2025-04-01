@@ -67,7 +67,7 @@ export const base: StyleSpecification = {
     //   "source-layer": "landcover",
     //   filter: ["==", ["get", "subclass"], "ice_shelf"],
     //   layout: { visibility: "none" },
-    //   paint: { "fill-color": "#797B77", "fill-opacity": 0.8 },
+    //   paint: { "fill-color": landColors.road, "fill-opacity": 0.8 },
     // },
     // {
     //   id: "landcover-glacier",
@@ -240,7 +240,7 @@ export const base: StyleSpecification = {
         ["==", ["get", "class"], "pier"],
       ],
       layout: { visibility: "none" },
-      paint: { "fill-antialias": true, "fill-color": "#797B77" },
+      paint: { "fill-antialias": true, "fill-color": landColors.road },
     },
     {
       id: "road_pier",
@@ -255,7 +255,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": "#797B77",
+        "line-color": landColors.road,
         "line-width": [
           "interpolate",
           ["exponential", 1.2],
@@ -278,7 +278,7 @@ export const base: StyleSpecification = {
         ["match", ["get", "brunnel"], ["bridge"], true, false],
       ],
       layout: { visibility: "none" },
-      paint: { "fill-color": "#797B77" },
+      paint: { "fill-color": landColors.road },
     },
     // {
     //   id: "road_path",
@@ -384,7 +384,7 @@ export const base: StyleSpecification = {
     //   ],
     //   layout: { "line-cap": "butt", "line-join": "miter", visibility: "none" },
     //   paint: {
-    //     "line-color": "#797B77",
+    //     "line-color": landColors.road,
     //     "line-dasharray": [0.28, 0.14],
     //     "line-width": [
     //       "interpolate",
@@ -433,7 +433,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": "#797B77",
+        "line-color": landColors.road,
         "line-width": [
           "interpolate",
           ["exponential", 1.4],
@@ -457,7 +457,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": "#797B77",
+        "line-color": landColors.road,
         "line-offset": 0,
         "line-width": [
           "interpolate",
@@ -685,7 +685,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": "#797B77",
+        "line-color": landColors.road,
         "line-width": [
           "interpolate",
           ["exponential", 1.4],
