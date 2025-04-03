@@ -11,29 +11,29 @@ export type ESRelatedPlace = {
   identifiers: TWebIdentifier[];
   location: TLonLat;
   name: string;
-  preview?: string;
+  featured_photograph?: string;
   slug: string;
   type: string;
   types?: string[];
   uuid: string;
 };
 
-export type ESVideo = {
-  featured: null | boolean;
-  embed_url: string;
-  provider: string;
-  embed_id: string;
-  name: string;
-  thumbnail_url: string;
-  uuid: string;
-};
-
-type ESRelatedPhotograph = {
-  featured: boolean | null;
-  name: string;
-  uuid: string;
+export type ESRelatedMedium = {
+  description: string;
   full_url: string;
+  embed_url: string;
+  featured: boolean | undefined;
+  info?: string;
+  media_type: "pano" | "photograph" | "video";
+  name: string;
+  places?: ESRelatedPlace[];
+  place_names?: string[];
+  publisher?: string;
+  location?: TLonLat;
+  slug: string;
+  title?: string;
   thumbnail_url: string;
+  uuid?: string;
 };
 
 export type ESManifests = {
@@ -59,20 +59,6 @@ export type ESMapLayer = {
   name: string;
 };
 
-export type ESPano = {
-  description: string;
-  embed_url: string;
-  name: string;
-  places?: ESRelatedPlace[];
-  place_names?: string[];
-  publisher?: string;
-  location?: TLonLat;
-  slug: string;
-  title?: string;
-  thumbnail_url: string;
-  uuid?: string;
-};
-
 type TWebIdentifier = {
   authority: "viaf" | "wikidata" | "geonames";
   identifier: string;
@@ -81,29 +67,29 @@ type TWebIdentifier = {
 export type ESPlace = {
   bbox: [number, number, number, number];
   county: string;
-  date_modified: string;
+  date_modified?: string;
   description: string;
-  featured_photograph: string;
-  featured_video: ESVideo;
+  featured_photograph?: string;
+  featured_video?: ESRelatedMedium;
   geojson: FeatureCollection;
   identifier: string;
-  identifiers: TWebIdentifier[];
+  identifiers?: TWebIdentifier[];
   manifests: ESManifests[];
   map_layers: ESMapLayer[];
   name: string;
-  names: string[];
+  names?: string[];
   location: TLonLat;
   other_places: ESRelatedPlace[];
-  panos?: ESPano[];
-  photographs: ESRelatedPhotograph[];
+  panos?: ESRelatedMedium[];
+  photographs?: ESRelatedMedium[];
   places: ESRelatedPlace[];
   short_description: string;
   slug: string;
-  topos: ESTopo[];
+  topos?: ESTopo[];
   type: string;
   types: string[];
   uuid: string;
-  videos: ESVideo[];
+  videos?: ESRelatedMedium[];
 };
 
 export type ESMapItem = {
@@ -133,6 +119,6 @@ export type ESPhotographItem = {
   places: string[];
   slug: string;
   title?: string;
-  thumbnail_rul: string;
+  thumbnail_url: string;
   uuid: string;
 };

@@ -26,6 +26,17 @@ const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
     }
   }, [map, activeStyle]);
 
+  useEffect(() => {
+    if (!map) return;
+    if (activeStyle === "satellite") {
+      const currentZoom = map.getZoom();
+      if (currentZoom > 15.5) map.setZoom(15.5);
+      map.setMaxZoom(15.5);
+    } else {
+      map.setMaxZoom(22);
+    }
+  }, [map, activeStyle]);
+
   return (
     <Popover>
       <PopoverButton className="flex items-center gap-2 absolute top-4 right-4 bg-white p-4 rounded-full shadow-md">

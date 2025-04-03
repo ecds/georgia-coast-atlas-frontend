@@ -7,7 +7,7 @@ export const satellite: StyleSpecification = {
     "maputnik:renderer": "mbgljs",
   },
   center: [1.537786, 41.837539],
-  zoom: 12,
+  zoom: 20,
   bearing: 0,
   pitch: 0,
   sources: {

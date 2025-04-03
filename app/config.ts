@@ -386,7 +386,6 @@ export const PLACE_TYPES: TTypeColors = {
 const collectionPrefix = "georgia_coast";
 
 export const indexCollection = `${collectionPrefix}_places`;
-export const countyIndexCollection = `${collectionPrefix}_counties`;
 export const topicIndexCollection = `${collectionPrefix}_topics`;
 export const worksIndexCollection = `${collectionPrefix}_works`;
 export const mapIndexCollection = `${collectionPrefix}_maps`;
@@ -398,8 +397,6 @@ export const defaultBounds = () => {
   // import { bbox } from "@turf/turf";
   // import { simpleCounties } from "~/mapStyles";
   // import { LngLat, LngLatBounds } from "maplibre-gl";
-  // import { inlandCountyShapes, simpleIslandShapes } from "~/mapStyles/sources";
-  // const counties = bbox(inlandCountyShapes);
   // const islands = bbox(simpleIslandShapes);
   // const countyBounds = new LngLatBounds(
   //   new LngLat(counties[0], counties[1]),

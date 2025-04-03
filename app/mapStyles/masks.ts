@@ -1,37 +1,38 @@
-import { simpleIslandShapes, inlandCountyShapes } from "./sources";
+import { areas } from "./sources";
 import type { StyleSpecification } from "maplibre-gl";
 
 export const landColors = {
-  island: "#4A5D41",
-  activeIsland: "#68825C",
-  county: "#414A5D",
-  activeCounty: "#606C87",
+  island: "#68825C",
+  activeIsland: "#4A5D41",
+  county: "#606C87",
+  activeCounty: "#414A5D",
   water: "#8191B2",
   road: "#797B77",
 };
 
+export const areasSourceId = "islands";
+export const islandsLayerId = "simpleIslandsFill";
+export const countiesSourceId = "counties";
+export const countiesLayerId = "simpleCounties";
+
 export const masks: StyleSpecification = {
   version: 8,
   sources: {
-    counties: {
+    [areasSourceId]: {
       type: "geojson",
-      data: inlandCountyShapes,
-      promoteId: "uuid",
-    },
-    islands: {
-      type: "geojson",
-      data: simpleIslandShapes,
+      data: areas,
       promoteId: "uuid",
     },
   },
   layers: [
     {
-      id: "simpleIslandsFill",
-      source: "islands",
+      id: islandsLayerId,
+      source: areasSourceId,
       type: "fill",
       layout: {
         visibility: "visible",
       },
+      filter: ["==", ["get", "type"], "island"],
       paint: {
         "fill-color": [
           "case",
@@ -42,12 +43,13 @@ export const masks: StyleSpecification = {
       },
     },
     {
-      id: "simpleCounties",
-      source: "counties",
+      id: countiesLayerId,
+      source: areasSourceId,
       type: "fill",
       layout: {
         visibility: "visible",
       },
+      filter: ["==", ["get", "type"], "county"],
       paint: {
         "fill-color": [
           "case",

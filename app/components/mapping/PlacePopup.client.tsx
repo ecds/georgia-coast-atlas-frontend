@@ -21,18 +21,20 @@ interface PopupProps extends Props {
 
 const PopupContent = ({ onClose, children, showCloseButton = true }: Props) => {
   return (
-    <div>
-      {children}
+    <div className="flex flex-col">
       {showCloseButton && (
-        <button
-          className="maplibregl-popup-close-button"
-          type="button"
-          aria-label="Close popup"
-          onClick={onClose}
-        >
-          <FontAwesomeIcon icon={faClose} />
-        </button>
+        <div className="flex justify-end">
+          <button
+            // className="maplibregl-popup-close-button"
+            type="button"
+            aria-label="Close popup"
+            onClick={onClose}
+          >
+            <FontAwesomeIcon icon={faClose} />
+          </button>
+        </div>
       )}
+      {children}
     </div>
   );
 };
@@ -73,7 +75,7 @@ const PlacePopup = ({
     if (popContainerRef.current && coordinates && show && map) {
       popupRef.current = new maplibregl.Popup({
         closeButton: false,
-        className: "pointer-events-auto",
+        className: "pointer-events-auto place-popup",
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current);

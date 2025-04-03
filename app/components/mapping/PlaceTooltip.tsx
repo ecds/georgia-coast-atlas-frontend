@@ -7,31 +7,24 @@ import type { ReactNode } from "react";
 import type { PositionAnchor } from "maplibre-gl";
 import type { TLonLat } from "~/esTypes";
 
-interface Props {
+interface PopupProps {
+  anchor?: PositionAnchor;
+  children: ReactNode;
+  className?: string;
   location: TLonLat;
   onClose: () => void;
-  children: ReactNode;
-  showCloseButton?: boolean;
-}
-
-interface PopupProps extends Props {
   show: boolean;
   zoomToFeature?: boolean;
-  anchor?: PositionAnchor;
 }
 
-const TooltipContent = ({ children }: Props) => {
-  return <div className="text-lg">{children}</div>;
-};
-
 const PlaceTooltip = ({
-  location,
-  show,
-  onClose,
-  zoomToFeature = true,
-  children,
-  showCloseButton = true,
   anchor,
+  children,
+  className,
+  location,
+  onClose,
+  show,
+  zoomToFeature = true,
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const { map } = useContext(MapContext);
@@ -95,13 +88,7 @@ const PlaceTooltip = ({
     return (
       <>
         {createPortal(
-          <TooltipContent
-            location={location}
-            onClose={onClose}
-            showCloseButton={showCloseButton}
-          >
-            {children}
-          </TooltipContent>,
+          <div className={className ?? "text-lg"}>{children}</div>,
           popContainerRef.current
         )}
       </>

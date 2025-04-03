@@ -33,7 +33,9 @@ const RelatedTopoQuads = () => {
     }
   };
 
-  if (place.topos?.length > 0) {
+  if (!place || !place.topos) return null;
+
+  if (place.topos.length > 0) {
     return (
       <RelatedSection
         title="Topo Quads"

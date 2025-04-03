@@ -1,2 +1,1 @@
-export * from "./islands";
-export * from "./inlandCounties";
+export * from "./areas";

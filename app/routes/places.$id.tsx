@@ -1,43 +1,32 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import {
-  useLoaderData,
-  useLocation,
-  useNavigation,
-  useNavigate,
-} from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
+import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faArrowUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
+import { PlaceContext } from "~/contexts";
 import { fetchBySlug } from "~/data/coredata";
-import { MapContext, PlaceContext } from "~/contexts";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
-import { countyIndexCollection, dataHosts, indexCollection } from "~/config";
+import { dataHosts, indexCollection } from "~/config";
 import { pageMetadata } from "~/utils/pageMetadata";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
-import RelatedVideos from "~/components/relatedRecords/RelatedVideos";
-import RelatedPhotographs from "~/components/relatedRecords/RelatedPhotographs";
 import RelatedMapLayers from "~/components/relatedRecords/RelatedMapLayers";
 import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
-import RelatedPanos from "~/components/relatedRecords/RelatedPanos";
+import RelatedSection from "~/components/relatedRecords/RelatedSection";
+import RelatedMedia from "~/components/relatedRecords/RelatedMedia";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
 import type { LngLatBounds } from "maplibre-gl";
-import RelatedSection from "~/components/relatedRecords/RelatedSection";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return pageMetadata(data?.place);
+  return pageMetadata(data?.place as ESPlace);
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  let place: ESPlace = await fetchBySlug(params.id, indexCollection);
-
-  if (!place) {
-    place = await fetchBySlug(params.id, countyIndexCollection);
-  }
+  const place: ESPlace = await fetchBySlug(params.id, indexCollection);
 
   if (!place) {
     throw new Response(null, {
@@ -62,11 +51,12 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const PlacePage = () => {
   const { place, wpData } = useLoaderData<typeof loader>();
-  const { map } = useContext(MapContext);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [activePlace, setActivePlace] = useState<
+    ESRelatedPlace | ESPlace | undefined
+  >();
   const [hoveredPlace, setHoveredPlace] = useState<
-    ESRelatedPlace | undefined
+    ESRelatedPlace | ESPlace | undefined
   >();
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
   const [backTo, setBackTo] = useState<
@@ -80,7 +70,6 @@ const PlacePage = () => {
     | undefined
   >(undefined);
   const topRef = useRef<HTMLDivElement>(null);
-  const navigation = useNavigation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -88,20 +77,45 @@ const PlacePage = () => {
     setBackTo(location.state);
   }, [location]);
 
-  useEffect(() => {
-    if (navigation.state === "loading" && map) {
-      if (map && map.getLayer(`place-${place.uuid}`))
-        map.removeLayer(`place-${place.uuid}`);
-    }
-  }, [navigation, map, place]);
-
   const navigateBack = () => {
     if (backTo) {
       navigate(-1);
     }
   };
 
-  useEffect(() => {}, [backTo]);
+  // useEffect(() => {
+  //   if (!map) return;
+  //   if (
+  //     place.types.includes("Barrier Island") ||
+  //     place.types.includes("County")
+  //   ) {
+  //     map.setFeatureState(
+  //       { source: areasSourceId, id: place.uuid },
+  //       { hovered: true }
+  //     );
+  //   } else {
+  //     map.setPaintProperty(
+  //       countiesLayerId,
+  //       "fill-color",
+  //       landColors.activeCounty
+  //     );
+  //     map.setPaintProperty(
+  //       islandsLayerId,
+  //       "fill-color",
+  //       landColors.activeIsland
+  //     );
+  //   }
+
+  //   return () => {
+  //     map.setPaintProperty(countiesLayerId, "fill-color", landColors.county);
+  //     map.setPaintProperty(islandsLayerId, "fill-color", landColors.island);
+  //     map.setFeatureState(
+  //       { source: areasSourceId, id: place.uuid },
+  //       { hovered: false }
+  //     );
+  //   };
+  // }, [map, place]);
+
   return (
     <PlaceContext.Provider
       value={{
@@ -131,7 +145,7 @@ const PlacePage = () => {
         )}
         <Heading
           as="h1"
-          className="text-2xl px-4 py-1 pb-1 sticky top-[3.25rem] z-10 bg-white shadow-md"
+          className={`text-2xl px-4 py-1 pb-1 sticky ${backTo ? "top-[3.25rem]" : "top-0"} z-10 bg-white shadow-md`}
         >
           {place.name}
         </Heading>
@@ -144,33 +158,35 @@ const PlacePage = () => {
             __html:
               wpData?.content.rendered ??
               place.description ??
-              `<p>${place.short_description}</p>`,
+              place.short_description,
           }}
         />
         <div className="px-4">
           <RelatedPlaces />
-          <RelatedVideos />
-          <RelatedPhotographs />
-          <RelatedPanos />
+          <RelatedMedia title="Videos" records={place.videos} />
+          <RelatedMedia title="Photographs" records={place.photographs} />
+          <RelatedMedia title="Panos" records={place.panos} />
           <RelatedMapLayers />
           <RelatedTopoQuads />
-          <RelatedSection title="See Also">
-            {place.identifiers.map((identifier) => {
-              return (
-                <a
-                  key={identifier.authority}
-                  href={identifier.identifier}
-                  className="block my-2 uppercase text-county hover:text-activeCounty underline"
-                >
-                  {identifier.authority}{" "}
-                  <FontAwesomeIcon
-                    icon={faArrowUpRightFromSquare}
-                    className="text-sm"
-                  />
-                </a>
-              );
-            })}
-          </RelatedSection>
+          {place.identifiers && place.identifiers.length > 0 && (
+            <RelatedSection title="See Also">
+              {place.identifiers?.map((identifier) => {
+                return (
+                  <a
+                    key={identifier.authority}
+                    href={identifier.identifier}
+                    className="block my-2 uppercase text-county hover:text-activeCounty underline"
+                  >
+                    {identifier.authority}{" "}
+                    <FontAwesomeIcon
+                      icon={faArrowUpRightFromSquare}
+                      className="text-sm"
+                    />
+                  </a>
+                );
+              })}
+            </RelatedSection>
+          )}
         </div>
       </>
     </PlaceContext.Provider>

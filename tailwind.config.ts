@@ -111,10 +111,9 @@ export default {
             width: "1rem",
           },
         },
-        "[maplibregl-popup-close-button], button.maplibregl-popup-close-button":
-          {
-            paddingRight: ".5rem !important",
-          },
+        "[maplibregl-popup], .place-popup .maplibregl-popup-content": {
+          paddingTop: "0 !important",
+        },
         "[maplibregl-popup-content], .tooltip .maplibregl-popup-content": {
           background: "black",
         },

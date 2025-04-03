@@ -1,9 +1,9 @@
 import CloverImage from "@samvera/clover-iiif/image";
 import type { Options } from "openseadragon";
-import type { ESPhotographItem } from "~/esTypes";
+import type { ESPhotographItem, ESRelatedMedium } from "~/esTypes";
 
 interface Props {
-  photo: ESPhotographItem;
+  photo: ESPhotographItem | ESRelatedMedium;
 }
 
 const openSeadragonConfig: Options = {
@@ -19,7 +19,7 @@ const openSeadragonConfig: Options = {
 
 const IIIFViewer = ({ photo }: Props) => {
   return (
-    <div className="h-[66vh] w-full border border-black/50 rounded-md shadow-lg">
+    <div className="h-[50vh] w-full border border-black/50 rounded-md shadow-lg">
       <CloverImage
         src={photo.full_url}
         openSeadragonConfig={openSeadragonConfig}

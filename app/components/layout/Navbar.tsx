@@ -4,7 +4,7 @@ import gcaLogo from "app/images/gca-logo.png";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
-  "w-52 origin-top-right rounded-xl border bg-activeIsland border-black/50 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50";
+  "w-52 origin-top-right rounded-xl border bg-island border-black/50 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50";
 const menuLinkClassName =
   "block rounded-lg text-white capitalize py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50";
 

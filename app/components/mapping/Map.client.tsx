@@ -21,7 +21,6 @@ const Map = ({ children, className }: Props) => {
 
     const initialLayers = ({ target }: MapLibreEvent) => {
       if (!target.getLayer("buildings")) return;
-      target.on("click", "buildings", (event) => console.log(event));
       // target.setLayoutProperty("buildings", "visibility", "none");
     };
 
@@ -50,7 +49,7 @@ const Map = ({ children, className }: Props) => {
 
       _map.addControl(new AttributionControl({ compact: true }));
 
-      _map.on("styledata", initialLayers);
+      // _map.on("styledata", initialLayers);
     } catch (error) {
       console.error(error);
     }

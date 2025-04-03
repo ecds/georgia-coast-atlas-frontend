@@ -6,7 +6,7 @@ import { LngLatBounds } from "maplibre-gl";
 import {
   cluster,
   clusterCount,
-  placePolygon,
+  // placePolygon,
   singlePoint,
 } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
@@ -15,8 +15,9 @@ import type {
   MapLayerMouseEvent,
   SourceSpecification,
 } from "maplibre-gl";
+import { areasSourceId } from "~/mapStyles";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat, ESRelatedPlace } from "~/esTypes";
+import type { TLonLat, ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -34,7 +35,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     setActivePlace,
   } = useContext(PlaceContext);
   const [tooltipPlace, setTooltipPlace] = useState<
-    ESRelatedPlace | undefined
+    ESRelatedPlace | ESPlace | undefined
   >();
   const [hoverLocation, setHoverLocation] = useState<TLonLat>({
     lat: 0,
@@ -45,7 +46,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     ESRelatedPlace | undefined
   >();
   useEffect(() => {
-    if (!map || !place.geojson.features[1]) return;
+    if (!map || !place) return;
 
     const handleMouseEnter = async ({ features }: MapLayerMouseEvent) => {
       map.getCanvas().style.cursor = "pointer";
@@ -110,16 +111,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       promoteId: "uuid",
     };
 
-    const shapeSource: SourceSpecification = {
-      type: "geojson",
-      data: place.geojson,
-      promoteId: "uuid",
-    };
-
     const sourceId = `place-${place.uuid}`;
-    const shapeSourceId = `place-shape-${place.uuid}`;
-
-    const polyLayer = placePolygon(`polygon-${place.uuid}`, shapeSourceId);
 
     const clusterLayer = cluster({
       id: `clusters-${place.uuid}`,
@@ -136,8 +128,6 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     const pointLayer = singlePoint(`points-${place.uuid}`, sourceId);
 
     map.addSource(sourceId, placesSource);
-    map.addSource(shapeSourceId, shapeSource);
-    // map.addLayer(polyLayer);
     map.addLayer(clusterLayer);
     map.addLayer(countLayer);
     map.addLayer(pointLayer);
@@ -148,18 +138,31 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     map.on("click", pointLayer.id, handleClick);
     map.on("click", clusterLayer.id, handleClick);
 
+    const setColors = () => {
+      map.setFeatureState(
+        { source: areasSourceId, id: place.uuid },
+        { hovered: true }
+      );
+    };
+
+    setColors();
+    map.on("styledata", setColors);
+
     return () => {
+      map.setFeatureState(
+        { source: areasSourceId, id: place.uuid },
+        { hovered: false }
+      );
       map.off("mousemove", pointLayer.id, handleMouseEnter);
       map.off("mousemove", clusterLayer.id, handleMouseEnter);
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
       map.off("click", pointLayer.id, handleClick);
       map.off("click", clusterLayer.id, handleClick);
-      // map.removeLayer(polyLayer.id);
+      map.off("styledata", setColors);
       map.removeLayer(clusterLayer.id);
       map.removeLayer(countLayer.id);
       map.removeLayer(pointLayer.id);
       map.removeSource(sourceId);
-      map.removeSource(shapeSourceId);
     };
   }, [map, geojson, clusterFillColor, clusterTextColor, place]);
 

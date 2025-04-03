@@ -20,7 +20,12 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   const [geojson, setGeojson] = useState<FeatureCollection | undefined>();
 
   useEffect(() => {
-    if (place.places.length == 0 || !place.types.includes("Barrier Island")) {
+    if (!place) return;
+    if (
+      place.places.length == 0 ||
+      (!place.types.includes("Barrier Island") &&
+        !place.types.includes("County"))
+    ) {
       setGeojson(toFeatureCollection([place]));
     } else if (!place.other_places || otherPlaces.length === 0) {
       setGeojson(toFeatureCollection(place.places));
@@ -30,8 +35,10 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   }, [place, otherPlaces]);
 
   useEffect(() => {
-    if (!place.other_places) setOtherPlaces([]);
+    if (!place?.other_places) setOtherPlaces([]);
   }, [place]);
+
+  if (!place) return null;
 
   return (
     <RelatedSection
@@ -55,8 +62,11 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
           onClose={() => setActivePlace(undefined)}
           zoomToFeature={false}
         >
-          {activePlace.preview && (
-            <img src={activePlace.preview.replace("max", "600,")} alt="" />
+          {activePlace.featured_photograph && (
+            <img
+              src={activePlace.featured_photograph.replace("max", "600,")}
+              alt=""
+            />
           )}
           <h4 className="text-xl">{activePlace.name}</h4>
           <div

@@ -38,8 +38,8 @@ const WMSLayer = ({ placeLayer }: Props) => {
     };
 
     map.addSource(placeLayer.uuid, source);
-    if (map.getLayer(`clusters-${place.uuid}`)) {
-      map.addLayer(layer, `clusters-${place.uuid}`);
+    if (map.getLayer(`clusters-${place?.uuid}`)) {
+      map.addLayer(layer, `clusters-${place?.uuid}`);
     } else {
       map.addLayer(layer);
     }
@@ -56,7 +56,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
       map &&
       map.getLayer(placeLayer.uuid)
     ) {
-      map.moveLayer(placeLayer.uuid, `clusters-${place.uuid}`);
+      map.moveLayer(placeLayer.uuid, `clusters-${place?.uuid}`);
       map.setPaintProperty(placeLayer.uuid, "raster-opacity", opacity * 0.01);
     } else {
       map?.setPaintProperty(placeLayer.uuid, "raster-opacity", 0);

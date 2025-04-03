@@ -138,7 +138,7 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
           "@type": "ItemPage",
           identifier: place.identifier,
           name: place.name,
-          alternateName: place.names.filter((name) => name !== place.name),
+          alternateName: place.names?.filter((name) => name !== place.name),
           url: `https://georgiacoastatlas.org/places/${place.slug}`,
           headline: `Georgia Coast Atlas: ${place.name}`,
           abstract:

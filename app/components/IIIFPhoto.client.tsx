@@ -2,7 +2,7 @@ import { useContext } from "react";
 import CloverImage from "@samvera/clover-iiif/image";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
-import { GalleryContext } from "~/contexts";
+import { RelatedMediaContext } from "~/contexts";
 import type { Options } from "openseadragon";
 
 const openSeadragonConfig: Options = {
@@ -15,7 +15,7 @@ const openSeadragonConfig: Options = {
 };
 
 const IIIFPhoto = () => {
-  const { activePhotograph } = useContext(GalleryContext);
+  const { activePhotograph } = useContext(RelatedMediaContext);
   // const overlayRef = useRef<HTMLDivElement>(null);
 
   return (

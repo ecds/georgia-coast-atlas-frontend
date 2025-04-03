@@ -3,7 +3,7 @@ import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { MapContext, PlaceContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
-import { masks } from "~/mapStyles";
+import { countiesLayerId, islandsLayerId, areasSourceId } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import { booleanWithin, point } from "@turf/turf";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
@@ -12,25 +12,15 @@ import type { Geometry } from "geojson";
 
 interface Props {
   places: ESPlace[];
-  sourceName: string;
 }
 
-const islandStyleLayer = masks.layers.find(
-  (layer) => layer.id === "simpleIslandsFill"
-);
-
-const countyStyleLayer = masks.layers.find(
-  (layer) => layer.id === "simpleCounties"
-);
-
-const FeaturedPlaces = ({ places, sourceName }: Props) => {
+const FeaturedPlaces = ({ places }: Props) => {
   const { map, mapLoaded } = useContext(MapContext);
-  const { hoveredPlace, setHoveredPlace } = useContext(PlaceContext);
-  const hoveredId = useRef<string | undefined>(undefined);
-  const [activeIsland, setActiveIsland] = useState<ESPlace | undefined>(
-    undefined
-  );
+  const { hoveredPlace, setHoveredPlace, activePlace, setActivePlace } =
+    useContext(PlaceContext);
   const [location, setLocation] = useState<TLonLat | undefined>(undefined);
+  const [currentZoom, setCurrentZoom] = useState<number>(0);
+  const hoveredId = useRef<string | undefined>(undefined);
   const hoveredGeometry = useRef<Geometry | undefined>(undefined);
 
   const handleMouseMove = useCallback(
@@ -63,6 +53,8 @@ const FeaturedPlaces = ({ places, sourceName }: Props) => {
           setLocation(undefined);
           hoveredGeometry.current = undefined;
         }
+      } else {
+        setHoveredPlace(undefined);
       }
     },
     [map, setHoveredPlace]
@@ -82,42 +74,54 @@ const FeaturedPlaces = ({ places, sourceName }: Props) => {
       });
       setHoveredPlace(undefined);
       setLocation(undefined);
-      setActiveIsland(clickedIsland);
+      setActivePlace(clickedIsland);
     },
-    [map, places, setHoveredPlace]
+    [map, places, setHoveredPlace, setActivePlace]
   );
 
   useEffect(() => {
-    const sourceLayer =
-      sourceName == "islands" ? islandStyleLayer : countyStyleLayer;
+    const updateZoom = () => {
+      if (!map) return;
+      setCurrentZoom(map.getZoom());
+    };
 
-    if (!map || !mapLoaded || !sourceLayer || !map.getLayer(sourceLayer.id))
-      return;
+    const clearLocation = () => {
+      setLocation(undefined);
+    };
 
-    map.on("mousemove", sourceLayer.id, handleMouseMove);
-    map.on("mouseleave", sourceLayer.id, handleMouseLeave);
-    map.on("click", sourceLayer.id, handleClick);
+    if (!map) return;
+
+    for (const layer of [islandsLayerId, countiesLayerId]) {
+      map.on("mousemove", layer, handleMouseMove);
+      map.on("mouseleave", layer, handleMouseLeave);
+      map.on("click", layer, handleClick);
+    }
+    map.on("zoomend", updateZoom);
+    map.on("mouseout", clearLocation);
 
     return () => {
-      map.off("mousemove", sourceLayer.id, handleMouseMove);
-      map.off("mouseleave", sourceLayer.id, handleMouseLeave);
-      map.off("click", sourceLayer.id, handleClick);
+      for (const layer of [islandsLayerId, countiesLayerId]) {
+        map.off("mousemove", layer, handleMouseMove);
+        map.off("mouseleave", layer, handleMouseLeave);
+        map.off("click", layer, handleClick);
+      }
+      for (const place of places) {
+        map.setFeatureState(
+          { source: areasSourceId, id: place.uuid },
+          { hovered: false }
+        );
+      }
+      map.off("zoomend", updateZoom);
+      map.off("mouseout", clearLocation);
     };
-  }, [
-    map,
-    mapLoaded,
-    handleClick,
-    handleMouseMove,
-    handleMouseLeave,
-    sourceName,
-  ]);
+  }, [map, mapLoaded, handleClick, handleMouseMove, handleMouseLeave, places]);
 
   useEffect(() => {
-    // if (hoveredPlace) setActiveIsland(undefined);
+    // if (hoveredPlace) setActivePlace(undefined);
     if (!map) return;
     if (hoveredId.current && hoveredId.current !== hoveredPlace?.uuid) {
       map.setFeatureState(
-        { source: sourceName, id: hoveredId.current },
+        { source: areasSourceId, id: hoveredId.current },
         { hovered: false }
       );
       hoveredId.current = undefined;
@@ -125,60 +129,70 @@ const FeaturedPlaces = ({ places, sourceName }: Props) => {
 
     if (hoveredPlace) {
       map.setFeatureState(
-        { source: sourceName, id: hoveredPlace.uuid },
+        { source: areasSourceId, id: hoveredPlace.uuid },
         { hovered: true }
       );
       hoveredId.current = hoveredPlace.uuid;
     } else {
       hoveredId.current = undefined;
+      map.removeFeatureState({ source: areasSourceId });
     }
-  }, [map, hoveredPlace, sourceName]);
+  }, [map, hoveredPlace]);
 
-  return (
-    <>
-      {places.map((place) => {
-        return (
-          <ClientOnly key={`popup-${place.uuid}`}>
-            {() => (
-              <>
-                <PlacePopup
-                  show={activeIsland == place}
-                  location={place.location}
-                  onClose={() => setActiveIsland(undefined)}
-                  zoomToFeature={false}
-                >
-                  {place.featured_photograph && (
-                    <img
-                      src={place.featured_photograph.replace("max", "600,")}
-                      alt=""
-                    />
-                  )}
-                  <h4 className="text-xl ">{place.name}</h4>
-                  <p>{place.short_description}</p>
-                  <Link
-                    state={{ title: "Search Results", slug: "search" }}
-                    to={`/places/${place.slug}`}
-                    className="text-blue-700 underline underline-offset-2 text-l block mt-2"
+  useEffect(() => {
+    if (activePlace) setHoveredPlace(undefined);
+  }, [activePlace, setHoveredPlace]);
+
+  if (map) {
+    return (
+      <>
+        {places.map((place) => {
+          return (
+            <ClientOnly key={`popup-${place.uuid}`}>
+              {() => (
+                <>
+                  <PlacePopup
+                    show={activePlace == place}
+                    location={place.location}
+                    onClose={() => setActivePlace(undefined)}
+                    zoomToFeature={false}
                   >
-                    Explore
-                  </Link>
-                </PlacePopup>
-                <PlaceTooltip
-                  show={hoveredPlace == place}
-                  location={location ?? place.location}
-                  onClose={() => setActiveIsland(undefined)}
-                  zoomToFeature={false}
-                  // anchor={sourceName === "islands" ? "left" : "right"}
-                >
-                  <h4 className="text-white">{place.name}</h4>
-                </PlaceTooltip>
-              </>
-            )}
-          </ClientOnly>
-        );
-      })}
-    </>
-  );
+                    {place.featured_photograph && (
+                      <img
+                        src={place.featured_photograph.replace("max", "600,")}
+                        alt=""
+                      />
+                    )}
+                    <h4 className="text-xl ">{place.name}</h4>
+                    <p>{place.short_description}</p>
+                    <Link
+                      state={{ title: "Explore", slug: "explore" }}
+                      to={`/places/${place.slug}`}
+                      className="text-blue-700 underline underline-offset-2 text-l block mt-2"
+                    >
+                      Explore
+                    </Link>
+                  </PlacePopup>
+                  <PlaceTooltip
+                    show={hoveredPlace == place && activePlace !== hoveredPlace}
+                    className={currentZoom < 12 ? "text-lg" : "text-xs"}
+                    location={location ?? place.location}
+                    onClose={() => setActivePlace(undefined)}
+                    zoomToFeature={false}
+                    // anchor={sourceName === "islands" ? "left" : "right"}
+                  >
+                    <h4 className="text-white">{place.name}</h4>
+                  </PlaceTooltip>
+                </>
+              )}
+            </ClientOnly>
+          );
+        })}
+      </>
+    );
+  }
+
+  return null;
 };
 
 export default FeaturedPlaces;

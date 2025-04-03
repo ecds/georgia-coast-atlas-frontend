@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Carousel } from "nuka-carousel";
 import {
   Button,
   Dialog,
@@ -10,18 +11,50 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import type { ReactNode } from "react";
-import type { ESVideo, ESPano } from "~/esTypes";
+import type { ESRelatedMedium } from "~/esTypes";
+import { ClientOnly } from "remix-utils/client-only";
+import IIIFViewer from "./layout/IIIFViewer.client";
+import MediumThumbnail from "./MediumThumbnail";
+import { RelatedMediaContext } from "~/contexts";
 
 interface Props {
   children: ReactNode;
-  medium: ESVideo | ESPano;
+  medium: ESRelatedMedium;
+  media: ESRelatedMedium[];
 }
 
-const MediumModal = ({ children, medium }: Props) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+const MediumViewer = () => {
+  const { activeMedium } = useContext(RelatedMediaContext);
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  if (!activeMedium) return null;
+
+  if (activeMedium.media_type == "photograph") {
+    return <ClientOnly>{() => <IIIFViewer photo={activeMedium} />}</ClientOnly>;
+  }
+  return (
+    <div className="relative pb-[56.25%] h-0 overflow-hidden max-w-full">
+      <iframe
+        className="absolute t-0 l-0 h-full w-full"
+        src={activeMedium.embed_url}
+        title={activeMedium.name}
+        allowFullScreen
+      />
+    </div>
+  );
+};
+
+const MediumModal = ({ children, medium, media }: Props) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { activeMedium, setActiveMedium } = useContext(RelatedMediaContext);
+
+  const open = () => {
+    setIsOpen(true);
+    setActiveMedium(medium);
+  };
+  const close = () => {
+    setIsOpen(false);
+    setActiveMedium(undefined);
+  };
 
   return (
     <>
@@ -29,7 +62,7 @@ const MediumModal = ({ children, medium }: Props) => {
       <Transition appear show={isOpen}>
         <Dialog
           as="div"
-          className="relative z-10 focus:outline-none"
+          className="relative z-50 focus:outline-none"
           onClose={close}
         >
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
@@ -53,14 +86,33 @@ const MediumModal = ({ children, medium }: Props) => {
                       <FontAwesomeIcon icon={faCircleXmark} /> Close
                     </Button>
                   </DialogTitle>
-                  <div className="relative pb-[56.25%] h-0 overflow-hidden max-w-full">
-                    <iframe
-                      className="absolute t-0 l-0 h-full w-full"
-                      src={medium.embed_url}
-                      title={medium.name}
-                      allowFullScreen
-                    />
-                  </div>
+                  <MediumViewer />
+                  {media.length > 1 && (
+                    <Carousel
+                      showArrows
+                      scrollDistance="slide"
+                      wrapMode="wrap"
+                      initialPage={
+                        activeMedium ? media.indexOf(activeMedium) - 2 : 0
+                      }
+                    >
+                      {media.map((medium) => {
+                        return (
+                          <button
+                            key={`carousel-${medium.uuid}`}
+                            className={`mt-2 rounded-md ${medium.media_type === "pano" ? "" : "w-32 h-32"} ${medium === activeMedium ? "bg-water/25" : ""}`}
+                            onClick={() => setActiveMedium(medium)}
+                          >
+                            <MediumThumbnail
+                              medium={medium}
+                              captionClassName="text-sm truncate text-left"
+                              figureClassName={`${medium.media_type === "pano" ? "mx-4 my-2" : "scale-75"} w-32 max-h-32`}
+                            />
+                          </button>
+                        );
+                      })}
+                    </Carousel>
+                  )}
                 </DialogPanel>
               </TransitionChild>
             </div>

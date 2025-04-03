@@ -15,7 +15,7 @@ const PlaceList = () => {
         label: "flex flex-row gap-2 my-2",
         labelText: "truncate",
         showMore:
-          "border text-white capitalize border-island bg-activeIsland hover:bg-activeIsland/40 px-2 py-1 rounded-md",
+          "border text-white capitalize border-island bg-island hover:bg-island/40 px-2 py-1 rounded-md",
       }}
     />
   );

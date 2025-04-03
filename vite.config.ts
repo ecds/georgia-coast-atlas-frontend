@@ -5,6 +5,13 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import SiteMap from "vite-plugin-sitemap";
 import { islands } from "./app/config";
 
+declare module "@remix-run/node" {
+  // or cloudflare, deno, etc.
+  interface Future {
+    v3_singleFetch: true;
+  }
+}
+
 const ISLANDS = islands.map((island) => `/${island.id}-island`);
 
 const robotOption = {

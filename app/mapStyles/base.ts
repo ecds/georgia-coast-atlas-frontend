@@ -317,7 +317,10 @@ export const base: StyleSpecification = {
       filter: [
         "all",
         ["==", ["geometry-type"], "LineString"],
-        ["match", ["get", "class"], ["minor"], true, false],
+        // ["!=", ["get", "access"], "False"],
+        ["match", ["get", "class"], ["minor", "service"], true, false],
+        // ["in", ["get", "service"], "[parking_aisle]"],
+        ["!=", ["get", "service"], "driveway"],
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
@@ -429,9 +432,11 @@ export const base: StyleSpecification = {
       filter: [
         "all",
         ["==", ["geometry-type"], "LineString"],
+        // ["==", ["get", "class"], "secondary"],
+        // ["in", ["get", "class"], "[secondary, tertiary]"],
         ["match", ["get", "class"], ["secondary", "tertiary"], true, false],
       ],
-      layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
+      layout: { "line-cap": "round", "line-join": "round" },
       paint: {
         "line-color": landColors.road,
         "line-width": [

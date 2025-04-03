@@ -63,7 +63,7 @@ const ExplorePage = () => {
                   state={{ title: "Explore", slug: "explore" }}
                   className={`${
                     hoveredPlace === island
-                      ? "text-white bg-activeIsland"
+                      ? "text-white bg-island"
                       : "text-black"
                   } p-2 rounded-sm`}
                 >
@@ -103,8 +103,7 @@ const ExplorePage = () => {
           )}
         </ul>
       </div>
-      <FeaturedPlaces places={islands} sourceName="islands" />
-      <FeaturedPlaces places={counties} sourceName="counties" />
+      <FeaturedPlaces places={[...islands, ...counties]} />
     </PlaceContext.Provider>
   );
 };

@@ -21,9 +21,11 @@ export const loader = async () => {
 
 const IndividualPlantations = () => {
   const { plantations, geojson } = useLoaderData<typeof loader>();
-  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [activePlace, setActivePlace] = useState<
+    ESRelatedPlace | ESPlace | undefined
+  >();
   const [hoveredPlace, setHoveredPlace] = useState<
-    ESRelatedPlace | undefined
+    ESRelatedPlace | ESPlace | undefined
   >();
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
 
@@ -51,12 +53,12 @@ const IndividualPlantations = () => {
           <h1 className="relative z-10 text-6xl font-extrabold uppercase text-center my-4">
             Plantations
           </h1>
-          <div className="relative p-10 rounded-lg shadow-md max-w-4xl mx-auto text-center z-10 bg-activeIsland">
+          <div className="relative p-10 rounded-lg shadow-md max-w-4xl mx-auto text-center z-10 bg-island">
             <p className="text-lg mt-4">intro here</p>
           </div>
         </header>
 
-        <main className="py-16 px-6 lg:px-20 space-y-16 bg-activeIsland">
+        <main className="py-16 px-6 lg:px-20 space-y-16 bg-island">
           <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[600px] mb-12">
             <div className="bg-white rounded-lg">
               <RelatedPlacesDetailedList />
