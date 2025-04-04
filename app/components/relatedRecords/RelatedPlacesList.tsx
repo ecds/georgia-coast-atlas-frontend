@@ -101,7 +101,7 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
               className="mt-4 p-2 bg-island text-white rounded"
               disabled={loading}
             >
-              {loading ? "Loading..." : "Load More"}
+              {loading ? "Loading..." : "Show More"}
             </button>
           )}
 

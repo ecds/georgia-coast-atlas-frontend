@@ -68,7 +68,7 @@ const RelatedMedia = ({ title, records }: Props) => {
             className="mt-4 p-2 bg-island text-white rounded"
             onClick={() => setShowingMore(!showingMore)}
           >
-            {showingMore ? "Show Less" : "Load More"}
+            {showingMore ? "Show Less" : "Show More"}
           </button>
         )}
       </RelatedSection>
