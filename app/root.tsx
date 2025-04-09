@@ -20,7 +20,10 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
 import { pageMetadata } from "~/utils/pageMetadata";
+import { MapContext } from "./contexts";
+import { useState } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type { Map as TMap } from "maplibre-gl";
 
 export const meta: MetaFunction = () => {
   return pageMetadata();
@@ -32,6 +35,8 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const [map, setMap] = useState<TMap>();
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   return (
     <html lang="en">
       <head>
@@ -53,7 +58,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           className={`mx-auto relative mt-20 bg-white overflow-hidden`}
           id="main"
         >
-          {children}
+          <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
+            {children}
+          </MapContext.Provider>
         </main>
         <Loading />
         <ScrollRestoration />
