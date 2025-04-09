@@ -119,6 +119,6 @@ export type ESPhotographItem = {
   places: string[];
   slug: string;
   title?: string;
-  thumbnail_url: string;
+  thumbnail_rul: string;
   uuid: string;
 };
