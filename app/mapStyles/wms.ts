@@ -1,21 +1,21 @@
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
-import type { ESMapLayer } from "~/esTypes";
 
 interface Props {
-  placeLayer: ESMapLayer;
+  url: string;
+  id: string;
   initialOpacity?: number | undefined;
 }
 
-export const wmsLayer = ({ placeLayer, initialOpacity }: Props) => {
+export const wmsLayer = ({ url, id, initialOpacity }: Props) => {
   const source: SourceSpecification = {
     type: "raster",
-    tiles: [placeLayer.wms_resource],
+    tiles: [url],
     tileSize: 256,
   };
 
   const layer: AddLayerObject = {
-    id: placeLayer.uuid,
-    source: placeLayer.uuid,
+    id,
+    source: id,
     type: "raster",
     paint: {
       "raster-opacity": initialOpacity ?? 0,

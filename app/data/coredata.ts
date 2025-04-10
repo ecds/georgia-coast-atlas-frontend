@@ -76,6 +76,7 @@ export const fetchBySlug = async (
         "uuid",
         "videos",
         "wms_resource",
+        "wms_resources",
       ],
     },
   };

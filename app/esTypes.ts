@@ -53,8 +53,9 @@ export type ESTopo = {
 };
 
 export type ESMapLayer = {
+  bbox: [number, number, number, number];
   preview: string;
-  wms_resource: string;
+  wms_resources: string[];
   uuid: string;
   name: string;
 };
@@ -95,7 +96,7 @@ export type ESPlace = {
 export type ESMapItem = {
   name: string;
   bbox: [number, number, number, number];
-  wms_resource: string;
+  wms_resources: string[];
   places: ESRelatedPlace[];
   description: string;
   date: string;
