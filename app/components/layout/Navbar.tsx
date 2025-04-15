@@ -10,6 +10,12 @@ const menuLinkClassName =
 
 const collections = ["maps", "panos", "photographs", "videos"];
 const aboutPages = ["project", "bibliography", "contact"];
+const topicPages = [
+  "climate-change",
+  "cultural-landscape",
+  "historical-sites",
+  "plantations",
+];
 
 const Navbar = () => {
   return (
@@ -61,12 +67,23 @@ const Navbar = () => {
           </MenuItems>
         </Menu>
 
-        <NavLink
-          to="/topics"
-          className="tracking-wide hover:underline text-white hover:text-white/80"
-        >
-          Topics
-        </NavLink>
+        <Menu>
+          <MenuButton>Topics</MenuButton>
+          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
+            {topicPages.map((topicPage) => {
+              return (
+                <MenuItem key={topicPage}>
+                  <Link
+                    className={`${menuLinkClassName} capitalize`}
+                    to={`/topics/${topicPage}`}
+                  >
+                    {topicPage.split("-").join(" ")}
+                  </Link>
+                </MenuItem>
+              );
+            })}
+          </MenuItems>
+        </Menu>
 
         <Menu>
           <MenuButton>About</MenuButton>

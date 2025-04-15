@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchBySlug } from "~/data/coredata";
+import { fetchBySlug, fetchPlacesByType } from "~/data/coredata";
 import { topicIndexCollection } from "~/config";
 import { useLoaderData } from "@remix-run/react";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
@@ -11,15 +11,13 @@ import RelatedSection from "~/components/relatedRecords/RelatedSection";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 export const loader = async () => {
-  const plantations: ESPlace = await fetchBySlug(
-    "plantations",
-    topicIndexCollection
-  );
-  const geojson = toFeatureCollection(plantations.places);
-  return { plantations, geojson };
+  const plantations: ESPlace[] = await fetchPlacesByType("Plantation");
+  const geojson = toFeatureCollection(plantations);
+  const topic = fetchBySlug("plantations", topicIndexCollection);
+  return { topic, plantations, geojson };
 };
 
-const IndividualPlantations = () => {
+const PlantationsTopicPage = () => {
   const { plantations, geojson } = useLoaderData<typeof loader>();
   const [activePlace, setActivePlace] = useState<
     ESRelatedPlace | ESPlace | undefined
@@ -32,13 +30,15 @@ const IndividualPlantations = () => {
   return (
     <PlaceContext.Provider
       value={{
-        place: plantations,
+        place: plantations[0],
         activePlace,
         setActivePlace,
         hoveredPlace,
         setHoveredPlace,
         noTrackMouse,
         setNoTrackMouse,
+        clusterFillColor: geojson.features[0].properties.hexColor,
+        clusterTextColor: "black",
       }}
     >
       <div className="min-h-screen bg-gray-100">
@@ -61,7 +61,7 @@ const IndividualPlantations = () => {
         <main className="py-16 px-6 lg:px-20 space-y-16 bg-island">
           <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[600px] mb-12">
             <div className="bg-white rounded-lg">
-              <RelatedPlacesDetailedList />
+              <RelatedPlacesDetailedList places={plantations} />
             </div>
             <div className="relative overflow-hidden rounded-lg lg:col-span-2">
               <RelatedPlacesMap geojson={geojson}>
@@ -75,7 +75,7 @@ const IndividualPlantations = () => {
               title="Articles"
               defaultOpen={false}
               className=""
-              headerClassName="uppercase bg-water/75 p-6"
+              toggleClassName="uppercase bg-water/75 p-6"
               bodyClassName="bg-white p-6"
             >
               <p>List of articles.</p>
@@ -84,7 +84,7 @@ const IndividualPlantations = () => {
               title="Monographs"
               defaultOpen={false}
               className=""
-              headerClassName="uppercase bg-water/75 p-6"
+              toggleClassName="uppercase bg-water/75 p-6"
               bodyClassName="bg-white p-6"
             >
               <p>List of monographs.</p>
@@ -93,7 +93,7 @@ const IndividualPlantations = () => {
               title="Media"
               defaultOpen={false}
               className=""
-              headerClassName="uppercase bg-water/75 p-6"
+              toggleClassName="uppercase bg-water/75 p-6"
               bodyClassName="bg-white p-6"
             >
               <p>List of media.</p>
@@ -105,4 +105,4 @@ const IndividualPlantations = () => {
   );
 };
 
-export default IndividualPlantations;
+export default PlantationsTopicPage;
