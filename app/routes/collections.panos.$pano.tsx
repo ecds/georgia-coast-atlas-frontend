@@ -2,6 +2,9 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { panosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import Map from "~/components/mapping/Map.client";
+import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
+import { ClientOnly } from "remix-utils/client-only";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const pano = await fetchBySlug(params.pano, panosIndexCollection);
@@ -42,6 +45,17 @@ const PanoDetail = () => {
           }}
         />
       </div>
+      {pano.places?.length > 0 && (
+        <div className="mt-8 h-[500px] w-full rounded-md overflow-hidden">
+          <ClientOnly>
+            {() => (
+              <Map className="w-96 h-96">
+                <SharedMapOverlay places={pano.places} />
+              </Map>
+            )}
+          </ClientOnly>
+        </div>
+      )}
     </div>
   );
 };

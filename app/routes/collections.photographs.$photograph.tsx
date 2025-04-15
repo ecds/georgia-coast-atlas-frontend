@@ -5,12 +5,15 @@ import IIIFViewer from "~/components/layout/IIIFViewer.client";
 import { ClientOnly } from "remix-utils/client-only";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ESPhotographItem } from "~/esTypes";
+import Map from "~/components/mapping/Map.client";
+import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph: ESPhotographItem = await fetchBySlug(
     params.photograph,
     photosIndexCollection
   );
+  
 
   if (!photograph) {
     throw new Response(null, {
@@ -46,6 +49,17 @@ const PhotographDetail = () => {
           }}
         />
       </div>
+      {photograph.places?.length > 0 && (
+        <div className="mt-8 h-[500px] w-full rounded-md overflow-hidden">
+          <ClientOnly>
+            {() => (
+              <Map className="w-96 h-96">
+                <SharedMapOverlay places={photograph.places} />
+              </Map>
+            )}
+          </ClientOnly>
+        </div>
+      )}
     </div>
   );
 };

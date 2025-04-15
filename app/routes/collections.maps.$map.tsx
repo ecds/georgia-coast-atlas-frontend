@@ -11,6 +11,7 @@ import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import LayerOpacity from "~/components/mapping/LayerOpacity";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ESMapItem } from "~/esTypes";
+import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const mapLayer: ESMapItem = await fetchBySlug(params.map, mapIndexCollection);
