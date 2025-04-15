@@ -12,7 +12,6 @@ import CollectionMapOverlay from "./CollectionMapOverlay";
 import { PlaceContext } from "~/contexts";
 import type { ESRelatedPlace } from "~/esTypes";
 
-
 interface Props {
   collectionType: string;
   children?: ReactNode;
@@ -129,7 +128,7 @@ const Thumbnails = ({ collectionType, children }: Props) => {
         <div className="h-[700px] mt-6 mx-2 rounded-md overflow-hidden">
           <ClientOnly>
             {() => (
-              <Map className="w-full h-full">
+              <Map className="w-96 h-96">
                 <CollectionMapOverlay geojson={geojson} />
               </Map>
             )}
