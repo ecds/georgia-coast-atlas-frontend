@@ -12,4 +12,4 @@ for file in "${files}"; do
 done
 
 echo "Running Remote Script"
-ssh ${REMOTE_USER}@${REMOTE_HOST} "cd ${REMOTE_PATH}; chmod +x run.sh; ./run.sh" &
+ssh ${REMOTE_USER}@${REMOTE_HOST} ${DEV_RESTART_COMMAND}

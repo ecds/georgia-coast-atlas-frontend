@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - feature/dev
+      - feature/unified-ui
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -48,4 +48,5 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
           DH_SSH_KEY: ${{ secrets.DH_SSH_KEY }}
+          DEV_RESTART_COMMAND: ${{ secrets.DEV_RESTART_COMMAND }}
         run: ./deploy.sh
