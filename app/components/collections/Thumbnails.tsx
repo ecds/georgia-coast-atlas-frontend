@@ -11,6 +11,7 @@ import type { FeatureCollection } from "geojson";
 import CollectionMapOverlay from "./CollectionMapOverlay";
 import { PlaceContext } from "~/contexts";
 import type { ESRelatedPlace } from "~/esTypes";
+import { topBarHeight } from "~/config";
 
 interface Props {
   collectionType: string;
@@ -22,26 +23,24 @@ const Thumbnails = ({ collectionType, children }: Props) => {
   const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
 
   const geojson = hitsToFeatureCollection(items);
-  console.log("Items passed to map", items);
+  console.log("Items passed to map", items, geojson);
 
   const toggleListGrid = () => {
     setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
   };
 
   return (
-    <div className="-mt-16 md:mt-0 h-full overflow-auto">
+    <div className="-mt-16 md:mt-0 h-full overflow-auto flex-grow">
       <h1 className="text-3xl text-black/80 m-4 md:m-auto md:ms-2 capitalize">
         {collectionType}
       </h1>
 
       <div className="flex gap-4 md:ms-2 md:my-2">
-      <button
+        <button
           onClick={toggleListGrid}
           className="border border-island px-2 py-1 rounded-md shadow-md hover:shadow-lg text-island"
         >
-          <FontAwesomeIcon
-            icon={viewMode === "list" ? faTableCells : faList}
-          />{" "}
+          <FontAwesomeIcon icon={viewMode === "list" ? faTableCells : faList} />{" "}
           {viewMode === "list" ? "Grid View" : "List View"}
         </button>
         <button
@@ -125,14 +124,14 @@ const Thumbnails = ({ collectionType, children }: Props) => {
           />
         </>
       ) : (
-        <div className="h-[700px] mt-6 mx-2 rounded-md overflow-hidden">
+        <div className="mt-6 mx-2 rounded-md overflow-hidden">
           <ClientOnly>
             {() => (
-              <Map className="w-96 h-96">
+              <Map className={`h-[calc(100vh-15rem)]`}>
                 <CollectionMapOverlay geojson={geojson} />
               </Map>
             )}
-          </ClientOnly> 
+          </ClientOnly>
         </div>
       )}
     </div>

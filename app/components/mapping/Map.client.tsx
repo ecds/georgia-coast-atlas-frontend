@@ -31,7 +31,7 @@ const Map = ({ children, className }: Props) => {
         preserveDrawingBuffer: true,
         attributionControl: false,
         maxBounds: new LngLatBounds([
-          -85.005165, 29.357851, -80.239729, 33.000659,
+          -85.005165, 29.357851, -75.239729, 33.000659,
         ]),
       });
 
