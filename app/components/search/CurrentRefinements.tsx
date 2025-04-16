@@ -43,7 +43,7 @@ const CurrentRefinements = () => {
         </select>
       </div>
       <ClientOnly>{() => <GeoToggle />}</ClientOnly>
-      <ul className="col-span-5 list-none flex flex-wrap space-3 ps-4 mb-4">
+      <ul className="col-span-12 list-none flex flex-wrap space-3 ps-4 mb-4">
         {items.map((item) => {
           return item.refinements.map((refinement) => {
             return (

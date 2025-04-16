@@ -49,7 +49,7 @@ const MapDetail = () => {
     map.fitBounds(bounds, { padding: 50 });
 
     return () => {
-      for (const [index, _] of mapLayer.wms_resources.entries()) {
+      for (const index in mapLayer.wms_resources) {
         const id = `${mapLayer.uuid}-${index}`;
         map.removeLayer(id);
         map.removeSource(id);
@@ -58,12 +58,9 @@ const MapDetail = () => {
   }, [map, mapLayer]);
 
   useEffect(() => {
-    for (const [index, _] of mapLayer.wms_resources.entries()) {
-      map?.setPaintProperty(
-        `${mapLayer.uuid}-${index}`,
-        "raster-opacity",
-        opacity * 0.01
-      );
+    for (const index in mapLayer.wms_resources) {
+      const id = `${mapLayer.uuid}-${index}`;
+      map?.setPaintProperty(id, "raster-opacity", opacity * 0.01);
     }
   }, [map, mapLayer, opacity]);
 

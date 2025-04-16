@@ -1,5 +1,5 @@
-import { landColors } from "./masks";
-import type { StyleSpecification } from "maplibre-gl";
+import { landColors } from "./areas";
+import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 
 export const base: StyleSpecification = {
   version: 8,
@@ -166,30 +166,30 @@ export const base: StyleSpecification = {
         ],
       },
     },
-    {
-      id: "waterway",
-      type: "line",
-      source: "openmaptiles",
-      "source-layer": "waterway",
-      filter: [
-        "all",
-        ["==", ["geometry-type"], "LineString"],
-        ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
-      ],
-      paint: {
-        "line-color": landColors.water,
-        "line-opacity": 1,
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.4],
-          ["zoom"],
-          8,
-          1,
-          20,
-          8,
-        ],
-      },
-    },
+    // {
+    //   id: "waterway",
+    //   type: "line",
+    //   source: "openmaptiles",
+    //   "source-layer": "waterway",
+    //   filter: [
+    //     "all",
+    //     ["==", ["geometry-type"], "LineString"],
+    //     ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
+    //   ],
+    //   paint: {
+    //     "line-color": landColors.water,
+    //     "line-opacity": 1,
+    //     "line-width": [
+    //       "interpolate",
+    //       ["exponential", 1.4],
+    //       ["zoom"],
+    //       8,
+    //       1,
+    //       20,
+    //       8,
+    //     ],
+    //   },
+    // },
     {
       id: "tunnel_railway_transit",
       type: "line",
@@ -764,3 +764,34 @@ export const base: StyleSpecification = {
     // },
   ],
 };
+
+export const water: LayerSpecification[] = [
+  {
+    id: "creeks",
+    type: "line",
+    source: "openmaptiles",
+    "source-layer": "waterway",
+    filter: [
+      "all",
+      ["==", ["geometry-type"], "LineString"],
+      ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
+    ],
+    paint: {
+      "line-color": landColors.water,
+      "line-opacity": 1,
+      "line-width": ["interpolate", ["exponential", 1], ["zoom"], 8, 1, 20, 8],
+    },
+  },
+  {
+    id: "intermittent",
+    type: "line",
+    source: "openmaptiles",
+    "source-layer": "waterway",
+    filter: ["all", ["==", ["get", "intermittent"], 1]],
+    paint: {
+      "line-color": landColors.water,
+      "line-opacity": 1,
+      "line-width": ["interpolate", ["exponential", 1], ["zoom"], 8, 1, 20, 8],
+    },
+  },
+];

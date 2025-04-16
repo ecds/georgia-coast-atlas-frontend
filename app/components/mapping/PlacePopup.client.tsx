@@ -6,13 +6,14 @@ import { useNavigation } from "@remix-run/react";
 import { createPortal } from "react-dom";
 import { MapContext } from "~/contexts";
 import type { ReactNode } from "react";
-import type { Popup, LngLatBounds } from "maplibre-gl";
+import type { Popup, LngLatBounds, PositionAnchor } from "maplibre-gl";
 
 interface Props {
   location: { lat: number; lon: number };
   onClose: () => void;
   children: ReactNode;
   showCloseButton?: boolean;
+  anchor?: PositionAnchor;
 }
 interface PopupProps extends Props {
   show: boolean;
@@ -21,7 +22,7 @@ interface PopupProps extends Props {
 
 const PopupContent = ({ onClose, children, showCloseButton = true }: Props) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col max-h-96 overflow-hidden">
       {showCloseButton && (
         <div className="flex justify-end">
           <button
@@ -46,6 +47,7 @@ const PlacePopup = ({
   zoomToFeature = true,
   children,
   showCloseButton = true,
+  anchor,
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const previousBounds = useRef<LngLatBounds | undefined>(undefined);
@@ -76,9 +78,11 @@ const PlacePopup = ({
       popupRef.current = new maplibregl.Popup({
         closeButton: false,
         className: "pointer-events-auto place-popup",
+        anchor,
       })
         .setLngLat(coordinates)
-        .setDOMContent(popContainerRef.current);
+        .setDOMContent(popContainerRef.current)
+        .on("close", onClose);
 
       popupRef.current?.addTo(map);
       if (zoomToFeature) {
@@ -96,7 +100,7 @@ const PlacePopup = ({
     return () => {
       if (popupRef.current) popupRef.current.remove();
     };
-  }, [show, map, coordinates, zoomToFeature, onClose]);
+  }, [show, map, coordinates, zoomToFeature, onClose, anchor]);
 
   useEffect(() => {
     // Zoom out to previous bounds only if previous bounds are larger than bounds

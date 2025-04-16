@@ -76,7 +76,7 @@ export type ESPlace = {
   identifier: string;
   identifiers?: TWebIdentifier[];
   manifests: ESManifests[];
-  map_layers: ESMapLayer[];
+  map_layers: ESMapItem[];
   name: string;
   names?: string[];
   location: TLonLat;
@@ -94,14 +94,15 @@ export type ESPlace = {
 };
 
 export type ESMapItem = {
-  name: string;
   bbox: [number, number, number, number];
-  wms_resources: string[];
-  places: ESRelatedPlace[];
   description: string;
   date: string;
-  uuid: string;
+  name: string;
+  places: ESRelatedPlace[];
   preview: string;
+  thumbnail_url: string;
+  uuid: string;
+  wms_resources: string[];
 };
 
 export type ESSearchProps = {

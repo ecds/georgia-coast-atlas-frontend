@@ -20,6 +20,7 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
 import type { LngLatBounds } from "maplibre-gl";
+import PlaceMap from "~/components/places/PlaceMap";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place as ESPlace);
@@ -162,7 +163,12 @@ const PlacePage = () => {
           }}
         />
         <div className="px-4">
-          <RelatedPlaces />
+          {place.types.includes("Barrier Island") ||
+          place.types.includes("County") ? (
+            <RelatedPlaces />
+          ) : (
+            <PlaceMap />
+          )}
           <RelatedMedia title="Videos" records={place.videos} />
           <RelatedMedia title="Photographs" records={place.photographs} />
           <RelatedMedia title="Panos" records={place.panos} />

@@ -98,7 +98,6 @@ export const placePolygon = (
   source: string,
   fillColor?: string
 ) => {
-  console.log("🚀 ~ source:", source);
   const polygon: AddLayerObject = {
     id,
     type: "fill",

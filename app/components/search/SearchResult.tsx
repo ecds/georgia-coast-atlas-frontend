@@ -8,7 +8,7 @@ const SearchResult = ({ hit }: { hit: Hit }) => {
   const { setActiveResult } = useContext(SearchContext);
   return (
     <div
-      className="flex border-b-2 py-2 w-full px-4"
+      className="flex border-b-2 py-2 w-full px-4 items-center"
       onMouseEnter={() => setActiveResult(hit.identifier)}
       onMouseLeave={() => setActiveResult(undefined)}
     >
@@ -24,7 +24,7 @@ const SearchResult = ({ hit }: { hit: Hit }) => {
           return (
             <span
               key={`${type}${hit.name}`}
-              className={`bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} text-xs font-medium me-2 px-2.5 py-0.5 rounded h-min w-max`}
+              className={`bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} ${hit.types.length > 1 ? "m-1" : ""} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} text-xs font-medium me-2 px-2.5 py-0.5 rounded h-min w-max`}
             >
               {type}
             </span>

@@ -106,6 +106,10 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     if (hoveredFeature) {
       setPopupTitle(hoveredFeature.properties?.name);
       setShowPopup(true);
+      if (hoveredFeature.geometry.type === "Point") {
+        const [lon, lat] = hoveredFeature.geometry.coordinates;
+        setHoveredLocation({ lon, lat });
+      }
     } else {
       setPopupTitle(undefined);
       setShowPopup(false);
@@ -127,7 +131,7 @@ const GeoSearchPoints = ({ geojson }: Props) => {
           <div>
             {hoveredFeature?.properties?.preview && (
               <img
-                className="max-h-32 max-w-32"
+                className="max-h-32 max-w-32 mt-2 mx-auto"
                 src={hoveredFeature?.properties.preview}
                 alt=""
               />

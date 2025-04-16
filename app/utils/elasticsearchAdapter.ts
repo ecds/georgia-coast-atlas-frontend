@@ -28,6 +28,7 @@ const searchConfig: SearchSettingsConfig = {
   facet_attributes: [
     { attribute: "place_names", field: "place_names", type: "string" },
     { attribute: "publisher", field: "publisher", type: "string" },
+    { attribute: "date", field: "date", type: "string" },
   ],
   sorting: { default: [{ field: "slug", order: "asc" }] },
 };

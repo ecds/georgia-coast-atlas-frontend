@@ -1,10 +1,14 @@
 import { useContext, useEffect } from "react";
 import { PlaceContext } from "~/contexts";
-import type { ESRelatedPlace } from "~/esTypes";
+import type { ESPlace, ESRelatedPlace } from "~/esTypes";
+import RelatedSection from "./RelatedSection";
 
-const RelatedPlacesDetailedList = () => {
+const RelatedPlacesDetailedList = ({
+  places,
+}: {
+  places: ESPlace[] | ESRelatedPlace[];
+}) => {
   const {
-    place,
     activePlace,
     setHoveredPlace,
     hoveredPlace,
@@ -12,7 +16,7 @@ const RelatedPlacesDetailedList = () => {
     setNoTrackMouse,
   } = useContext(PlaceContext);
 
-  const handleMouseEnter = (place: ESRelatedPlace) => {
+  const handleMouseEnter = (place: ESPlace | ESRelatedPlace) => {
     setHoveredPlace(place);
     if (setNoTrackMouse) setNoTrackMouse(true);
   };
@@ -32,56 +36,58 @@ const RelatedPlacesDetailedList = () => {
     });
   }, [activePlace]);
 
-  if (place.places.length > 0) {
+  if (places.length > 0) {
     return (
       <section className="h-[600px] overflow-hidden">
-        <ul className="h-full overflow-auto relative">
-          {place.places.map((relatedPlace) => {
+        <ul className="h-full overflow-auto relative rounded-lg">
+          {places.map((place) => {
             return (
               <li
-                id={`place-${relatedPlace.uuid}`}
+                id={`place-${place.uuid}`}
                 className=" flex flex-col border-b border-2"
-                key={`related-place-list-${relatedPlace.uuid}`}
+                key={`related-place-list-${place.uuid}`}
               >
-                <button
-                  className={`text-black/75 text-left md:py-1 ${
-                    hoveredPlace?.uuid === relatedPlace.uuid
-                      ? "bg-gray-100"
-                      : ""
-                  } ${activePlace === relatedPlace ? "" : ""}`}
-                  onMouseEnter={() => handleMouseEnter(relatedPlace)}
-                  onMouseLeave={handleMouseLeave}
-                  onClick={() => {
-                    setHoveredPlace(undefined);
-                    setActivePlace(relatedPlace);
-                  }}
+                <RelatedSection
+                  title={place.name}
+                  defaultOpen={false}
+                  toggleClassName="px-6"
+                  headerClassName="text-lg"
                 >
-                  <article className="p-4 w-full">
-                    <img
-                      src={
-                        place.featured_photograph ??
-                        "https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"
-                      }
-                      className="max-w-48 max-h-48 mx-auto mb-4"
-                      alt=""
-                    />
-                    <h2 className="text-xl font-semibold">
-                      {relatedPlace.name}
-                    </h2>
-                    <div
-                      className="my-2"
-                      dangerouslySetInnerHTML={{
-                        __html: relatedPlace.description ?? "",
-                      }}
-                    />
-                    <a
-                      className="text-blue-500 visited:text-blue-800 underline"
-                      href={`/places/${relatedPlace.slug}`}
-                    >
-                      Read More...
-                    </a>
-                  </article>
-                </button>
+                  <button
+                    className={`text-black/75 text-left md:py-1 ${
+                      hoveredPlace?.uuid === place.uuid ? "bg-gray-100" : ""
+                    } ${activePlace === place ? "" : ""}`}
+                    onMouseEnter={() => handleMouseEnter(place)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => {
+                      setHoveredPlace(undefined);
+                      setActivePlace(place);
+                    }}
+                  >
+                    <div className="p-4 w-full">
+                      <img
+                        src={
+                          place.featured_photograph ??
+                          "https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"
+                        }
+                        className="max-w-48 max-h-48 mx-auto mb-4"
+                        alt=""
+                      />
+                      <div
+                        className="my-2 line-clamp-3"
+                        dangerouslySetInnerHTML={{
+                          __html: place.description ?? "",
+                        }}
+                      />
+                      <a
+                        className="text-blue-500 visited:text-blue-800 underline"
+                        href={`/places/${place.slug}`}
+                      >
+                        Read More
+                      </a>
+                    </div>
+                  </button>
+                </RelatedSection>
               </li>
             );
           })}

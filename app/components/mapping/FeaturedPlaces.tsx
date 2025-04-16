@@ -140,6 +140,7 @@ const FeaturedPlaces = ({ places }: Props) => {
   }, [map, hoveredPlace]);
 
   useEffect(() => {
+    console.log("🚀 ~ FeaturedPlaces ~ activePlace:", activePlace);
     if (activePlace) setHoveredPlace(undefined);
   }, [activePlace, setHoveredPlace]);
 
@@ -156,11 +157,17 @@ const FeaturedPlaces = ({ places }: Props) => {
                     location={place.location}
                     onClose={() => setActivePlace(undefined)}
                     zoomToFeature={false}
+                    anchor={
+                      place.types.includes("Barrier Island")
+                        ? "right"
+                        : undefined
+                    }
                   >
                     {place.featured_photograph && (
                       <img
-                        src={place.featured_photograph.replace("max", "600,")}
+                        src={place.featured_photograph.replace("max", "400,")}
                         alt=""
+                        className="h-40 w-auto"
                       />
                     )}
                     <h4 className="text-xl ">{place.name}</h4>
@@ -177,7 +184,10 @@ const FeaturedPlaces = ({ places }: Props) => {
                     show={hoveredPlace == place && activePlace !== hoveredPlace}
                     className={currentZoom < 12 ? "text-lg" : "text-xs"}
                     location={location ?? place.location}
-                    onClose={() => setActivePlace(undefined)}
+                    onClose={() => {
+                      setActivePlace(undefined);
+                      setHoveredPlace(undefined);
+                    }}
                     zoomToFeature={false}
                     // anchor={sourceName === "islands" ? "left" : "right"}
                   >

@@ -50,7 +50,10 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
             items={[{ label: "Year", value: "instant_search_year_asc" }]}
           /> */}
         <CollectionList>
-          <PlaceFacets />
+          <div className="h-full min-w-fit overflow-y-scroll">
+            <PlaceFacets />
+            <PlaceFacets attribute="date" sortBy="name" />
+          </div>
           <Thumbnails collectionType="maps" />
         </CollectionList>
       </InstantSearch>

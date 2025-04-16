@@ -9,6 +9,7 @@ interface Props {
 
 const Thumbnails = ({ collectionType, children }: Props) => {
   const { items } = useHits();
+  console.log("🚀 ~ Thumbnails ~ items:", items);
 
   return (
     <div className="-mt-16 md:mt-0 h-full overflow-auto">
@@ -42,7 +43,7 @@ const Thumbnails = ({ collectionType, children }: Props) => {
                     />
 
                     <ul>
-                      {item.places.length > 0 && (
+                      {item.places?.length > 0 && (
                         <li className="">
                           <span className="font-semibold">Places:</span>{" "}
                           {item.place_names.join(",")}

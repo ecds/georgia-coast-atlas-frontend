@@ -39,7 +39,7 @@ const RelatedTopoQuads = () => {
     return (
       <RelatedSection
         title="Topo Quads"
-        headerClassName="mb-2"
+        toggleClassName="mb-2"
         defaultOpen={false}
       >
         {place.topos.map((topo) => {

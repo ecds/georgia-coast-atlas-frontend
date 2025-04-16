@@ -78,7 +78,7 @@ const GeoToggle = () => {
       </div>
       <div className="col-span-3 pe-2 justify-self-end self-center me-4">
         <button
-          className="text-sm bg-island disabled:bg-island/50 disabled:cursor-not-allowed p-2 rounded-md text-white capitalize"
+          className="text-sm bg-island hover:bg-island/75 disabled:bg-island/50 disabled:cursor-not-allowed drop-shadow-lg active:drop-shadow-none disabled:drop-shadow-none p-2 rounded-md text-white capitalize"
           disabled={
             (!showSearchButton && !enabled) || !showSearchButton || !enabled
           }

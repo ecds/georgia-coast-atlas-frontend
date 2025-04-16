@@ -33,9 +33,10 @@ const bgColor = (
 
 const refinementListClassNames = () => {
   const classNames: Partial<RefinementListClassNames> = {
-    checkbox: "w-6 h-6 border-gray-300 rounded focus:ring-2 me-2",
+    checkbox:
+      "w-6 h-6 border-gray-300 rounded focus:ring-2 me-2 checked:bg-county",
     count:
-      "bg-blue-100 text-blue-800 text-xs font-medium mx-2 px-2.5 py-0.5 rounded",
+      "bg-activeCounty text-white text-xs font-medium mx-2 px-2.5 py-0.5 rounded",
     item: `py-2 font-light text-sm`,
     selectedItem: "font-semibold",
   };
@@ -51,7 +52,7 @@ const FacetMenu = () => {
   });
   return (
     <Menu>
-      <MenuButton className="w-full h-14 bg-activeCounty/50 text-county font-medium mx-2 px-2.5 py-0.5 rounded">
+      <MenuButton className="w-full h-14 bg-county/50 hover:bg-county/75 drop-shadow-md active:drop-shadow-none text-activeCounty font-medium mx-2 px-2.5 py-0.5 rounded">
         <FontAwesomeIcon icon={faFilter} />{" "}
         <span className="hidden md:block text-xs">Filter</span>
       </MenuButton>
