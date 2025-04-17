@@ -1,5 +1,6 @@
 import { landColors } from "./areas";
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
+import chroma from "chroma-js";
 
 export const base: StyleSpecification = {
   version: 8,
@@ -11,7 +12,7 @@ export const base: StyleSpecification = {
   sources: {
     openmaptiles: {
       type: "vector",
-      url: "https://tiles.openfreemap.org/planet",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/georgia.json",
       promoteId: "id",
       attribution:
         '<a href="https://openfreemap.org/" target="_blank">&copy; OpenFreeMap!</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
@@ -19,113 +20,13 @@ export const base: StyleSpecification = {
   },
   layers: [
     // {
-    //   id: "landuse-residential",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "landuse",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "Polygon"],
-    //     ["==", ["get", "class"], "residential"],
-    //   ],
-    //   layout: { visibility: "none" },
-    //   paint: { "fill-color": "hsl(47,13%,86%)", "fill-opacity": 0.7 },
-    // },
-    // {
-    //   id: "landcover_grass",
+    //   id: "beaches",
     //   type: "fill",
     //   source: "openmaptiles",
     //   "source-layer": "landcover",
-    //   filter: ["==", ["get", "class"], "grass"],
+    //   filter: ["==", ["get", "class"], "beach"],
     //   layout: { visibility: "none" },
-    //   paint: { "fill-color": "hsl(82,46%,72%)", "fill-opacity": 0.45 },
-    // },
-    // {
-    //   id: "landcover_wood",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "landcover",
-    //   filter: ["==", ["get", "class"], "wood"],
-    //   layout: { visibility: "none" },
-    //   paint: {
-    //     "fill-color": "rgb(74 93 65)",
-    //     "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.6, 22, 1],
-    //   },
-    // },
-    // {
-    //   id: "park",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "park",
-    //   layout: { visibility: "none" },
-    //   paint: { "fill-color": "rgba(192, 216, 151, 0.53)", "fill-opacity": 1 },
-    // },
-    // {
-    //   id: "landcover-ice-shelf",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "landcover",
-    //   filter: ["==", ["get", "subclass"], "ice_shelf"],
-    //   layout: { visibility: "none" },
-    //   paint: { "fill-color": landColors.road, "fill-opacity": 0.8 },
-    // },
-    // {
-    //   id: "landcover-glacier",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "landcover",
-    //   filter: ["==", ["get", "subclass"], "glacier"],
-    //   layout: { visibility: "none" },
-    //   paint: {
-    //     "fill-color": "hsl(47,22%,94%)",
-    //     "fill-opacity": ["interpolate", ["linear"], ["zoom"], 0, 1, 8, 0.5],
-    //   },
-    // },
-    // {
-    //   id: "landcover_sand",
-    //   type: "fill",
-    //   metadata: {},
-    //   source: "openmaptiles",
-    //   "source-layer": "landcover",
-    //   filter: ["match", ["get", "class"], ["sand"], true, false],
-    //   layout: { visibility: "none" },
-    //   paint: {
-    //     "fill-antialias": false,
-    //     "fill-color": "rgb(74 93 65)",
-    //     "fill-opacity": 0.3,
-    //   },
-    // },
-    // {
-    //   id: "landuse",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "landuse",
-    //   filter: ["==", ["get", "class"], "agriculture"],
-    //   layout: { visibility: "none" },
-    //   paint: { "fill-color": "#eae0d0" },
-    // },
-    // {
-    //   id: "landuse_overlay_national_park",
-    //   type: "fill",
-    //   source: "openmaptiles",
-    //   "source-layer": "landcover",
-    //   filter: ["==", ["get", "class"], "national_park"],
-    //   layout: { visibility: "none" },
-    //   paint: {
-    //     "fill-color": "#E1EBB0",
-    //     "fill-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0, 9, 0.75],
-    //   },
-    // },
-    // {
-    //   id: "park_outline",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "park",
-    //   layout: { visibility: "none" },
-    //   paint: {
-    //     "line-color": "rgba(159, 183, 118, 0.69)",
-    //     "line-dasharray": [0.5, 1],
-    //   },
+    //   paint: { "fill-color": landColors.island },
     // },
     {
       id: "water",
@@ -166,30 +67,6 @@ export const base: StyleSpecification = {
         ],
       },
     },
-    // {
-    //   id: "waterway",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "waterway",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
-    //   ],
-    //   paint: {
-    //     "line-color": landColors.water,
-    //     "line-opacity": 1,
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.4],
-    //       ["zoom"],
-    //       8,
-    //       1,
-    //       20,
-    //       8,
-    //     ],
-    //   },
-    // },
     {
       id: "tunnel_railway_transit",
       type: "line",
@@ -204,28 +81,9 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "butt", "line-join": "miter", visibility: "none" },
       paint: {
-        "line-color": "hsl(34,12%,66%)",
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-dasharray": [3, 3],
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
-      },
-    },
-    {
-      id: "buildings",
-      type: "fill",
-      source: "openmaptiles",
-      "source-layer": "building",
-      layout: {
-        visibility: "none",
-      },
-      filter: [
-        "any",
-        // ["in", 9.144, ["to-number", ["get", "render_height"]]],
-        ["==", 3172249, ["to-number", ["get", "id"]]],
-      ],
-      paint: {
-        "fill-color": "hsl(39,41%,86%)",
-        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.6, 14, 1],
-        "fill-outline-color": "hsl(36,45%,80%)",
       },
     },
     {
@@ -240,7 +98,10 @@ export const base: StyleSpecification = {
         ["==", ["get", "class"], "pier"],
       ],
       layout: { visibility: "none" },
-      paint: { "fill-antialias": true, "fill-color": landColors.road },
+      paint: {
+        "fill-antialias": true,
+        "fill-color": chroma(landColors.road).shade(0.5).hex(),
+      },
     },
     {
       id: "road_pier",
@@ -255,7 +116,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": landColors.road,
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-width": [
           "interpolate",
           ["exponential", 1.2],
@@ -278,37 +139,8 @@ export const base: StyleSpecification = {
         ["match", ["get", "brunnel"], ["bridge"], true, false],
       ],
       layout: { visibility: "none" },
-      paint: { "fill-color": landColors.road },
+      paint: { "fill-color": chroma(landColors.road).shade(0.5).hex() },
     },
-    // {
-    //   id: "road_path",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "transportation",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     ["match", ["get", "class"], ["path", "track"], true, false],
-    //   ],
-    //   layout: {
-    //     "line-cap": "square",
-    //     "line-join": "bevel",
-    //     visibility: "none",
-    //   },
-    //   paint: {
-    //     "line-color": "hsl(0,0%,97%)",
-    //     "line-dasharray": [1, 1],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.55],
-    //       ["zoom"],
-    //       4,
-    //       0.25,
-    //       20,
-    //       10,
-    //     ],
-    //   },
-    // },
     {
       id: "road_minor",
       type: "line",
@@ -324,7 +156,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": landColors.road,
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-width": [
           "interpolate",
           ["exponential", 1.85],
@@ -336,70 +168,6 @@ export const base: StyleSpecification = {
         ],
       },
     },
-    // {
-    //   id: "tunnel_minor",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "transportation",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     [
-    //       "all",
-    //       ["==", ["get", "brunnel"], "tunnel"],
-    //       ["==", ["get", "class"], "minor_road"],
-    //     ],
-    //   ],
-    //   layout: { "line-cap": "butt", "line-join": "miter", visibility: "none" },
-    //   paint: {
-    //     "line-color": "#efefef",
-    //     "line-dasharray": [0.36, 0.18],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.55],
-    //       ["zoom"],
-    //       4,
-    //       0.25,
-    //       20,
-    //       30,
-    //     ],
-    //   },
-    // },
-    // {
-    //   id: "tunnel_major",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "transportation",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     [
-    //       "all",
-    //       ["==", ["get", "brunnel"], "tunnel"],
-    //       [
-    //         "match",
-    //         ["get", "class"],
-    //         ["primary", "secondary", "tertiary", "trunk"],
-    //         true,
-    //         false,
-    //       ],
-    //     ],
-    //   ],
-    //   layout: { "line-cap": "butt", "line-join": "miter", visibility: "none" },
-    //   paint: {
-    //     "line-color": landColors.road,
-    //     "line-dasharray": [0.28, 0.14],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.4],
-    //       ["zoom"],
-    //       6,
-    //       0.5,
-    //       20,
-    //       30,
-    //     ],
-    //   },
-    // },
     {
       id: "road_trunk_primary",
       type: "line",
@@ -412,7 +180,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": landColors.road,
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-width": [
           "interpolate",
           ["exponential", 1.4],
@@ -438,7 +206,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round" },
       paint: {
-        "line-color": landColors.road,
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-width": [
           "interpolate",
           ["exponential", 1.4],
@@ -462,7 +230,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": landColors.road,
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-offset": 0,
         "line-width": [
           "interpolate",
@@ -487,7 +255,7 @@ export const base: StyleSpecification = {
       ],
       layout: { visibility: "none" },
       paint: {
-        "line-color": "hsl(34,12%,66%)",
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
       },
     },
@@ -499,7 +267,7 @@ export const base: StyleSpecification = {
       filter: ["==", ["get", "class"], "rail"],
       layout: { visibility: "none" },
       paint: {
-        "line-color": "hsl(34,12%,66%)",
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0, 16, 1],
       },
     },
@@ -560,86 +328,6 @@ export const base: StyleSpecification = {
         ],
       },
     },
-    // {
-    //   id: "bridge_minor case",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "transportation",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     [
-    //       "all",
-    //       ["==", ["get", "brunnel"], "bridge"],
-    //       ["==", ["get", "class"], "minor_road"],
-    //     ],
-    //   ],
-    //   layout: { "line-cap": "butt", "line-join": "miter", visibility: "none" },
-    //   paint: {
-    //     "line-color": "#dedede",
-    //     "line-gap-width": [
-    //       "interpolate",
-    //       ["exponential", 1.55],
-    //       ["zoom"],
-    //       4,
-    //       0.25,
-    //       20,
-    //       30,
-    //     ],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.6],
-    //       ["zoom"],
-    //       12,
-    //       0.5,
-    //       20,
-    //       10,
-    //     ],
-    //   },
-    // },
-    // {
-    //   id: "bridge_major case",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "transportation",
-    //   filter: [
-    //     "all",
-    //     ["==", ["geometry-type"], "LineString"],
-    //     [
-    //       "all",
-    //       ["==", ["get", "brunnel"], "bridge"],
-    //       [
-    //         "match",
-    //         ["get", "class"],
-    //         ["primary", "secondary", "tertiary", "trunk"],
-    //         true,
-    //         false,
-    //       ],
-    //     ],
-    //   ],
-    //   layout: { "line-cap": "butt", "line-join": "miter", visibility: "none" },
-    //   paint: {
-    //     "line-color": "#dedede",
-    //     "line-gap-width": [
-    //       "interpolate",
-    //       ["exponential", 1.55],
-    //       ["zoom"],
-    //       4,
-    //       0.25,
-    //       20,
-    //       30,
-    //     ],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.6],
-    //       ["zoom"],
-    //       12,
-    //       0.5,
-    //       20,
-    //       10,
-    //     ],
-    //   },
-    // },
     {
       id: "bridge_minor",
       type: "line",
@@ -656,7 +344,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": "#efefef",
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-width": [
           "interpolate",
           ["exponential", 1.55],
@@ -690,7 +378,7 @@ export const base: StyleSpecification = {
       ],
       layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
       paint: {
-        "line-color": landColors.road,
+        "line-color": chroma(landColors.road).shade(0.5).hex(),
         "line-width": [
           "interpolate",
           ["exponential", 1.4],
@@ -702,66 +390,6 @@ export const base: StyleSpecification = {
         ],
       },
     },
-    // {
-    //   id: "admin_sub",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "boundary",
-    //   filter: ["match", ["get", "admin_level"], [4, 6, 8], true, false],
-    //   layout: { visibility: "none" },
-    //   paint: { "line-color": "hsl(0,0%,76%)", "line-dasharray": [2, 1] },
-    // },
-    // {
-    //   id: "admin_country_z0-4",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "boundary",
-    //   maxzoom: 5,
-    //   filter: [
-    //     "all",
-    //     ["<=", ["get", "admin_level"], 2],
-    //     ["==", ["geometry-type"], "LineString"],
-    //     ["!", ["has", "claimed_by"]],
-    //   ],
-    //   layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
-    //   paint: {
-    //     "line-color": "hsla(0,8%,22%,0.51)",
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.3],
-    //       ["zoom"],
-    //       3,
-    //       0.5,
-    //       22,
-    //       15,
-    //     ],
-    //   },
-    // },
-    // {
-    //   id: "admin_country_z5-",
-    //   type: "line",
-    //   source: "openmaptiles",
-    //   "source-layer": "boundary",
-    //   minzoom: 5,
-    //   filter: [
-    //     "all",
-    //     ["<=", ["get", "admin_level"], 2],
-    //     ["==", ["geometry-type"], "LineString"],
-    //   ],
-    //   layout: { "line-cap": "round", "line-join": "round", visibility: "none" },
-    //   paint: {
-    //     "line-color": "hsla(0,8%,22%,0.51)",
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.3],
-    //       ["zoom"],
-    //       3,
-    //       0.5,
-    //       22,
-    //       15,
-    //     ],
-    //   },
-    // },
   ],
 };
 
