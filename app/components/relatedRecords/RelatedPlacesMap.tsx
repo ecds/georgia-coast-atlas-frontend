@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
-import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import {
   cluster,
@@ -10,12 +9,12 @@ import {
   singlePoint,
 } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
+import { areasSourceId } from "~/mapStyles";
 import type {
   GeoJSONSource,
   MapLayerMouseEvent,
   SourceSpecification,
 } from "maplibre-gl";
-import { areasSourceId } from "~/mapStyles";
 import type { FeatureCollection } from "geojson";
 import type { TLonLat, ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { ReactNode } from "react";
@@ -96,11 +95,9 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       }
     };
 
-    const bounds = new LngLatBounds(
-      bbox(geojson) as [number, number, number, number]
-    );
+    const bounds = new LngLatBounds(place.bbox);
 
-    map.fitBounds(bounds, { padding: 100, maxZoom: 14 });
+    map.fitBounds(bounds, { padding: 50, maxZoom: 14 });
 
     const placesSource: SourceSpecification = {
       type: "geojson",
@@ -140,7 +137,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
 
     const setColors = () => {
       map.setFeatureState(
-        { source: areasSourceId, id: place.uuid },
+        { source: areasSourceId, id: place.uuid, sourceLayer: areasSourceId },
         { hovered: true }
       );
     };
@@ -150,7 +147,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
 
     return () => {
       map.setFeatureState(
-        { source: areasSourceId, id: place.uuid },
+        { source: areasSourceId, id: place.uuid, sourceLayer: areasSourceId },
         { hovered: false }
       );
       map.off("mousemove", pointLayer.id, handleMouseEnter);

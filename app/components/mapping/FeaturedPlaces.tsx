@@ -5,7 +5,6 @@ import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
 import { countiesLayerId, islandsLayerId, areasSourceId } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
-import { booleanWithin, point } from "@turf/turf";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace, TLonLat } from "~/esTypes";
 import type { Geometry } from "geojson";
@@ -28,36 +27,16 @@ const FeaturedPlaces = ({ places }: Props) => {
       features,
       lngLat,
     }: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+      if (activePlace || !map) return;
       setLocation({ lon: lngLat.lng, lat: lngLat.lat });
-      if (map && mapLoaded) {
-        map.getCanvas().style.cursor = "pointer";
-        if (features && features.length > 0) {
-          const feature = features[0];
-          hoveredGeometry.current = feature.geometry;
-          setHoveredPlace(places.find((place) => place.uuid === feature.id));
-        }
+      map.getCanvas().style.cursor = "pointer";
+      if (features && features.length > 0) {
+        const feature = features[0];
+        hoveredGeometry.current = feature.geometry;
+        setHoveredPlace(places.find((place) => place.uuid === feature.id));
       }
     },
-    [map, mapLoaded, places, setHoveredPlace]
-  );
-
-  const handleMouseLeave = useCallback(
-    ({ lngLat }: MapMouseEvent) => {
-      if (
-        hoveredGeometry.current &&
-        !booleanWithin(point(Object.values(lngLat)), hoveredGeometry.current)
-      ) {
-        if (map) {
-          map.getCanvas().style.cursor = "";
-          setHoveredPlace(undefined);
-          setLocation(undefined);
-          hoveredGeometry.current = undefined;
-        }
-      } else {
-        setHoveredPlace(undefined);
-      }
-    },
-    [map, setHoveredPlace]
+    [map, places, setHoveredPlace, activePlace]
   );
 
   const handleClick = useCallback(
@@ -87,41 +66,52 @@ const FeaturedPlaces = ({ places }: Props) => {
 
     const clearLocation = () => {
       setLocation(undefined);
+      if (map) map.getCanvas().style.cursor = "";
+    };
+
+    const handleMouseOverWater = () => {
+      setHoveredPlace(undefined);
     };
 
     if (!map) return;
 
-    for (const layer of [islandsLayerId, countiesLayerId]) {
+    for (const layer of [countiesLayerId, islandsLayerId]) {
       map.on("mousemove", layer, handleMouseMove);
-      map.on("mouseleave", layer, handleMouseLeave);
       map.on("click", layer, handleClick);
+      map.on("mouseleave", layer, clearLocation);
     }
     map.on("zoomend", updateZoom);
     map.on("mouseout", clearLocation);
+    map.on("mousemove", "water", handleMouseOverWater);
 
     return () => {
       for (const layer of [islandsLayerId, countiesLayerId]) {
         map.off("mousemove", layer, handleMouseMove);
-        map.off("mouseleave", layer, handleMouseLeave);
         map.off("click", layer, handleClick);
+        map.off("mouseleave", layer, clearLocation);
       }
+      map.off("mousemove", "water", handleMouseOverWater);
       for (const place of places) {
         map.setFeatureState(
-          { source: areasSourceId, id: place.uuid },
+          { source: areasSourceId, sourceLayer: areasSourceId, id: place.uuid },
           { hovered: false }
         );
       }
       map.off("zoomend", updateZoom);
       map.off("mouseout", clearLocation);
     };
-  }, [map, mapLoaded, handleClick, handleMouseMove, handleMouseLeave, places]);
+  }, [map, mapLoaded, handleClick, handleMouseMove, places, setHoveredPlace]);
 
   useEffect(() => {
     // if (hoveredPlace) setActivePlace(undefined);
     if (!map) return;
     if (hoveredId.current && hoveredId.current !== hoveredPlace?.uuid) {
       map.setFeatureState(
-        { source: areasSourceId, id: hoveredId.current },
+        {
+          source: areasSourceId,
+          sourceLayer: areasSourceId,
+          id: hoveredId.current,
+        },
         { hovered: false }
       );
       hoveredId.current = undefined;
@@ -129,18 +119,24 @@ const FeaturedPlaces = ({ places }: Props) => {
 
     if (hoveredPlace) {
       map.setFeatureState(
-        { source: areasSourceId, id: hoveredPlace.uuid },
+        {
+          source: areasSourceId,
+          sourceLayer: areasSourceId,
+          id: hoveredPlace.uuid,
+        },
         { hovered: true }
       );
       hoveredId.current = hoveredPlace.uuid;
     } else {
       hoveredId.current = undefined;
-      map.removeFeatureState({ source: areasSourceId });
+      map.removeFeatureState({
+        source: areasSourceId,
+        sourceLayer: areasSourceId,
+      });
     }
   }, [map, hoveredPlace]);
 
   useEffect(() => {
-    console.log("🚀 ~ FeaturedPlaces ~ activePlace:", activePlace);
     if (activePlace) setHoveredPlace(undefined);
   }, [activePlace, setHoveredPlace]);
 
@@ -171,7 +167,12 @@ const FeaturedPlaces = ({ places }: Props) => {
                       />
                     )}
                     <h4 className="text-xl ">{place.name}</h4>
-                    <p>{place.short_description}</p>
+                    <div
+                      className="tracking-loose my-2"
+                      dangerouslySetInnerHTML={{
+                        __html: place.short_description ?? "",
+                      }}
+                    />
                     <Link
                       state={{ title: "Explore", slug: "explore" }}
                       to={`/places/${place.slug}`}

@@ -10,7 +10,7 @@ import type { Popup, LngLatBounds, PositionAnchor } from "maplibre-gl";
 
 interface Props {
   location: { lat: number; lon: number };
-  onClose: () => void;
+  onClose?: () => void;
   children: ReactNode;
   showCloseButton?: boolean;
   anchor?: PositionAnchor;
@@ -64,7 +64,7 @@ const PlacePopup = ({
     if (navigation.state === "loading" && popupRef.current) {
       popupRef.current.remove();
       popupRef.current = null;
-      onClose();
+      if (onClose) onClose();
     }
   }, [navigation, onClose]);
 
@@ -79,10 +79,11 @@ const PlacePopup = ({
         closeButton: false,
         className: "pointer-events-auto place-popup",
         anchor,
+        offset: 5,
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current)
-        .on("close", onClose);
+        .on("close", onClose || (() => {}));
 
       popupRef.current?.addTo(map);
       if (zoomToFeature) {

@@ -182,6 +182,8 @@ const PlacePage = () => {
                     key={identifier.authority}
                     href={identifier.identifier}
                     className="block my-2 uppercase text-county hover:text-activeCounty underline"
+                    target="_blank"
+                    rel="noreferrer"
                   >
                     {identifier.authority}{" "}
                     <FontAwesomeIcon

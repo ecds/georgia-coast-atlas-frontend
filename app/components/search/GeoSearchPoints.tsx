@@ -46,23 +46,18 @@ const GeoSearchPoints = ({ geojson }: Props) => {
   useEffect(() => {
     if (!mapLoaded || !map || !geojson) return;
 
-    const mouseenter = (event: MapLayerMouseEvent) => {
+    const mouseMove = (event: MapLayerMouseEvent) => {
       if (event.features) {
         const feature = event.features[0];
         map.getCanvas().style.cursor = "pointer";
-        if (feature.geometry.type == "Point") {
-          const [lon, lat] = feature.geometry.coordinates;
-          setHoveredLocation({ lon, lat });
-        }
+        setHoveredLocation({ lon: event.lngLat.lng, lat: event.lngLat.lat });
         setHoveredFeature(feature);
       } else {
         setHoveredFeature(undefined);
       }
     };
 
-    const mouseleave = () => {
-      setHoveredFeature(undefined);
-    };
+    const onMouseLeave = () => setHoveredFeature(undefined);
 
     const layerSource: SourceSpecification = {
       type: "geojson",
@@ -71,24 +66,24 @@ const GeoSearchPoints = ({ geojson }: Props) => {
       clusterRadius: 10,
     };
 
-    if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
+    map.addSource(sourceId, layerSource);
 
     // Add the point on top of the labels.
     map.addLayer(singlePoint(layerId, sourceId), "countySeats");
 
     map.on("click", layerId, handleClick);
-    map.on("mousemove", layerId, mouseenter);
-    map.on("mouseleave", layerId, mouseleave);
+    map.on("mousemove", layerId, mouseMove);
+    map.on("mouseleave", layerId, onMouseLeave);
 
     return () => {
       if (map.getLayer(layerId)) {
         map.off("click", layerId, handleClick);
-        map.off("mousemove", layerId, mouseenter);
-        map.off("mouseleave", layerId, mouseleave);
+        map.off("mousemove", layerId, mouseMove);
+        map.off("mouseleave", layerId, onMouseLeave);
         map.removeLayer(layerId);
       }
 
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
+      map.removeSource(sourceId);
     };
   }, [geojson, map, mapLoaded, handleClick]);
 
@@ -124,7 +119,6 @@ const GeoSearchPoints = ({ geojson }: Props) => {
         <PlacePopup
           location={hoveredLocation}
           show={showPopup}
-          onClose={() => setShowPopup(false)}
           zoomToFeature={false}
           showCloseButton={false}
         >

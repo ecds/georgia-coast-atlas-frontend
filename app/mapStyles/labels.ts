@@ -13,7 +13,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "housenumber",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "housenumber",
     //   minzoom: 17,
     //   filter: ["==", ["geometry-type"], "Point"],
@@ -31,7 +31,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "poi_label",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "poi",
     //   minzoom: 14,
     //   filter: [
@@ -65,7 +65,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "airport-label",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "aerodrome_label",
     //   minzoom: 10,
     //   filter: ["all", ["has", "iata"]],
@@ -95,7 +95,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "road_major_label",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "transportation_name",
     //   filter: ["==", ["geometry-type"], "LineString"],
     //   layout: {
@@ -129,7 +129,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "mountain_peak",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "mountain_peak",
     //   minzoom: 7,
     //   filter: [
@@ -166,7 +166,7 @@ export const labels: StyleSpecification = {
     //   id: "park-label",
     //   type: "symbol",
     //   metadata: { "mapbox:group": "1444849242106.713" },
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "park",
     //   minzoom: 0,
     //   filter: [
@@ -208,7 +208,7 @@ export const labels: StyleSpecification = {
     {
       id: "place_label_other",
       type: "symbol",
-      source: "openmaptiles",
+      source: "ecdsTiles",
       "source-layer": "place",
       minzoom: 8,
       filter: [
@@ -246,7 +246,7 @@ export const labels: StyleSpecification = {
     {
       id: "place_label_city",
       type: "symbol",
-      source: "openmaptiles",
+      source: "ecdsTiles",
       "source-layer": "place",
       maxzoom: 16,
       filter: [
@@ -276,7 +276,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "country_label-other",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "place",
     //   maxzoom: 12,
     //   filter: [
@@ -302,7 +302,7 @@ export const labels: StyleSpecification = {
     // {
     //   id: "country_label",
     //   type: "symbol",
-    //   source: "openmaptiles",
+    //   source: "ecdsTiles",
     //   "source-layer": "place",
     //   maxzoom: 12,
     //   filter: [

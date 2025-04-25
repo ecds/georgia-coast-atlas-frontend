@@ -6,3 +6,4 @@ export * from "./mapStyle";
 export * from "./areas";
 export * from "./costalLabels";
 export * from "./wms";
+export * from "./osm";

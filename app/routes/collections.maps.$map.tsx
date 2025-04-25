@@ -11,6 +11,7 @@ import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import LayerOpacity from "~/components/mapping/LayerOpacity";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ESMapItem } from "~/esTypes";
+import Compass from "~/components/mapping/Compass";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const mapLayer: ESMapItem = await fetchBySlug(params.map, mapIndexCollection);
@@ -47,6 +48,10 @@ const MapDetail = () => {
     const bounds = new LngLatBounds(mapLayer.bbox);
 
     map.fitBounds(bounds, { padding: 50 });
+    if (mapLayer.bearing) {
+      map.once("moveend", () => map.rotateTo(mapLayer.bearing ?? 0));
+    }
+    console.log("🚀 ~ useEffect ~ map:", map, Math.abs(map.getBearing() * 1));
 
     return () => {
       for (const index in mapLayer.wms_resources) {
@@ -97,6 +102,7 @@ const MapDetail = () => {
           {() => (
             <Map>
               <StyleSwitcher />
+              {mapLayer.bearing && <Compass />}
             </Map>
           )}
         </ClientOnly>

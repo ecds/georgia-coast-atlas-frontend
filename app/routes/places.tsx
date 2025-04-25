@@ -5,16 +5,19 @@ import Map from "~/components/mapping/Map.client";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 
 const linkClassNames = ({ isActive }: { isActive: boolean }) => {
-  return `text-center flex-grow py-3 px-3 text-lg tracking-wide font-semibold text-white focus:outline-none ${isActive ? "bg-county" : "bg-county/45"} hover:bg-county/75 focus:outline-1 focus:outline-black`;
+  return `text-center flex-grow py-3 px-3 text-lg tracking-wide font-semibold focus:outline-none ${isActive ? "bg-activeCounty text-white" : "bg-county/25 text-activeCounty hover:text-white"} hover:bg-county/75  focus:outline-1 focus:outline-black`;
 };
 
 const PlacesRootPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [hideTabs, setHideTabs] = useState<boolean>(false);
+  const [showTabs, setShowTabs] = useState<boolean>(false);
   const location = useLocation();
 
   useEffect(() => {
-    setHideTabs(Boolean(location.state));
+    setShowTabs(
+      location.pathname.includes("explore") ||
+        location.pathname.includes("search")
+    );
     containerRef.current?.scroll({ top: 0 });
   }, [location]);
 
@@ -26,7 +29,7 @@ const PlacesRootPage = () => {
       >
         <div>
           <div
-            className={`${hideTabs ? "hidden" : "flex"} w-full overflow-hidden sticky top-0 bg-activeCounty mx-auto z-50`}
+            className={`${showTabs ? "flex" : "hidden"} bg-white w-full overflow-hidden sticky top-0 mx-auto z-50 drop-shadow-sm`}
             role="tablist"
             aria-orientation="horizontal"
           >
@@ -39,7 +42,13 @@ const PlacesRootPage = () => {
             >
               Search
             </NavLink>
-            <NavLink to="/places/explore" className={linkClassNames} role="tab">
+            <NavLink
+              to="/places/explore"
+              className={({ isActive }) =>
+                `${linkClassNames({ isActive })} border-r-2`
+              }
+              role="tab"
+            >
               Explore
             </NavLink>
           </div>
@@ -52,7 +61,7 @@ const PlacesRootPage = () => {
         <ClientOnly>
           {() => (
             <Map>
-              <StyleSwitcher></StyleSwitcher>
+              <StyleSwitcher />
             </Map>
           )}
         </ClientOnly>

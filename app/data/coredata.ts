@@ -44,6 +44,7 @@ export const fetchBySlug = async (
       includes: [
         "alt",
         "bbox",
+        "bearing",
         "county",
         "date",
         "date_modified",

@@ -1,16 +1,16 @@
-import { areaShapes } from "./sources";
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 
 export const landColors = {
   island: "#68825C",
   activeIsland: "#4A5D41",
-  county: "#606C87",
-  activeCounty: "#414A5D",
+  county: "#797B77",
+  activeCounty: "#565855",
   water: "#8191B2",
-  road: "#797B77",
+  road: "#C3C8C1",
+  accent: "#5D414A",
 };
 
-export const areasSourceId = "islands";
+export const areasSourceId = "CostalShapes";
 export const islandsLayerId = "simpleIslandsFill";
 export const countiesSourceId = "counties";
 export const countiesLayerId = "simpleCounties";
@@ -19,8 +19,11 @@ export const areas: StyleSpecification = {
   version: 8,
   sources: {
     [areasSourceId]: {
-      type: "geojson",
-      data: areaShapes,
+      type: "vector",
+      scheme: "tms",
+      tiles: [
+        "https://geoserver.ecds.emory.edu/gwc/service/tms/1.0.0/CoastalGeorgia:CostalShapes@EPSG:900913@pbf/{z}/{x}/{y}.pbf",
+      ],
       promoteId: "uuid",
     },
   },
@@ -28,6 +31,7 @@ export const areas: StyleSpecification = {
     {
       id: countiesLayerId,
       source: areasSourceId,
+      "source-layer": areasSourceId,
       type: "fill",
       layout: {
         visibility: "visible",
@@ -45,6 +49,7 @@ export const areas: StyleSpecification = {
     {
       id: islandsLayerId,
       source: areasSourceId,
+      "source-layer": areasSourceId,
       type: "fill",
       layout: {
         visibility: "visible",
@@ -76,6 +81,7 @@ export const outlines: LayerSpecification[] = [
     id: "islandOutline",
     source: areasSourceId,
     type: "line",
+    layout: { visibility: "none" },
     filter: ["==", ["get", "type"], "island"],
     paint: {
       "line-color": landColors.activeIsland,

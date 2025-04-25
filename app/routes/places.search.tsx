@@ -21,7 +21,6 @@ import {
 } from "~/utils/getBB";
 import SearchResult from "~/components/search/SearchResult";
 // import SearchModal from "~/components/search/SearchModal";
-import type { ReactNode } from "react";
 import type { LoaderFunction } from "@remix-run/node";
 import type { Navigation, Location } from "@remix-run/react";
 import type { InstantSearchServerState } from "react-instantsearch";
@@ -34,7 +33,6 @@ type SearchProps = {
   location?: Location;
   modalOpen?: boolean;
   navigation?: Navigation;
-  children?: ReactNode;
   view?: views;
 };
 
@@ -61,7 +59,6 @@ const Search = ({
   serverUrl,
   location,
   navigation,
-  children,
 }: SearchProps) => {
   const { map } = useContext(MapContext);
 
@@ -105,7 +102,6 @@ const Search = ({
         }}
       >
         <Configure hitsPerPage={500} />
-        {children}
         <SearchForm />
         <Hits hitComponent={SearchResult} />
         {/* <InfiniteHits hitComponent={SearchResult} /> */}
@@ -142,9 +138,7 @@ const PlacesSearchPage = () => {
         location={location}
         navigation={navigation}
         view={view}
-      >
-        {/* <SearchModal isOpen={modalOpen} setIsOpen={setModalOpen} /> */}
-      </Search>
+      />
     </SearchContext.Provider>
   );
 };

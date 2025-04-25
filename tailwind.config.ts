@@ -27,7 +27,8 @@ export default {
         "open-sans": ["Open Sans", "sans-serif"],
       },
       colors: {
-        black: "#1C1817",
+        accent: landColors.accent,
+        black: "#181918",
         white: "#FDF9F6",
         "costal-green": "#4A5D41",
         island: landColors.island,

@@ -95,6 +95,7 @@ export type ESPlace = {
 
 export type ESMapItem = {
   bbox: [number, number, number, number];
+  bearing?: number;
   description: string;
   date: string;
   name: string;

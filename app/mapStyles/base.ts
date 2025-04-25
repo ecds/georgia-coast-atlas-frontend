@@ -10,28 +10,64 @@ export const base: StyleSpecification = {
   bearing: 0,
   pitch: 0,
   sources: {
-    openmaptiles: {
+    georgia: {
       type: "vector",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/georgia.json",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/us_south.json",
       promoteId: "id",
       attribution:
-        '<a href="https://openfreemap.org/" target="_blank">&copy; OpenFreeMap!</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+        '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+    },
+    florida: {
+      type: "vector",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/florida.json",
+      promoteId: "id",
+    },
+    southCarolina: {
+      type: "vector",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/south_carolina.json",
+      promoteId: "id",
     },
   },
   layers: [
     // {
     //   id: "beaches",
     //   type: "fill",
-    //   source: "openmaptiles",
+    //   source: "georgia",
     //   "source-layer": "landcover",
     //   filter: ["==", ["get", "class"], "beach"],
     //   layout: { visibility: "none" },
     //   paint: { "fill-color": landColors.island },
     // },
+    // {
+    //   id: "scWater",
+    //   type: "fill",
+    //   source: "southCarolina",
+    //   "source-layer": "water",
+    //   filter: [
+    //     "all",
+    //     ["==", ["geometry-type"], "Polygon"],
+    //     ["!=", ["get", "brunnel"], "tunnel"],
+    //     ["!=", ["get", "class"], "swimming_pool"],
+    //   ],
+    //   paint: { "fill-color": landColors.water, "fill-opacity": 1 },
+    // },
+    // {
+    //   id: "flWater",
+    //   type: "fill",
+    //   source: "florida",
+    //   "source-layer": "water",
+    //   filter: [
+    //     "all",
+    //     ["==", ["geometry-type"], "Polygon"],
+    //     ["!=", ["get", "brunnel"], "tunnel"],
+    //     ["!=", ["get", "class"], "swimming_pool"],
+    //   ],
+    //   paint: { "fill-color": landColors.water, "fill-opacity": 1 },
+    // },
     {
       id: "water",
       type: "fill",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "water",
       filter: [
         "all",
@@ -39,12 +75,12 @@ export const base: StyleSpecification = {
         ["!=", ["get", "brunnel"], "tunnel"],
         ["!=", ["get", "class"], "swimming_pool"],
       ],
-      paint: { "fill-color": landColors.water },
+      paint: { "fill-color": landColors.water, "fill-opacity": 1 },
     },
     {
       id: "waterway-tunnel",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "waterway",
       filter: [
         "all",
@@ -70,7 +106,7 @@ export const base: StyleSpecification = {
     {
       id: "tunnel_railway_transit",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       minzoom: 0,
       filter: [
@@ -90,7 +126,7 @@ export const base: StyleSpecification = {
       id: "road_area_pier",
       type: "fill",
       metadata: {},
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -107,7 +143,7 @@ export const base: StyleSpecification = {
       id: "road_pier",
       type: "line",
       metadata: {},
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -131,7 +167,7 @@ export const base: StyleSpecification = {
     {
       id: "road_bridge_area",
       type: "fill",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -144,7 +180,7 @@ export const base: StyleSpecification = {
     {
       id: "road_minor",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -171,7 +207,7 @@ export const base: StyleSpecification = {
     {
       id: "road_trunk_primary",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -195,7 +231,7 @@ export const base: StyleSpecification = {
     {
       id: "road_secondary_tertiary",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -221,7 +257,7 @@ export const base: StyleSpecification = {
     {
       id: "road_major_motorway",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -246,7 +282,7 @@ export const base: StyleSpecification = {
     {
       id: "railway_transit",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -262,7 +298,7 @@ export const base: StyleSpecification = {
     {
       id: "railway",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: ["==", ["get", "class"], "rail"],
       layout: { visibility: "none" },
@@ -274,7 +310,7 @@ export const base: StyleSpecification = {
     {
       id: "waterway-bridge-case",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "waterway",
       filter: [
         "all",
@@ -307,7 +343,7 @@ export const base: StyleSpecification = {
     {
       id: "waterway-bridge",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "waterway",
       filter: [
         "all",
@@ -331,7 +367,7 @@ export const base: StyleSpecification = {
     {
       id: "bridge_minor",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -359,7 +395,7 @@ export const base: StyleSpecification = {
     {
       id: "bridge_major",
       type: "line",
-      source: "openmaptiles",
+      source: "georgia",
       "source-layer": "transportation",
       filter: [
         "all",
@@ -390,6 +426,46 @@ export const base: StyleSpecification = {
         ],
       },
     },
+    {
+      id: "building",
+      type: "fill",
+      source: "openmaptiles",
+      "source-layer": "building",
+      minzoom: 13,
+      maxzoom: 14,
+      paint: {
+        "fill-color": landColors.accent,
+        "fill-opacity": 0.1,
+        "fill-outline-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          13,
+          landColors.accent,
+          14,
+          landColors.accent,
+        ],
+      },
+      layout: {
+        visibility: "none",
+      },
+    },
+    {
+      id: "building-3d",
+      type: "fill-extrusion",
+      source: "openmaptiles",
+      "source-layer": "building",
+      minzoom: 14,
+      paint: {
+        "fill-extrusion-base": ["get", "render_min_height"],
+        "fill-extrusion-color": landColors.accent,
+        "fill-extrusion-height": ["get", "render_height"],
+        "fill-extrusion-opacity": 0.2,
+      },
+      layout: {
+        visibility: "none",
+      },
+    },
   ],
 };
 
@@ -397,7 +473,7 @@ export const water: LayerSpecification[] = [
   {
     id: "creeks",
     type: "line",
-    source: "openmaptiles",
+    source: "georgia",
     "source-layer": "waterway",
     filter: [
       "all",
@@ -413,7 +489,7 @@ export const water: LayerSpecification[] = [
   {
     id: "intermittent",
     type: "line",
-    source: "openmaptiles",
+    source: "georgia",
     "source-layer": "waterway",
     filter: ["all", ["==", ["get", "intermittent"], 1]],
     paint: {
