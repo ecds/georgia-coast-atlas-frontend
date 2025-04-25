@@ -15,7 +15,7 @@ module.exports = {
     },
   },
   env: {
-    browser: true,
+    node: true,
     commonjs: true,
     es6: true,
   },
@@ -28,7 +28,6 @@ module.exports = {
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-console": ["warn", { allow: ["error"] }],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {

@@ -7,11 +7,11 @@ import {
 import { renderToString } from "react-dom/server";
 import { panosIndexCollection, searchRouter } from "~/config";
 import { panoCollection } from "~/utils/elasticsearchAdapter";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import type { InstantSearchServerState } from "react-instantsearch";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "react-router";
 import Thumbnails from "~/components/collections/Thumbnails";
 
 type SearchProps = {

@@ -1,4 +1,4 @@
-import type { ErrorResponse } from "@remix-run/node";
+import type { ErrorResponse } from "react-router";
 
 const RouteError = ({ error }: { error: ErrorResponse }) => {
   return (

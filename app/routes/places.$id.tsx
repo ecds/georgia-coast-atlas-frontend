@@ -5,7 +5,7 @@ import {
   useLocation,
   Await,
   useNavigation,
-} from "@remix-run/react";
+} from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { fetchBySlug } from "~/data/coredata";
@@ -18,7 +18,7 @@ import Loading from "~/components/layout/Loading";
 import { indexCollection } from "~/config";
 import { pageMetadata } from "~/utils/pageMetadata";
 import AsyncError from "~/components/errorResponses/AsyncError";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

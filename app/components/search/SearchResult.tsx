@@ -1,5 +1,5 @@
 import { PLACE_TYPES } from "~/config";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import type { Hit } from "instantsearch.js";
 import { useContext } from "react";
 import { SearchContext } from "~/contexts";

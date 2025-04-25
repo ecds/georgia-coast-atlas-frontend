@@ -5,7 +5,7 @@ import { PlaceContext } from "~/contexts";
 import RelatedPlacesMap from "./RelatedPlacesMap";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import PlacePopup from "../mapping/PlacePopup.client";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import type { FeatureCollection } from "geojson";
 import type { ESRelatedPlace } from "~/esTypes";
 

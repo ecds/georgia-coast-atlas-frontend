@@ -1,13 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { MapContext } from "~/contexts";
-import { useLoaderData, useNavigation } from "@remix-run/react";
+import { useLoaderData, useNavigation } from "react-router";
 import { fetchCounties, fetchPlacesByType } from "~/data/coredata";
 import IntroModal from "~/components/layout/IntroModal";
 import { defaultBounds, topBarHeight } from "~/config";
 import Counties from "~/components/mapping/Counties";
 import Islands from "~/components/mapping/Islands";
 import type { ESPlace } from "~/esTypes";
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "react-router";
 
 export const meta: MetaFunction = () => {
   return [

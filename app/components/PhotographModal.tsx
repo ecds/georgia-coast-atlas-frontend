@@ -10,7 +10,6 @@ import {
 } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import { ClientOnly } from "remix-utils/client-only";
 import { GalleryContext } from "~/contexts";
 import OpenSeadragonViewer from "./OpenseadragonViewer.client";
 import type { ReactNode } from "react";
@@ -66,7 +65,7 @@ const PhotographModal = ({ children, photographs, photograph }: Props) => {
                   {photographs && (
                     <div className="flex flex-col justify-between">
                       <div className="h-96">
-                        <ClientOnly>{() => <OpenSeadragonViewer />}</ClientOnly>
+                        <OpenSeadragonViewer />
                       </div>
                       {photographs.length > 1 && (
                         <Carousel showArrows scrollDistance="slide">

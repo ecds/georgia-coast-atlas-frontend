@@ -1,4 +1,4 @@
-import { useAsyncError } from "@remix-run/react";
+import { useAsyncError } from "react-router";
 
 const AsyncError = () => {
   const error = useAsyncError() as Error;

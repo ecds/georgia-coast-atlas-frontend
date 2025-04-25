@@ -1,5 +1,5 @@
 import { worksIndexCollection } from "~/config";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import { elasticSearchPost } from "~/data/coredata";
 
 type TWork = {

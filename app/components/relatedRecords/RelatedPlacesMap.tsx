@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import { ClientOnly } from "remix-utils/client-only";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
@@ -170,21 +169,17 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
   }, [setActivePlace, clickedPlace]);
 
   return (
-    <ClientOnly>
-      {() => (
-        <>
-          {children}
-          <PlaceTooltip
-            location={hoverLocation}
-            show={showTooltip}
-            onClose={() => setTooltipPlace(undefined)}
-            zoomToFeature={false}
-          >
-            <h4 className="text-white">{tooltipPlace?.name}</h4>
-          </PlaceTooltip>
-        </>
-      )}
-    </ClientOnly>
+    <>
+      {children}
+      <PlaceTooltip
+        location={hoverLocation}
+        show={showTooltip}
+        onClose={() => setTooltipPlace(undefined)}
+        zoomToFeature={false}
+      >
+        <h4 className="text-white">{tooltipPlace?.name}</h4>
+      </PlaceTooltip>
+    </>
   );
 };
 

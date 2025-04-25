@@ -1,12 +1,12 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { MapContext } from "~/contexts";
-import { ClientOnly } from "remix-utils/client-only";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
+import ClientOnly from "~/components/ClientOnly";
 
 interface Props {
   islands: ESPlace[];
@@ -120,41 +120,39 @@ const Islands = ({ islands }: Props) => {
     <>
       {islands.map((island) => {
         return (
-          <ClientOnly key={`popup-${island.uuid}`}>
-            {() => (
-              <>
-                <PlacePopup
-                  show={activeIsland == island}
-                  location={island.location}
-                  onClose={() => setActiveIsland(undefined)}
-                  zoomToFeature={false}
+          <ClientOnly key={`popup-${island.uuid}`} fallback={<div></div>}>
+            <div>
+              <PlacePopup
+                show={activeIsland == island}
+                location={island.location}
+                onClose={() => setActiveIsland(undefined)}
+                zoomToFeature={false}
+              >
+                {island.featured_photograph && (
+                  <img
+                    src={island.featured_photograph.replace("max", "600,")}
+                    alt=""
+                  />
+                )}
+                <h4 className="text-xl ">{island.name}</h4>
+                <p>{island.short_description}</p>
+                <Link
+                  to={`/islands/${island.slug}`}
+                  className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                 >
-                  {island.featured_photograph && (
-                    <img
-                      src={island.featured_photograph.replace("max", "600,")}
-                      alt=""
-                    />
-                  )}
-                  <h4 className="text-xl ">{island.name}</h4>
-                  <p>{island.short_description}</p>
-                  <Link
-                    to={`/islands/${island.slug}`}
-                    className="text-blue-700 underline underline-offset-2 text-l block mt-2"
-                  >
-                    Explore
-                  </Link>
-                </PlacePopup>
-                <PlaceTooltip
-                  show={hoveredIsland == island}
-                  location={island.location}
-                  onClose={() => setActiveIsland(undefined)}
-                  zoomToFeature={false}
-                  anchor="left"
-                >
-                  <h4 className="text-white">{island.name}</h4>
-                </PlaceTooltip>
-              </>
-            )}
+                  Explore
+                </Link>
+              </PlacePopup>
+              <PlaceTooltip
+                show={hoveredIsland == island}
+                location={island.location}
+                onClose={() => setActiveIsland(undefined)}
+                zoomToFeature={false}
+                anchor="left"
+              >
+                <h4 className="text-white">{island.name}</h4>
+              </PlaceTooltip>
+            </div>
           </ClientOnly>
         );
       })}

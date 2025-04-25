@@ -8,14 +8,13 @@ import {
   useRouteError,
   isRouteErrorResponse,
   useLocation,
-} from "@remix-run/react";
+} from "react-router";
 import styles from "./index.css?url";
 import Navbar from "./components/layout/Navbar";
 import Loading from "./components/layout/Loading";
 import RouteError from "./components/errorResponses/RouteError";
 import CodeError from "./components/errorResponses/CodeError";
 import { MapContext, SearchModalContext } from "./contexts";
-import { ClientOnly } from "remix-utils/client-only";
 import StyleSwitcher from "./components/mapping/StyleSwitcher";
 import Map from "./components/mapping/Map.client";
 import { topBarHeight } from "./config";
@@ -27,7 +26,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
 import { pageMetadata } from "~/utils/pageMetadata";
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "react-router";
 import type { Map as TMap } from "maplibre-gl";
 
 export const meta: MetaFunction = () => {
@@ -53,13 +52,9 @@ const ChildContent = ({
       >
         {children}
         <div className="hidden md:block flex-grow">
-          <ClientOnly>
-            {() => (
-              <Map>
-                <StyleSwitcher></StyleSwitcher>
-              </Map>
-            )}
-          </ClientOnly>
+          <Map>
+            <StyleSwitcher></StyleSwitcher>
+          </Map>
         </div>
       </div>
     );

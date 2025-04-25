@@ -1,15 +1,14 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "react-router";
 import { useContext, useEffect, useState } from "react";
 import { mapIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import { MapContext } from "~/contexts";
 import Map from "~/components/mapping/Map.client";
-import { ClientOnly } from "remix-utils/client-only";
 import { wmsLayer } from "~/mapStyles";
 import { LngLatBounds } from "maplibre-gl";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import LayerOpacity from "~/components/mapping/LayerOpacity";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import type { ESMapItem } from "~/esTypes";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -86,13 +85,9 @@ const MapDetail = () => {
         </ul> */}
       </div>
       <div className="flex-grow">
-        <ClientOnly>
-          {() => (
-            <Map>
-              <StyleSwitcher />
-            </Map>
-          )}
-        </ClientOnly>
+        <Map>
+          <StyleSwitcher />
+        </Map>
       </div>
     </div>
   );

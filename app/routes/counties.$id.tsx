@@ -1,4 +1,4 @@
-import { Await, useLoaderData, useNavigation } from "@remix-run/react";
+import { Await, useLoaderData, useNavigation } from "react-router";
 import { fetchBySlug } from "~/data/coredata";
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
@@ -7,7 +7,7 @@ import { counties as countyStyle } from "~/mapStyles";
 import { countyIndexCollection, defaultBounds } from "~/config";
 import RelatedPlacesList from "~/components/relatedRecords/RelatedPlacesList";
 import { LngLatBounds } from "maplibre-gl";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import { pageMetadata } from "~/utils/pageMetadata";
 

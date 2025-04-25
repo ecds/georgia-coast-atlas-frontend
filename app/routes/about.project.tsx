@@ -1,5 +1,5 @@
 import { dataHosts } from "~/config";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import "~/styles/about.css";
 import type { TWordPressData } from "~/types";
 

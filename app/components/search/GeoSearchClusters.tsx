@@ -2,8 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import { largeCluster } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
-import { ClientOnly } from "remix-utils/client-only";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import type { FeatureCollection } from "geojson";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
 
@@ -121,39 +120,35 @@ const GeoSearchClusters = ({ geojson }: Props) => {
   ]);
 
   return (
-    <ClientOnly>
-      {() => (
-        <PlacePopup
-          location={clickedLocation}
-          show={showPopup}
-          onClose={() => {
-            setShowPopup(false);
-            setClusterList(undefined);
-          }}
-          zoomToFeature={false}
-          showCloseButton={clusterList instanceof Array}
-        >
-          <div>
-            <h4>{popupTitle}</h4>
-            <ul>
-              {clusterList?.map((place) => {
-                return (
-                  <li key={place.slug}>
-                    <Link
-                      state={{ backTo: "Search Results" }}
-                      className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                      to={`/places/${place.slug}`}
-                    >
-                      {place.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </PlacePopup>
-      )}
-    </ClientOnly>
+    <PlacePopup
+      location={clickedLocation}
+      show={showPopup}
+      onClose={() => {
+        setShowPopup(false);
+        setClusterList(undefined);
+      }}
+      zoomToFeature={false}
+      showCloseButton={clusterList instanceof Array}
+    >
+      <div>
+        <h4>{popupTitle}</h4>
+        <ul>
+          {clusterList?.map((place) => {
+            return (
+              <li key={place.slug}>
+                <Link
+                  state={{ backTo: "Search Results" }}
+                  className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+                  to={`/places/${place.slug}`}
+                >
+                  {place.title}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </PlacePopup>
   );
 };
 

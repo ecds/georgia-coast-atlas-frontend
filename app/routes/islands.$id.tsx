@@ -1,10 +1,5 @@
 import { useContext, useEffect, useState, Suspense } from "react";
-import {
-  useLoaderData,
-  useRouteError,
-  isRouteErrorResponse,
-  Await,
-} from "@remix-run/react";
+import { useLoaderData, useRouteError, isRouteErrorResponse, Await } from "react-router";
 import { dataHosts, defaultBounds, indexCollection } from "~/config.ts";
 import { fetchBySlug } from "~/data/coredata";
 import FeaturedMedium from "~/components/FeaturedMedium";
@@ -19,7 +14,7 @@ import { pageMetadata } from "~/utils/pageMetadata";
 import AsyncError from "~/components/errorResponses/AsyncError";
 import NoRecord from "~/components/errorResponses/NoRecord";
 import type { TWordPressData } from "~/types";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

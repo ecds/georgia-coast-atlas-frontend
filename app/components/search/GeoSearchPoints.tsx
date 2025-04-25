@@ -2,8 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext, SearchContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
-import { ClientOnly } from "remix-utils/client-only";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate } from "react-router";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 
@@ -105,28 +104,24 @@ const GeoSearchPoints = ({ geojson }: Props) => {
   }, [map, activeFeature, geojson]);
 
   return (
-    <ClientOnly>
-      {() => (
-        <PlacePopup
-          location={clickedLocation}
-          show={showPopup}
-          onClose={() => setShowPopup(false)}
-          zoomToFeature={false}
-          showCloseButton={false}
-        >
-          <div>
-            {activeFeature?.properties?.preview && (
-              <img
-                className="max-h-32 max-w-32"
-                src={activeFeature?.properties.preview}
-                alt=""
-              />
-            )}
-            <h4>{popupTitle}</h4>
-          </div>
-        </PlacePopup>
-      )}
-    </ClientOnly>
+    <PlacePopup
+      location={clickedLocation}
+      show={showPopup}
+      onClose={() => setShowPopup(false)}
+      zoomToFeature={false}
+      showCloseButton={false}
+    >
+      <div>
+        {activeFeature?.properties?.preview && (
+          <img
+            className="max-h-32 max-w-32"
+            src={activeFeature?.properties.preview}
+            alt=""
+          />
+        )}
+        <h4>{popupTitle}</h4>
+      </div>
+    </PlacePopup>
   );
 };
 

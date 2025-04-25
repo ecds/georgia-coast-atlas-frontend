@@ -7,11 +7,11 @@ import {
 import { renderToString } from "react-dom/server";
 import { photosIndexCollection, searchRouter } from "~/config";
 import { photoCollection } from "~/utils/elasticsearchAdapter";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "react-router";
 import type { ESSearchProps } from "~/esTypes";
 
 export const loader: LoaderFunction = async ({ request }) => {

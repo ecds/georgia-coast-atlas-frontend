@@ -4,13 +4,13 @@
 // Specifically, COUNTYNAME needs to be name.
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "~/contexts";
-import { ClientOnly } from "remix-utils/client-only";
 import PlacePopup from "./PlacePopup.client";
 import { masks } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
+import ClientOnly from "../ClientOnly";
 
 const countyStyleLayer = masks.layers.find(
   (layer) => layer.id === "simpleCounties"
@@ -110,33 +110,31 @@ const Counties = ({ counties }: { counties: ESPlace[] }) => {
       {counties.map((county) => {
         return (
           <ClientOnly key={county.uuid}>
-            {() => (
-              <>
-                <PlacePopup
-                  show={activeCounty === county.name}
-                  onClose={() => setActiveCounty(undefined)}
-                  zoomToFeature={false}
-                  location={popupLocation}
+            <div>
+              <PlacePopup
+                show={activeCounty === county.name}
+                onClose={() => setActiveCounty(undefined)}
+                zoomToFeature={false}
+                location={popupLocation}
+              >
+                <h4 className="text-xl">{county.name}</h4>
+                <Link
+                  to={`/counties/${county.slug}`}
+                  className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                 >
-                  <h4 className="text-xl">{county.name}</h4>
-                  <Link
-                    to={`/counties/${county.slug}`}
-                    className="text-blue-700 underline underline-offset-2 text-l block mt-2"
-                  >
-                    Explore
-                  </Link>
-                </PlacePopup>
-                <PlaceTooltip
-                  show={hoveredCounty == county.name}
-                  location={county.location}
-                  onClose={() => setActiveCounty(undefined)}
-                  zoomToFeature={false}
-                  anchor="right"
-                >
-                  <h4 className="text-white">{county.name} County</h4>
-                </PlaceTooltip>
-              </>
-            )}
+                  Explore
+                </Link>
+              </PlacePopup>
+              <PlaceTooltip
+                show={hoveredCounty == county.name}
+                location={county.location}
+                onClose={() => setActiveCounty(undefined)}
+                zoomToFeature={false}
+                anchor="right"
+              >
+                <h4 className="text-white">{county.name} County</h4>
+              </PlaceTooltip>
+            </div>
           </ClientOnly>
         );
       })}

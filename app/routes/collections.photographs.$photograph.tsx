@@ -1,9 +1,8 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "react-router";
 import { photosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import IIIFViewer from "~/components/layout/IIIFViewer.client";
-import { ClientOnly } from "remix-utils/client-only";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import type { ESPhotographItem } from "~/esTypes";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -34,7 +33,7 @@ const PhotographDetail = () => {
         Back to Photograph Collection
       </Link>
 
-      <ClientOnly>{() => <IIIFViewer photo={photograph} />}</ClientOnly>
+      <IIIFViewer photo={photograph} />
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>

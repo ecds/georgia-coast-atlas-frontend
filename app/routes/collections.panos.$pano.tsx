@@ -1,7 +1,7 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "react-router";
 import { panosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const pano = await fetchBySlug(params.pano, panosIndexCollection);

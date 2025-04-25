@@ -12,15 +12,15 @@ import { allPlacesSearchClient } from "~/utils/elasticsearchAdapter";
 import GeoSearch from "~/components/search/GeoSearch";
 import SearchForm from "~/components/search/SearchForm";
 import { history } from "instantsearch.js/es/lib/routers";
-import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
+import { useLoaderData, useLocation, useNavigation } from "react-router";
 import { defaultBounds, indexCollection } from "~/config";
 import { MapContext, SearchContext } from "~/contexts";
 import { getBB } from "~/utils/getBB";
 import SearchResult from "~/components/search/SearchResult";
 import SearchModal from "~/components/search/SearchModal";
 import type { ReactNode } from "react";
-import type { LoaderFunction } from "@remix-run/node";
-import type { Navigation, Location } from "@remix-run/react";
+import type { LoaderFunction } from "react-router";
+import type { Navigation, Location } from "react-router";
 import type { InstantSearchServerState } from "react-instantsearch";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/react";
 

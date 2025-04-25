@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { fetchBySlug } from "~/data/coredata";
 import { topicIndexCollection } from "~/config";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import { PlaceContext } from "~/contexts";
 import RelatedPlacesDetailedList from "~/components/relatedRecords/RelatedPlacesDetailedList";

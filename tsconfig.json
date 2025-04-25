@@ -2,10 +2,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "**/.server/**/*.ts",
-    "**/.server/**/*.tsx",
-    "**/.client/**/*.ts",
-    "**/.client/**/*.tsx"
+    "**/server/**/*.ts",
   ],
   "compilerOptions": {
     "lib": [
@@ -14,7 +11,6 @@
       "ES2023"
     ],
     "types": [
-      "@remix-run/node",
       "vite/client"
     ],
     "isolatedModules": true,
@@ -35,7 +31,16 @@
       ]
     },
     // Vite takes care of building everything, not tsc.
-    "noEmit": true,
-    "allowImportingTsExtensions": true
-  }
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
+  },
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.vite.json"
+    }
+  ]
 }

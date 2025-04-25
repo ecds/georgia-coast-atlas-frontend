@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import Map from "../mapping/Map.client";
-import { ClientOnly } from "remix-utils/client-only";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { costalLabels } from "~/mapStyles";
@@ -147,21 +146,17 @@ const TopicMap = ({ geojson }: Props) => {
   }, [setActivePlace, clickedPlace]);
 
   return (
-    <ClientOnly>
-      {() => (
-        <>
-          <Map className="w-full h-[600px] border-0" />
-          <PlaceTooltip
-            location={hoverLocation}
-            show={showTooltip}
-            onClose={() => setTooltipPlace(undefined)}
-            zoomToFeature={false}
-          >
-            <h4 className="text-white">{tooltipPlace?.name}</h4>
-          </PlaceTooltip>
-        </>
-      )}
-    </ClientOnly>
+    <>
+      <Map className="w-full h-[600px] border-0" />
+      <PlaceTooltip
+        location={hoverLocation}
+        show={showTooltip}
+        onClose={() => setTooltipPlace(undefined)}
+        zoomToFeature={false}
+      >
+        <h4 className="text-white">{tooltipPlace?.name}</h4>
+      </PlaceTooltip>
+    </>
   );
 };
 

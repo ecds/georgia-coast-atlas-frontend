@@ -1,5 +1,5 @@
-import { useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "react-router";
+import type { LoaderFunction } from "react-router";
 import { fetchDataBySlugFromTopics } from "~/data/coredata.ts";
 
 // Define the video type
