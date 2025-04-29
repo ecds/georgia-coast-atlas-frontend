@@ -22,8 +22,9 @@ import {
 import SearchResult from "~/components/search/SearchResult";
 // import SearchModal from "~/components/search/SearchModal";
 import type { LoaderFunction } from "@remix-run/node";
-import type { Navigation, Location } from "@remix-run/react";
+import type { Navigation, Location, MetaFunction } from "@remix-run/react";
 import type { InstantSearchServerState } from "react-instantsearch";
+import { pageMetaDefaults } from "~/utils/pageMetadata";
 
 type views = "search" | "explore";
 
@@ -54,6 +55,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
+export const meta: MetaFunction = () => {
+  return [{
+    ...pageMetaDefaults,
+    title: 'Search: Georgia Coast Atlas'
+  }]
+}
+
 const Search = ({
   serverState,
   serverUrl,
@@ -61,23 +69,6 @@ const Search = ({
   navigation,
 }: SearchProps) => {
   const { map } = useContext(MapContext);
-
-  // Return to previously searched bounds.
-  useEffect(() => {
-    if (!map || navigation?.state !== "idle") return;
-
-    if (location?.state?.previousBounds) {
-      const previousBounds = boundingBoxFromLngLat(
-        location.state.previousBounds
-      );
-      map.fitBounds(previousBounds);
-      // location.state.previousBounds = undefined;
-    } else if (location?.search.includes("geoSearch")) {
-      const previousBounds =
-        boundingBoxFromSearchParameters(location?.search) ?? defaultBounds();
-      map.fitBounds(previousBounds, { padding: 50 });
-    }
-  }, [location, map, navigation]);
 
   return (
     <InstantSearchSSRProvider {...serverState}>

@@ -30,12 +30,13 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     (event: MapLayerMouseEvent) => {
       if (!event.features || !event.features.length) return;
       const properties = event.features[0].properties;
+      console.log("🚀 ~ GeoSearchPoints ~ location:", location)
       navigate(`/places/${properties.slug}`, {
         state: {
           title: "Search Results",
           slug: "search",
           bounds: map?.getBounds(),
-          previous: location.pathname,
+          previous: `${location.pathname}${location.search}`,
           search: location.search,
         },
       });

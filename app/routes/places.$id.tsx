@@ -62,17 +62,18 @@ const PlacePage = () => {
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
   const [backTo, setBackTo] = useState<
     | {
-        slug: string;
-        title: string;
-        bounds?: LngLatBounds;
-        previous: string;
-        search?: string;
-      }
+      slug: string;
+      title: string;
+      bounds?: LngLatBounds;
+      previous: string;
+      search?: string;
+    }
     | undefined
   >(undefined);
   const topRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  console.log("🚀 ~ PlacePage ~ location:", location)
 
   useEffect(() => {
     setBackTo(location.state);
@@ -80,42 +81,9 @@ const PlacePage = () => {
 
   const navigateBack = () => {
     if (backTo) {
-      navigate(-1);
+      navigate(backTo.previous, { state: backTo });
     }
   };
-
-  // useEffect(() => {
-  //   if (!map) return;
-  //   if (
-  //     place.types.includes("Barrier Island") ||
-  //     place.types.includes("County")
-  //   ) {
-  //     map.setFeatureState(
-  //       { source: areasSourceId, id: place.uuid },
-  //       { hovered: true }
-  //     );
-  //   } else {
-  //     map.setPaintProperty(
-  //       countiesLayerId,
-  //       "fill-color",
-  //       landColors.activeCounty
-  //     );
-  //     map.setPaintProperty(
-  //       islandsLayerId,
-  //       "fill-color",
-  //       landColors.activeIsland
-  //     );
-  //   }
-
-  //   return () => {
-  //     map.setPaintProperty(countiesLayerId, "fill-color", landColors.county);
-  //     map.setPaintProperty(islandsLayerId, "fill-color", landColors.island);
-  //     map.setFeatureState(
-  //       { source: areasSourceId, id: place.uuid },
-  //       { hovered: false }
-  //     );
-  //   };
-  // }, [map, place]);
 
   return (
     <PlaceContext.Provider
@@ -164,7 +132,7 @@ const PlacePage = () => {
         />
         <div className="px-4">
           {place.types.includes("Barrier Island") ||
-          place.types.includes("County") ? (
+            place.types.includes("County") ? (
             <RelatedPlaces />
           ) : (
             <PlaceMap />
