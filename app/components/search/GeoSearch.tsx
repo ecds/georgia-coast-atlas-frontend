@@ -33,7 +33,6 @@ const GeoSearch = ({ location }: { location?: Location }) => {
     const searchParams = new URLSearchParams(location?.search)
 
     if (location?.state?.bounds) {
-      console.log("🚀 ~ useEffect ~ location?.state?.bounds:", location?.state?.bounds)
       map.fitBounds(location.state.bounds)
     } else if (searchParams.has('georgia_coast_places[geoSearch][boundingBox]')) {
       const bbox = searchParams.get('georgia_coast_places[geoSearch][boundingBox]')?.split(',').map((n) => parseFloat(n)).reverse() as [number, number, number, number]
@@ -54,7 +53,6 @@ const GeoSearch = ({ location }: { location?: Location }) => {
         <GeoSearchClusters geojson={geojson} />
         <GeoSearchPoints geojson={geojson} />
       </>
-
     )
   }
 
