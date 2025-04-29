@@ -38,11 +38,12 @@ const PhotographDetail = () => {
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>
+        // Add link here
         <div
           dangerouslySetInnerHTML={{
             __html:
               photograph.description ??
-              "Velit quis veniam commodo fugiat proident officia aute exercitation dolor duis amet non reprehenderit. Elit dolore ut Lorem dolore adipisicing nostrud cillum irure esse esse ipsum incididunt. In sunt laborum do aliqua magna veniam irure enim id officia. Est non qui commodo esse.",
+              "",
           }}
         />
       </div>
