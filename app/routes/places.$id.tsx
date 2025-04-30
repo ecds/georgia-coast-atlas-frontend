@@ -81,7 +81,7 @@ const PlacePage = () => {
 
   const navigateBack = () => {
     if (backTo) {
-      navigate(backTo.previous, { state: backTo });
+      navigate(backTo.previous, { state: { ...backTo, previous: location.pathname } });
     }
   };
 
