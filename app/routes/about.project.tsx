@@ -5,7 +5,7 @@ import type { TWordPressData } from "~/types";
 
 export const loader = async () => {
   const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=about`
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=about-project`
   );
 
   const wpData: TWordPressData[] = await wpResponse.json();
