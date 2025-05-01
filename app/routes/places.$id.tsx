@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -16,11 +16,11 @@ import RelatedMapLayers from "~/components/relatedRecords/RelatedMapLayers";
 import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
 import RelatedSection from "~/components/relatedRecords/RelatedSection";
 import RelatedMedia from "~/components/relatedRecords/RelatedMedia";
+import PlaceMap from "~/components/places/PlaceMap";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
 import type { LngLatBounds } from "maplibre-gl";
-import PlaceMap from "~/components/places/PlaceMap";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return pageMetadata(data?.place as ESPlace);
@@ -62,28 +62,20 @@ const PlacePage = () => {
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
   const [backTo, setBackTo] = useState<
     | {
-      slug: string;
-      title: string;
-      bounds?: LngLatBounds;
-      previous: string;
-      search?: string;
-    }
+        slug: string;
+        title: string;
+        bounds?: LngLatBounds;
+        previous: string;
+        search?: string;
+      }
     | undefined
   >(undefined);
   const topRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const location = useLocation();
-  console.log("🚀 ~ PlacePage ~ location:", location)
 
   useEffect(() => {
     setBackTo(location.state);
   }, [location]);
-
-  const navigateBack = () => {
-    if (backTo) {
-      navigate(backTo.previous, { state: { ...backTo, previous: location.pathname } });
-    }
-  };
 
   return (
     <PlaceContext.Provider
@@ -104,12 +96,13 @@ const PlacePage = () => {
       <>
         {backTo && (
           <nav className="w-full bg-white z-50 sticky top-0 py-2">
-            <button
-              onClick={navigateBack}
+            <Link
+              to={`/places/${backTo.slug}`}
+              state={backTo}
               className="block bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-1 rounded-lg text-left w-max m-2 text-xs"
             >
               <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo.title}
-            </button>
+            </Link>
           </nav>
         )}
         <Heading
@@ -132,7 +125,7 @@ const PlacePage = () => {
         />
         <div className="px-4">
           {place.types.includes("Barrier Island") ||
-            place.types.includes("County") ? (
+          place.types.includes("County") ? (
             <RelatedPlaces />
           ) : (
             <PlaceMap />

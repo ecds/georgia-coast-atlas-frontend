@@ -22,7 +22,7 @@ interface PopupProps extends Props {
 
 const PopupContent = ({ onClose, children, showCloseButton = true }: Props) => {
   return (
-    <div className="flex flex-col max-h-96 overflow-hidden">
+    <div className="flex flex-col">
       {showCloseButton && (
         <div className="flex justify-end">
           <button
@@ -74,7 +74,7 @@ const PlacePopup = ({
   }, [map, location]);
 
   useEffect(() => {
-    if (popContainerRef.current && coordinates && show && map) {
+    if (coordinates && show && map) {
       popupRef.current = new maplibregl.Popup({
         closeButton: false,
         className: "pointer-events-auto place-popup",

@@ -27,6 +27,7 @@ interface Props {
 const RelatedPlacesMap = ({ geojson, children }: Props) => {
   const { map } = useContext(MapContext);
   const {
+    activeLayers,
     clusterFillColor,
     clusterTextColor,
     place,
@@ -44,6 +45,8 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
   const [clickedPlace, setClickedPlace] = useState<
     ESRelatedPlace | undefined
   >();
+  const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>();
+
   useEffect(() => {
     if (!map || !place) return;
 
@@ -96,8 +99,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     };
 
     const bounds = new LngLatBounds(place.bbox);
-
-    map.fitBounds(bounds, { padding: 50, maxZoom: 14 });
+    setPlaceBounds(bounds);
 
     const placesSource: SourceSpecification = {
       type: "geojson",
@@ -181,6 +183,11 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
   useEffect(() => {
     setActivePlace(clickedPlace);
   }, [setActivePlace, clickedPlace]);
+
+  useEffect(() => {
+    if (!map || !placeBounds) return;
+    if (activeLayers?.length == 0) map?.fitBounds(placeBounds);
+  }, [activeLayers, placeBounds, map]);
 
   return (
     <ClientOnly>

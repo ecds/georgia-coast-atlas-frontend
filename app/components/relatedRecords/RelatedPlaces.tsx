@@ -38,6 +38,10 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
     if (!place?.other_places) setOtherPlaces([]);
   }, [place]);
 
+  // useEffect(() => {
+  //   console.log("🚀 ~ RelatedPlaces ~ activePlace:", activePlace);
+  // }, [activePlace]);
+
   if (!place) return null;
 
   return (
@@ -58,13 +62,13 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
       {activePlace && (
         <PlacePopup
           location={activePlace.location}
-          show={true}
+          show={Boolean(activePlace)}
           onClose={() => setActivePlace(undefined)}
           zoomToFeature={false}
         >
           {activePlace.featured_photograph && (
             <img
-              src={activePlace.featured_photograph.replace("max", "600,")}
+              src={activePlace.featured_photograph.replace("max", "300,")}
               alt=""
             />
           )}
