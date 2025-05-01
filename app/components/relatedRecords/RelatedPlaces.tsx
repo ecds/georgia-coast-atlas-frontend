@@ -38,10 +38,6 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
     if (!place?.other_places) setOtherPlaces([]);
   }, [place]);
 
-  // useEffect(() => {
-  //   console.log("🚀 ~ RelatedPlaces ~ activePlace:", activePlace);
-  // }, [activePlace]);
-
   if (!place) return null;
 
   return (

@@ -17,6 +17,7 @@ export const wmsLayer = ({ url, id, initialOpacity }: Props) => {
     id,
     source: id,
     type: "raster",
+    layout: {visibility: initialOpacity === 0 ? "none" : "visible"},
     paint: {
       "raster-opacity": initialOpacity ?? 0,
     },

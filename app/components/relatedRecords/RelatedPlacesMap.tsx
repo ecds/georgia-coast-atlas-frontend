@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { ClientOnly } from "remix-utils/client-only";
 import { LngLatBounds } from "maplibre-gl";
@@ -16,7 +16,7 @@ import type {
   SourceSpecification,
 } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat, ESPlace, ESRelatedPlace } from "~/esTypes";
+import type { TLonLat } from "~/esTypes";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -27,48 +27,50 @@ interface Props {
 const RelatedPlacesMap = ({ geojson, children }: Props) => {
   const { map } = useContext(MapContext);
   const {
+    activePlace,
     activeLayers,
     clusterFillColor,
     clusterTextColor,
     place,
     hoveredPlace,
     setActivePlace,
+    setHoveredPlace,
   } = useContext(PlaceContext);
-  const [tooltipPlace, setTooltipPlace] = useState<
-    ESRelatedPlace | ESPlace | undefined
-  >();
   const [hoverLocation, setHoverLocation] = useState<TLonLat>({
     lat: 0,
     lon: 0,
   });
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
-  const [clickedPlace, setClickedPlace] = useState<
-    ESRelatedPlace | undefined
-  >();
   const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>();
+  const activePlaceRef = useRef(activePlace);
+
+  useEffect(() => {
+    activePlaceRef.current = activePlace;
+  }, [activePlace]);
 
   useEffect(() => {
     if (!map || !place) return;
 
     const handleMouseEnter = async ({ features }: MapLayerMouseEvent) => {
+      if (activePlaceRef.current) return;
       map.getCanvas().style.cursor = "pointer";
       if (features) {
-        setTooltipPlace(
+        setHoveredPlace(
           place.places.find(
             (place) => place.uuid === features[0].properties.uuid
           )
         );
       } else {
-        setTooltipPlace(undefined);
+        setHoveredPlace(undefined);
       }
     };
 
     const handleMouseLeave = () => {
-      setTooltipPlace(undefined);
+      setHoveredPlace(undefined);
     };
 
     const handleClick = async ({ features, lngLat }: MapLayerMouseEvent) => {
-      setTooltipPlace(undefined);
+      setHoveredPlace(undefined);
       if (features) {
         const feature = features[0];
         if (feature.properties?.cluster) {
@@ -88,13 +90,13 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
         }
 
         map.getCanvas().style.cursor = "pointer";
-        setClickedPlace(
+        setActivePlace(
           [...place.places, ...place.other_places].find(
             (place) => place.uuid === feature.properties.uuid
           )
         );
       } else {
-        setClickedPlace(undefined);
+        setActivePlace(undefined);
       }
     };
 
@@ -163,26 +165,26 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       map.removeLayer(pointLayer.id);
       map.removeSource(sourceId);
     };
-  }, [map, geojson, clusterFillColor, clusterTextColor, place]);
-
-  useEffect(() => {
-    setTooltipPlace(hoveredPlace);
-  }, [hoveredPlace]);
+  }, [
+    map,
+    geojson,
+    clusterFillColor,
+    clusterTextColor,
+    place,
+    setActivePlace,
+    setHoveredPlace,
+  ]);
 
   useEffect(() => {
     if (!map) return;
-    if (tooltipPlace) {
-      setHoverLocation(tooltipPlace.location);
+    if (hoveredPlace) {
+      setHoverLocation(hoveredPlace.location);
       setShowTooltip(true);
     } else {
       map.getCanvas().style.cursor = "";
       setShowTooltip(false);
     }
-  }, [map, tooltipPlace]);
-
-  useEffect(() => {
-    setActivePlace(clickedPlace);
-  }, [setActivePlace, clickedPlace]);
+  }, [map, hoveredPlace]);
 
   useEffect(() => {
     if (!map || !placeBounds) return;
@@ -197,10 +199,10 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
           <PlaceTooltip
             location={hoverLocation}
             show={showTooltip}
-            onClose={() => setTooltipPlace(undefined)}
+            onClose={() => setHoveredPlace(undefined)}
             zoomToFeature={false}
           >
-            <h4 className="text-white">{tooltipPlace?.name}</h4>
+            <h4 className="text-white">{hoveredPlace?.name}</h4>
           </PlaceTooltip>
         </>
       )}
