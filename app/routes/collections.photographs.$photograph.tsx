@@ -5,6 +5,8 @@ import IIIFViewer from "~/components/layout/IIIFViewer.client";
 import { ClientOnly } from "remix-utils/client-only";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ESPhotographItem } from "~/esTypes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph: ESPhotographItem = await fetchBySlug(
@@ -47,6 +49,7 @@ const PhotographDetail = () => {
             className="text-sm text-blue-600 underline hover:text-blue-800 block mt-1"
           >
             View Full Image
+            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-sm" />
           </a>
         )}
 
