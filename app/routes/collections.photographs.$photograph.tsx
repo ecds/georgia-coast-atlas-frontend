@@ -1,12 +1,13 @@
 import { Link, useLoaderData } from "@remix-run/react";
-import { photosIndexCollection } from "~/config";
-import { fetchBySlug } from "~/data/coredata";
-import IIIFViewer from "~/components/layout/IIIFViewer.client";
-import { ClientOnly } from "remix-utils/client-only";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { ESPhotographItem } from "~/esTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { ClientOnly } from "remix-utils/client-only";
+import IIIFViewer from "~/components/layout/IIIFViewer.client";
+import { photosIndexCollection } from "~/config";
+import { fetchBySlug } from "~/data/coredata";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ESPhotographItem } from "~/esTypes";
+
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph: ESPhotographItem = await fetchBySlug(
@@ -46,10 +47,10 @@ const PhotographDetail = () => {
             href={photograph.full_url.replace("/square/", "/full/")}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-blue-600 underline hover:text-blue-800 block mt-1"
+            className="text-sm text-blue-600 underline hover:text-blue-800 block mt-1 w-fit flex items-center"
           >
             View Full Image
-            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-sm" />
+            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-sm ms-2" />
           </a>
         )}
 
