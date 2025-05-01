@@ -38,7 +38,18 @@ const PhotographDetail = () => {
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>
-        // Add link here
+
+        {photograph.full_url && (
+          <a
+            href={photograph.full_url.replace("/square/", "/full/")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 underline hover:text-blue-800 block mt-1"
+          >
+            View Full Image
+          </a>
+        )}
+
         <div
           dangerouslySetInnerHTML={{
             __html:
