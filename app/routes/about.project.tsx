@@ -1,7 +1,10 @@
 import { dataHosts } from "~/config";
 import { useLoaderData } from "@remix-run/react";
-import "~/styles/about.css";
+import { pageMetaDefaults } from "~/utils/pageMetadata";
+import wpCssUrl from "~/styles/about.css?url";
 import type { TWordPressData } from "~/types";
+import type { MetaFunction } from "@remix-run/react";
+import type { LinksFunction } from "@remix-run/node";
 
 export const loader = async () => {
   const wpResponse = await fetch(
@@ -11,6 +14,19 @@ export const loader = async () => {
   const wpData: TWordPressData[] = await wpResponse.json();
 
   return { wpData: wpData[0] };
+};
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: wpCssUrl }];
+};
+
+export const meta: MetaFunction = () => {
+  return [
+    {
+      ...pageMetaDefaults,
+      title: "About the Project: Georgia Coast Atlas",
+    },
+  ];
 };
 
 const ProjectPage = () => {
