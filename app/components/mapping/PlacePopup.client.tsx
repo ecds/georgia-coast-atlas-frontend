@@ -80,6 +80,7 @@ const PlacePopup = ({
         className: "pointer-events-auto place-popup",
         anchor,
         offset: 5,
+        maxWidth: "33%",
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current)

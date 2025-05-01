@@ -1,7 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { MapContext, PlaceContext } from "~/contexts";
-import { ClientOnly } from "remix-utils/client-only";
+import { Link } from "@remix-run/react";
 import { LngLatBounds } from "maplibre-gl";
+import { ClientOnly } from "remix-utils/client-only";
+import { MapContext, PlaceContext } from "~/contexts";
 import {
   cluster,
   clusterCount,
@@ -10,13 +11,13 @@ import {
 } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import { areasSourceId } from "~/mapStyles";
+import PlacePopup from "../mapping/PlacePopup.client";
 import type {
   GeoJSONSource,
   MapLayerMouseEvent,
   SourceSpecification,
 } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat } from "~/esTypes";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -36,10 +37,6 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     setActivePlace,
     setHoveredPlace,
   } = useContext(PlaceContext);
-  const [hoverLocation, setHoverLocation] = useState<TLonLat>({
-    lat: 0,
-    lon: 0,
-  });
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>();
   const activePlaceRef = useRef(activePlace);
@@ -52,11 +49,11 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     if (!map || !place) return;
 
     const handleMouseEnter = async ({ features }: MapLayerMouseEvent) => {
-      if (activePlaceRef.current) return;
       map.getCanvas().style.cursor = "pointer";
+      if (activePlaceRef.current) return;
       if (features) {
         setHoveredPlace(
-          place.places.find(
+          [...place.places, ...place.other_places].find(
             (place) => place.uuid === features[0].properties.uuid
           )
         );
@@ -66,6 +63,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
     };
 
     const handleMouseLeave = () => {
+      map.getCanvas().style.cursor = "";
       setHoveredPlace(undefined);
     };
 
@@ -73,6 +71,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       setHoveredPlace(undefined);
       if (features) {
         const feature = features[0];
+        setActivePlace(undefined);
         if (feature.properties?.cluster) {
           const source: GeoJSONSource | undefined = map.getSource(
             feature.layer.source
@@ -89,12 +88,11 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
           return;
         }
 
-        map.getCanvas().style.cursor = "pointer";
-        setActivePlace(
-          [...place.places, ...place.other_places].find(
-            (place) => place.uuid === feature.properties.uuid
-          )
+        const clickedPlace = [...place.places, ...place.other_places].find(
+          (place) => place.uuid === feature.properties.uuid
         );
+
+        setActivePlace(clickedPlace);
       } else {
         setActivePlace(undefined);
       }
@@ -178,7 +176,6 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
   useEffect(() => {
     if (!map) return;
     if (hoveredPlace) {
-      setHoverLocation(hoveredPlace.location);
       setShowTooltip(true);
     } else {
       map.getCanvas().style.cursor = "";
@@ -196,14 +193,44 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
       {() => (
         <>
           {children}
-          <PlaceTooltip
-            location={hoverLocation}
-            show={showTooltip}
-            onClose={() => setHoveredPlace(undefined)}
-            zoomToFeature={false}
-          >
-            <h4 className="text-white">{hoveredPlace?.name}</h4>
-          </PlaceTooltip>
+          {hoveredPlace && (
+            <PlaceTooltip
+              location={hoveredPlace.location}
+              show={showTooltip}
+              onClose={() => setHoveredPlace(undefined)}
+              zoomToFeature={false}
+            >
+              <h4 className="text-white">{hoveredPlace.name}</h4>
+            </PlaceTooltip>
+          )}
+          {activePlace && (
+            <PlacePopup
+              location={activePlace.location}
+              show={Boolean(activePlace)}
+              onClose={() => setActivePlace(undefined)}
+              zoomToFeature={false}
+            >
+              {activePlace.featured_photograph && (
+                <img
+                  src={activePlace.featured_photograph.replace("max", "300,")}
+                  alt=""
+                />
+              )}
+              <h4 className="text-xl">{activePlace.name}</h4>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: activePlace.description ?? "",
+                }}
+              />
+              <Link
+                to={`/places/${activePlace.slug}`}
+                state={{ slug: place?.slug, title: place?.name }}
+                className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+              >
+                Read More
+              </Link>
+            </PlacePopup>
+          )}
         </>
       )}
     </ClientOnly>
