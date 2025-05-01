@@ -1,10 +1,13 @@
 import { Link, useLoaderData } from "@remix-run/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { ClientOnly } from "remix-utils/client-only";
+import IIIFViewer from "~/components/layout/IIIFViewer.client";
 import { photosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
-import IIIFViewer from "~/components/layout/IIIFViewer.client";
-import { ClientOnly } from "remix-utils/client-only";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { ESPhotographItem } from "~/esTypes";
+
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph: ESPhotographItem = await fetchBySlug(
@@ -38,11 +41,24 @@ const PhotographDetail = () => {
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>
+
+        {photograph.full_url && (
+          <a
+            href={photograph.full_url.replace("/square/", "/full/")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 underline hover:text-blue-800 block mt-1 w-fit flex items-center"
+          >
+            View Full Image
+            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-sm ms-2" />
+          </a>
+        )}
+
         <div
           dangerouslySetInnerHTML={{
             __html:
               photograph.description ??
-              "Velit quis veniam commodo fugiat proident officia aute exercitation dolor duis amet non reprehenderit. Elit dolore ut Lorem dolore adipisicing nostrud cillum irure esse esse ipsum incididunt. In sunt laborum do aliqua magna veniam irure enim id officia. Est non qui commodo esse.",
+              "",
           }}
         />
       </div>
