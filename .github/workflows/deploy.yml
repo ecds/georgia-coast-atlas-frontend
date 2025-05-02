@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - feature/unified-ui
+      - dev
 
 permissions:
   id-token: write # This is required for requesting the JWT
