@@ -22,9 +22,10 @@ const MenuSelect = ({ attribute }: Props) => {
   }, [selectedValue, refine, clear]);
 
   return (
-    <div>
-      <h2 className="capitalize">{attribute}</h2>
+    <div className="mt-4 ms-6 ">
+      <h2 className="capitalize text-lg">{attribute}</h2>
       <select
+        className="w-36 p-1 border-2 rounded-sm"
         value={selectedValue ?? "Historical"}
         onChange={(event) => {
           setSelectedValue(event.target.value);
