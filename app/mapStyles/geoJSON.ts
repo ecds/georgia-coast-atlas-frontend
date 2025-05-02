@@ -92,3 +92,20 @@ export const singlePoint = (id: string, source: string, size?: number) => {
   };
   return point;
 };
+
+export const placePolygon = (
+  id: string,
+  source: string,
+  fillColor?: string
+) => {
+  const polygon: AddLayerObject = {
+    id,
+    type: "fill",
+    source,
+    paint: {
+      "fill-color": fillColor ?? "orange",
+      "fill-opacity": 1,
+    },
+  };
+  return polygon;
+};

@@ -5,12 +5,13 @@ import {
   getServerState,
 } from "react-instantsearch";
 import { renderToString } from "react-dom/server";
+import { useLoaderData } from "@remix-run/react";
 import { mapIndexCollection, searchRouter } from "~/config";
 import { mapCollection } from "~/utils/elasticsearchAdapter";
-import { useLoaderData } from "@remix-run/react";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
+import MenuSelect from "~/components/search/MenuSelect";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
 import { useState } from "react";
@@ -44,30 +45,27 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
   const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>();
   
   return (
-    <PlaceContext.Provider
-      value={{
-        place: { uuid: "", places: [], other_places: [] } as any,
-        activePlace,
-        setActivePlace,
-        hoveredPlace,
-        setHoveredPlace,
-      }}
-    >
-      <InstantSearchSSRProvider {...serverState}>
-        <InstantSearch
-          indexName={mapIndexCollection}
-          searchClient={mapCollection}
-          future={{ preserveSharedStateOnUnmount: true }}
-          routing={searchRouter(serverUrl)}
-        >
-          <Configure hitsPerPage={24} />
-          <CollectionList>
+    <InstantSearchSSRProvider {...serverState}>
+      <InstantSearch
+        indexName={mapIndexCollection}
+        searchClient={mapCollection}
+        future={{ preserveSharedStateOnUnmount: true }}
+        routing={searchRouter(serverUrl)}
+      >
+        <Configure hitsPerPage={100} />
+        {/* <SortBy
+            items={[{ label: "Year", value: "instant_search_year_asc" }]}
+          /> */}
+        <CollectionList>
+          <div className="h-full min-w-fit overflow-y-scroll">
+            <MenuSelect attribute="categories" />
             <PlaceFacets />
-            <Thumbnails collectionType="maps" />
-          </CollectionList>
-        </InstantSearch>
-      </InstantSearchSSRProvider>
-    </PlaceContext.Provider>
+            <PlaceFacets attribute="date" sortBy="name" />
+          </div>
+          <Thumbnails collectionType="maps" />
+        </CollectionList>
+      </InstantSearch>
+    </InstantSearchSSRProvider>
   );
 };
 

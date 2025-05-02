@@ -1,9 +1,4 @@
-import {
-  countyIndexCollection,
-  dataHosts,
-  indexCollection,
-  keys,
-} from "~/config";
+import { dataHosts, indexCollection, keys } from "~/config";
 import type { TESHit, TSearchOptions } from "~/types";
 
 const elasticSearchHeaders = () => {
@@ -49,21 +44,27 @@ export const fetchBySlug = async (
       includes: [
         "alt",
         "bbox",
+        "bearing",
         "county",
         "date",
+        "date_modified",
         "description",
         "embed_url",
         "featured_photograph",
         "featured_video",
         "full_url",
+        "geojson",
         "identifier",
+        "identifiers",
         "manifest",
         "manifests",
         "map_layers",
         "name",
+        "names",
         "link",
         "location",
         "other_places",
+        "panos",
         "photographs",
         "places",
         "publisher",
@@ -76,6 +77,7 @@ export const fetchBySlug = async (
         "uuid",
         "videos",
         "wms_resource",
+        "wms_resources",
       ],
     },
   };
@@ -92,26 +94,6 @@ export const fetchBySlug = async (
   const data = await response.json();
   const result = data.hits.hits.map((hit: TESHit) => hit._source)[0];
   return result;
-};
-
-export const fetchCounties = async () => {
-  const body = {
-    _source: {
-      includes: ["name", "location", "uuid", "slug"],
-    },
-  };
-  const response = await fetch(
-    `${dataHosts.elasticSearch}/${countyIndexCollection}/_search`,
-    {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: elasticSearchHeaders(),
-    }
-  );
-
-  const data = await response.json();
-  const counties = data.hits.hits.map((hit: TESHit) => hit._source);
-  return counties;
 };
 
 export const fetchPlacesByType = async (type: string) => {
@@ -146,6 +128,7 @@ export const fetchPlacesByType = async (type: string) => {
         "uuid",
       ],
     },
+    sort: [{ slug: { order: "asc" } }],
   };
 
   const response = await fetch(

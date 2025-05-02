@@ -5,32 +5,26 @@ import { createPortal } from "react-dom";
 import { MapContext, PlaceContext } from "~/contexts";
 import type { ReactNode } from "react";
 import type { PositionAnchor } from "maplibre-gl";
+import type { TLonLat } from "~/esTypes";
 
-interface Props {
-  location: { lat: number; lon: number };
-  onClose: () => void;
+interface PopupProps {
+  anchor?: PositionAnchor;
   children: ReactNode;
-  showCloseButton?: boolean;
-}
-
-interface PopupProps extends Props {
+  className?: string;
+  location: TLonLat;
+  onClose: () => void;
   show: boolean;
   zoomToFeature?: boolean;
-  anchor?: PositionAnchor;
 }
 
-const TooltipContent = ({ children }: Props) => {
-  return <div className="text-lg">{children}</div>;
-};
-
 const PlaceTooltip = ({
-  location,
-  show,
-  onClose,
-  zoomToFeature = true,
-  children,
-  showCloseButton = true,
   anchor,
+  children,
+  className,
+  location,
+  onClose,
+  show,
+  zoomToFeature = true,
 }: PopupProps) => {
   const popupRef = useRef<Popup | null>(null);
   const { map } = useContext(MapContext);
@@ -62,7 +56,8 @@ const PlaceTooltip = ({
       popupRef.current = new Popup({
         closeButton: false,
         className: "tooltip",
-        offset: 20,
+        // offset: 20,
+        anchor,
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current);
@@ -93,13 +88,7 @@ const PlaceTooltip = ({
     return (
       <>
         {createPortal(
-          <TooltipContent
-            location={location}
-            onClose={onClose}
-            showCloseButton={showCloseButton}
-          >
-            {children}
-          </TooltipContent>,
+          <div className={className ?? "text-lg"}>{children}</div>,
           popContainerRef.current
         )}
       </>

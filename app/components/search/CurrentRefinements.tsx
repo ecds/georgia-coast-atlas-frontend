@@ -2,7 +2,8 @@ import { useCurrentRefinements, useSortBy } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { indexCollection, PLACE_TYPES } from "~/config";
-import GeoToggle from "./GeoToggle";
+import GeoToggle from "./GeoToggle.client";
+import { ClientOnly } from "remix-utils/client-only";
 
 const CurrentRefinements = () => {
   const { items, refine } = useCurrentRefinements();
@@ -41,8 +42,8 @@ const CurrentRefinements = () => {
           ))}
         </select>
       </div>
-      <GeoToggle />
-      <ul className="col-span-5 list-none flex flex-wrap space-3 ps-4 mb-4">
+      <ClientOnly>{() => <GeoToggle />}</ClientOnly>
+      <ul className="col-span-12 list-none flex flex-wrap space-3 ps-4 mb-4">
         {items.map((item) => {
           return item.refinements.map((refinement) => {
             return (

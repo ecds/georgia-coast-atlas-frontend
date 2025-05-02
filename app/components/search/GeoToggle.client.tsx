@@ -2,30 +2,28 @@ import { useContext, useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import { MapContext } from "~/contexts";
 import { useGeoSearch } from "react-instantsearch";
+import type { MapLibreEvent } from "maplibre-gl";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { createPortal } from "react-dom";
 
 const GeoToggle = () => {
   const [enabled, setEnabled] = useState(false);
+  const [showSearchButton, setShowSearchButton] = useState<boolean>(false);
   const { map } = useContext(MapContext);
   const { refine, clearMapRefinement, currentRefinement } = useGeoSearch();
-  const [boundsDiff, setBoundsDiff] = useState<boolean>(false);
 
   useEffect(() => {
     if (!map) return;
-    const checkboxBoundsDiff = () => {
-      const mapBounds = map.getBounds();
-      setBoundsDiff(
-        Boolean(currentRefinement) &&
-          (mapBounds.getNorthEast().lat !== currentRefinement?.northEast.lat ||
-            mapBounds.getNorthEast().lon !== currentRefinement?.northEast.lon ||
-            mapBounds.getSouthWest().lat !== currentRefinement?.southWest.lat ||
-            mapBounds.getSouthWest().lon !== currentRefinement?.southWest.lon)
-      );
+    const handelBoundsChange = ({ originalEvent }: MapLibreEvent) => {
+      if (!map) return;
+      setShowSearchButton(Boolean(originalEvent));
     };
 
-    map.on("moveend", checkboxBoundsDiff);
+    map.on("moveend", handelBoundsChange);
 
     return () => {
-      map.off("moveend", checkboxBoundsDiff);
+      map.off("moveend", handelBoundsChange);
     };
   }, [map, currentRefinement]);
 
@@ -58,7 +56,7 @@ const GeoToggle = () => {
 
   const updateSearchResults = () => {
     searchArea();
-    setBoundsDiff(false);
+    setShowSearchButton(false);
   };
 
   return (
@@ -69,7 +67,7 @@ const GeoToggle = () => {
           <Switch
             checked={enabled}
             onChange={toggleSearch}
-            className="group relative self-center xl:self-start flex h-7 w-14 cursor-pointer rounded-full bg-activeIsland/20 p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-activeIsland/50"
+            className="group relative self-center xl:self-start flex h-7 w-14 cursor-pointer rounded-full bg-island/20 p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-island/50"
           >
             <span
               aria-hidden="true"
@@ -80,13 +78,29 @@ const GeoToggle = () => {
       </div>
       <div className="col-span-3 pe-2 justify-self-end self-center me-4">
         <button
-          className="text-sm bg-island disabled:bg-island/50 disabled:cursor-not-allowed p-2 rounded-md text-white capitalize"
-          disabled={!boundsDiff}
+          className="text-sm bg-island hover:bg-island/75 disabled:bg-island/50 disabled:cursor-not-allowed drop-shadow-lg active:drop-shadow-none disabled:drop-shadow-none p-2 rounded-md text-white capitalize"
+          disabled={
+            (!showSearchButton && !enabled) || !showSearchButton || !enabled
+          }
           onClick={updateSearchResults}
         >
           update area
         </button>
       </div>
+      {createPortal(
+        <div
+          className={`fixed top-24 left-3/4 -translate-x-3/4 ${showSearchButton ? "block" : "hidden"}`}
+        >
+          <button
+            className="flex items-center px-3 py-2 text-sm bg-white rounded-full shadow-md hover:bg-gray-100"
+            onClick={updateSearchResults}
+          >
+            <FontAwesomeIcon icon={faSearch} className="mr-2 text-gray-600" />
+            Search This Area
+          </button>
+        </div>,
+        document.body
+      )}
     </>
   );
 };

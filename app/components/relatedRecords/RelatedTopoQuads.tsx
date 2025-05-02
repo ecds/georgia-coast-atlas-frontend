@@ -6,8 +6,7 @@ import type { ESTopoLayer } from "~/esTypes";
 
 const RelatedTopoQuads = () => {
   const [visibleLayers, setVisibleLayers] = useState<ESTopoLayer[]>([]);
-  const { place, activeLayers, setActiveLayers, full } =
-    useContext(PlaceContext);
+  const { place, activeLayers, setActiveLayers } = useContext(PlaceContext);
 
   const removeFromActiveLayers = (id: string) => {
     if (setActiveLayers && activeLayers)
@@ -34,9 +33,15 @@ const RelatedTopoQuads = () => {
     }
   };
 
-  if (full && place.topos?.length > 0) {
+  if (!place || !place.topos) return null;
+
+  if (place.topos.length > 0) {
     return (
-      <RelatedSection title="Topo Quads" headerClassName="mb-2">
+      <RelatedSection
+        title="Topo Quads"
+        toggleClassName="mb-2"
+        defaultOpen={false}
+      >
         {place.topos.map((topo) => {
           return (
             <RelatedSection

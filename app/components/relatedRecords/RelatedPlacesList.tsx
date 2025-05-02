@@ -19,7 +19,9 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
     setActivePlace,
     setNoTrackMouse,
   } = useContext(PlaceContext);
-  const [allPlaces, setAllPlaces] = useState<ESRelatedPlace[]>(place.places);
+  const [allPlaces, setAllPlaces] = useState<ESRelatedPlace[]>(
+    place?.places ?? []
+  );
   const [loading, setLoading] = useState(false);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
 
@@ -35,7 +37,7 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
   };
 
   const loadMorePlaces = async () => {
-    if (hasLoadedMore || !setOtherPlaces) return;
+    if (!place || hasLoadedMore || !setOtherPlaces) return;
     setLoading(true);
 
     try {
@@ -58,6 +60,7 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
   };
 
   useEffect(() => {
+    if (!place) return;
     if (otherPlaces && otherPlaces.length > 0) {
       setAllPlaces([...place.places, ...otherPlaces]);
     } else {
@@ -95,17 +98,17 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
           {!hasLoadedMore && (
             <button
               onClick={loadMorePlaces}
-              className="mt-4 p-2 bg-blue-500 text-white rounded"
+              className="mt-4 p-2 bg-island text-white rounded"
               disabled={loading}
             >
-              {loading ? "Loading..." : "Load More"}
+              {loading ? "Loading..." : "Show More"}
             </button>
           )}
 
           {hasLoadedMore && (
             <button
               onClick={unloadMorePlaces}
-              className="mt-4 p-2 bg-blue-500 text-white rounded"
+              className="mt-4 p-2 bg-island text-white rounded"
               disabled={loading}
             >
               Show Less

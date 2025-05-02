@@ -242,7 +242,7 @@ export type TTopoCoordsRecord = {
   };
 };
 
-export type TBaseStyleName = "default" | "satellite" | "usgs";
+export type TBaseStyleName = "default" | "osm" | "satellite" | "usgs";
 
 export type TBaseStyle = {
   name: TBaseStyleName;

@@ -61,6 +61,22 @@ const countySeats: FeatureCollection = {
 const haloColor = "#141B10";
 const textColor = "#EDEFEB";
 
+// const islands = [
+//   "Blackbeard Island",
+//   "Cumberland Island",
+//   "Jekyll Island",
+//   "Little Saint Simons Island",
+//   "Little Tybee Island",
+//   "Ossabaw Island",
+//   "Saint Catherines Island",
+//   "Saint Simons Island",
+//   "Sapelo Island",
+//   "Sea Island",
+//   "Tybee Island",
+//   "Wassaw Island",
+//   "Wolf Island",
+// ];
+
 export const costalLabels: StyleSpecification = {
   version: 8,
   sources: {
@@ -87,5 +103,37 @@ export const costalLabels: StyleSpecification = {
         "text-halo-width": 2,
       },
     },
+    // {
+    //   id: "place_label_other",
+    //   type: "symbol",
+    //   source: "openmaptiles",
+    //   "source-layer": "place",
+    //   // minzoom: 8,
+    //   filter: [
+    //     "all",
+    //     // ["==", ["geometry-type"], "Point"],
+    //     ["in", ["get", "name"], `${islands}`],
+    //   ],
+    //   layout: {
+    //     "text-anchor": "center",
+    //     "text-field": [
+    //       "format",
+    //       ["get", "name:latin"],
+    //       "\n",
+    //       {},
+    //       ["get", "name:nonlatin"],
+    //     ],
+    //     "text-font": ["Noto Sans Regular"],
+    //     "text-max-width": 6,
+    //     "text-size": ["interpolate", ["linear"], ["zoom"], 6, 10, 12, 14],
+    //     visibility: "visible",
+    //   },
+    //   paint: {
+    //     "text-color": textColor,
+    //     "text-halo-blur": 0,
+    //     "text-halo-color": haloColor,
+    //     "text-halo-width": 1,
+    //   },
+    // },
   ],
 };

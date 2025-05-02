@@ -27,7 +27,8 @@ export default {
         "open-sans": ["Open Sans", "sans-serif"],
       },
       colors: {
-        black: "#1C1817",
+        accent: landColors.accent,
+        black: "#181918",
         white: "#FDF9F6",
         "costal-green": "#4A5D41",
         island: landColors.island,
@@ -37,6 +38,12 @@ export default {
         water: landColors.water,
       },
       height: {
+        topOffset: `calc(100vh - ${topBarHeight})`,
+      },
+      maxHeight: {
+        topOffset: `calc(100vh - ${topBarHeight})`,
+      },
+      top: {
         topOffset: `calc(100vh - ${topBarHeight})`,
       },
     },
@@ -105,10 +112,9 @@ export default {
             width: "1rem",
           },
         },
-        "[maplibregl-popup-close-button], button.maplibregl-popup-close-button":
-          {
-            paddingRight: ".5rem !important",
-          },
+        "[maplibregl-popup], .place-popup .maplibregl-popup-content": {
+          paddingTop: "0 !important",
+        },
         "[maplibregl-popup-content], .tooltip .maplibregl-popup-content": {
           background: "black",
         },

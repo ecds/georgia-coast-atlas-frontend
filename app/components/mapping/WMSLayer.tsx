@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
+import { LngLatBounds } from "maplibre-gl";
 import AddLayerButton from "./AddLayerButton";
 import LayerOpacity from "./LayerOpacity";
 import {
@@ -8,10 +8,11 @@ import {
   PlaceLayerContainer,
   PlaceLayerTitle,
 } from "../relatedRecords/PlaceLayerContainer";
-import type { ESMapLayer } from "~/esTypes";
+import { wmsLayer } from "~/mapStyles";
+import type { ESMapItem } from "~/esTypes";
 
 interface Props {
-  placeLayer: ESMapLayer;
+  placeLayer: ESMapItem;
 }
 
 const WMSLayer = ({ placeLayer }: Props) => {
@@ -22,40 +23,43 @@ const WMSLayer = ({ placeLayer }: Props) => {
   useEffect(() => {
     if (!map) return;
 
-    const source: SourceSpecification = {
-      type: "raster",
-      tiles: [placeLayer.wms_resource],
-      tileSize: 256,
-    };
+    for (const [index, resource] of placeLayer.wms_resources.entries()) {
+      const id = `${placeLayer.uuid}-${index}`;
+      const { source, layer } = wmsLayer({
+        url: resource,
+        id,
+        initialOpacity: 0,
+      });
 
-    const layer: AddLayerObject = {
-      id: placeLayer.uuid,
-      source: placeLayer.uuid,
-      type: "raster",
-      paint: {
-        "raster-opacity": 0,
-      },
-    };
-
-    if (!map.getSource(placeLayer.uuid)) map.addSource(placeLayer.uuid, source);
-    if (!map.getLayer(placeLayer.uuid))
-      map.addLayer(layer, `clusters-${place.uuid}`);
+      map.addSource(id, source);
+      map.addLayer(layer);
+    }
 
     return () => {
-      if (map.getLayer(placeLayer.uuid)) map.removeLayer(placeLayer.uuid);
-      if (map.getSource(placeLayer.uuid)) map.removeSource(placeLayer.uuid);
+      for (const index in placeLayer.wms_resources) {
+        const id = `${placeLayer.uuid}-${index}`;
+        map.removeLayer(id);
+        map.removeSource(id);
+      }
     };
   }, [map, placeLayer, place]);
 
   useEffect(() => {
-    if (
-      activeLayers?.includes(placeLayer.uuid) &&
-      map &&
-      map.getLayer(placeLayer.uuid)
-    ) {
-      map.setPaintProperty(placeLayer.uuid, "raster-opacity", opacity * 0.01);
+    if (activeLayers?.includes(placeLayer.uuid) && map) {
+      for (const index in placeLayer.wms_resources) {
+        const id = `${placeLayer.uuid}-${index}`;
+        map.setPaintProperty(id, "raster-opacity", opacity * 0.01);
+        map.setLayoutProperty(id, "visibility", "visible");
+        const bounds = new LngLatBounds(placeLayer.bbox);
+
+        map.fitBounds(bounds, { padding: 50 });
+      }
     } else {
-      map?.setPaintProperty(placeLayer.uuid, "raster-opacity", 0);
+      for (const index in placeLayer.wms_resources) {
+        const id = `${placeLayer.uuid}-${index}`;
+        map?.setPaintProperty(id, "raster-opacity", 0);
+        map?.setLayoutProperty(id, "visibility", "none");
+      }
     }
   }, [activeLayers, map, placeLayer, opacity]);
 
@@ -78,7 +82,7 @@ const WMSLayer = ({ placeLayer }: Props) => {
     const active = activeLayers?.includes(placeLayer.uuid);
     return (
       <PlaceLayerContainer key={placeLayer.uuid}>
-        <AddLayerButton onClick={handleClick} image={placeLayer.preview}>
+        <AddLayerButton onClick={handleClick} image={placeLayer.thumbnail_url}>
           {active ? "remove" : "add"}
         </AddLayerButton>
         <PlaceLayerBody>

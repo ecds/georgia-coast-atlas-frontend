@@ -1,8 +1,7 @@
 import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
-import type { ESPlace, ESRelatedPlace } from "./esTypes";
-import type { TIIIFBody } from "./types";
+import type { ESPlace, ESRelatedMedium, ESRelatedPlace } from "./esTypes";
 
 type TMapContext = {
   map: Map | undefined;
@@ -13,17 +12,20 @@ type TMapContext = {
 
 type TPlaceContext = {
   activeLayers?: string[];
-  activePlace: ESRelatedPlace | undefined;
+  activePlace: ESRelatedPlace | ESPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  full?: boolean;
-  hoveredPlace: ESRelatedPlace | undefined;
+  hoveredPlace: ESRelatedPlace | ESPlace | undefined;
   noTrackMouse?: boolean;
-  place: ESPlace;
+  place: ESPlace | undefined;
   relatedClosed?: boolean;
   setActiveLayers?: Dispatch<SetStateAction<string[]>>;
-  setActivePlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
-  setHoveredPlace: Dispatch<SetStateAction<ESRelatedPlace | undefined>>;
+  setActivePlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESPlace | undefined>
+  >;
+  setHoveredPlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESPlace | undefined>
+  >;
   setNoTrackMouse?: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -44,15 +46,6 @@ export const PlaceContext = createContext<TPlaceContext>({
     county: "",
     description: "",
     featured_photograph: "",
-    featured_video: {
-      featured: false,
-      embed_url: "",
-      provider: "",
-      embed_id: "",
-      name: "",
-      thumbnail_url: "",
-      uuid: "",
-    },
     geojson: { type: "FeatureCollection", features: [] },
     identifier: "",
     location: { lat: 0, lon: 0 },
@@ -77,13 +70,15 @@ export const PlaceContext = createContext<TPlaceContext>({
     );
   },
   activePlace: undefined,
-  setActivePlace: (_: SetStateAction<ESRelatedPlace | undefined>) => {
+  setActivePlace: (_: SetStateAction<ESRelatedPlace | ESPlace | undefined>) => {
     console.error(
       "setActivePlace not implemented. Did you pass it to context?"
     );
   },
   hoveredPlace: undefined,
-  setHoveredPlace: (_: SetStateAction<ESRelatedPlace | undefined>) => {
+  setHoveredPlace: (
+    _: SetStateAction<ESRelatedPlace | ESPlace | undefined>
+  ) => {
     console.error(
       "setActiveHovered not implemented. Did you pass it to context?"
     );
@@ -118,14 +113,14 @@ export const SearchModalContext = createContext<TSearchModalContext>({
   },
 });
 
-type TGalleryContext = {
-  activePhotograph: TIIIFBody | undefined;
-  setActivePhotograph: Dispatch<SetStateAction<TIIIFBody | undefined>>;
+type TRelatedMediaContext = {
+  activeMedium: ESRelatedMedium | undefined;
+  setActiveMedium: Dispatch<SetStateAction<ESRelatedMedium | undefined>>;
 };
 
-export const GalleryContext = createContext<TGalleryContext>({
-  activePhotograph: undefined,
-  setActivePhotograph: (_: SetStateAction<TIIIFBody | undefined>) => {
-    console.error("setActivePhotograph not implemented.");
+export const RelatedMediaContext = createContext<TRelatedMediaContext>({
+  activeMedium: undefined,
+  setActiveMedium: (_: SetStateAction<ESRelatedMedium | undefined>) => {
+    console.error("setActiveMedium not implemented.");
   },
 });

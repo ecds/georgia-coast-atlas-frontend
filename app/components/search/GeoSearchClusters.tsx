@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
-import { largeCluster } from "~/mapStyles/geoJSON";
+import { clusterCount, largeCluster } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { ClientOnly } from "remix-utils/client-only";
 import { Link } from "@remix-run/react";
@@ -20,36 +20,22 @@ const GeoSearchClusters = ({ geojson }: Props) => {
     lat: number;
     lon: number;
   }>({ lat: 0, lon: 0 });
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [popupTitle, setPopupTitle] = useState<string | undefined>();
+  const [showPopup, setShowPopup] = useState<boolean>(true);
   const [clusterList, setClusterList] =
     useState<{ title: string; slug: string }[]>();
 
   const mousemove = useCallback(
     (event: MapLayerMouseEvent) => {
-      if (!event.features || !map || clusterList) return;
-      const features = event.features;
+      if (!event.features || !map) return;
       map.getCanvas().style.cursor = "pointer";
-      setClickedLocation({ lat: event.lngLat.lat, lon: event.lngLat.lng });
-      if (features[0].properties.point_count) {
-        setPopupTitle(`${features[0].properties.point_count} Places`);
-      } else {
-        setPopupTitle(features[0].properties.name);
-      }
-      setShowPopup(true);
     },
-    [map, clusterList]
+    [map]
   );
 
   const mouseleave = useCallback(() => {
-    if (!map || clusterList) return;
+    if (!map) return;
     map.getCanvas().style.cursor = "";
-    if (!clusterList) {
-      setShowPopup(false);
-    } else {
-      setClusterList(undefined);
-    }
-  }, [map, clusterList]);
+  }, [map]);
 
   const handleClick = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -63,13 +49,13 @@ const GeoSearchClusters = ({ geojson }: Props) => {
       const properties = event.features[0].properties;
       const slugs = properties.slugs.split("|");
       const titles = properties.names.split("|");
-      titles.pop();
+      setClickedLocation({ lon: event.lngLat.lng, lat: event.lngLat.lat });
+      setShowPopup(true);
+      // titles.pop();
       const list = titles.map((title: string, index: number) => {
         return { title, slug: slugs[index] };
       });
       setClusterList(list);
-      setPopupTitle(undefined);
-      setShowPopup(true);
     },
     [map]
   );
@@ -89,23 +75,32 @@ const GeoSearchClusters = ({ geojson }: Props) => {
       },
     };
 
-    if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
+    map.addSource(sourceId, layerSource);
 
-    if (!map.getLayer(layerId))
-      map.addLayer(
-        largeCluster({ id: layerId, source: sourceId, fillColor: "#5D414A" }),
-        "countySeats"
-      );
-    map.on("click", layerId, handleClick);
+    map.addLayer(
+      clusterCount({
+        id: `counts-${layerId}`,
+        source: sourceId,
+        textColor: "white",
+      })
+    );
+
+    map.addLayer(
+      largeCluster({ id: layerId, source: sourceId, fillColor: "#5D414A" }),
+      "countySeats"
+    );
+
+    map.on("click", `counts-${layerId}`, handleClick);
     map.on("mousemove", layerId, mousemove);
     map.on("mouseleave", layerId, mouseleave);
 
     return () => {
       if (map.getLayer(layerId)) {
-        map.off("click", layerId, handleClick);
+        map.off("click", `counts-${layerId}`, handleClick);
         map.off("mousemove", layerId, mousemove);
         map.off("mouseleave", layerId, mouseleave);
         map.removeLayer(layerId);
+        map.removeLayer(`counts-${layerId}`);
       }
 
       if (map.getSource(sourceId)) map.removeSource(sourceId);
@@ -126,31 +121,24 @@ const GeoSearchClusters = ({ geojson }: Props) => {
         <PlacePopup
           location={clickedLocation}
           show={showPopup}
-          onClose={() => {
-            setShowPopup(false);
-            setClusterList(undefined);
-          }}
           zoomToFeature={false}
-          showCloseButton={clusterList instanceof Array}
+          showCloseButton={true}
         >
-          <div>
-            <h4>{popupTitle}</h4>
-            <ul>
-              {clusterList?.map((place) => {
-                return (
-                  <li key={place.slug}>
-                    <Link
-                      state={{ backTo: "Search Results" }}
-                      className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                      to={`/places/${place.slug}`}
-                    >
-                      {place.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          <ul>
+            {clusterList?.map((place) => {
+              return (
+                <li key={place.slug}>
+                  <Link
+                    state={{ title: "Search Results", slug: "search" }}
+                    className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+                    to={`/places/${place.slug}`}
+                  >
+                    {place.title}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </PlacePopup>
       )}
     </ClientOnly>

@@ -23,10 +23,14 @@ export const getColor = (type: string) => {
 export const toFeatureCollection = (places: ESRelatedPlace[] | ESPlace[]) => {
   return featureCollection(
     places.map((place) => {
+      if (place.types) {
+        place.type = place.types[0];
+      }
       const placeFeature = point([place.location.lon, place.location.lat], {
         ...place,
         hexColor: place.type ? getColor(place.type) : "blue",
       });
+
       return placeFeature;
     })
   );

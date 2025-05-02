@@ -1,10 +1,16 @@
-import type maplibregl from "maplibre-gl";
+import chroma from "chroma-js";
+import type { Map } from "maplibre-gl";
 
+interface Props {
+  map: Map;
+  color?: string;
+}
 // implementation of StyleImageInterface to draw a pulsing dot icon on the map
 // Search for StyleImageInterface in https://maplibre.org/maplibre-gl-js/docs/API/
-export const pulsingDot = (map: maplibregl.Map) => {
-  if (!document) return;
+export const pulsingDot = ({ map, color = "#FF6464" }: Props) => {
+  // if (!document) return;
 
+  const rgb = chroma(color).rgb();
   const size = 75;
   const canvas = document.createElement("canvas");
   const icon = {
@@ -39,13 +45,13 @@ export const pulsingDot = (map: maplibregl.Map) => {
         0,
         Math.PI * 2
       );
-      this.context.fillStyle = `rgba(255, 200, 200,${1 - t})`;
+      this.context.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]},${1 - t})`;
       this.context.fill();
 
       // draw inner circle
       this.context.beginPath();
       this.context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
-      this.context.fillStyle = "rgba(255, 100, 100, 1)";
+      this.context.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
       // this.context.strokeStyle = "white";
       // this.context.lineWidth = 2 + 4 * (1 - t);
       this.context.fill();

@@ -8,28 +8,32 @@ export type TLonLat = {
 
 export type ESRelatedPlace = {
   description: string;
+  identifiers: TWebIdentifier[];
   location: TLonLat;
   name: string;
+  featured_photograph?: string;
   slug: string;
   type: string;
+  types?: string[];
   uuid: string;
-  preview?: string;
 };
 
-export type ESVideo = {
-  featured: null | boolean;
+export type ESRelatedMedium = {
+  description: string;
+  full_url: string;
   embed_url: string;
-  provider: string;
-  embed_id: string;
+  featured: boolean | undefined;
+  info?: string;
+  media_type: "pano" | "photograph" | "video";
   name: string;
+  places?: ESRelatedPlace[];
+  place_names?: string[];
+  publisher?: string;
+  location?: TLonLat;
+  slug: string;
+  title?: string;
   thumbnail_url: string;
-  uuid: string;
-};
-
-type ESRelatedPhotograph = {
-  featured: boolean | null;
-  name: string;
-  uuid: string;
+  uuid?: string;
 };
 
 export type ESManifests = {
@@ -49,46 +53,57 @@ export type ESTopo = {
 };
 
 export type ESMapLayer = {
+  bbox: [number, number, number, number];
   preview: string;
-  wms_resource: string;
+  wms_resources: string[];
   uuid: string;
   name: string;
+};
+
+type TWebIdentifier = {
+  authority: "viaf" | "wikidata" | "geonames";
+  identifier: string;
 };
 
 export type ESPlace = {
   bbox: [number, number, number, number];
   county: string;
+  date_modified?: string;
   description: string;
-  featured_photograph: string;
-  featured_video: ESVideo;
+  featured_photograph?: string;
+  featured_video?: ESRelatedMedium;
   geojson: FeatureCollection;
   identifier: string;
+  identifiers?: TWebIdentifier[];
   manifests: ESManifests[];
-  map_layers: ESMapLayer[];
+  map_layers: ESMapItem[];
   name: string;
+  names?: string[];
   location: TLonLat;
   other_places: ESRelatedPlace[];
-  photographs: ESRelatedPhotograph[];
+  panos?: ESRelatedMedium[];
+  photographs?: ESRelatedMedium[];
   places: ESRelatedPlace[];
-  related_videos?: ESVideo[];
   short_description: string;
   slug: string;
-  topos: ESTopo[];
+  topos?: ESTopo[];
   type: string;
   types: string[];
   uuid: string;
-  videos: ESVideo[];
+  videos?: ESRelatedMedium[];
 };
 
 export type ESMapItem = {
-  name: string;
   bbox: [number, number, number, number];
-  wms_resource: string;
-  places: ESRelatedPlace[];
+  bearing?: number;
   description: string;
   date: string;
-  uuid: string;
+  name: string;
+  places: ESRelatedPlace[];
   preview: string;
+  thumbnail_url: string;
+  uuid: string;
+  wms_resources: string[];
 };
 
 export type ESSearchProps = {

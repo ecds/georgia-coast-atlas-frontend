@@ -1,8 +1,9 @@
 const baseAttrs = [
   "description",
+  "identifiers",
   "name",
   "place_names",
-  "places",
+  "places.name",
   "publisher",
   "location",
   "locations",
@@ -11,7 +12,7 @@ const baseAttrs = [
   "uuid",
 ];
 export const mapAttrs = {
-  result_attributes: [...baseAttrs, "date", "manifest", "wms_resource"],
+  result_attributes: [...baseAttrs, "date", "manifest", "wms_resources"],
 };
 
 export const panoAttrs = {

@@ -1,6 +1,6 @@
 import { history } from "instantsearch.js/es/lib/routers";
 import maplibregl from "maplibre-gl";
-import { base, satellite, usgs } from "./mapStyles";
+import { base, osm, satellite, usgs } from "./mapStyles";
 import type { TBaseStyle, TTypeColors } from "./types";
 
 export const islands = [
@@ -103,6 +103,11 @@ export const mapLayers: TBaseStyle[] = [
     name: "usgs",
     label: "USGS",
     layers: usgs.layers.map((layer) => layer.id),
+  },
+  {
+    name: "osm",
+    label: "OpenStreetMap",
+    layers: osm.layers.map((layer) => layer.id),
   },
 ];
 
@@ -386,7 +391,6 @@ export const PLACE_TYPES: TTypeColors = {
 const collectionPrefix = "georgia_coast";
 
 export const indexCollection = `${collectionPrefix}_places`;
-export const countyIndexCollection = `${collectionPrefix}_counties`;
 export const topicIndexCollection = `${collectionPrefix}_topics`;
 export const worksIndexCollection = `${collectionPrefix}_works`;
 export const mapIndexCollection = `${collectionPrefix}_maps`;
@@ -396,8 +400,8 @@ export const photosIndexCollection = `${collectionPrefix}_photographs`;
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
-    new maplibregl.LngLat(-81.93612670899995, 30.71087651700003),
-    new maplibregl.LngLat(-80.85723315099995, 32.241012160000025)
+    new maplibregl.LngLat(-82.70105718813312, 30.3557685071232),
+    new maplibregl.LngLat(-80.83780307387659, 32.59542857268996)
   );
 };
 

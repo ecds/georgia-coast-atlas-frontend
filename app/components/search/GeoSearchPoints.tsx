@@ -17,8 +17,8 @@ const layerId = "hits-layer";
 const GeoSearchPoints = ({ geojson }: Props) => {
   const { map, mapLoaded } = useContext(MapContext);
   const { activeResult } = useContext(SearchContext);
-  const [activeFeature, setActiveFeature] = useState<Feature | undefined>();
-  const [clickedLocation, setClickedLocation] = useState<{
+  const [hoveredFeature, setHoveredFeature] = useState<Feature | undefined>();
+  const [hoveredLocation, setHoveredLocation] = useState<{
     lat: number;
     lon: number;
   }>({ lat: 0, lon: 0 });
@@ -30,26 +30,35 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     (event: MapLayerMouseEvent) => {
       if (!event.features || !event.features.length) return;
       const properties = event.features[0].properties;
+      console.log("🚀 ~ GeoSearchPoints ~ location:", location)
       navigate(`/places/${properties.slug}`, {
-        state: { backTo: "Search Results" },
+        state: {
+          title: "Search Results",
+          slug: "search",
+          bounds: map?.getBounds(),
+          previous: `${location.pathname}${location.search}`,
+          search: location.search,
+        },
       });
     },
-    [navigate]
+    [navigate, map]
   );
 
   useEffect(() => {
     if (!mapLoaded || !map || !geojson) return;
 
-    const mouseenter = (event: MapLayerMouseEvent) => {
-      if (!event.features) return;
-      const features = event.features;
-      map.getCanvas().style.cursor = "pointer";
-      setActiveFeature(features[0]);
+    const mouseMove = (event: MapLayerMouseEvent) => {
+      if (event.features) {
+        const feature = event.features[0];
+        map.getCanvas().style.cursor = "pointer";
+        setHoveredLocation({ lon: event.lngLat.lng, lat: event.lngLat.lat });
+        setHoveredFeature(feature);
+      } else {
+        setHoveredFeature(undefined);
+      }
     };
 
-    const mouseleave = () => {
-      setActiveFeature(undefined);
-    };
+    const onMouseLeave = () => setHoveredFeature(undefined);
 
     const layerSource: SourceSpecification = {
       type: "geojson",
@@ -58,29 +67,29 @@ const GeoSearchPoints = ({ geojson }: Props) => {
       clusterRadius: 10,
     };
 
-    if (!map.getSource(sourceId)) map.addSource(sourceId, layerSource);
+    map.addSource(sourceId, layerSource);
 
-    if (!map.getLayer(layerId))
-      map.addLayer(singlePoint(layerId, sourceId), "countySeats");
+    // Add the point on top of the labels.
+    map.addLayer(singlePoint(layerId, sourceId), "countySeats");
 
     map.on("click", layerId, handleClick);
-    map.on("mouseenter", layerId, mouseenter);
-    map.on("mouseleave", layerId, mouseleave);
+    map.on("mousemove", layerId, mouseMove);
+    map.on("mouseleave", layerId, onMouseLeave);
 
     return () => {
       if (map.getLayer(layerId)) {
         map.off("click", layerId, handleClick);
-        map.off("mouseenter", layerId, mouseenter);
-        map.off("mouseleave", layerId, mouseleave);
+        map.off("mousemove", layerId, mouseMove);
+        map.off("mouseleave", layerId, onMouseLeave);
         map.removeLayer(layerId);
       }
 
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
+      map.removeSource(sourceId);
     };
   }, [geojson, map, mapLoaded, handleClick]);
 
   useEffect(() => {
-    setActiveFeature(
+    setHoveredFeature(
       geojson.features.find(
         (feature) => feature?.properties?.identifier === activeResult
       )
@@ -89,36 +98,36 @@ const GeoSearchPoints = ({ geojson }: Props) => {
 
   useEffect(() => {
     if (!map) return;
-    if (activeFeature) {
-      if (activeFeature.geometry.type == "Point") {
-        setClickedLocation({
-          lat: activeFeature.geometry.coordinates[1],
-          lon: activeFeature.geometry.coordinates[0],
-        });
-      }
-      setPopupTitle(activeFeature.properties?.name);
+
+    if (hoveredFeature) {
+      setPopupTitle(hoveredFeature.properties?.name);
       setShowPopup(true);
+      if (hoveredFeature.geometry.type === "Point") {
+        const [lon, lat] = hoveredFeature.geometry.coordinates;
+        setHoveredLocation({ lon, lat });
+      }
     } else {
-      map.getCanvas().style.cursor = "";
+      setPopupTitle(undefined);
       setShowPopup(false);
+      map.getCanvas().style.cursor = "";
+      setHoveredLocation({ lat: 0, lon: 0 });
     }
-  }, [map, activeFeature, geojson]);
+  }, [map, hoveredFeature]);
 
   return (
     <ClientOnly>
       {() => (
         <PlacePopup
-          location={clickedLocation}
+          location={hoveredLocation}
           show={showPopup}
-          onClose={() => setShowPopup(false)}
           zoomToFeature={false}
           showCloseButton={false}
         >
           <div>
-            {activeFeature?.properties?.preview && (
+            {hoveredFeature?.properties?.preview && (
               <img
-                className="max-h-32 max-w-32"
-                src={activeFeature?.properties.preview}
+                className="max-h-32 max-w-32 mt-2 mx-auto"
+                src={hoveredFeature?.properties.preview}
                 alt=""
               />
             )}

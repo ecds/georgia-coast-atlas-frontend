@@ -6,7 +6,7 @@ import { PlaceContext } from "~/contexts";
 const RelatedMapLayers = () => {
   const { place } = useContext(PlaceContext);
 
-  if (place.map_layers?.length > 0) {
+  if (place && place.map_layers?.length > 0) {
     return (
       <RelatedSection title="Map Layers">
         {place.map_layers.map((mapLayer) => {
