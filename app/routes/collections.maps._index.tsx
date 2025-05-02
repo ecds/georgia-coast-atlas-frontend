@@ -13,6 +13,7 @@ import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
+import MenuSelect from "~/components/search/MenuSelect";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
@@ -51,6 +52,7 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
           /> */}
         <CollectionList>
           <div className="h-full min-w-fit overflow-y-scroll">
+            <MenuSelect attribute="categories" />
             <PlaceFacets />
             <PlaceFacets attribute="date" sortBy="name" />
           </div>
