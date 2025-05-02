@@ -4,6 +4,7 @@ const baseAttrs = [
   "place_names",
   "places",
   "publisher",
+  "location",
   "locations",
   "slug",
   "thumbnail_url",

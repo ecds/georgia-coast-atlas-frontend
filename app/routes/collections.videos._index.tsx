@@ -13,6 +13,9 @@ import PlaceFacets from "~/components/collections/PlaceFacets";
 import Thumbnails from "~/components/collections/Thumbnails";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
+import { useState } from "react";
+import { PlaceContext } from "~/contexts";
+import type { ESRelatedPlace } from "~/esTypes";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
@@ -37,21 +40,34 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 const VideoCollection = ({ serverState, serverUrl }: SearchProps) => {
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>();
+
   return (
-    <InstantSearchSSRProvider {...serverState}>
-      <InstantSearch
-        indexName={videosIndexCollection}
-        searchClient={videoCollection}
-        future={{ preserveSharedStateOnUnmount: true }}
-        routing={searchRouter(serverUrl)}
-      >
-        <Configure hitsPerPage={100} />
-        <CollectionList>
-          <PlaceFacets />
-          <Thumbnails collectionType="videos" />
-        </CollectionList>
-      </InstantSearch>
-    </InstantSearchSSRProvider>
+    <PlaceContext.Provider
+      value={{
+        place: { uuid: "", places: [], other_places: [] } as any,
+        activePlace,
+        setActivePlace,
+        hoveredPlace,
+        setHoveredPlace,
+      }}
+    >
+      <InstantSearchSSRProvider {...serverState}>
+        <InstantSearch
+          indexName={videosIndexCollection}
+          searchClient={videoCollection}
+          future={{ preserveSharedStateOnUnmount: true }}
+          routing={searchRouter(serverUrl)}
+        >
+          <Configure hitsPerPage={100} />
+          <CollectionList>
+            <PlaceFacets />
+            <Thumbnails collectionType="videos" />
+          </CollectionList>
+        </InstantSearch>
+      </InstantSearchSSRProvider>
+    </PlaceContext.Provider>
   );
 };
 
