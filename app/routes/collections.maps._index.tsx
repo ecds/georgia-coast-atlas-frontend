@@ -5,18 +5,15 @@ import {
   getServerState,
 } from "react-instantsearch";
 import { renderToString } from "react-dom/server";
+import { useLoaderData } from "@remix-run/react";
 import { mapIndexCollection, searchRouter } from "~/config";
 import { mapCollection } from "~/utils/elasticsearchAdapter";
-import { useLoaderData } from "@remix-run/react";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
+import MenuSelect from "~/components/search/MenuSelect";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
-import MenuSelect from "~/components/search/MenuSelect";
-import { useState } from "react";
-import { PlaceContext } from "~/contexts";
-import type { ESRelatedPlace } from "~/esTypes";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;

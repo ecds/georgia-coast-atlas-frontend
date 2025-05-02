@@ -1,17 +1,13 @@
+import { useState } from "react";
+import { Link } from "@remix-run/react";
+import { ClientOnly } from "remix-utils/client-only";
+import { Pagination, useHits } from "react-instantsearch";
+import Map from "~/components/mapping/Map.client";
 import { faMap, faTableCells, faList } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link, useSearchParams, useNavigate } from "@remix-run/react";
-import { Pagination, useHits } from "react-instantsearch";
-import { useState, useEffect } from "react";
-import { ClientOnly } from "remix-utils/client-only";
-import type { ReactNode } from "react";
-import Map from "~/components/mapping/Map.client";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
-import type { FeatureCollection } from "geojson";
 import CollectionMapOverlay from "./CollectionMapOverlay";
-import { PlaceContext } from "~/contexts";
-import type { ESRelatedPlace } from "~/esTypes";
-import { topBarHeight } from "~/config";
+import type { ReactNode } from "react";
 
 interface Props {
   collectionType: string;
@@ -23,7 +19,6 @@ const Thumbnails = ({ collectionType, children }: Props) => {
   const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
 
   const geojson = hitsToFeatureCollection(items);
-  console.log("Items passed to map", items, geojson);
 
   const toggleListGrid = () => {
     setViewMode((prev) => (prev === "grid" ? "list" : "grid"));

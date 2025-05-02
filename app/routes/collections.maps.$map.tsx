@@ -51,7 +51,6 @@ const MapDetail = () => {
     if (mapLayer.bearing) {
       map.once("moveend", () => map.rotateTo(mapLayer.bearing ?? 0));
     }
-    console.log("🚀 ~ useEffect ~ map:", map, Math.abs(map.getBearing() * 1));
 
     return () => {
       for (const index in mapLayer.wms_resources) {
