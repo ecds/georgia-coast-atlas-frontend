@@ -14,9 +14,6 @@ import Thumbnails from "~/components/collections/Thumbnails";
 import MenuSelect from "~/components/search/MenuSelect";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
-import { useState } from "react";
-import { PlaceContext } from "~/contexts";
-import type { ESRelatedPlace } from "~/esTypes";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
@@ -41,9 +38,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
-  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
-  const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>();
-  
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -68,7 +62,6 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
     </InstantSearchSSRProvider>
   );
 };
-
 
 const MapCollectionPage = () => {
   const { serverState, serverUrl } = useLoaderData() as SearchProps;

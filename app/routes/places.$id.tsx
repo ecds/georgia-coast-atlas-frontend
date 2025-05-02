@@ -77,14 +77,6 @@ const PlacePage = () => {
     setBackTo(location.state);
   }, [location]);
 
-  useEffect(() => {
-    console.log(
-      "🚀 ~ PlacePage ~ activePlace, hoveredPlace:",
-      activePlace,
-      hoveredPlace
-    );
-  }, [activePlace, hoveredPlace]);
-
   return (
     <PlaceContext.Provider
       value={{

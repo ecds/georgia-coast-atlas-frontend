@@ -1,9 +1,9 @@
 import { useCallback, useContext, useEffect, useState } from "react";
+import { ClientOnly } from "remix-utils/client-only";
+import { useNavigate } from "@remix-run/react";
 import { MapContext, SearchContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
-import { ClientOnly } from "remix-utils/client-only";
-import { useNavigate } from "@remix-run/react";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 
@@ -30,7 +30,6 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     (event: MapLayerMouseEvent) => {
       if (!event.features || !event.features.length) return;
       const properties = event.features[0].properties;
-      console.log("🚀 ~ GeoSearchPoints ~ location:", location)
       navigate(`/places/${properties.slug}`, {
         state: {
           title: "Search Results",

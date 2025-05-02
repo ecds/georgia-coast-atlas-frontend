@@ -2,17 +2,18 @@ import { useEffect, useContext, useState } from "react";
 import { MapContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "../mapping/PlacePopup.client";
-import type { ESRelatedPlace } from "~/esTypes";
-import { FeatureCollection } from "geojson";
+import type { MapLayerMouseEvent } from "maplibre-gl";
+import type { FeatureCollection } from "geojson";
+import type { ESPlace } from "~/esTypes";
 
 interface Props {
-  places: ESRelatedPlace[];
+  places: ESPlace[];
   zoomTo?: boolean;
 }
 
 const SharedMapOverlay = ({ places, zoomTo = true }: Props) => {
   const { map } = useContext(MapContext);
-  const [active, setActive] = useState<ESRelatedPlace | undefined>();
+  const [active, setActive] = useState<ESPlace | undefined>();
 
   useEffect(() => {
     if (!map || !places.length) return;
@@ -45,10 +46,13 @@ const SharedMapOverlay = ({ places, zoomTo = true }: Props) => {
     map.addLayer(singlePoint(sourceId, sourceId));
 
     if (zoomTo && features.length === 1) {
-      map.flyTo({ center: features[0].geometry.coordinates as [number, number], zoom: 13 });
+      map.flyTo({
+        center: features[0].geometry.coordinates as [number, number],
+        zoom: 13,
+      });
     }
 
-    const handleClick = (e: any) => {
+    const handleClick = (e: MapLayerMouseEvent) => {
       const feature = e.features?.[0];
       const match = places.find((p) => p.uuid === feature?.properties?.uuid);
       if (match) setActive(match);
@@ -61,7 +65,7 @@ const SharedMapOverlay = ({ places, zoomTo = true }: Props) => {
       if (map.getLayer(sourceId)) map.removeLayer(sourceId);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
-  }, [map, places]);
+  }, [map, places, zoomTo]);
 
   return (
     <>
@@ -71,9 +75,6 @@ const SharedMapOverlay = ({ places, zoomTo = true }: Props) => {
           show={true}
           onClose={() => setActive(undefined)}
         >
-          {active.preview && (
-            <img src={active.preview.replace("max", "600,")} alt="" />
-          )}
           <h4 className="text-xl">{active.name}</h4>
           <div dangerouslySetInnerHTML={{ __html: active.description ?? "" }} />
         </PlacePopup>

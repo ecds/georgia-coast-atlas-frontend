@@ -12,17 +12,16 @@ import type { FormEvent } from "react";
 import { useSearchBox } from "react-instantsearch";
 import { SearchModalContext } from "~/contexts";
 
-
 interface SearchModalProps {
-  isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function SearchModal({ isOpen, setIsOpen }: SearchModalProps) {
+export default function SearchModal({ setIsOpen }: SearchModalProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [hasQuery, setHasQuery] = useState<boolean>(false);
   const { query, refine } = useSearchBox();
-  const { searchModalOpen, setSearchModalOpen } = useContext(SearchModalContext);
+  const { searchModalOpen, setSearchModalOpen } =
+    useContext(SearchModalContext);
   const location = useLocation();
 
   useEffect(() => {

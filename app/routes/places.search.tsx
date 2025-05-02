@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { renderToString } from "react-dom/server";
 import {
   Configure,
@@ -8,23 +8,19 @@ import {
   Pagination,
   getServerState,
 } from "react-instantsearch";
+import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
+import { history as searchHistory } from "instantsearch.js/es/lib/routers";
 import { allPlacesSearchClient } from "~/utils/elasticsearchAdapter";
 import GeoSearch from "~/components/search/GeoSearch";
 import SearchForm from "~/components/search/SearchForm";
-import { history as searchHistory } from "instantsearch.js/es/lib/routers";
-import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
-import { defaultBounds, indexCollection } from "~/config";
-import { MapContext, SearchContext } from "~/contexts";
-import {
-  boundingBoxFromLngLat,
-  boundingBoxFromSearchParameters,
-} from "~/utils/getBB";
+import { indexCollection } from "~/config";
+import { SearchContext } from "~/contexts";
 import SearchResult from "~/components/search/SearchResult";
+import { pageMetaDefaults } from "~/utils/pageMetadata";
 // import SearchModal from "~/components/search/SearchModal";
 import type { LoaderFunction } from "@remix-run/node";
 import type { Navigation, Location, MetaFunction } from "@remix-run/react";
 import type { InstantSearchServerState } from "react-instantsearch";
-import { pageMetaDefaults } from "~/utils/pageMetadata";
 
 type views = "search" | "explore";
 
@@ -56,20 +52,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const meta: MetaFunction = () => {
-  return [{
-    ...pageMetaDefaults,
-    title: 'Search: Georgia Coast Atlas'
-  }]
-}
+  return [
+    {
+      ...pageMetaDefaults,
+      title: "Search: Georgia Coast Atlas",
+    },
+  ];
+};
 
-const Search = ({
-  serverState,
-  serverUrl,
-  location,
-  navigation,
-}: SearchProps) => {
-  const { map } = useContext(MapContext);
-
+const Search = ({ serverState, serverUrl, location }: SearchProps) => {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
