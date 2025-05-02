@@ -1,6 +1,17 @@
-import { Link } from "@remix-run/react";
-import type { ReactNode } from "react";
+import { faMap, faTableCells, faList } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useSearchParams, useNavigate } from "@remix-run/react";
 import { Pagination, useHits } from "react-instantsearch";
+import { useState, useEffect } from "react";
+import { ClientOnly } from "remix-utils/client-only";
+import type { ReactNode } from "react";
+import Map from "~/components/mapping/Map.client";
+import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
+import type { FeatureCollection } from "geojson";
+import CollectionMapOverlay from "./CollectionMapOverlay";
+import { PlaceContext } from "~/contexts";
+import type { ESRelatedPlace } from "~/esTypes";
+import { topBarHeight } from "~/config";
 
 interface Props {
   collectionType: string;
@@ -9,21 +20,61 @@ interface Props {
 
 const Thumbnails = ({ collectionType, children }: Props) => {
   const { items } = useHits();
-  console.log("🚀 ~ Thumbnails ~ items:", items);
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
+
+  const geojson = hitsToFeatureCollection(items);
+  console.log("Items passed to map", items, geojson);
+
+  const toggleListGrid = () => {
+    setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
+  };
 
   return (
-    <div className="-mt-16 md:mt-0 h-full overflow-auto">
+    <div className="-mt-16 md:mt-0 h-full overflow-auto flex-grow">
       <h1 className="text-3xl text-black/80 m-4 md:m-auto md:ms-2 capitalize">
         {collectionType}
       </h1>
-      <div>
-        <ol className="flex flex-col md:flex-none md:grid md:grid-cols-1 lg:grid-cols-3 md:pe-6">
-          {items.map((item) => {
-            return (
+
+      <div className="flex gap-4 md:ms-2 md:my-2">
+        <button
+          onClick={toggleListGrid}
+          className="border border-island px-2 py-1 rounded-md shadow-md hover:shadow-lg text-island"
+        >
+          <FontAwesomeIcon icon={viewMode === "list" ? faTableCells : faList} />{" "}
+          {viewMode === "list" ? "Grid View" : "List View"}
+        </button>
+        <button
+          onClick={() => setViewMode("map")}
+          className={`border px-2 py-1 rounded-md shadow-md hover:shadow-lg ${
+            viewMode === "map"
+              ? "bg-island text-white"
+              : "border-island text-island"
+          }`}
+        >
+          <FontAwesomeIcon icon={faMap} /> Map View
+        </button>
+      </div>
+
+      {viewMode === "grid" || viewMode === "list" ? (
+        <>
+          <ol
+            className={`md:pe-6 ${
+              viewMode === "grid"
+                ? "md:grid md:grid-cols-1 lg:grid-cols-3"
+                : "flex flex-col"
+            }`}
+          >
+            {items.map((item) => (
               <li key={item.objectID}>
-                <figure className="min-w-[250px] min-h-[250px] flex flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0 px-2 md:px-0 lg:px-2 mb-6 md:mb-auto md:ms-2 md:mt-12 lg:mt-6 w-full">
+                <figure
+                  className={`w-full flex px-2 md:px-0 lg:px-2 ${
+                    viewMode === "grid"
+                      ? "min-h-[250px] mb-6 md:mb-auto md:ms-2 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0"
+                      : "border-b border-black/10 shadow-sm pb-4 mb-2 last:mb-0 min-h-[140px] flex-row items-start gap-4"
+                  }`}
+                >
                   <Link
-                    to={`/collections/${collectionType.toLocaleLowerCase()}/${item.slug}`}
+                    to={`/collections/${collectionType.toLowerCase()}/${item.slug}`}
                   >
                     <img
                       src={item.thumbnail_url}
@@ -41,10 +92,9 @@ const Thumbnails = ({ collectionType, children }: Props) => {
                         __html: item.description ?? "",
                       }}
                     />
-
                     <ul>
                       {item.places?.length > 0 && (
-                        <li className="">
+                        <li>
                           <span className="font-semibold">Places:</span>{" "}
                           {item.place_names.join(",")}
                         </li>
@@ -60,20 +110,30 @@ const Thumbnails = ({ collectionType, children }: Props) => {
                   </figcaption>
                 </figure>
               </li>
-            );
-          })}
-        </ol>
-        <Pagination
-          classNames={{
-            root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5",
-            list: "flex flex-row items-stretch justify-center",
-            pageItem:
-              "bg-county/20 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
-            selectedItem: "bg-county text-white",
-          }}
-          padding={2}
-        />
-      </div>
+            ))}
+          </ol>
+          <Pagination
+            classNames={{
+              root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5",
+              list: "flex flex-row items-stretch justify-center",
+              pageItem:
+                "bg-county/20 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+              selectedItem: "bg-county text-white",
+            }}
+            padding={2}
+          />
+        </>
+      ) : (
+        <div className="mt-6 mx-2 rounded-md overflow-hidden">
+          <ClientOnly>
+            {() => (
+              <Map className={`h-[calc(100vh-15rem)]`}>
+                <CollectionMapOverlay geojson={geojson} />
+              </Map>
+            )}
+          </ClientOnly>
+        </div>
+      )}
     </div>
   );
 };

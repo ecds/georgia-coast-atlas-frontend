@@ -14,6 +14,9 @@ import Thumbnails from "~/components/collections/Thumbnails";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
 import MenuSelect from "~/components/search/MenuSelect";
+import { useState } from "react";
+import { PlaceContext } from "~/contexts";
+import type { ESRelatedPlace } from "~/esTypes";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;

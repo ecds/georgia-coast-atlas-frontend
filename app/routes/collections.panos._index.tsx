@@ -13,13 +13,9 @@ import CollectionList from "~/components/collections/CollectionList";
 import type { InstantSearchServerState } from "react-instantsearch";
 import type { LoaderFunction } from "@remix-run/node";
 import Thumbnails from "~/components/collections/Thumbnails";
-
-type SearchProps = {
-  serverState?: InstantSearchServerState;
-  serverUrl?: string;
-  location?: Location;
-  modalOpen?: boolean;
-};
+import { useState } from "react";
+import { PlaceContext } from "~/contexts";
+import type { ESRelatedPlace, ESSearchProps } from "~/esTypes";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
@@ -36,27 +32,40 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
-const PanoCollection = ({ serverState, serverUrl }: SearchProps) => {
+const PanoCollection = ({ serverState, serverUrl }: ESSearchProps) => {
+  const [activePlace, setActivePlace] = useState<ESRelatedPlace | undefined>();
+  const [hoveredPlace, setHoveredPlace] = useState<ESRelatedPlace | undefined>();
+
   return (
-    <InstantSearchSSRProvider {...serverState}>
-      <InstantSearch
-        indexName={panosIndexCollection}
-        searchClient={panoCollection}
-        future={{ preserveSharedStateOnUnmount: true }}
-        routing={searchRouter(serverUrl)}
-      >
-        <Configure hitsPerPage={100} />
-        <CollectionList>
-          <PlaceFacets />
-          <Thumbnails collectionType="panos" />
-        </CollectionList>
-      </InstantSearch>
-    </InstantSearchSSRProvider>
+    <PlaceContext.Provider
+      value={{
+        place: { uuid: "", places: [], other_places: [] } as any,
+        activePlace,
+        setActivePlace,
+        hoveredPlace,
+        setHoveredPlace,
+      }}
+    >
+      <InstantSearchSSRProvider {...serverState}>
+        <InstantSearch
+          indexName={panosIndexCollection}
+          searchClient={panoCollection}
+          future={{ preserveSharedStateOnUnmount: true }}
+          routing={searchRouter(serverUrl)}
+        >
+          <Configure hitsPerPage={100} />
+          <CollectionList>
+            <PlaceFacets />
+            <Thumbnails collectionType="panos" />
+          </CollectionList>
+        </InstantSearch>
+      </InstantSearchSSRProvider>
+    </PlaceContext.Provider>
   );
 };
 
 const PanoCollectionIndex = () => {
-  const { serverState, serverUrl } = useLoaderData() as SearchProps;
+  const { serverState, serverUrl } = useLoaderData() as ESSearchProps;
 
   return (
     <div>
