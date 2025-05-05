@@ -1,8 +1,8 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import PlacePopup from "~/components/mapping/PlacePopup.client";
+import PlacePopup from "~/components/mapping/PlacePopup";
 import { MapContext, PlaceContext } from "~/contexts";
-import { ClientOnly } from "remix-utils/client-only";
-import { Link } from "@remix-run/react";
+import ClientOnly from "~/components/ClientOnly";
+import { Link } from "react-router";
 import { countiesLayerId, islandsLayerId, areasSourceId } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
@@ -146,56 +146,52 @@ const FeaturedPlaces = ({ places }: Props) => {
         {places.map((place) => {
           return (
             <ClientOnly key={`popup-${place.uuid}`}>
-              {() => (
-                <>
-                  <PlacePopup
-                    show={activePlace == place}
-                    location={place.location}
-                    onClose={() => setActivePlace(undefined)}
-                    zoomToFeature={false}
-                    anchor={
-                      place.types.includes("Barrier Island")
-                        ? "right"
-                        : undefined
-                    }
-                  >
-                    {place.featured_photograph && (
-                      <img
-                        src={place.featured_photograph.replace("max", "400,")}
-                        alt=""
-                        className="h-40 w-auto"
-                      />
-                    )}
-                    <h4 className="text-xl ">{place.name}</h4>
-                    <div
-                      className="tracking-loose my-2"
-                      dangerouslySetInnerHTML={{
-                        __html: place.short_description ?? "",
-                      }}
+              <>
+                <PlacePopup
+                  show={activePlace == place}
+                  location={place.location}
+                  onClose={() => setActivePlace(undefined)}
+                  zoomToFeature={false}
+                  anchor={
+                    place.types.includes("Barrier Island") ? "right" : undefined
+                  }
+                >
+                  {place.featured_photograph && (
+                    <img
+                      src={place.featured_photograph.replace("max", "400,")}
+                      alt=""
+                      className="h-40 w-auto"
                     />
-                    <Link
-                      state={{ title: "Explore", slug: "explore" }}
-                      to={`/places/${place.slug}`}
-                      className="text-blue-700 underline underline-offset-2 text-l block mt-2"
-                    >
-                      Explore
-                    </Link>
-                  </PlacePopup>
-                  <PlaceTooltip
-                    show={hoveredPlace == place && activePlace !== hoveredPlace}
-                    className={currentZoom < 12 ? "text-lg" : "text-xs"}
-                    location={location ?? place.location}
-                    onClose={() => {
-                      setActivePlace(undefined);
-                      setHoveredPlace(undefined);
+                  )}
+                  <h4 className="text-xl ">{place.name}</h4>
+                  <div
+                    className="tracking-loose my-2"
+                    dangerouslySetInnerHTML={{
+                      __html: place.short_description ?? "",
                     }}
-                    zoomToFeature={false}
-                    // anchor={sourceName === "islands" ? "left" : "right"}
+                  />
+                  <Link
+                    state={{ title: "Explore", slug: "explore" }}
+                    to={`/places/${place.slug}`}
+                    className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                   >
-                    <h4 className="text-white">{place.name}</h4>
-                  </PlaceTooltip>
-                </>
-              )}
+                    Explore
+                  </Link>
+                </PlacePopup>
+                <PlaceTooltip
+                  show={hoveredPlace == place && activePlace !== hoveredPlace}
+                  className={currentZoom < 12 ? "text-lg" : "text-xs"}
+                  location={location ?? place.location}
+                  onClose={() => {
+                    setActivePlace(undefined);
+                    setHoveredPlace(undefined);
+                  }}
+                  zoomToFeature={false}
+                  // anchor={sourceName === "islands" ? "left" : "right"}
+                >
+                  <h4 className="text-white">{place.name}</h4>
+                </PlaceTooltip>
+              </>
             </ClientOnly>
           );
         })}

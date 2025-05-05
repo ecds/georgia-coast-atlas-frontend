@@ -1,8 +1,8 @@
-import { NavLink, Outlet, useLocation } from "@remix-run/react";
+import { NavLink, Outlet, useLocation } from "react-router";
 import { useEffect, useRef, useState } from "react";
-import { ClientOnly } from "remix-utils/client-only";
-import Map from "~/components/mapping/Map.client";
+import Map from "~/components/mapping/Map";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
+import ClientOnly from "~/components/ClientOnly";
 
 const linkClassNames = ({ isActive }: { isActive: boolean }) => {
   return `text-center flex-grow py-3 px-3 text-lg tracking-wide font-semibold focus:outline-none ${isActive ? "bg-activeCounty text-white" : "bg-county/25 text-activeCounty hover:text-white"} hover:bg-county/75  focus:outline-1 focus:outline-black`;
@@ -59,11 +59,9 @@ const PlacesRootPage = () => {
       </div>
       <div className="hidden md:block flex-grow">
         <ClientOnly>
-          {() => (
-            <Map>
-              <StyleSwitcher />
-            </Map>
-          )}
+          <Map>
+            <StyleSwitcher />
+          </Map>
         </ClientOnly>
       </div>
     </div>

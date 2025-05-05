@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from "react";
 import { MapContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
-import PlacePopup from "../mapping/PlacePopup.client";
+import PlacePopup from "../mapping/PlacePopup";
 import type { MapLayerMouseEvent } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
 import type { ESPlace } from "~/esTypes";

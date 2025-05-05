@@ -8,7 +8,7 @@ import GeoSearchClusters from "./GeoSearchClusters";
 import GeoSearchPoints from "./GeoSearchPoints";
 import { defaultBounds } from "~/config";
 import type { FeatureCollection } from "geojson";
-import type { Location } from "@remix-run/react";
+import type { Location } from "react-router";
 import type { GeoHit } from "instantsearch.js";
 
 const GeoSearch = ({ location }: { location?: Location }) => {

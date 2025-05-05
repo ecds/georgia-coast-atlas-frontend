@@ -7,7 +7,7 @@ import {
 import { useEffect, useRef, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faSearch, faFilter } from "@fortawesome/free-solid-svg-icons";
-import { Form, useLocation } from "@remix-run/react";
+import { Form, useLocation } from "react-router";
 import type { FormEvent } from "react";
 import { useSearchBox } from "react-instantsearch";
 import { SearchModalContext } from "~/contexts";

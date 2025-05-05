@@ -8,7 +8,7 @@ import {
   Pagination,
   getServerState,
 } from "react-instantsearch";
-import { useLoaderData, useLocation, useNavigation } from "@remix-run/react";
+import { useLoaderData, useLocation, useNavigation } from "react-router";
 import { history as searchHistory } from "instantsearch.js/es/lib/routers";
 import { allPlacesSearchClient } from "~/utils/elasticsearchAdapter";
 import GeoSearch from "~/components/search/GeoSearch";
@@ -18,8 +18,8 @@ import { SearchContext } from "~/contexts";
 import SearchResult from "~/components/search/SearchResult";
 import { pageMetaDefaults } from "~/utils/pageMetadata";
 // import SearchModal from "~/components/search/SearchModal";
-import type { LoaderFunction } from "@remix-run/node";
-import type { Navigation, Location, MetaFunction } from "@remix-run/react";
+import type { LoaderFunction } from "react-router";
+import type { Navigation, Location, MetaFunction } from "react-router";
 import type { InstantSearchServerState } from "react-instantsearch";
 
 type views = "search" | "explore";

@@ -6,7 +6,7 @@ import {
   manifest,
 } from "~/utils/iiif";
 import topoCoords from "~/data/topoCoords.json";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import type {
   TTopoCoords,
   TTopoCoordsRecord,

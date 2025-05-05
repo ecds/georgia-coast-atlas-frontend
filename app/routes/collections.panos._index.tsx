@@ -5,10 +5,10 @@ import {
   getServerState,
 } from "react-instantsearch";
 import { renderToString } from "react-dom/server";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "react-router";
 import { panosIndexCollection, searchRouter } from "~/config";
 import { panoCollection } from "~/utils/elasticsearchAdapter";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";

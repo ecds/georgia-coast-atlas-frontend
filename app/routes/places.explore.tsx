@@ -1,10 +1,10 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "react-router";
 import { fetchPlacesByType } from "~/data/coredata";
 import FeaturedPlaces from "~/components/mapping/FeaturedPlaces";
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { defaultBounds } from "~/config";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "react-router";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
 export const loader: LoaderFunction = async () => {

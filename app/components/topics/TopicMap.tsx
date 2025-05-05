@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
-import Map from "../mapping/Map.client";
-import { ClientOnly } from "remix-utils/client-only";
+import Map from "../mapping/Map";
+import ClientOnly from "~/components/ClientOnly";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { costalLabels } from "~/mapStyles";
@@ -9,7 +9,7 @@ import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat, ESRelatedPlace } from "~/esTypes";
+import type { TLonLat, ESRelatedPlace, ESPlace } from "~/esTypes";
 
 interface Props {
   geojson: FeatureCollection;
@@ -25,7 +25,7 @@ const TopicMap = ({ geojson }: Props) => {
     setActivePlace,
   } = useContext(PlaceContext);
   const [tooltipPlace, setTooltipPlace] = useState<
-    ESRelatedPlace | undefined
+    ESRelatedPlace | ESPlace | undefined
   >();
   const [hoverLocation, setHoverLocation] = useState<TLonLat>({
     lat: 0,
@@ -36,7 +36,7 @@ const TopicMap = ({ geojson }: Props) => {
     ESRelatedPlace | undefined
   >();
   useEffect(() => {
-    if (!map) return;
+    if (!map || !place) return;
 
     const handleMouseEnter = ({ features }: MapLayerMouseEvent) => {
       if (features) {
@@ -148,19 +148,17 @@ const TopicMap = ({ geojson }: Props) => {
 
   return (
     <ClientOnly>
-      {() => (
-        <>
-          <Map className="w-full h-[600px] border-0" />
-          <PlaceTooltip
-            location={hoverLocation}
-            show={showTooltip}
-            onClose={() => setTooltipPlace(undefined)}
-            zoomToFeature={false}
-          >
-            <h4 className="text-white">{tooltipPlace?.name}</h4>
-          </PlaceTooltip>
-        </>
-      )}
+      <>
+        <Map className="w-full h-[600px] border-0" />
+        <PlaceTooltip
+          location={hoverLocation}
+          show={showTooltip}
+          onClose={() => setTooltipPlace(undefined)}
+          zoomToFeature={false}
+        >
+          <h4 className="text-white">{tooltipPlace?.name}</h4>
+        </PlaceTooltip>
+      </>
     </ClientOnly>
   );
 };

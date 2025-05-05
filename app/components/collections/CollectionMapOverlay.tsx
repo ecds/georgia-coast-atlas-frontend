@@ -4,7 +4,7 @@ import { LngLatBounds } from "maplibre-gl";
 import { MapContext, PlaceContext } from "~/contexts";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
-import PlacePopup from "../mapping/PlacePopup.client";
+import PlacePopup from "../mapping/PlacePopup";
 import type {
   GeoJSONSource,
   MapLayerMouseEvent,

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link } from "@remix-run/react";
-import { ClientOnly } from "remix-utils/client-only";
+import { Link } from "react-router";
 import { Pagination, useHits } from "react-instantsearch";
-import Map from "~/components/mapping/Map.client";
+import Map from "~/components/mapping/Map";
 import { faMap, faTableCells, faList } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ClientOnly from "~/components/ClientOnly";
 import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
 import CollectionMapOverlay from "./CollectionMapOverlay";
 import type { ReactNode } from "react";
@@ -121,11 +121,9 @@ const Thumbnails = ({ collectionType, children }: Props) => {
       ) : (
         <div className="mt-6 mx-2 rounded-md overflow-hidden">
           <ClientOnly>
-            {() => (
-              <Map className={`h-[calc(100vh-15rem)]`}>
-                <CollectionMapOverlay geojson={geojson} />
-              </Map>
-            )}
+            <Map className={`h-[calc(100vh-15rem)]`}>
+              <CollectionMapOverlay geojson={geojson} />
+            </Map>
           </ClientOnly>
         </div>
       )}

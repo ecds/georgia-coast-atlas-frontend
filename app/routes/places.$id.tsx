@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLoaderData, useLocation } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -17,7 +17,7 @@ import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
 import RelatedSection from "~/components/relatedRecords/RelatedSection";
 import RelatedMedia from "~/components/relatedRecords/RelatedMedia";
 import PlaceMap from "~/components/places/PlaceMap";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
 import type { LngLatBounds } from "maplibre-gl";

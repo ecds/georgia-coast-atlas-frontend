@@ -1,10 +1,10 @@
 import { dataHosts } from "~/config";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import { pageMetaDefaults } from "~/utils/pageMetadata";
 import wpCssUrl from "~/styles/about.css?url";
 import type { TWordPressData } from "~/types";
-import type { MetaFunction } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { MetaFunction } from "react-router";
+import type { LinksFunction } from "react-router";
 
 export const loader = async () => {
   const wpResponse = await fetch(

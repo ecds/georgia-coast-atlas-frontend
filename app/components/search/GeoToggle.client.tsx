@@ -2,10 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import { MapContext } from "~/contexts";
 import { useGeoSearch } from "react-instantsearch";
-import type { MapLibreEvent } from "maplibre-gl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { createPortal } from "react-dom";
+import type { MapLibreEvent } from "maplibre-gl";
 
 const GeoToggle = () => {
   const [enabled, setEnabled] = useState(false);

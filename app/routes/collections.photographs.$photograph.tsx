@@ -1,12 +1,12 @@
-import { Link, useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { Link, useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import IIIFViewer from "~/components/layout/IIIFViewer.client";
 import { photosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
-import Map from "~/components/mapping/Map.client";
+import Map from "~/components/mapping/Map";
 import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -37,7 +37,9 @@ const PhotographDetail = () => {
         Back to Photograph Collection
       </Link>
 
-      <ClientOnly>{() => <IIIFViewer photo={photograph} />}</ClientOnly>
+      <ClientOnly>
+        <IIIFViewer photo={photograph} />
+      </ClientOnly>
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>
@@ -66,11 +68,9 @@ const PhotographDetail = () => {
       {photograph.places?.length > 0 && (
         <div className="mt-8 h-[500px] w-full rounded-md overflow-hidden">
           <ClientOnly>
-            {() => (
-              <Map className="w-96 h-96">
-                <SharedMapOverlay places={photograph.places} />
-              </Map>
-            )}
+            <Map className="w-96 h-96">
+              <SharedMapOverlay places={photograph.places} />
+            </Map>
           </ClientOnly>
         </div>
       )}

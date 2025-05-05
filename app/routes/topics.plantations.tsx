@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { fetchBySlug, fetchPlacesByType } from "~/data/coredata";
 import { topicIndexCollection } from "~/config";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import { PlaceContext } from "~/contexts";
 import RelatedPlacesDetailedList from "~/components/relatedRecords/RelatedPlacesDetailedList";
 import RelatedPlacesMap from "~/components/relatedRecords/RelatedPlacesMap";
-import Map from "~/components/mapping/Map.client";
+import Map from "~/components/mapping/Map";
 import RelatedSection from "~/components/relatedRecords/RelatedSection";
 import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 
