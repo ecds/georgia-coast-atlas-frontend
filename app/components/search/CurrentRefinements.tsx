@@ -2,7 +2,7 @@ import { useCurrentRefinements, useSortBy } from "react-instantsearch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { indexCollection, PLACE_TYPES } from "~/config";
-import GeoToggle from "./GeoToggle.client";
+import GeoToggle from "./GeoToggle";
 import ClientOnly from "../ClientOnly";
 
 const CurrentRefinements = () => {
