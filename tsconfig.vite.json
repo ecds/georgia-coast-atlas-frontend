@@ -5,7 +5,9 @@
     "app/**/*",
     "app/**/.server/**/*",
     "app/**/.client/**/*",
-    "server/**/*"
+    "server/**/*",
+    "**./*.ts",
+    "*.ts"
   ],
   "compilerOptions": {
     "composite": true,
