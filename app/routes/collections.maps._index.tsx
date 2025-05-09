@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Configure,
   InstantSearch,
@@ -12,15 +13,11 @@ import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import MenuSelect from "~/components/search/MenuSelect";
-import type { InstantSearchServerState } from "react-instantsearch";
-import type { LoaderFunction } from "react-router";
-
-type SearchProps = {
-  serverState?: InstantSearchServerState;
-  serverUrl?: string;
-  location?: Location;
-  modalOpen?: boolean;
-};
+import ViewToggle from "~/components/collections/ViewToggle";
+import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import type { LoaderFunction } from "@remix-run/node";
+import type { ESSearchProps } from "~/esTypes";
+import CollectionContainer from "~/components/collections/CollectionContainer";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
@@ -37,7 +34,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
-const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
+const MapCollection = ({ serverState, serverUrl, children }: ESSearchProps) => {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -47,16 +44,13 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
         routing={searchRouter(serverUrl)}
       >
         <Configure hitsPerPage={100} />
-        {/* <SortBy
-            items={[{ label: "Year", value: "instant_search_year_asc" }]}
-          /> */}
         <CollectionList>
           <div className="h-full min-w-fit overflow-y-scroll">
             <MenuSelect attribute="categories" />
             <PlaceFacets />
             <PlaceFacets attribute="date" sortBy="name" />
           </div>
-          <Thumbnails collectionType="maps" />
+          {children}
         </CollectionList>
       </InstantSearch>
     </InstantSearchSSRProvider>
@@ -64,11 +58,24 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
 };
 
 const MapCollectionPage = () => {
-  const { serverState, serverUrl } = useLoaderData() as SearchProps;
+  const { serverState, serverUrl } = useLoaderData() as ESSearchProps;
+  const [viewMode, setViewMode] = useState<"grid" | "map" | undefined>();
 
   return (
     <div>
-      <MapCollection serverState={serverState} serverUrl={serverUrl} />
+      <MapCollection serverState={serverState} serverUrl={serverUrl}>
+        <CollectionContainer collectionType="maps">
+          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+          <Thumbnails
+            collectionType="maps"
+            className={viewMode === "grid" ? "block" : "hidden"}
+          />
+          <CollectionMapOverlay
+            collectionType="maps"
+            className={viewMode === "map" ? "block" : "hidden"}
+          />
+        </CollectionContainer>
+      </MapCollection>
     </div>
   );
 };

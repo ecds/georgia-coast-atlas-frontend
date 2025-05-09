@@ -1,5 +1,4 @@
-import { Link, useLoaderData } from "react-router";
-import type { LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import ClientOnly from "~/components/ClientOnly";
@@ -8,6 +7,8 @@ import { photosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import Map from "~/components/mapping/Map";
 import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import Item from "~/components/collections/Item";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph = await fetchBySlug(
@@ -29,17 +30,8 @@ const PhotographDetail = () => {
   const { photograph } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col p-6">
-      <Link
-        to="/collections/photographs"
-        className="text-sm text-activeCounty underline hover:font-semibold"
-      >
-        Back to Photograph Collection
-      </Link>
-
-      <ClientOnly>
-        <IIIFViewer photo={photograph} />
-      </ClientOnly>
+    <Item itemType="photograph">
+      <ClientOnly>{() => <IIIFViewer photo={photograph} />}</ClientOnly>
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>
@@ -74,7 +66,7 @@ const PhotographDetail = () => {
           </ClientOnly>
         </div>
       )}
-    </div>
+    </Item>
   );
 };
 

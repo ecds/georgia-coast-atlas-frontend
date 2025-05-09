@@ -1,4 +1,5 @@
 import type { FeatureCollection } from "geojson";
+import type { ReactNode } from "react";
 import type { InstantSearchServerState } from "react-instantsearch";
 
 export type TLonLat = {
@@ -93,16 +94,23 @@ export type ESPlace = {
   videos?: ESRelatedMedium[];
 };
 
-export type ESMapItem = {
+type ESCollectionItem = {
+  description: string;
+  name: string;
+  location: TLonLat;
+  places: string[];
+  slug: string;
+  thumbnail_url: string;
+  title?: string;
+  uuid: string;
+};
+
+export type ESMapItem = ESCollectionItem & {
   bbox: [number, number, number, number];
   bearing?: number;
-  description: string;
   date: string;
   name: string;
-  places: ESRelatedPlace[];
   preview: string;
-  thumbnail_url: string;
-  uuid: string;
   wms_resources: string[];
 };
 
@@ -111,17 +119,12 @@ export type ESSearchProps = {
   serverUrl?: string;
   location?: Location;
   modalOpen?: boolean;
+  children?: ReactNode;
 };
 
-export type ESPhotographItem = {
+export type ESPhotographItem = ESCollectionItem & {
   alt?: string;
-  description?: string;
-  full_url: string;
   manifest: string;
-  name: string;
-  places: string[];
-  slug: string;
-  title?: string;
-  thumbnail_rul: string;
-  uuid: string;
 };
+
+export type CollectionType = "maps" | "photographs" | "panos" | "videos";
