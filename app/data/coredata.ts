@@ -1,7 +1,7 @@
 import { dataHosts, indexCollection, keys } from "~/config";
 import type { TESHit, TSearchOptions } from "~/types";
 
-const elasticSearchHeaders = () => {
+export const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
   esHeaders.append("authorization", `ApiKey ${keys.elasticsearch}`);
   esHeaders.append("Content-Type", "application/json");

@@ -1,54 +1,16 @@
 import { Link, NavLink } from "@remix-run/react";
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-} from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
-
-type TopicPage = {
-  slug: string;
-  label?: string;
-};
+import TTopicTree from "./CollectionTree";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
   "w-52 origin-top-right rounded-xl border bg-island border-black/50 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-50";
 const menuLinkClassName =
-  "block rounded-lg text-white capitalize py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50";
+  "block rounded-lg text-white capitalize py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50 text-left";
 
 const collections = ["maps", "panos", "photographs", "videos"];
 const aboutPages = ["project", "bibliography", "contact"];
-const topicPages: Array<TopicPage & { subs: TopicPage[] }> = [
-  {
-    slug: "cultural-landscapes",
-    subs: [
-      { slug: "designed-landscapes" },
-      { slug: "historic-sites" },
-      { slug: "ethnographic-landscapes" },
-      { slug: "vernacular-landscapes" },
-    ],
-  },
-  {
-    slug: "environmental-landscape",
-    subs: [
-      { slug: "ecosystems" },
-      { slug: "habitats" },
-      { slug: "landforms-geomorphology", label: "Landforms & Geomorphology" },
-      { slug: "environmental-issues" },
-      { slug: "climate-change" },
-    ],
-  },
-  {
-    slug: "cartography-writing",
-    label: "Cartography & Writing",
-    subs: [{ slug: "cartography" }, { slug: "writing" }],
-  },
-];
 
 const Navbar = () => {
   return (
@@ -100,20 +62,27 @@ const Navbar = () => {
           </MenuItems>
         </Menu>
 
-        <Menu>
+        <TTopicTree
+          anchor={itemsAnchor}
+          itemsClassName={itemsClassName}
+          linkClassName={menuLinkClassName}
+        />
+
+        {/* <PopoverGroup> */}
+        {/* <Popover>
           {({ close }) => (
             <>
-              <MenuButton>Topics</MenuButton>
-              <MenuItems
+              <PopoverButton>Topics</PopoverButton>
+              <PopoverPanel
                 anchor={itemsAnchor}
                 className={itemsClassName}
                 transition
               >
                 {topicPages.map((topicPage) => {
                   return (
-                    <MenuItem key={topicPage.slug}>
+                    <Popover key={topicPage.slug}>
                       {topicPage.subs.length > 0 ? (
-                        <Popover as="div">
+                        <>
                           <PopoverButton className={menuLinkClassName}>
                             {topicPage.label ??
                               topicPage.slug.split("-").join(" ")}
@@ -136,7 +105,7 @@ const Navbar = () => {
                               );
                             })}
                           </PopoverPanel>
-                        </Popover>
+                        </>
                       ) : (
                         <Link
                           className={`${menuLinkClassName} capitalize`}
@@ -146,13 +115,14 @@ const Navbar = () => {
                             topicPage.slug.split("-").join(" ")}
                         </Link>
                       )}
-                    </MenuItem>
+                    </Popover>
                   );
                 })}
-              </MenuItems>
+              </PopoverPanel>
             </>
           )}
-        </Menu>
+        </Popover> */}
+        {/* </PopoverGroup> */}
 
         <Menu>
           <MenuButton>About</MenuButton>

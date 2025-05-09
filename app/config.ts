@@ -397,6 +397,7 @@ export const mapIndexCollection = `${collectionPrefix}_maps`;
 export const panosIndexCollection = `${collectionPrefix}_panos`;
 export const videosIndexCollection = `${collectionPrefix}_videos`;
 export const photosIndexCollection = `${collectionPrefix}_photographs`;
+export const topicTreeIndexCollection = `${collectionPrefix}_topic_tree`;
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
