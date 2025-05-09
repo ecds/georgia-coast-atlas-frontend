@@ -10,7 +10,7 @@ import { fetchBySlug } from "~/data/coredata";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
 import { dataHosts, indexCollection } from "~/config";
-import { pageMetadata } from "~/utils/pageMetadata";
+import { placeMetaTags } from "~/utils/placeMetaTags";
 import RelatedPlaces from "~/components/relatedRecords/RelatedPlaces";
 import RelatedMapLayers from "~/components/relatedRecords/RelatedMapLayers";
 import RelatedTopoQuads from "~/components/relatedRecords/RelatedTopoQuads";
@@ -23,7 +23,7 @@ import type { TWordPressData } from "~/types";
 import type { LngLatBounds } from "maplibre-gl";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return pageMetadata(data?.place as ESPlace);
+  return placeMetaTags(data?.place as ESPlace);
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -62,12 +62,12 @@ const PlacePage = () => {
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
   const [backTo, setBackTo] = useState<
     | {
-        slug: string;
-        title: string;
-        bounds?: LngLatBounds;
-        previous: string;
-        search?: string;
-      }
+      slug: string;
+      title: string;
+      bounds?: LngLatBounds;
+      previous: string;
+      search?: string;
+    }
     | undefined
   >(undefined);
   const topRef = useRef<HTMLDivElement>(null);
@@ -125,7 +125,7 @@ const PlacePage = () => {
         />
         <div className="px-4">
           {place.types.includes("Barrier Island") ||
-          place.types.includes("County") ? (
+            place.types.includes("County") ? (
             <RelatedPlaces />
           ) : (
             <PlaceMap />

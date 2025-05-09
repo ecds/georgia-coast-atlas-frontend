@@ -65,7 +65,7 @@ const mentions = (place: ESPlace) => {
   }
 };
 
-export const pageMetaDefaults = [
+export const placeMetaDefaults = [
   {
     title: "Georgia Coast Atlas",
   },
@@ -102,7 +102,7 @@ export const pageMetaDefaults = [
   },
 ];
 
-export const pageMetadata = (place: ESPlace | undefined = undefined) => {
+export const placeMetaTags = (place: ESPlace | undefined = undefined) => {
   if (place) {
     return [
       {
@@ -192,5 +192,5 @@ export const pageMetadata = (place: ESPlace | undefined = undefined) => {
     ];
   }
 
-  return pageMetaDefaults;
+  return placeMetaDefaults;
 };

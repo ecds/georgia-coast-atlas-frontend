@@ -8,6 +8,7 @@ import { renderToString } from "react-dom/server";
 import { useLoaderData } from "@remix-run/react";
 import { mapIndexCollection, searchRouter } from "~/config";
 import { mapCollection } from "~/utils/elasticsearchAdapter";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
@@ -74,3 +75,11 @@ const MapCollectionPage = () => {
 };
 
 export default MapCollectionPage;
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Maps Collection",
+    description: "TODO: Add descriptive text about the maps collection here.",
+    image: "TODO: Add a valid og:image URL for the maps collection here.",
+    slug: "maps",
+  });

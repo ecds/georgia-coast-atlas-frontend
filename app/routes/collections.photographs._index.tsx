@@ -8,6 +8,7 @@ import { renderToString } from "react-dom/server";
 import { useLoaderData } from "@remix-run/react";
 import { photosIndexCollection, searchRouter } from "~/config";
 import { photoCollection } from "~/utils/elasticsearchAdapter";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
@@ -59,3 +60,11 @@ const PhotographCollectionIndex = () => {
 };
 
 export default PhotographCollectionIndex;
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Photograph Collection",
+    description: "TODO: Add descriptive text about the photograph collection here.",
+    image: "TODO: Add a valid og:image URL for the photograph collection here.",
+    slug: "photographs",
+  });

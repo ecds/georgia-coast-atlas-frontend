@@ -8,6 +8,7 @@ import { renderToString } from "react-dom/server";
 import { useLoaderData } from "@remix-run/react";
 import { searchRouter, videosIndexCollection } from "~/config";
 import { videoCollection } from "~/utils/elasticsearchAdapter";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import CollectionList from "~/components/collections/CollectionList";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import Thumbnails from "~/components/collections/Thumbnails";
@@ -66,3 +67,11 @@ const VideoCollectionIndex = () => {
 };
 
 export default VideoCollectionIndex;
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Videos Collection",
+    description: "TODO: Add descriptive text about the videos collection here.",
+    image: "TODO: Add a valid og:image URL for the videos collection here.",
+    slug: "videos",
+  });
