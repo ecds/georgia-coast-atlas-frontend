@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Configure,
   InstantSearch,
@@ -11,8 +12,11 @@ import { photoCollection } from "~/utils/elasticsearchAdapter";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
+import ViewToggle from "~/components/collections/ViewToggle";
+import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
 import type { LoaderFunction } from "@remix-run/node";
 import type { ESSearchProps } from "~/esTypes";
+import CollectionContainer from "~/components/collections/CollectionContainer";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
@@ -29,7 +33,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
-const PhotographCollection = ({ serverState, serverUrl }: ESSearchProps) => {
+const PhotographCollection = ({
+  serverState,
+  serverUrl,
+  children,
+}: ESSearchProps) => {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -41,7 +49,7 @@ const PhotographCollection = ({ serverState, serverUrl }: ESSearchProps) => {
         <Configure hitsPerPage={24} />
         <CollectionList>
           <PlaceFacets />
-          <Thumbnails collectionType="photographs" />
+          {children}
         </CollectionList>
       </InstantSearch>
     </InstantSearchSSRProvider>
@@ -50,11 +58,22 @@ const PhotographCollection = ({ serverState, serverUrl }: ESSearchProps) => {
 
 const PhotographCollectionIndex = () => {
   const { serverState, serverUrl } = useLoaderData() as ESSearchProps;
+  const [viewMode, setViewMode] = useState<"grid" | "map" | undefined>();
 
   return (
-    <div>
-      <PhotographCollection serverState={serverState} serverUrl={serverUrl} />
-    </div>
+    <PhotographCollection serverState={serverState} serverUrl={serverUrl}>
+      <CollectionContainer collectionType="photographs">
+        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+        <Thumbnails
+          collectionType="photographs"
+          className={viewMode === "grid" ? "block" : "hidden"}
+        />
+        <CollectionMapOverlay
+          collectionType="photographs"
+          className={viewMode === "map" ? "block" : "hidden"}
+        />
+      </CollectionContainer>
+    </PhotographCollection>
   );
 };
 

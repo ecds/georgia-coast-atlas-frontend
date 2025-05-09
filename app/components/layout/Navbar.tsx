@@ -1,6 +1,19 @@
 import { Link, NavLink } from "@remix-run/react";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+} from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
+
+type TopicPage = {
+  slug: string;
+  label?: string;
+};
 
 const itemsAnchor = "bottom";
 const itemsClassName =
@@ -10,11 +23,31 @@ const menuLinkClassName =
 
 const collections = ["maps", "panos", "photographs", "videos"];
 const aboutPages = ["project", "bibliography", "contact"];
-const topicPages = [
-  "climate-change",
-  "cultural-landscape",
-  "historical-sites",
-  "plantations",
+const topicPages: Array<TopicPage & { subs: TopicPage[] }> = [
+  {
+    slug: "cultural-landscapes",
+    subs: [
+      { slug: "designed-landscapes" },
+      { slug: "historic-sites" },
+      { slug: "ethnographic-landscapes" },
+      { slug: "vernacular-landscapes" },
+    ],
+  },
+  {
+    slug: "environmental-landscape",
+    subs: [
+      { slug: "ecosystems" },
+      { slug: "habitats" },
+      { slug: "landforms-geomorphology", label: "Landforms & Geomorphology" },
+      { slug: "environmental-issues" },
+      { slug: "climate-change" },
+    ],
+  },
+  {
+    slug: "cartography-writing",
+    label: "Cartography & Writing",
+    subs: [{ slug: "cartography" }, { slug: "writing" }],
+  },
 ];
 
 const Navbar = () => {
@@ -68,21 +101,57 @@ const Navbar = () => {
         </Menu>
 
         <Menu>
-          <MenuButton>Topics</MenuButton>
-          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
-            {topicPages.map((topicPage) => {
-              return (
-                <MenuItem key={topicPage}>
-                  <Link
-                    className={`${menuLinkClassName} capitalize`}
-                    to={`/topics/${topicPage}`}
-                  >
-                    {topicPage.split("-").join(" ")}
-                  </Link>
-                </MenuItem>
-              );
-            })}
-          </MenuItems>
+          {({ close }) => (
+            <>
+              <MenuButton>Topics</MenuButton>
+              <MenuItems
+                anchor={itemsAnchor}
+                className={itemsClassName}
+                transition
+              >
+                {topicPages.map((topicPage) => {
+                  return (
+                    <MenuItem key={topicPage.slug}>
+                      {topicPage.subs.length > 0 ? (
+                        <Popover as="div">
+                          <PopoverButton className={menuLinkClassName}>
+                            {topicPage.label ??
+                              topicPage.slug.split("-").join(" ")}
+                          </PopoverButton>
+                          <PopoverPanel
+                            as="ul"
+                            anchor="left start"
+                            className={`${itemsClassName} me-4`}
+                          >
+                            {topicPage.subs.map((sub) => {
+                              return (
+                                <Link
+                                  key={sub.slug}
+                                  className={`${menuLinkClassName} capitalize`}
+                                  to={`/topics/${topicPage.slug}/${sub.slug}`}
+                                  onClick={close}
+                                >
+                                  {sub.label ?? sub.slug.split("-").join(" ")}
+                                </Link>
+                              );
+                            })}
+                          </PopoverPanel>
+                        </Popover>
+                      ) : (
+                        <Link
+                          className={`${menuLinkClassName} capitalize`}
+                          to={`/topics/${topicPage.slug}`}
+                        >
+                          {topicPage.label ??
+                            topicPage.slug.split("-").join(" ")}
+                        </Link>
+                      )}
+                    </MenuItem>
+                  );
+                })}
+              </MenuItems>
+            </>
+          )}
         </Menu>
 
         <Menu>

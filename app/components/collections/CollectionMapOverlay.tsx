@@ -1,55 +1,89 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "@remix-run/react";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
-import { MapContext, PlaceContext } from "~/contexts";
+import { MapContext } from "~/contexts";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
-import PlaceTooltip from "../mapping/PlaceTooltip";
+import { useHits } from "react-instantsearch";
 import PlacePopup from "../mapping/PlacePopup.client";
+import { ClientOnly } from "remix-utils/client-only";
+import Map from "../mapping/Map.client";
 import type {
   GeoJSONSource,
   MapLayerMouseEvent,
   SourceSpecification,
 } from "maplibre-gl";
+import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
+import type { Hit } from "instantsearch.js";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat, ESRelatedPlace, ESPlace } from "~/esTypes";
+import type { CollectionType } from "~/esTypes";
 
 type Props = {
-  geojson: FeatureCollection;
+  className?: string;
+  collectionType: CollectionType;
 };
 
-const CollectionMapOverlay = ({ geojson }: Props) => {
+const CollectionMapOverlay = ({ className, collectionType }: Props) => {
   const { map } = useContext(MapContext);
-  const [tooltipPlace, setTooltipPlace] = useState<
-    ESRelatedPlace | ESPlace | undefined
-  >();
-  const [hoverLocation, setHoverLocation] = useState<TLonLat>({
-    lat: 0,
-    lon: 0,
-  });
-  const [showTooltip, setShowTooltip] = useState(false);
-  const {
-    clusterFillColor,
-    clusterTextColor,
-    hoveredPlace,
-    setHoveredPlace,
-    activePlace,
-    setActivePlace,
-    place,
-  } = useContext(PlaceContext);
+  const navigate = useNavigate();
+  const [geojson, setGeojson] = useState<FeatureCollection>();
+  const [activeItem, setActiveItem] = useState<Hit>();
+  ``;
+
+  const { items } = useHits();
+
+  useEffect(() => {
+    if (!items) return;
+    setGeojson(hitsToFeatureCollection(items));
+  }, [items]);
 
   useEffect(() => {
     if (!map || !geojson?.features?.length) return;
 
-    const sourceId = `place-${place?.uuid || "collection"}`;
+    const handleMouseEnter = ({ features }: MapLayerMouseEvent) => {
+      map.getCanvas().style.cursor = "pointer";
+      const feature = features?.[0];
+      setActiveItem(
+        items.find((item) => item.uuid === feature?.properties.uuid)
+      );
+    };
+
+    const handleMouseLeave = () => {
+      map.getCanvas().style.cursor = "";
+    };
+
+    const handleClick = async ({ features, lngLat }: MapLayerMouseEvent) => {
+      if (!features?.[0]) return;
+
+      const feature = features[0];
+
+      if (feature.properties?.cluster) {
+        const source = map.getSource(sourceId) as GeoJSONSource;
+        if (!source) return;
+        const zoom = await source.getClusterExpansionZoom(
+          feature.properties.cluster_id
+        );
+        map.easeTo({ center: lngLat, zoom });
+        return;
+      }
+      const clickedPlace = items.find(
+        (item) => item.uuid === feature?.properties.uuid
+      );
+      if (clickedPlace)
+        navigate(`/collections/${collectionType}/${clickedPlace.slug}`);
+    };
+
+    const sourceId = "collection";
     const clusterLayer = cluster({
       id: `${sourceId}-clusters`,
       source: sourceId,
-      fillColor: clusterFillColor ?? "#1d4ed8",
+      fillColor: "#1d4ed8",
     });
+
     const countLayer = clusterCount({
       id: `${sourceId}-counts`,
       source: sourceId,
-      textColor: clusterTextColor ?? "white",
+      textColor: "white",
     });
     const pointLayer = singlePoint(`${sourceId}-points`, sourceId);
 
@@ -57,7 +91,7 @@ const CollectionMapOverlay = ({ geojson }: Props) => {
       type: "geojson",
       data: geojson,
       cluster: true,
-      clusterMaxZoom: 14,
+      clusterMaxZoom: 22,
       clusterRadius: 50,
       promoteId: "uuid",
     };
@@ -77,53 +111,6 @@ const CollectionMapOverlay = ({ geojson }: Props) => {
     );
     map.fitBounds(bounds, { padding: 50 });
 
-    const handleMouseEnter = ({ features }: MapLayerMouseEvent) => {
-      map.getCanvas().style.cursor = "pointer";
-      const feature = features?.[0];
-      if (feature?.properties?.uuid) {
-        const match = [
-          ...(place?.places || []),
-          ...(place?.other_places || []),
-        ].find((p) => p.uuid === feature.properties.uuid);
-        if (match) {
-          setTooltipPlace(match);
-          setHoverLocation(match.location);
-          setHoveredPlace(match);
-          setShowTooltip(true);
-        }
-      }
-    };
-
-    const handleMouseLeave = () => {
-      map.getCanvas().style.cursor = "";
-      setTooltipPlace(undefined);
-      setHoveredPlace(undefined);
-      setShowTooltip(false);
-    };
-
-    const handleClick = async ({ features, lngLat }: MapLayerMouseEvent) => {
-      setTooltipPlace(undefined);
-      if (!features?.[0]) return;
-
-      const feature = features[0];
-
-      if (feature.properties?.cluster) {
-        const source = map.getSource(sourceId) as GeoJSONSource;
-        if (!source) return;
-        const zoom = await source.getClusterExpansionZoom(
-          feature.properties.cluster_id
-        );
-        map.easeTo({ center: lngLat, zoom });
-        return;
-      }
-
-      const match = [
-        ...(place?.places || []),
-        ...(place?.other_places || []),
-      ].find((p) => p.uuid === feature.properties.uuid);
-      if (match) setActivePlace(match);
-    };
-
     map.on("mousemove", pointLayer.id, handleMouseEnter);
     map.on("mouseleave", pointLayer.id, handleMouseLeave);
     map.on("click", pointLayer.id, handleClick);
@@ -139,51 +126,35 @@ const CollectionMapOverlay = ({ geojson }: Props) => {
       if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
-  }, [
-    map,
-    geojson,
-    clusterFillColor,
-    clusterTextColor,
-    setActivePlace,
-    setHoveredPlace,
-    place,
-  ]);
-
-  useEffect(() => {
-    if (hoveredPlace) {
-      setTooltipPlace(hoveredPlace);
-      setHoverLocation(hoveredPlace.location);
-      setShowTooltip(true);
-    } else {
-      setShowTooltip(false);
-    }
-  }, [hoveredPlace]);
+  }, [map, geojson, navigate, items, collectionType]);
 
   return (
-    <>
-      <PlaceTooltip
-        location={hoverLocation}
-        show={showTooltip}
-        onClose={() => setTooltipPlace(undefined)}
-        zoomToFeature={false}
-      >
-        <h4 className="text-white">{tooltipPlace?.name}</h4>
-      </PlaceTooltip>
-
-      {activePlace && (
-        <PlacePopup
-          location={activePlace.location}
-          show={true}
-          onClose={() => setActivePlace(undefined)}
-          zoomToFeature={false}
-        >
-          <h4 className="text-xl">{activePlace.name}</h4>
-          <div
-            dangerouslySetInnerHTML={{ __html: activePlace.description ?? "" }}
-          />
-        </PlacePopup>
-      )}
-    </>
+    <div className={`mt-6 mx-2 rounded-md overflow-hidden ${className}`}>
+      <ClientOnly>
+        {() => (
+          <Map className={`h-[calc(100vh-15rem)]`}>
+            {activeItem && (
+              <PlacePopup
+                location={activeItem.location}
+                show={true}
+                onClose={() => setActiveItem(undefined)}
+                zoomToFeature={false}
+              >
+                {activeItem.thumbnail_url && (
+                  <img src={activeItem.thumbnail_url} alt="" />
+                )}
+                <h4 className="text-xl">{activeItem.name}</h4>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: activeItem.description ?? "",
+                  }}
+                />
+              </PlacePopup>
+            )}
+          </Map>
+        )}
+      </ClientOnly>
+    </div>
   );
 };
 
