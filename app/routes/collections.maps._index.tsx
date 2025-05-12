@@ -18,6 +18,7 @@ import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay"
 import type { LoaderFunction } from "@remix-run/node";
 import type { ESSearchProps } from "~/esTypes";
 import CollectionContainer from "~/components/collections/CollectionContainer";
+import { indexTotal } from "~/data/coredata";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
@@ -28,13 +29,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 
+  const total = await indexTotal({ collection: mapIndexCollection });
+
   return {
     serverState,
     serverUrl,
+    total,
   };
 };
 
-const MapCollection = ({ serverState, serverUrl, children }: ESSearchProps) => {
+const MapCollection = ({
+  serverState,
+  serverUrl,
+  children,
+  total,
+}: ESSearchProps) => {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -46,7 +55,11 @@ const MapCollection = ({ serverState, serverUrl, children }: ESSearchProps) => {
         <Configure hitsPerPage={100} />
         <CollectionList>
           <div className="h-full min-w-fit overflow-y-scroll">
-            <MenuSelect attribute="categories" />
+            <MenuSelect
+              attribute="categories"
+              attributeLabel="Category"
+              total={total}
+            />
             <PlaceFacets />
             <PlaceFacets attribute="date" sortBy="name" />
           </div>
@@ -58,12 +71,16 @@ const MapCollection = ({ serverState, serverUrl, children }: ESSearchProps) => {
 };
 
 const MapCollectionPage = () => {
-  const { serverState, serverUrl } = useLoaderData() as ESSearchProps;
+  const { serverState, serverUrl, total } = useLoaderData() as ESSearchProps;
   const [viewMode, setViewMode] = useState<"grid" | "map" | undefined>();
 
   return (
     <div>
-      <MapCollection serverState={serverState} serverUrl={serverUrl}>
+      <MapCollection
+        serverState={serverState}
+        serverUrl={serverUrl}
+        total={total}
+      >
         <CollectionContainer collectionType="maps">
           <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
           <Thumbnails

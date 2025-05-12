@@ -8,6 +8,23 @@ export const elasticSearchHeaders = () => {
   return esHeaders;
 };
 
+export const indexTotal = async ({ collection }: { collection: string }) => {
+  const body = {
+    size: 0,
+  };
+  const response = await fetch(
+    `${dataHosts.elasticSearch}/${collection}/_search`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
+    }
+  );
+
+  const data = await response.json();
+  return data.hits.total.value;
+};
+
 export const elasticSearchPost = async ({
   body,
   collection,

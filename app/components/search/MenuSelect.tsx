@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCurrentRefinements, useRefinementList } from "react-instantsearch";
 import type { ChangeEvent } from "react";
 
 interface Props {
   attribute: string;
+  total?: number;
+  attributeLabel?: string;
+  operator?: "and" | "or";
 }
 
-const MenuSelect = ({ attribute }: Props) => {
+const MenuSelect = ({ attribute, total, attributeLabel, operator }: Props) => {
   const { items, refine } = useRefinementList({
     attribute,
-    operator: "or",
+    operator: operator ?? "and",
   });
 
   const { refine: clear, items: currentRefinements } = useCurrentRefinements();
 
-  const [selectedValue, setSelectedValue] = useState<string | undefined>("all");
+  const [selectedValue, setSelectedValue] = useState<string | undefined>("");
 
-  const totalCount = items
-    .map((item) => item.count)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+  useEffect(() => {
+    setSelectedValue(items[0].isRefined ? items[0].value : "");
+  }, [items]);
 
   const handleChange = ({ target }: ChangeEvent<HTMLSelectElement>) => {
     const currentRefinement = currentRefinements.find(
@@ -39,11 +42,15 @@ const MenuSelect = ({ attribute }: Props) => {
     <div className="mt-4 ms-6 ">
       <h2 className="capitalize text-lg">{attribute}</h2>
       <select
-        className="w-36 p-1 border-2 rounded-sm"
+        className="w-36 p-1 border-2 rounded-sm text-sm capitalize"
         value={selectedValue}
         onChange={handleChange}
       >
-        <option value="all">{`All (${totalCount})`}</option>
+        {items[0] && items.every((item) => !item.isRefined) ? (
+          <option value="">{`Select ${attributeLabel ?? attribute}`}</option>
+        ) : (
+          <option value="all">{`All (${total})`}</option>
+        )}
         {items.map((item) => (
           <option key={item.label} value={item.value}>
             {item.label} ({item.count})
