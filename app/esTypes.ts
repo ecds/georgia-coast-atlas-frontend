@@ -120,6 +120,7 @@ export type ESSearchProps = {
   location?: Location;
   modalOpen?: boolean;
   children?: ReactNode;
+  total?: number;
 };
 
 export type ESPhotographItem = ESCollectionItem & {
