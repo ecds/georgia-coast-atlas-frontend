@@ -162,6 +162,8 @@ export default {
     "bg-red-100",
     "bg-county",
     "bg-activeCounty/70",
+    "md:aspect-video",
+    "md:aspect-square",
     ...bgColors,
     ...textColors,
     ...textBgColors,
