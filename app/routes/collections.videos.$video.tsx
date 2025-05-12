@@ -37,9 +37,7 @@ const VideoDetail = () => {
         <h1 className="text-lg text-black/85">{video.name}</h1>
         <div
           dangerouslySetInnerHTML={{
-            __html:
-              video.description ??
-              "Velit quis veniam commodo fugiat proident officia aute exercitation dolor duis amet non reprehenderit. Elit dolore ut Lorem dolore adipisicing nostrud cillum irure esse esse ipsum incididunt. In sunt laborum do aliqua magna veniam irure enim id officia. Est non qui commodo esse.",
+            __html: video.description ?? "",
           }}
         />
       </div>
