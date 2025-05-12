@@ -1,7 +1,7 @@
 import { Link, NavLink } from "@remix-run/react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
-import TTopicTree from "./CollectionTree";
+import TTopicTree from "./TopicTree";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
