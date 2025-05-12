@@ -74,7 +74,7 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
                                   <Link
                                     key={topic.slug}
                                     className={linkClassName}
-                                    to={`/topics/${level1.slug}/${level2.slug}/${topic.slug}`}
+                                    to={`/topics/${topic.slug}`}
                                     onClick={close}
                                   >
                                     {topic.label}

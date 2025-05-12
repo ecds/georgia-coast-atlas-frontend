@@ -94,6 +94,17 @@ export type ESPlace = {
   videos?: ESRelatedMedium[];
 };
 
+export type ESTopic = {
+  map_layers?: ESMapItem[];
+  name: string;
+  photographs?: ESRelatedMedium[];
+  places?: ESRelatedPlace[];
+  slug: string;
+  uuid: string;
+  videos?: ESRelatedMedium[];
+  wordpress_id: number | undefined;
+};
+
 type ESCollectionItem = {
   description: string;
   name: string;
