@@ -54,7 +54,7 @@ const MapCollection = ({
       >
         <Configure hitsPerPage={100} />
         <CollectionList>
-          <div className="h-full min-w-fit overflow-y-scroll">
+          <div className="h-full min-w-fit overflow-y-scroll pb-8">
             <MenuSelect
               attribute="categories"
               attributeLabel="Category"
@@ -62,6 +62,7 @@ const MapCollection = ({
             />
             <PlaceFacets />
             <PlaceFacets attribute="date" sortBy="name" />
+            <PlaceFacets attribute="publisher" sortBy="name" />
           </div>
           {children}
         </CollectionList>

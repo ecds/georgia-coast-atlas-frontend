@@ -14,9 +14,17 @@ interface Props {
   nested?: boolean;
   records: ESRelatedMedium[] | undefined;
   title: string;
+  thumbnailHeight?: string;
+  thumbnailWidth?: string;
 }
 
-const RelatedMedia = ({ title, records }: Props) => {
+const RelatedMedia = ({
+  title,
+  records,
+  bodyClassName,
+  thumbnailHeight,
+  thumbnailWidth,
+}: Props) => {
   const [groupOne, setGroupOne] = useState<ESRelatedMedium[]>([]);
   const [groupTwo, setGroupTwo] = useState<ESRelatedMedium[]>([]);
   const [mediaDisplayed, setMediaDisplayed] = useState<ESRelatedMedium[]>([]);
@@ -46,7 +54,7 @@ const RelatedMedia = ({ title, records }: Props) => {
 
   return (
     <RelatedMediaContext.Provider value={{ activeMedium, setActiveMedium }}>
-      <RelatedSection title={title}>
+      <RelatedSection title={title} className={bodyClassName}>
         <div
           className={`flex ${title === "Panos" ? "flex-col space-y-4" : "flex-wrap"} justify-around`}
         >
@@ -57,7 +65,11 @@ const RelatedMedia = ({ title, records }: Props) => {
                 medium={record}
                 media={[...groupOne, ...groupTwo]}
               >
-                <MediumThumbnail medium={record} />
+                <MediumThumbnail
+                  medium={record}
+                  thumbnailHeight={thumbnailHeight}
+                  thumbnailWidth={thumbnailWidth}
+                />
               </MediumModal>
             );
           })}

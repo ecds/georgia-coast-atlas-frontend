@@ -7,6 +7,8 @@ interface Props {
   figureClassName?: string;
   imageClassName?: string;
   captionClassName?: string;
+  thumbnailHeight?: string;
+  thumbnailWidth?: string;
 }
 
 const MediumThumbnail = ({
@@ -14,6 +16,8 @@ const MediumThumbnail = ({
   figureClassName,
   imageClassName,
   captionClassName,
+  thumbnailHeight,
+  thumbnailWidth,
 }: Props) => {
   if (!medium) return null;
 
@@ -26,7 +30,9 @@ const MediumThumbnail = ({
     >
       <div className="relative">
         {medium.media_type === "video" && (
-          <span className="text-white absolute w-32 z-[2] text-6xl h-full flex items-center justify-center">
+          <span
+            className={`text-white absolute ${thumbnailWidth ?? "w-32"} z-[2] text-6xl h-full flex items-center justify-center`}
+          >
             <FontAwesomeIcon
               icon={faPlayCircle}
               className="drop-shadow-2xl opacity-80"
@@ -34,7 +40,7 @@ const MediumThumbnail = ({
           </span>
         )}
         <img
-          className={`${imageClassName} ${medium.media_type === "pano" ? "" : "drop-shadow-md md:h-32  md:w-32"}`}
+          className={`${imageClassName} ${medium.media_type === "pano" ? "" : `drop-shadow-md ${thumbnailHeight ?? "md:h-32"}  ${thumbnailWidth ?? "md:w-32"}`}`}
           src={medium.thumbnail_url}
           alt=""
         />
@@ -42,7 +48,7 @@ const MediumThumbnail = ({
       <figcaption
         className={
           captionClassName ??
-          `${medium.media_type === "pano" ? "md:w-full" : "md:w-32"} text-left truncate`
+          `${medium.media_type === "pano" ? "md:w-full" : `${thumbnailWidth ?? "md:w-32"}`} text-left truncate`
         }
       >
         {medium.name}

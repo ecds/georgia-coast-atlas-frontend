@@ -388,7 +388,7 @@ export const PLACE_TYPES: TTypeColors = {
   },
 };
 
-const collectionPrefix = "georgia_coast";
+export const collectionPrefix = "georgia_coast";
 
 export const indexCollection = `${collectionPrefix}_places`;
 export const topicIndexCollection = `${collectionPrefix}_topics`;
