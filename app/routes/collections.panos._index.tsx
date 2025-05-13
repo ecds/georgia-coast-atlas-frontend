@@ -68,6 +68,7 @@ const PanoCollectionIndex = () => {
           <Thumbnails
             collectionType="panos"
             className={viewMode === "grid" ? "block" : "hidden"}
+            aspect="video"
           />
           <CollectionMapOverlay
             collectionType="panos"
