@@ -18,7 +18,7 @@ const Thumbnails = ({ items, mediaType }: Props) => {
           {items.map((item) => (
             <li
               key={item.uuid}
-              className="w-56 md:w-64 lg:w-72 xl:w-80  md:ms-2 md:mx-12"
+              className="w-56 md:w-64 lg:w-72 xl:w-80  md:ms-2 md:mx-4 lg:mx-6"
             >
               <Link
                 to={`/topics/${mediaType}/${item.slug}`}
