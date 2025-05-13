@@ -13,8 +13,11 @@ interface Props {
 }
 
 const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
-  const [tree, setTree] = useState<TTopicTree[]>();
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>();
+  const [tree, setTree] = useState<TTopicTree[] | undefined>();
+  const [currentTopic, setCurrentTopic] = useState<TTopicTree | undefined>();
   const treeRef = useRef<TTopicTree[]>();
+  const parentTopicRef = useRef<TTopicTree[]>();
 
   useEffect(() => {
     const fetchTree = async () => {
@@ -30,15 +33,42 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
       const data = await response.json();
       const result = data.hits.hits.map((hit: TESHit) => hit._source)[0];
       treeRef.current = result.doc;
+      parentTopicRef.current = result.doc;
       setTree(result.doc);
     };
     if (treeRef.current) return;
     fetchTree();
-
-    return () => {
-      // treeRef.current = undefined;
-    };
   }, []);
+
+  useEffect(() => {
+    setTree(treeRef.current);
+    setCurrentTopic(undefined);
+  }, [popoverElement]);
+
+  const handleClick = (topic: TTopicTree) => {
+    if (topic.sub_topics) {
+      parentTopicRef.current = tree;
+      setCurrentTopic(topic);
+      setTree(topic.sub_topics);
+    }
+  };
+
+  const handelBack = () => {
+    if (!treeRef.current) return;
+    if (currentTopic?.parent_topics && currentTopic.parent_topics.length > 0) {
+      const root = currentTopic.parent_topics.shift();
+      let parentTree = treeRef.current.find((parent) => parent.slug === root);
+      for (const parentTopic of currentTopic.parent_topics) {
+        parentTree = parentTree?.sub_topics?.find(
+          (sub) => sub.slug === parentTopic
+        );
+      }
+      setTree(parentTree?.sub_topics);
+      setCurrentTopic(parentTree);
+    } else {
+      setTree(treeRef.current);
+    }
+  };
 
   if (tree) {
     return (
@@ -46,48 +76,49 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
         {({ close }) => (
           <>
             <PopoverButton>Topics</PopoverButton>
-            <PopoverPanel anchor={anchor} className={itemsClassName} transition>
-              {tree.map((level1) => {
-                return (
-                  <Popover key={level1.slug}>
-                    <PopoverButton className={linkClassName}>
-                      {level1.label}
-                    </PopoverButton>
-                    <PopoverPanel
-                      as="ul"
-                      anchor="left start"
-                      className={`${itemsClassName} me-4`}
+            <PopoverPanel
+              anchor={anchor}
+              className={itemsClassName}
+              transition
+              // @ts-expect-error: we need to use state so we can tell when the Popover closes.
+              ref={setPopoverElement}
+            >
+              {currentTopic && (
+                <button
+                  onClick={handelBack}
+                  className="block text-center border-b text-md font-bold w-full py-1.5"
+                >
+                  {currentTopic.label}
+                </button>
+              )}
+              {tree.map((topic) => {
+                if (topic.sub_topics) {
+                  return (
+                    <button
+                      key={topic.slug}
+                      className={linkClassName}
+                      onClick={() => handleClick(topic)}
                     >
-                      {level1.sub_topics.map((level2) => {
-                        return (
-                          <Popover key={level2.slug}>
-                            <PopoverButton className={linkClassName}>
-                              {level2.label}
-                            </PopoverButton>
-                            <PopoverPanel
-                              as="ul"
-                              anchor="left start"
-                              className={`${itemsClassName} me-4`}
-                            >
-                              {level2.sub_topics.map((topic) => {
-                                return (
-                                  <Link
-                                    key={topic.slug}
-                                    className={linkClassName}
-                                    to={`/topics/${topic.slug}`}
-                                    onClick={close}
-                                  >
-                                    {topic.label}
-                                  </Link>
-                                );
-                              })}
-                            </PopoverPanel>
-                          </Popover>
-                        );
-                      })}
-                    </PopoverPanel>
-                  </Popover>
-                );
+                      {topic.label}
+                    </button>
+                  );
+                } else {
+                  return (
+                    <Link
+                      key={topic.slug}
+                      to={`/topics/${topic.slug}`}
+                      className={linkClassName}
+                      onClick={() => {
+                        close();
+                        setTree(treeRef.current);
+                        setCurrentTopic(undefined);
+                        parentTopicRef.current = undefined;
+                      }}
+                    >
+                      {topic.label}
+                    </Link>
+                  );
+                }
               })}
             </PopoverPanel>
           </>
@@ -95,7 +126,7 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
       </Popover>
     );
   }
-  return <></>;
+  return <div>Topics</div>;
 };
 
 export default TopicTree;

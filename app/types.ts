@@ -276,24 +276,11 @@ export type TPlaceGeoJSON = {
   geojson: FeatureCollection;
 };
 
-type Topic = {
-  label: string;
+export type TTopicTree = {
   slug: string;
-};
-
-export type TTopicTree = Topic & {
-  sub_topics: [
-    {
-      label: string;
-      slug: string;
-      sub_topics: [
-        {
-          label: string;
-          slug: string;
-        },
-      ];
-    },
-  ];
+  label: string;
+  parent_topics?: string[];
+  sub_topics?: TTopicTree[];
 };
 
 export type TESHit = {
