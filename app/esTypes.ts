@@ -1,4 +1,4 @@
-import type { FeatureCollection } from "geojson";
+import type { FeatureCollection, Geometry } from "geojson";
 import type { ReactNode } from "react";
 import type { InstantSearchServerState } from "react-instantsearch";
 
@@ -10,6 +10,7 @@ export type TLonLat = {
 export type ESRelatedPlace = {
   description: string;
   identifiers: TWebIdentifier[];
+  geojson?: Geometry;
   location: TLonLat;
   name: string;
   featured_photograph?: string;

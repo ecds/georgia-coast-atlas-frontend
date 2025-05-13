@@ -1,29 +1,26 @@
 import { useContext, useEffect, useState } from "react";
-import { MapContext, PlaceContext } from "~/contexts";
-import Map from "../mapping/Map";
-import ClientOnly from "~/components/ClientOnly";
+import { MapContext } from "~/contexts";
+import Map from "../mapping/Map.client";
+import { ClientOnly } from "remix-utils/client-only";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { costalLabels } from "~/mapStyles";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
+import { toFeatureCollection } from "~/utils/toFeatureCollection";
+import StyleSwitcher from "../mapping/StyleSwitcher";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat, ESRelatedPlace, ESPlace } from "~/esTypes";
+import type { TLonLat, ESRelatedPlace, ESTopic } from "~/esTypes";
 
 interface Props {
-  geojson: FeatureCollection;
+  topic: ESTopic;
+  className?: string;
 }
 
-const TopicMap = ({ geojson }: Props) => {
+const TopicMap = ({ topic, className }: Props) => {
   const { map } = useContext(MapContext);
-  const {
-    clusterFillColor,
-    clusterTextColor,
-    place,
-    hoveredPlace,
-    setActivePlace,
-  } = useContext(PlaceContext);
+  const [geojson, setGeojson] = useState<FeatureCollection>();
   const [tooltipPlace, setTooltipPlace] = useState<
     ESRelatedPlace | ESPlace | undefined
   >();
@@ -32,17 +29,25 @@ const TopicMap = ({ geojson }: Props) => {
     lon: 0,
   });
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
-  const [clickedPlace, setClickedPlace] = useState<
-    ESRelatedPlace | undefined
-  >();
+  // const [clickedPlace, setClickedPlace] = useState<
+  //   ESRelatedPlace | undefined
+  // >();
+
   useEffect(() => {
-    if (!map || !place) return;
+    if (!topic.places) return;
+    setGeojson(toFeatureCollection(topic.places));
+  }, [topic]);
+
+  useEffect(() => {
+    if (!topic.places || !map || !geojson) return;
 
     const handleMouseEnter = ({ features }: MapLayerMouseEvent) => {
+      if (!topic.places) return;
+
       if (features) {
         map.getCanvas().style.cursor = "pointer";
         setTooltipPlace(
-          place.places.find(
+          topic.places.find(
             (place) => place.uuid === features[0].properties.uuid
           )
         );
@@ -55,19 +60,19 @@ const TopicMap = ({ geojson }: Props) => {
       setTooltipPlace(undefined);
     };
 
-    const handleClick = ({ features }: MapLayerMouseEvent) => {
-      setTooltipPlace(undefined);
-      if (features) {
-        map.getCanvas().style.cursor = "pointer";
-        setClickedPlace(
-          place.places.find(
-            (place) => place.uuid === features[0].properties.uuid
-          )
-        );
-      } else {
-        setClickedPlace(undefined);
-      }
-    };
+    // const handleClick = ({ features }: MapLayerMouseEvent) => {
+    //   setTooltipPlace(undefined);
+    //   if (features) {
+    //     map.getCanvas().style.cursor = "pointer";
+    //     setClickedPlace(
+    //       topic.places?.find(
+    //         (place) => place.uuid === features[0].properties.uuid
+    //       )
+    //     );
+    //   } else {
+    //     setClickedPlace(undefined);
+    //   }
+    // };
 
     const bounds = new LngLatBounds(
       bbox(geojson) as [number, number, number, number]
@@ -84,21 +89,21 @@ const TopicMap = ({ geojson }: Props) => {
       promoteId: "uuid",
     };
 
-    const sourceId = `place-${place.uuid}`;
+    const sourceId = `place-${topic.uuid}`;
 
     const clusterLayer = cluster({
-      id: `clusters-${place.uuid}`,
+      id: `clusters-${topic.uuid}`,
       source: sourceId,
-      fillColor: clusterFillColor ?? "#1d4ed8",
+      fillColor: "#1d4ed8",
     });
 
     const countLayer = clusterCount({
-      id: `counts-${place.uuid}`,
+      id: `counts-${topic.uuid}`,
       source: sourceId,
-      textColor: clusterTextColor ?? "white",
+      textColor: "white",
     });
 
-    const pointLayer = singlePoint(`points-${place.uuid}`, sourceId);
+    const pointLayer = singlePoint(`points-${topic.uuid}`, sourceId);
 
     if (map.getSource(sourceId)) map.removeSource(sourceId);
     if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
@@ -112,27 +117,27 @@ const TopicMap = ({ geojson }: Props) => {
 
     map.on("mousemove", pointLayer.id, handleMouseEnter);
     map.on("mouseleave", pointLayer.id, handleMouseLeave);
-    map.on("click", pointLayer.id, handleClick);
+    // map.on("click", pointLayer.id, handleClick);
     // map.on("click", clusterLayer.id, handleClick);
 
     return () => {
       map.off("mousemove", pointLayer.id, handleMouseEnter);
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
-      map.off("click", pointLayer.id, handleClick);
+      // map.off("click", pointLayer.id, handleClick);
       // map.off("click", clusterLayer.id, handleClick);
       if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
       if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
       if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
-  }, [map, geojson, clusterFillColor, clusterTextColor, place]);
+  }, [map, geojson, topic]);
+
+  // useEffect(() => {
+  //   setTooltipPlace(hoveredPlace);
+  // }, [hoveredPlace]);
 
   useEffect(() => {
-    setTooltipPlace(hoveredPlace);
-  }, [hoveredPlace]);
-
-  useEffect(() => {
-    if (!map) return;
+    if (!topic.places || !map) return;
     if (tooltipPlace) {
       setHoverLocation(tooltipPlace.location);
       setShowTooltip(true);
@@ -140,27 +145,35 @@ const TopicMap = ({ geojson }: Props) => {
       map.getCanvas().style.cursor = "";
       setShowTooltip(false);
     }
-  }, [map, tooltipPlace]);
+  }, [map, tooltipPlace, topic]);
 
-  useEffect(() => {
-    setActivePlace(clickedPlace);
-  }, [setActivePlace, clickedPlace]);
+  // useEffect(() => {
+  //   setActivePlace(clickedPlace);
+  // }, [setActivePlace, clickedPlace]);
 
-  return (
-    <ClientOnly>
-      <>
-        <Map className="w-full h-[600px] border-0" />
-        <PlaceTooltip
-          location={hoverLocation}
-          show={showTooltip}
-          onClose={() => setTooltipPlace(undefined)}
-          zoomToFeature={false}
-        >
-          <h4 className="text-white">{tooltipPlace?.name}</h4>
-        </PlaceTooltip>
-      </>
-    </ClientOnly>
-  );
+  if (topic.places) {
+    return (
+      <ClientOnly>
+        {() => (
+          <>
+            <Map className={`w-full border-0 ${className}`}>
+              <StyleSwitcher />
+            </Map>
+            <PlaceTooltip
+              location={hoverLocation}
+              show={showTooltip}
+              onClose={() => setTooltipPlace(undefined)}
+              zoomToFeature={false}
+            >
+              <h4 className="text-white">{tooltipPlace?.name}</h4>
+            </PlaceTooltip>
+          </>
+        )}
+      </ClientOnly>
+    );
+  }
+
+  return null;
 };
 
 export default TopicMap;

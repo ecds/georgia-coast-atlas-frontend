@@ -5,8 +5,10 @@ import RelatedSection from "./RelatedSection";
 
 const RelatedPlacesDetailedList = ({
   places,
+  className,
 }: {
   places: ESPlace[] | ESRelatedPlace[];
+  className?: string;
 }) => {
   const {
     activePlace,
@@ -38,7 +40,7 @@ const RelatedPlacesDetailedList = ({
 
   if (places.length > 0) {
     return (
-      <section className="h-[600px] overflow-hidden">
+      <div className={`overflow-hidden ${className}`}>
         <ul className="h-full overflow-auto relative rounded-lg">
           {places.map((place) => {
             return (
@@ -92,7 +94,7 @@ const RelatedPlacesDetailedList = ({
             );
           })}
         </ul>
-      </section>
+      </div>
     );
   }
 
