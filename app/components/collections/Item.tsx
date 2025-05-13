@@ -4,12 +4,13 @@ import type { ReactNode } from "react";
 interface Props {
   itemType?: "photograph" | "map" | "pano" | "video";
   children: ReactNode;
+  className?: string;
 }
 
-const Item = ({ itemType, children }: Props) => {
+const Item = ({ itemType, children, className }: Props) => {
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col p-6">
+    <div className={`flex flex-col p-6 ${className}`}>
       {itemType && (
         <button
           onClick={() => navigate(-1)}

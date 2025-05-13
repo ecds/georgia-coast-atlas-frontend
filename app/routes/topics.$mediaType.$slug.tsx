@@ -12,25 +12,34 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return { medium };
 };
 
-const Component = () => {
+const TopicMediumItemRoute = () => {
   const { medium } = useLoaderData<typeof loader>();
 
   switch (medium.media_type) {
     case "video":
       return (
-        <Item>
-          <div className="relative pb-[56.2%] h-0 overflow-hidden max-w-full">
-            <iframe
-              title={medium.uuid}
-              src={medium.embed_url}
-              allowFullScreen
-              className="absolute top-0 left-0 w-full h-full bg-black/60"
-            />
+        <Item className="grid grid-cols-3 mx-2 md:mx-6 lg:mx-12 xl:mx-16">
+          <div className="col-span-3">
+            <div className="w-3/4 mx-auto">
+              <iframe
+                title={medium.uuid}
+                src={medium.embed_url}
+                allowFullScreen
+                className="w-full aspect-video bg-black/60"
+              />
+              <Heading
+                as="h1"
+                className="col-span-3 text-lg md:text-xl mt-2 overflow-hidden text-ellipsis text-nowrap md:overflow-visible md:text-wrap"
+              >
+                {medium.name}
+              </Heading>
+            </div>
           </div>
-          <Heading as="h1">{medium.name}</Heading>
-          <div className="mx-16 mt-8">
-            <div>
-              <Heading as="h2">Transcript:</Heading>
+          <div className="mt-8 col-span-3">
+            <div className="w-3/4 mx-auto">
+              <Heading as="h2" className="text-lg">
+                Transcript:
+              </Heading>
               <div
                 className="font-light leading-loose tracking-wide"
                 dangerouslySetInnerHTML={{
@@ -49,4 +58,4 @@ const Component = () => {
   return <></>;
 };
 
-export default Component;
+export default TopicMediumItemRoute;
