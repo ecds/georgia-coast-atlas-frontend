@@ -54,7 +54,7 @@ const VideoCollection = ({
         future={{ preserveSharedStateOnUnmount: true }}
         routing={searchRouter(serverUrl)}
       >
-        <Configure hitsPerPage={100} />
+        <Configure hitsPerPage={100} filters="suppress:no" />
         <CollectionList>
           <PlaceFacets />
           {children}
@@ -76,6 +76,7 @@ const VideoCollectionIndex = () => {
           <Thumbnails
             collectionType="videos"
             className={viewMode === "grid" ? "block" : "hidden"}
+            aspect="video"
           />
           <CollectionMapOverlay
             collectionType="videos"

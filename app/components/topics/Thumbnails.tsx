@@ -14,18 +14,18 @@ const Thumbnails = ({ items, mediaType }: Props) => {
         <Heading as="h2" className="md:mx-8 text-2xl capitalize">
           {mediaType}
         </Heading>
-        <ul className="flex flex-col md:flex-row flex-wrap items-start justify-center md:items-start">
+        <ul className="flex flex-col md:flex-row flex-wrap items-center md:items-start justify-center">
           {items.map((item) => (
             <li
               key={item.uuid}
-              className="w-auto md:w-64 lg:w-72 xl:w-80  md:ms-2 md:mx-12"
+              className="w-56 md:w-64 lg:w-72 xl:w-80  md:ms-2 md:mx-12"
             >
               <Link
                 to={`/topics/${mediaType}/${item.slug}`}
                 state={{ backTo: "" }}
               >
                 <div
-                  className={`flex px-2 md:px-0  md:aspect-${mediaType === "videos" ? "video" : "square"} w-auto md:w-64 lg:w-72 xl:w-80 md:mb-auto md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0 bg-cover bg-no-repeat bg-center rounded-md drop-shadow-lg`}
+                  className={`flex mx-auto px-2 md:px-0  aspect-${mediaType === "videos" ? "video" : "square"} w-56 md:w-64 lg:w-72 xl:w-80 md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0 bg-cover bg-no-repeat bg-center rounded-md drop-shadow-lg`}
                   style={{ backgroundImage: `url(${item.thumbnail_url})` }}
                 >
                   <div

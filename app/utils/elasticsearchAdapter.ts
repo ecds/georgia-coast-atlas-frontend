@@ -25,6 +25,13 @@ const searchConfig: SearchSettingsConfig = {
     },
   ],
   result_attributes: [],
+  filter_attributes: [
+    {
+      attribute: "suppress",
+      type: "string",
+      field: "suppress",
+    },
+  ],
   facet_attributes: [
     { attribute: "categories", field: "categories", type: "string" },
     { attribute: "date", field: "date", type: "string" },
