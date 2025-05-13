@@ -14,7 +14,7 @@ const Thumbnails = ({ items, mediaType }: Props) => {
         <Heading as="h2" className="md:mx-8 text-2xl capitalize">
           {mediaType}
         </Heading>
-        <ul className="flex flex-col md:flex-row flex-wrap items-center justify-center md:items-start">
+        <ul className="flex flex-col md:flex-row flex-wrap items-start justify-center md:items-start">
           {items.map((item) => (
             <li
               key={item.uuid}
