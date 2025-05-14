@@ -10,6 +10,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { panosIndexCollection, searchRouter } from "~/config";
 import { panoCollection } from "~/utils/elasticsearchAdapter";
 import { useLoaderData } from "@remix-run/react";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
@@ -81,3 +82,11 @@ const PanoCollectionIndex = () => {
 };
 
 export default PanoCollectionIndex;
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Panos Collection",
+    description: "TODO: Add descriptive text about the panos collection here.",
+    image: "TODO: Add a valid og:image URL for the panos collection here.",
+    slug: "panos",
+  });

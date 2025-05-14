@@ -16,7 +16,7 @@ import SearchForm from "~/components/search/SearchForm";
 import { indexCollection } from "~/config";
 import { SearchContext } from "~/contexts";
 import SearchResult from "~/components/search/SearchResult";
-import { pageMetaDefaults } from "~/utils/pageMetadata";
+import { placeMetaDefaults } from "~/utils/placeMetaTags";
 // import SearchModal from "~/components/search/SearchModal";
 import type { LoaderFunction } from "@remix-run/node";
 import type { Navigation, Location, MetaFunction } from "@remix-run/react";
@@ -54,7 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export const meta: MetaFunction = () => {
   return [
     {
-      ...pageMetaDefaults,
+      ...placeMetaDefaults,
       title: "Search: Georgia Coast Atlas",
     },
   ];

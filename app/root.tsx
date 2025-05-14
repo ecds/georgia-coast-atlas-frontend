@@ -19,14 +19,14 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 // Prevent fontawesome from adding its CSS since we did it manually above:
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
-import { pageMetadata } from "~/utils/pageMetadata";
+import { placeMetaTags } from "~/utils/placeMetaTags";
 import { MapContext } from "./contexts";
 import { useState } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import type { Map as TMap } from "maplibre-gl";
 
 export const meta: MetaFunction = () => {
-  return pageMetadata();
+  return placeMetaTags();
 };
 
 export const links: LinksFunction = () => [
