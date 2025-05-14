@@ -9,29 +9,41 @@ import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import StyleSwitcher from "../mapping/StyleSwitcher";
-import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
+import type { Dispatch, SetStateAction } from "react";
+import type {
+  GeoJSONSource,
+  MapLayerMouseEvent,
+  SourceSpecification,
+} from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import type { TLonLat, ESRelatedPlace, ESTopic } from "~/esTypes";
+import type { ESRelatedPlace, ESTopic } from "~/esTypes";
 
 interface Props {
   topic: ESTopic;
   className?: string;
+  clickedPlace: ESRelatedPlace | undefined;
+  hoveredPlace: ESRelatedPlace | undefined;
+  setClickedPlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESRelatedPlace | undefined>
+  >;
+  setHoveredPlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESRelatedPlace | undefined>
+  >;
 }
 
-const TopicMap = ({ topic, className }: Props) => {
+const TopicMap = ({
+  topic,
+  className,
+  hoveredPlace,
+  clickedPlace,
+  setClickedPlace,
+}: Props) => {
   const { map } = useContext(MapContext);
   const [geojson, setGeojson] = useState<FeatureCollection>();
   const [tooltipPlace, setTooltipPlace] = useState<
     ESRelatedPlace | ESPlace | undefined
   >();
-  const [hoverLocation, setHoverLocation] = useState<TLonLat>({
-    lat: 0,
-    lon: 0,
-  });
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
-  // const [clickedPlace, setClickedPlace] = useState<
-  //   ESRelatedPlace | undefined
-  // >();
 
   useEffect(() => {
     if (!topic.places) return;
@@ -60,19 +72,37 @@ const TopicMap = ({ topic, className }: Props) => {
       setTooltipPlace(undefined);
     };
 
-    // const handleClick = ({ features }: MapLayerMouseEvent) => {
-    //   setTooltipPlace(undefined);
-    //   if (features) {
-    //     map.getCanvas().style.cursor = "pointer";
-    //     setClickedPlace(
-    //       topic.places?.find(
-    //         (place) => place.uuid === features[0].properties.uuid
-    //       )
-    //     );
-    //   } else {
-    //     setClickedPlace(undefined);
-    //   }
-    // };
+    const handleClick = async ({ features, lngLat }: MapLayerMouseEvent) => {
+      setTooltipPlace(undefined);
+      if (features) {
+        const feature = features[0];
+
+        if (feature.properties?.cluster) {
+          const source: GeoJSONSource | undefined = map.getSource(
+            feature.layer.source
+          );
+          if (!source) return;
+
+          const zoom = await source.getClusterExpansionZoom(
+            feature.properties.cluster_id
+          );
+          map.easeTo({
+            center: lngLat,
+            zoom,
+          });
+          return;
+        }
+
+        map.getCanvas().style.cursor = "pointer";
+        setClickedPlace(
+          topic.places?.find(
+            (place) => place.uuid === features[0].properties.uuid
+          )
+        );
+      } else {
+        setClickedPlace(undefined);
+      }
+    };
 
     const bounds = new LngLatBounds(
       bbox(geojson) as [number, number, number, number]
@@ -105,11 +135,6 @@ const TopicMap = ({ topic, className }: Props) => {
 
     const pointLayer = singlePoint(`points-${topic.uuid}`, sourceId);
 
-    if (map.getSource(sourceId)) map.removeSource(sourceId);
-    if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
-    if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
-    if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
-
     map.addSource(sourceId, placesSource);
     map.addLayer(clusterLayer);
     map.addLayer(countLayer);
@@ -117,29 +142,41 @@ const TopicMap = ({ topic, className }: Props) => {
 
     map.on("mousemove", pointLayer.id, handleMouseEnter);
     map.on("mouseleave", pointLayer.id, handleMouseLeave);
-    // map.on("click", pointLayer.id, handleClick);
-    // map.on("click", clusterLayer.id, handleClick);
+    map.on("mousemove", clusterLayer.id, handleMouseEnter);
+    map.on("mouseleave", clusterLayer.id, handleMouseLeave);
+
+    map.on("click", pointLayer.id, handleClick);
+    map.on("click", clusterLayer.id, handleClick);
 
     return () => {
       map.off("mousemove", pointLayer.id, handleMouseEnter);
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
-      // map.off("click", pointLayer.id, handleClick);
-      // map.off("click", clusterLayer.id, handleClick);
+      map.off("mousemove", clusterLayer.id, handleMouseEnter);
+      map.off("mouseleave", clusterLayer.id, handleMouseLeave);
+      map.off("click", pointLayer.id, handleClick);
+      map.off("click", clusterLayer.id, handleClick);
       if (map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
       if (map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
       if (map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     };
-  }, [map, geojson, topic]);
+  }, [map, geojson, topic, setClickedPlace]);
 
-  // useEffect(() => {
-  //   setTooltipPlace(hoveredPlace);
-  // }, [hoveredPlace]);
+  useEffect(() => {
+    setTooltipPlace(clickedPlace);
+    if (map && clickedPlace) {
+      const bounds = map.getBounds().extend(clickedPlace.location);
+      map.fitBounds(bounds, { padding: 100 });
+    }
+  }, [clickedPlace, map]);
+
+  useEffect(() => {
+    setTooltipPlace(hoveredPlace);
+  }, [hoveredPlace]);
 
   useEffect(() => {
     if (!topic.places || !map) return;
     if (tooltipPlace) {
-      setHoverLocation(tooltipPlace.location);
       setShowTooltip(true);
     } else {
       map.getCanvas().style.cursor = "";
@@ -160,7 +197,7 @@ const TopicMap = ({ topic, className }: Props) => {
               <StyleSwitcher />
             </Map>
             <PlaceTooltip
-              location={hoverLocation}
+              location={hoveredPlace?.location ?? { lat: 0, lon: 0 }}
               show={showTooltip}
               onClose={() => setTooltipPlace(undefined)}
               zoomToFeature={false}

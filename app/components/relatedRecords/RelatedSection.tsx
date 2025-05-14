@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Heading from "../layout/Heading";
 import { PlaceContext } from "~/contexts";
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 
 interface Props {
   bodyClassName?: string;
@@ -20,6 +20,7 @@ interface Props {
   headerClassName?: string;
   nested?: boolean;
   title: string;
+  onClick?: MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
 const RelatedSection = ({
@@ -32,6 +33,7 @@ const RelatedSection = ({
   toggleClassName,
   nested = false,
   title,
+  onClick,
 }: Props) => {
   const { relatedClosed } = useContext(PlaceContext);
 
@@ -48,6 +50,7 @@ const RelatedSection = ({
             <DisclosureButton
               className={`group flex w-full items-center justify-between ${toggleClassName}`}
               disabled={!collapsable}
+              onClick={onClick}
             >
               <Heading
                 as={nested ? "h3" : "h2"}
