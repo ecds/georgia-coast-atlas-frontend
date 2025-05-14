@@ -5,6 +5,8 @@ import { elasticSearchHeaders } from "~/data/coredata";
 import { Link } from "@remix-run/react";
 import type { AnchorProps } from "node_modules/@headlessui/react/dist/internal/floating";
 import type { TESHit, TTopicTree } from "~/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 
 interface Props {
   anchor: AnchorProps;
@@ -67,6 +69,7 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
       setCurrentTopic(parentTree);
     } else {
       setTree(treeRef.current);
+      setCurrentTopic(undefined);
     }
   };
 
@@ -86,9 +89,9 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
               {currentTopic && (
                 <button
                   onClick={handelBack}
-                  className="block text-center border-b text-md font-bold w-full py-1.5"
+                  className={`${linkClassName} block border-b text-md font-bold w-full text-left py-1.5 rounded-none`}
                 >
-                  {currentTopic.label}
+                  <FontAwesomeIcon icon={faChevronLeft} /> Back
                 </button>
               )}
               {tree.map((topic) => {
