@@ -1,6 +1,6 @@
 import { dataHosts } from "~/config";
-import { useLoaderData } from "react-router";
-import { pageMetaDefaults } from "~/utils/pageMetadata";
+import { useLoaderData } from "@remix-run/react";
+import { placeMetaDefaults } from "~/utils/placeMetaTags";
 import wpCssUrl from "~/styles/about.css?url";
 import type { TWordPressData } from "~/types";
 import type { MetaFunction } from "react-router";
@@ -23,7 +23,7 @@ export const links: LinksFunction = () => {
 export const meta: MetaFunction = () => {
   return [
     {
-      ...pageMetaDefaults,
+      ...placeMetaDefaults,
       title: "About the Project: Georgia Coast Atlas",
     },
   ];
