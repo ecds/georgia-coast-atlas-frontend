@@ -8,8 +8,11 @@ const ISLANDS = islands.map((island) => `/${island.id}-island`);
 
 const robotOption = { userAgent: "*", [process.env.ROBOTS ?? "allow"]: "/" };
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   server: { port: 3000 },
+  build: {
+    rollupOptions: isSsrBuild ? { input: "./server/app.js" } : undefined,
+  },
   plugins: [
     reactRouter(),
     tsconfigPaths(),
@@ -22,7 +25,6 @@ export default defineConfig({
   ],
   optimizeDeps: { exclude: ["virtual:react-router/server-build"] },
   ssr: {
-    target: "node",
     noExternal: [
       "remix-utils",
       "maplibre-gl",
@@ -30,4 +32,4 @@ export default defineConfig({
       "@samvera_clover-iiif",
     ],
   },
-});
+}));

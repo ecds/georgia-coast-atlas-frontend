@@ -37,12 +37,12 @@
     "emitDeclarationOnly": true,
     "allowImportingTsExtensions": true,
   },
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.vite.json"
-    }
-  ]
+  // "references": [
+  //   {
+  //     "path": "./tsconfig.node.json"
+  //   },
+  //   {
+  //     "path": "./tsconfig.vite.json"
+  //   }
+  // ]
 }
