@@ -1,7 +1,7 @@
 import { Link, NavLink } from "@remix-run/react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
-import TTopicTree from "./TopicTree";
+import TopicTree from "./TopicTree";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
@@ -62,67 +62,11 @@ const Navbar = () => {
           </MenuItems>
         </Menu>
 
-        <TTopicTree
+        <TopicTree
           anchor={itemsAnchor}
           itemsClassName={itemsClassName}
           linkClassName={menuLinkClassName}
         />
-
-        {/* <PopoverGroup> */}
-        {/* <Popover>
-          {({ close }) => (
-            <>
-              <PopoverButton>Topics</PopoverButton>
-              <PopoverPanel
-                anchor={itemsAnchor}
-                className={itemsClassName}
-                transition
-              >
-                {topicPages.map((topicPage) => {
-                  return (
-                    <Popover key={topicPage.slug}>
-                      {topicPage.subs.length > 0 ? (
-                        <>
-                          <PopoverButton className={menuLinkClassName}>
-                            {topicPage.label ??
-                              topicPage.slug.split("-").join(" ")}
-                          </PopoverButton>
-                          <PopoverPanel
-                            as="ul"
-                            anchor="left start"
-                            className={`${itemsClassName} me-4`}
-                          >
-                            {topicPage.subs.map((sub) => {
-                              return (
-                                <Link
-                                  key={sub.slug}
-                                  className={`${menuLinkClassName} capitalize`}
-                                  to={`/topics/${topicPage.slug}/${sub.slug}`}
-                                  onClick={close}
-                                >
-                                  {sub.label ?? sub.slug.split("-").join(" ")}
-                                </Link>
-                              );
-                            })}
-                          </PopoverPanel>
-                        </>
-                      ) : (
-                        <Link
-                          className={`${menuLinkClassName} capitalize`}
-                          to={`/topics/${topicPage.slug}`}
-                        >
-                          {topicPage.label ??
-                            topicPage.slug.split("-").join(" ")}
-                        </Link>
-                      )}
-                    </Popover>
-                  );
-                })}
-              </PopoverPanel>
-            </>
-          )}
-        </Popover> */}
-        {/* </PopoverGroup> */}
 
         <Menu>
           <MenuButton>About</MenuButton>
