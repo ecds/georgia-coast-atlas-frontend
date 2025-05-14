@@ -2,7 +2,7 @@ import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { useEffect, useRef, useState } from "react";
 import { dataHosts } from "~/config";
 import { elasticSearchHeaders } from "~/data/coredata";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import type { AnchorProps } from "node_modules/@headlessui/react/dist/internal/floating";
 import type { TESHit, TTopicTree } from "~/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

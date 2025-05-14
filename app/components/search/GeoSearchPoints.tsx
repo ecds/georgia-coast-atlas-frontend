@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { ClientOnly } from "remix-utils/client-only";
-import { useNavigate } from "@remix-run/react";
+import ClientOnly from "~/components/ClientOnly";
+import { useNavigate } from "react-router";
 import { MapContext, SearchContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
@@ -115,25 +115,23 @@ const GeoSearchPoints = ({ geojson }: Props) => {
 
   return (
     <ClientOnly>
-      {() => (
-        <PlacePopup
-          location={hoveredLocation}
-          show={showPopup}
-          zoomToFeature={false}
-          showCloseButton={false}
-        >
-          <div>
-            {hoveredFeature?.properties?.preview && (
-              <img
-                className="max-h-32 max-w-32 mt-2 mx-auto"
-                src={hoveredFeature?.properties.preview}
-                alt=""
-              />
-            )}
-            <h4>{popupTitle}</h4>
-          </div>
-        </PlacePopup>
-      )}
+      <PlacePopup
+        location={hoveredLocation}
+        show={showPopup}
+        zoomToFeature={false}
+        showCloseButton={false}
+      >
+        <div>
+          {hoveredFeature?.properties?.preview && (
+            <img
+              className="max-h-32 max-w-32 mt-2 mx-auto"
+              src={hoveredFeature?.properties.preview}
+              alt=""
+            />
+          )}
+          <h4>{popupTitle}</h4>
+        </div>
+      </PlacePopup>
     </ClientOnly>
   );
 };
