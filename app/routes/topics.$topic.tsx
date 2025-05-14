@@ -3,11 +3,10 @@ import { dataHosts, topicIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import Heading from "~/components/layout/Heading";
 import Thumbnails from "~/components/topics/Thumbnails";
+import RelatedPlaces from "~/components/topics/RelatedPlases";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { TWordPressData } from "~/types";
 import type { ESTopic } from "~/esTypes";
-import TopicMap from "~/components/topics/TopicMap";
-import RelatedPlacesDetailedList from "~/components/relatedRecords/RelatedPlacesDetailedList";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const topic: ESTopic = await fetchBySlug(params.topic, topicIndexCollection);
@@ -35,7 +34,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const TopicGroupPage = () => {
   const { topic, wpData } = useLoaderData<typeof loader>();
-  console.log("🚀 ~ TopicGroupPage ~ topic:", topic);
   return (
     <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-20">
       <Heading
@@ -50,25 +48,7 @@ const TopicGroupPage = () => {
           __html: wpData?.content.rendered ?? "",
         }}
       />
-      {topic.places && (
-        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-9 mb-12 md:gap-2 lg:gap-4">
-          <Heading
-            as="h2"
-            className="text-2xl capitalize col-span-1 md:col-span-6 lg:col-span-9"
-          >
-            Places
-          </Heading>
-          <div className="rounded-lg bg-county/25 md:col-span-2 lg:col-span-3 mb-8 md:mb-0">
-            <RelatedPlacesDetailedList
-              places={topic.places}
-              className="h-[66vh]"
-            />
-          </div>
-          <div className="relative overflow-hidden rounded-lg md:col-span-4 lg:col-span-6">
-            <TopicMap topic={topic} className="h-[66vh]" />
-          </div>
-        </div>
-      )}
+      <RelatedPlaces topic={topic} />
       <Thumbnails items={topic.videos} mediaType="videos" />
     </div>
   );

@@ -33,6 +33,7 @@ const PlaceTooltip = ({
   const [coordinates, setCoordinates] = useState<
     [number, number] | undefined
   >();
+  // const [trackMouse, setTrackMouse] = useState();
   const popContainerRef = useRef<HTMLDivElement>(document.createElement("div"));
 
   const navigation = useNavigation();
@@ -48,6 +49,23 @@ const PlaceTooltip = ({
   useEffect(() => {
     if (!map) return;
     if (location) setCoordinates([location.lon, location.lat]);
+
+    const enableMouseTracking = () => {
+      if (popupRef.current) {
+        popupRef.current.trackPointer();
+      }
+    };
+
+    const remove = () => {
+      popupRef.current?.remove();
+    };
+    map.on("mousemove", enableMouseTracking);
+    map.on("mouseout", remove);
+
+    return () => {
+      map.off("mousemove", enableMouseTracking);
+      map.off("mouseout", remove);
+    };
   }, [map, location]);
 
   useEffect(() => {
@@ -63,9 +81,9 @@ const PlaceTooltip = ({
         .setDOMContent(popContainerRef.current);
       // .trackPointer();
 
-      if (!noTrackMouse) {
-        popupRef.current.trackPointer();
-      }
+      // if (!noTrackMouse) {
+      //   popupRef.current.trackPointer();
+      // }
 
       popupRef.current?.addTo(map);
       if (zoomToFeature) {
