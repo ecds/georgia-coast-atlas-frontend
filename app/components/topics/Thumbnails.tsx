@@ -1,13 +1,14 @@
 import { Link } from "@remix-run/react";
-import type { ESRelatedMedium } from "~/esTypes";
 import Heading from "../layout/Heading";
+import type { ESRelatedMedium } from "~/esTypes";
 
 interface Props {
   items: ESRelatedMedium[] | undefined;
-  mediaType: "videos";
+  mediaType: "videos" | "photographs" | "panos" | "maps";
+  topic: string;
 }
 
-const Thumbnails = ({ items, mediaType }: Props) => {
+const Thumbnails = ({ items, mediaType, topic }: Props) => {
   if (items && items.length > 0) {
     return (
       <>
@@ -21,11 +22,11 @@ const Thumbnails = ({ items, mediaType }: Props) => {
               className="w-56 md:w-64 lg:w-72 xl:w-80  md:ms-2 md:mx-4 lg:mx-6"
             >
               <Link
-                to={`/topics/${mediaType}/${item.slug}`}
-                state={{ backTo: "" }}
+                to={`/collections/${mediaType}/${item.slug}`}
+                state={{ backTo: `Back to ${topic}` }}
               >
                 <div
-                  className={`flex mx-auto px-2 md:px-0  aspect-${mediaType === "videos" ? "video" : "square"} w-56 md:w-64 lg:w-72 xl:w-80 md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0 bg-cover bg-no-repeat bg-center rounded-md drop-shadow-lg`}
+                  className={`flex mx-auto px-2 md:px-0  aspect-${mediaType === "photographs" || mediaType === "maps" ? "square" : "video"} w-56 md:w-64 lg:w-72 xl:w-80 md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0 bg-cover bg-no-repeat bg-center rounded-md drop-shadow-lg`}
                   style={{ backgroundImage: `url(${item.thumbnail_url})` }}
                 >
                   <div

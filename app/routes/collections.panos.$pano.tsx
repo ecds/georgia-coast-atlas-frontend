@@ -1,11 +1,12 @@
-import { useLoaderData } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { panosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import Map from "~/components/mapping/Map.client";
 import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
 import { ClientOnly } from "remix-utils/client-only";
 import Item from "~/components/collections/Item";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const pano = await fetchBySlug(params.pano, panosIndexCollection);
@@ -22,9 +23,23 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const PanoDetail = () => {
   const { pano } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [backTo, setBackTo] = useState("Back to Panos Collectin");
+
+  useEffect(() => {
+    if (!location.state.backTo) return;
+    setBackTo(location.state.backTo);
+  }, [location]);
 
   return (
-    <Item itemType="pano">
+    <Item>
+      <button
+        className="text-sm text-activeCounty underline hover:font-semibold self-start capitalize"
+        onClick={() => navigate(-1)}
+      >
+        {backTo}
+      </button>
       <iframe
         title={pano.uuid}
         src={pano.embed_url}

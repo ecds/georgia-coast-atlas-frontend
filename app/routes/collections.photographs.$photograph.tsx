@@ -1,4 +1,5 @@
-import { useLoaderData } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { ClientOnly } from "remix-utils/client-only";
@@ -7,8 +8,8 @@ import { photosIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import Map from "~/components/mapping/Map.client";
 import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import Item from "~/components/collections/Item";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph = await fetchBySlug(
@@ -28,9 +29,23 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const PhotographDetail = () => {
   const { photograph } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [backTo, setBackTo] = useState("Back to Photograph Collection");
+
+  useEffect(() => {
+    if (!location.state.backTo) return;
+    setBackTo(location.state.backTo);
+  }, [location]);
 
   return (
-    <Item itemType="photograph">
+    <Item>
+      <button
+        className="text-sm text-activeCounty underline hover:font-semibold self-start capitalize"
+        onClick={() => navigate(-1)}
+      >
+        {backTo}
+      </button>
       <ClientOnly>{() => <IIIFViewer photo={photograph} />}</ClientOnly>
 
       <div>
