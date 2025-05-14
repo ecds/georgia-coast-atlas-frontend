@@ -3,7 +3,7 @@ import { dataHosts, topicIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import Heading from "~/components/layout/Heading";
 import Thumbnails from "~/components/topics/Thumbnails";
-import RelatedPlaces from "~/components/topics/RelatedPlases";
+import RelatedPlaces from "~/components/topics/RelatedPlaces";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { TWordPressData } from "~/types";
 import type { ESTopic } from "~/esTypes";
@@ -49,7 +49,13 @@ const TopicGroupPage = () => {
         }}
       />
       <RelatedPlaces topic={topic} />
-      <Thumbnails items={topic.videos} mediaType="videos" />
+      <Thumbnails topic={topic.name} items={topic.videos} mediaType="videos" />
+      <Thumbnails
+        topic={topic.name}
+        items={topic.photographs}
+        mediaType="photographs"
+      />
+      <Thumbnails topic={topic.name} items={topic.panos} mediaType="panos" />
     </div>
   );
 };

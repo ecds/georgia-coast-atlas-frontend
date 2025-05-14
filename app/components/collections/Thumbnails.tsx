@@ -1,16 +1,14 @@
 import { Link } from "@remix-run/react";
 import { Pagination, useHits } from "react-instantsearch";
-import type { ReactNode } from "react";
 import type { CollectionType } from "~/esTypes";
 
 interface Props {
   collectionType: CollectionType;
-  children?: ReactNode;
   className?: string;
   aspect?: "square" | "video";
 }
 
-const Thumbnails = ({ collectionType, children, className, aspect }: Props) => {
+const Thumbnails = ({ collectionType, className, aspect }: Props) => {
   const { items } = useHits();
 
   return (
@@ -23,6 +21,7 @@ const Thumbnails = ({ collectionType, children, className, aspect }: Props) => {
           <li key={item.objectID} className="w-56 md:w-44 lg:w-56 xl:w-64 mx-2">
             <Link
               to={`/collections/${collectionType.toLowerCase()}/${item.slug}`}
+              state={{ backTo: `Back to ${collectionType} Collection` }}
             >
               <div
                 className={`flex px-2 md:px-0 aspect-${aspect ?? "square"} w-56 md:w-44 lg:w-56 xl:w-64 md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start bg-cover bg-no-repeat bg-center rounded-md drop-shadow-md`}
@@ -58,7 +57,6 @@ const Thumbnails = ({ collectionType, children, className, aspect }: Props) => {
                 </li>
               )}
             </ul>
-            {children}
           </li>
         ))}
       </ol>

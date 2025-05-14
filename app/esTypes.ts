@@ -98,6 +98,7 @@ export type ESPlace = {
 export type ESTopic = {
   map_layers?: ESMapItem[];
   name: string;
+  panos?: ESRelatedMedium[];
   photographs?: ESRelatedMedium[];
   places?: ESRelatedPlace[];
   slug: string;
