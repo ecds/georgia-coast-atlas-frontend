@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import Map from "../mapping/Map.client";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { costalLabels } from "~/mapStyles";
@@ -86,10 +86,7 @@ const TopicMap = ({
           const zoom = await source.getClusterExpansionZoom(
             feature.properties.cluster_id
           );
-          map.easeTo({
-            center: lngLat,
-            zoom,
-          });
+          map.easeTo({ center: lngLat, zoom });
           return;
         }
 
@@ -191,21 +188,19 @@ const TopicMap = ({
   if (topic.places) {
     return (
       <ClientOnly>
-        {() => (
-          <>
-            <Map className={`w-full border-0 ${className}`}>
-              <StyleSwitcher />
-            </Map>
-            <PlaceTooltip
-              location={hoveredPlace?.location ?? { lat: 0, lon: 0 }}
-              show={showTooltip}
-              onClose={() => setTooltipPlace(undefined)}
-              zoomToFeature={false}
-            >
-              <h4 className="text-white">{tooltipPlace?.name}</h4>
-            </PlaceTooltip>
-          </>
-        )}
+        <>
+          <Map className={`w-full border-0 ${className}`}>
+            <StyleSwitcher />
+          </Map>
+          <PlaceTooltip
+            location={hoveredPlace?.location ?? { lat: 0, lon: 0 }}
+            show={showTooltip}
+            onClose={() => setTooltipPlace(undefined)}
+            zoomToFeature={false}
+          >
+            <h4 className="text-white">{tooltipPlace?.name}</h4>
+          </PlaceTooltip>
+        </>
       </ClientOnly>
     );
   }

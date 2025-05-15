@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Pagination, useHits } from "react-instantsearch";
 import type { CollectionType } from "~/esTypes";
 

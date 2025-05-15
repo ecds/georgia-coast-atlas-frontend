@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import type { ReactNode } from "react";
 import type { ESRelatedMedium } from "~/esTypes";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import IIIFViewer from "./layout/IIIFViewer.client";
 import MediumThumbnail from "./MediumThumbnail";
 import { RelatedMediaContext } from "~/contexts";
@@ -29,7 +29,11 @@ const MediumViewer = () => {
   if (!activeMedium) return null;
 
   if (activeMedium.media_type == "photograph") {
-    return <ClientOnly>{() => <IIIFViewer photo={activeMedium} />}</ClientOnly>;
+    return (
+      <ClientOnly>
+        <IIIFViewer photo={activeMedium} />
+      </ClientOnly>
+    );
   }
   return (
     <div className="relative pb-[56.25%] h-0 overflow-hidden max-w-full">

@@ -1,8 +1,8 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
 import { MapContext, PlaceContext } from "~/contexts";
-import { ClientOnly } from "remix-utils/client-only";
-import { Link } from "@remix-run/react";
+import ClientOnly from "~/components/ClientOnly";
+import { Link } from "react-router";
 import { countiesLayerId, islandsLayerId, areasSourceId } from "~/mapStyles";
 import PlaceTooltip from "./PlaceTooltip";
 import type { MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
@@ -40,11 +40,7 @@ const FeaturedPlaces = ({ places }: Props) => {
   );
 
   const handleClick = useCallback(
-    (
-      event: MapMouseEvent & {
-        features?: MapGeoJSONFeature[];
-      }
-    ) => {
+    (event: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
       if (!map && !event.features) return;
       const clickedIsland = places.find((island) => {
         if (event.features)

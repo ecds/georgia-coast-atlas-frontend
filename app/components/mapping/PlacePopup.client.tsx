@@ -2,7 +2,7 @@ import maplibregl from "maplibre-gl";
 import { useContext, useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation } from "@remix-run/react";
+import { useNavigation } from "react-router";
 import { createPortal } from "react-dom";
 import { MapContext } from "~/contexts";
 import type { ReactNode } from "react";

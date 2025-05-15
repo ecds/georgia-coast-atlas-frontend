@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate } from "react-router";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
 import { MapContext } from "~/contexts";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import { useHits } from "react-instantsearch";
 import PlacePopup from "../mapping/PlacePopup.client";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import Map from "../mapping/Map.client";
 import type {
   GeoJSONSource,
@@ -18,10 +18,7 @@ import type { Hit } from "instantsearch.js";
 import type { FeatureCollection } from "geojson";
 import type { CollectionType } from "~/esTypes";
 
-type Props = {
-  className?: string;
-  collectionType: CollectionType;
-};
+type Props = { className?: string; collectionType: CollectionType };
 
 const CollectionMapOverlay = ({ className, collectionType }: Props) => {
   const { map } = useContext(MapContext);
@@ -131,28 +128,26 @@ const CollectionMapOverlay = ({ className, collectionType }: Props) => {
   return (
     <div className={`mt-6 mx-2 rounded-md overflow-hidden ${className}`}>
       <ClientOnly>
-        {() => (
-          <Map className={`h-[calc(100vh-15rem)]`}>
-            {activeItem && (
-              <PlacePopup
-                location={activeItem.location}
-                show={true}
-                onClose={() => setActiveItem(undefined)}
-                zoomToFeature={false}
-              >
-                {activeItem.thumbnail_url && (
-                  <img src={activeItem.thumbnail_url} alt="" />
-                )}
-                <h4 className="text-xl">{activeItem.name}</h4>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: activeItem.description ?? "",
-                  }}
-                />
-              </PlacePopup>
-            )}
-          </Map>
-        )}
+        <Map className={`h-[calc(100vh-15rem)]`}>
+          {activeItem && (
+            <PlacePopup
+              location={activeItem.location}
+              show={true}
+              onClose={() => setActiveItem(undefined)}
+              zoomToFeature={false}
+            >
+              {activeItem.thumbnail_url && (
+                <img src={activeItem.thumbnail_url} alt="" />
+              )}
+              <h4 className="text-xl">{activeItem.name}</h4>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: activeItem.description ?? "",
+                }}
+              />
+            </PlacePopup>
+          )}
+        </Map>
       </ClientOnly>
     </div>
   );

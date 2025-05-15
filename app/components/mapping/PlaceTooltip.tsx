@@ -1,6 +1,6 @@
 import { Popup } from "maplibre-gl";
 import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigation } from "@remix-run/react";
+import { useNavigation } from "react-router";
 import { createPortal } from "react-dom";
 import { MapContext, PlaceContext } from "~/contexts";
 import type { ReactNode } from "react";

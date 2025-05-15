@@ -2,8 +2,8 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContext } from "~/contexts";
 import { clusterCount, largeCluster } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
-import { ClientOnly } from "remix-utils/client-only";
-import { Link } from "@remix-run/react";
+import ClientOnly from "~/components/ClientOnly";
+import { Link } from "react-router";
 import type { FeatureCollection } from "geojson";
 import type { MapLayerMouseEvent, SourceSpecification } from "maplibre-gl";
 
@@ -117,30 +117,28 @@ const GeoSearchClusters = ({ geojson }: Props) => {
 
   return (
     <ClientOnly>
-      {() => (
-        <PlacePopup
-          location={clickedLocation}
-          show={showPopup}
-          zoomToFeature={false}
-          showCloseButton={true}
-        >
-          <ul>
-            {clusterList?.map((place) => {
-              return (
-                <li key={place.slug}>
-                  <Link
-                    state={{ title: "Search Results", slug: "search" }}
-                    className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-                    to={`/places/${place.slug}`}
-                  >
-                    {place.title}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </PlacePopup>
-      )}
+      <PlacePopup
+        location={clickedLocation}
+        show={showPopup}
+        zoomToFeature={false}
+        showCloseButton={true}
+      >
+        <ul>
+          {clusterList?.map((place) => {
+            return (
+              <li key={place.slug}>
+                <Link
+                  state={{ title: "Search Results", slug: "search" }}
+                  className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+                  to={`/places/${place.slug}`}
+                >
+                  {place.title}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </PlacePopup>
     </ClientOnly>
   );
 };
