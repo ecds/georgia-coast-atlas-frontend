@@ -50,7 +50,7 @@ export default function Index() {
 
         <div className="flex flex-row space-x-8">
           <NavLink
-            to="/explore"
+            to="/places/explore"
             className="bg-blue-300 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-md text-lg tracking-wide border border-gray-300"
             style={{
               backgroundColor: "#98c1d9",
@@ -62,7 +62,7 @@ export default function Index() {
             Explore the Coast
           </NavLink>
           <NavLink
-            to="/search"
+            to="/places/search"
             className="bg-blue-300 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-md text-lg tracking-wide border border-gray-300"
             style={{
               backgroundColor: "#98c1d9",
