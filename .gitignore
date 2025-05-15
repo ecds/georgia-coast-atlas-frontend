@@ -5,7 +5,6 @@ node_modules
 .env
 
 .*.json
-/server/
 /public/build/
 /public/robots.txt
 /public/sitemap.xml
