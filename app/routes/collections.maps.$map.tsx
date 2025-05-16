@@ -1,26 +1,37 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import { useContext, useEffect, useState } from "react";
 import { mapIndexCollection } from "~/config";
 import { fetchBySlug } from "~/data/coredata";
 import { MapContext } from "~/contexts";
 import Map from "~/components/mapping/Map.client";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import { wmsLayer } from "~/mapStyles";
 import { LngLatBounds } from "maplibre-gl";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import LayerOpacity from "~/components/mapping/LayerOpacity";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { ESMapItem } from "~/esTypes";
 import Compass from "~/components/mapping/Compass";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
+import type { LoaderFunctionArgs } from "react-router";
+import type { ESMapItem, ESCollectionItem } from "~/esTypes";
+
+export const meta = ({ data }: { data: { mapLayer: ESCollectionItem } }) => {
+  const { mapLayer } = data;
+
+  const previewImage = mapLayer.thumbnail_url.replace("!250,250", "!1200,630");
+
+  return collectionMetadata({
+    title: mapLayer.title ?? mapLayer.name,
+    description: mapLayer.description ?? "A map from the Georgia Coast Atlas.",
+    image: previewImage,
+    slug: `mapLayer/${mapLayer.slug}`,
+  });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const mapLayer: ESMapItem = await fetchBySlug(params.map, mapIndexCollection);
 
   if (!mapLayer) {
-    throw new Response(null, {
-      status: 404,
-      statusText: "Map not found",
-    });
+    throw new Response(null, { status: 404, statusText: "Map not found" });
   }
 
   return { mapLayer };
@@ -30,6 +41,14 @@ const MapDetail = () => {
   const { mapLayer } = useLoaderData<typeof loader>();
   const { map } = useContext(MapContext);
   const [opacity, setOpacity] = useState<number>(100);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [backTo, setBackTo] = useState("Back to Map Collection");
+
+  useEffect(() => {
+    if (!location.state.backTo) return;
+    setBackTo(location.state.backTo);
+  }, [location]);
 
   useEffect(() => {
     if (!map) return;
@@ -75,12 +94,12 @@ const MapDetail = () => {
   return (
     <div className="flex flex-row overflow-hidden">
       <div className="w-1/3 p-6">
-        <Link
-          to="/collections/maps"
-          className="text-sm text-activeCounty underline hover:font-semibold"
+        <button
+          className="text-sm text-activeCounty underline hover:font-semibold self-start capitalize"
+          onClick={() => navigate(-1)}
         >
-          Back to Map Collection
-        </Link>
+          {backTo}
+        </button>
         <h1 className="text-xl mt-2">{mapLayer.name}</h1>
         <LayerOpacity
           id={mapLayer.uuid}
@@ -98,12 +117,10 @@ const MapDetail = () => {
       </div>
       <div className="flex-grow">
         <ClientOnly>
-          {() => (
-            <Map>
-              <StyleSwitcher />
-              {mapLayer.bearing && <Compass />}
-            </Map>
-          )}
+          <Map>
+            <StyleSwitcher />
+            {mapLayer.bearing && <Compass />}
+          </Map>
         </ClientOnly>
       </div>
     </div>

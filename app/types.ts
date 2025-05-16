@@ -276,12 +276,20 @@ export type TPlaceGeoJSON = {
   geojson: FeatureCollection;
 };
 
+export type TTopicTree = {
+  slug: string;
+  label: string;
+  parent_topics?: string[];
+  sub_topics?: TTopicTree[];
+};
+
 export type TESHit = {
   _index: string;
   _type: string;
   _id: string;
   _score: number;
   _source: TPlace;
+  doc: object | TTopicTree[];
 };
 
 export type TSearchFilter = {

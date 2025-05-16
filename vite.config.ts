@@ -1,41 +1,20 @@
-import { vitePlugin as remix } from "@remix-run/dev";
-import { installGlobals } from "@remix-run/node";
+import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import SiteMap from "vite-plugin-sitemap";
 import { islands } from "./app/config";
 
-declare module "@remix-run/node" {
-  // or cloudflare, deno, etc.
-  interface Future {
-    v3_singleFetch: true;
-  }
-}
-
 const ISLANDS = islands.map((island) => `/${island.id}-island`);
 
-const robotOption = {
-  userAgent: "*",
-  [process.env.ROBOTS ?? "allow"]: "/",
-};
+const robotOption = { userAgent: "*", [process.env.ROBOTS ?? "allow"]: "/" };
 
-installGlobals();
-
-export default defineConfig({
-  server: {
-    port: 3000,
+export default defineConfig(({ isSsrBuild }) => ({
+  server: { port: 3000 },
+  build: {
+    rollupOptions: isSsrBuild ? { input: "./server/app.js" } : undefined,
   },
   plugins: [
-    remix({
-      future: {
-        v3_singleFetch: true,
-        v3_fetcherPersist: true,
-        v3_lazyRouteDiscovery: true,
-        v3_relativeSplatPath: true,
-        v3_throwAbortReason: true,
-        v3_routeConfig: true,
-      },
-    }),
+    reactRouter(),
     tsconfigPaths(),
     SiteMap({
       hostname: "https://georgiacoastatlas.org",
@@ -44,14 +23,13 @@ export default defineConfig({
       robots: [robotOption],
     }),
   ],
+  optimizeDeps: { exclude: ["virtual:react-router/server-build"] },
   ssr: {
-    target: "node",
     noExternal: [
       "remix-utils",
       "maplibre-gl",
       "@turf_turf",
       "@samvera_clover-iiif",
-      "chroma",
     ],
   },
-});
+}));

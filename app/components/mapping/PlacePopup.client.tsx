@@ -2,7 +2,7 @@ import maplibregl from "maplibre-gl";
 import { useContext, useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation } from "@remix-run/react";
+import { useNavigation } from "react-router";
 import { createPortal } from "react-dom";
 import { MapContext } from "~/contexts";
 import type { ReactNode } from "react";
@@ -84,9 +84,10 @@ const PlacePopup = ({
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current)
-        .on("close", onClose || (() => {}));
+        .addTo(map);
 
-      popupRef.current?.addTo(map);
+      popupRef.current.on("close", onClose || (() => {}));
+
       if (zoomToFeature) {
         previousBounds.current = map.getBounds();
         map.flyTo({ center: coordinates, zoom: 15 });

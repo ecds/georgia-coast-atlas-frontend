@@ -1,11 +1,28 @@
 import { dataHosts, indexCollection, keys } from "~/config";
 import type { TESHit, TSearchOptions } from "~/types";
 
-const elasticSearchHeaders = () => {
+export const elasticSearchHeaders = () => {
   const esHeaders = new Headers();
   esHeaders.append("authorization", `ApiKey ${keys.elasticsearch}`);
   esHeaders.append("Content-Type", "application/json");
   return esHeaders;
+};
+
+export const indexTotal = async ({ collection }: { collection: string }) => {
+  const body = {
+    size: 0,
+  };
+  const response = await fetch(
+    `${dataHosts.elasticSearch}/${collection}/_search`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: elasticSearchHeaders(),
+    }
+  );
+
+  const data = await response.json();
+  return data.hits.total.value;
 };
 
 export const elasticSearchPost = async ({
@@ -40,46 +57,6 @@ export const fetchBySlug = async (
     },
     size: 1,
     from: 0,
-    _source: {
-      includes: [
-        "alt",
-        "bbox",
-        "bearing",
-        "county",
-        "date",
-        "date_modified",
-        "description",
-        "embed_url",
-        "featured_photograph",
-        "featured_video",
-        "full_url",
-        "geojson",
-        "identifier",
-        "identifiers",
-        "manifest",
-        "manifests",
-        "map_layers",
-        "name",
-        "names",
-        "link",
-        "location",
-        "other_places",
-        "panos",
-        "photographs",
-        "places",
-        "publisher",
-        "related_videos",
-        "slug",
-        "short_description",
-        "title",
-        "topos",
-        "types",
-        "uuid",
-        "videos",
-        "wms_resource",
-        "wms_resources",
-      ],
-    },
   };
 
   const response = await fetch(

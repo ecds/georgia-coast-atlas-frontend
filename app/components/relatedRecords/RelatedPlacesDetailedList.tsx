@@ -1,69 +1,67 @@
-import { useContext, useEffect } from "react";
-import { PlaceContext } from "~/contexts";
-import type { ESPlace, ESRelatedPlace } from "~/esTypes";
 import RelatedSection from "./RelatedSection";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
+import type { ESRelatedPlace } from "~/esTypes";
+
+interface Props {
+  className?: string;
+  clickedPlace: ESRelatedPlace | undefined;
+  hoveredPlace: ESRelatedPlace | undefined;
+  places: ESRelatedPlace[];
+  setClickedPlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESRelatedPlace | undefined>
+  >;
+  setHoveredPlace: Dispatch<
+    SetStateAction<ESRelatedPlace | ESRelatedPlace | undefined>
+  >;
+}
 
 const RelatedPlacesDetailedList = ({
+  className,
+  clickedPlace,
   places,
-}: {
-  places: ESPlace[] | ESRelatedPlace[];
-}) => {
-  const {
-    activePlace,
-    setHoveredPlace,
-    hoveredPlace,
-    setActivePlace,
-    setNoTrackMouse,
-  } = useContext(PlaceContext);
-
-  const handleMouseEnter = (place: ESPlace | ESRelatedPlace) => {
-    setHoveredPlace(place);
-    if (setNoTrackMouse) setNoTrackMouse(true);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredPlace(undefined);
-    if (setNoTrackMouse) setNoTrackMouse(false);
+  setClickedPlace,
+  setHoveredPlace,
+}: Props) => {
+  const handleClick = (place: ESRelatedPlace) => {
+    if (place == clickedPlace) {
+      setClickedPlace(undefined);
+    } else {
+      setClickedPlace(place);
+    }
   };
 
   useEffect(() => {
-    if (!activePlace) return;
-    const element = document.getElementById(`place-${activePlace.uuid}`);
+    if (!clickedPlace) return;
+    const element = document.getElementById(`place-${clickedPlace.uuid}`);
     element?.scrollIntoView({
       behavior: "smooth",
-      block: "nearest",
+      block: "start",
       inline: "start",
     });
-  }, [activePlace]);
+  }, [clickedPlace]);
 
   if (places.length > 0) {
     return (
-      <section className="h-[600px] overflow-hidden">
+      <div className={`overflow-hidden ${className}`}>
         <ul className="h-full overflow-auto relative rounded-lg">
           {places.map((place) => {
             return (
               <li
                 id={`place-${place.uuid}`}
                 className=" flex flex-col border-b border-2"
-                key={`related-place-list-${place.uuid}`}
+                key={`related-place-list-${place.uuid}-${clickedPlace?.uuid === place.uuid}`}
+                data-should-be-open={clickedPlace?.uuid === place.uuid}
+                onMouseEnter={() => setHoveredPlace(place)}
+                onMouseLeave={() => setHoveredPlace(undefined)}
               >
                 <RelatedSection
                   title={place.name}
-                  defaultOpen={false}
+                  defaultOpen={place.uuid === clickedPlace?.uuid}
                   toggleClassName="px-6"
                   headerClassName="text-lg"
+                  onClick={() => handleClick(place)}
                 >
-                  <button
-                    className={`text-black/75 text-left md:py-1 ${
-                      hoveredPlace?.uuid === place.uuid ? "bg-gray-100" : ""
-                    } ${activePlace === place ? "" : ""}`}
-                    onMouseEnter={() => handleMouseEnter(place)}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={() => {
-                      setHoveredPlace(undefined);
-                      setActivePlace(place);
-                    }}
-                  >
+                  <div className={`text-black/75 text-left md:py-1`}>
                     <div className="p-4 w-full">
                       <img
                         src={
@@ -86,13 +84,13 @@ const RelatedPlacesDetailedList = ({
                         Read More
                       </a>
                     </div>
-                  </button>
+                  </div>
                 </RelatedSection>
               </li>
             );
           })}
         </ul>
-      </section>
+      </div>
     );
   }
 

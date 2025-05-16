@@ -10,15 +10,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
-    ecmaFeatures: {
-      jsx: true,
-    },
+    ecmaFeatures: { jsx: true },
   },
-  env: {
-    browser: true,
-    commonjs: true,
-    es6: true,
-  },
+  env: { browser: true, commonjs: true, es6: true, node: true },
   ignorePatterns: ["!**/.server", "!**/.client"],
 
   // Base config
@@ -28,7 +22,6 @@ module.exports = {
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-console": ["warn", { allow: ["error"] }],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
@@ -37,6 +30,10 @@ module.exports = {
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_",
       },
+    ],
+    "import/no-unresolved": [
+      "error",
+      { ignore: ["virtual:react-router/server-build"] },
     ],
   },
 
@@ -52,17 +49,13 @@ module.exports = {
         "plugin:jsx-a11y/recommended",
       ],
       settings: {
-        react: {
-          version: "detect",
-        },
+        react: { version: "detect" },
         formComponents: ["Form"],
         linkComponents: [
           { name: "Link", linkAttribute: "to" },
           { name: "NavLink", linkAttribute: "to" },
         ],
-        "import/resolver": {
-          typescript: {},
-        },
+        "import/resolver": { typescript: {} },
       },
     },
 
@@ -74,12 +67,8 @@ module.exports = {
       settings: {
         "import/internal-regex": "^~/",
         "import/resolver": {
-          node: {
-            extensions: [".ts", ".tsx"],
-          },
-          typescript: {
-            alwaysTryTypes: true,
-          },
+          node: { extensions: [".ts", ".tsx"] },
+          typescript: { alwaysTryTypes: true },
         },
       },
       extends: [
@@ -90,11 +79,6 @@ module.exports = {
     },
 
     // Node
-    {
-      files: [".eslintrc.cjs"],
-      env: {
-        node: true,
-      },
-    },
+    { files: [".eslintrc.cjs"], env: { node: true } },
   ],
 };

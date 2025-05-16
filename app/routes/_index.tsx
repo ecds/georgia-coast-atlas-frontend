@@ -1,6 +1,6 @@
-import { NavLink } from "@remix-run/react";
+import { NavLink } from "react-router";
 import { useEffect } from "react";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import LoopVideoGB from "~/components/layout/LoopVideoBG.client";
 
 export default function Index() {
@@ -13,7 +13,9 @@ export default function Index() {
 
   return (
     <div className="relative w-full h-screen">
-      <ClientOnly>{() => <LoopVideoGB />}</ClientOnly>
+      <ClientOnly>
+        <LoopVideoGB />
+      </ClientOnly>
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-1"></div>
 
       <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
@@ -48,7 +50,7 @@ export default function Index() {
 
         <div className="flex flex-row space-x-8">
           <NavLink
-            to="/explore"
+            to="/places/explore"
             className="bg-blue-300 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-md text-lg tracking-wide border border-gray-300"
             style={{
               backgroundColor: "#98c1d9",
@@ -60,7 +62,7 @@ export default function Index() {
             Explore the Coast
           </NavLink>
           <NavLink
-            to="/search"
+            to="/places/search"
             className="bg-blue-300 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-md text-lg tracking-wide border border-gray-300"
             style={{
               backgroundColor: "#98c1d9",

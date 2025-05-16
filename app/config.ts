@@ -388,7 +388,7 @@ export const PLACE_TYPES: TTypeColors = {
   },
 };
 
-const collectionPrefix = "georgia_coast";
+export const collectionPrefix = "georgia_coast";
 
 export const indexCollection = `${collectionPrefix}_places`;
 export const topicIndexCollection = `${collectionPrefix}_topics`;
@@ -397,6 +397,7 @@ export const mapIndexCollection = `${collectionPrefix}_maps`;
 export const panosIndexCollection = `${collectionPrefix}_panos`;
 export const videosIndexCollection = `${collectionPrefix}_videos`;
 export const photosIndexCollection = `${collectionPrefix}_photographs`;
+export const topicTreeIndexCollection = `${collectionPrefix}_topic_tree`;
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(

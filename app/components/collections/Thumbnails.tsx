@@ -1,134 +1,73 @@
-import { useState } from "react";
-import { Link } from "@remix-run/react";
-import { ClientOnly } from "remix-utils/client-only";
+import { Link } from "react-router";
 import { Pagination, useHits } from "react-instantsearch";
-import Map from "~/components/mapping/Map.client";
-import { faMap, faTableCells, faList } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { hitsToFeatureCollection } from "~/utils/toFeatureCollection";
-import CollectionMapOverlay from "./CollectionMapOverlay";
-import type { ReactNode } from "react";
+import type { CollectionType } from "~/esTypes";
 
 interface Props {
-  collectionType: string;
-  children?: ReactNode;
+  collectionType: CollectionType;
+  className?: string;
+  aspect?: "square" | "video";
 }
 
-const Thumbnails = ({ collectionType, children }: Props) => {
+const Thumbnails = ({ collectionType, className, aspect }: Props) => {
   const { items } = useHits();
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
-
-  const geojson = hitsToFeatureCollection(items);
-
-  const toggleListGrid = () => {
-    setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
-  };
 
   return (
-    <div className="-mt-16 md:mt-0 h-full overflow-auto flex-grow">
-      <h1 className="text-3xl text-black/80 m-4 md:m-auto md:ms-2 capitalize">
-        {collectionType}
-      </h1>
-
-      <div className="flex gap-4 md:ms-2 md:my-2">
-        <button
-          onClick={toggleListGrid}
-          className="border border-island px-2 py-1 rounded-md shadow-md hover:shadow-lg text-island"
-        >
-          <FontAwesomeIcon icon={viewMode === "list" ? faTableCells : faList} />{" "}
-          {viewMode === "list" ? "Grid View" : "List View"}
-        </button>
-        <button
-          onClick={() => setViewMode("map")}
-          className={`border px-2 py-1 rounded-md shadow-md hover:shadow-lg ${
-            viewMode === "map"
-              ? "bg-island text-white"
-              : "border-island text-island"
-          }`}
-        >
-          <FontAwesomeIcon icon={faMap} /> Map View
-        </button>
-      </div>
-
-      {viewMode === "grid" || viewMode === "list" ? (
-        <>
-          <ol
-            className={`md:pe-6 ${
-              viewMode === "grid"
-                ? "md:grid md:grid-cols-1 lg:grid-cols-3"
-                : "flex flex-col"
-            }`}
-          >
-            {items.map((item) => (
-              <li key={item.objectID}>
-                <figure
-                  className={`w-full flex px-2 md:px-0 lg:px-2 ${
-                    viewMode === "grid"
-                      ? "min-h-[250px] mb-6 md:mb-auto md:ms-2 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start md:space-x-4 lg:space-x-0"
-                      : "border-b border-black/10 shadow-sm pb-4 mb-2 last:mb-0 min-h-[140px] flex-row items-start gap-4"
-                  }`}
-                >
-                  <Link
-                    to={`/collections/${collectionType.toLowerCase()}/${item.slug}`}
-                  >
-                    <img
-                      src={item.thumbnail_url}
-                      alt={item.alt ?? ""}
-                      className="shadow-md"
-                    />
-                  </Link>
-                  <figcaption className="text-sm text-black/75 md:col-span-2 md:px-2 lg:px-0 lg:pe-4 w-full">
-                    <h2 className="text-lg md:text-base text-black mb-2 xl:my-2 truncate md:text-wrap">
-                      {item.title ?? item.name}
-                    </h2>
-                    <div
-                      className="tracking-loose my-2"
-                      dangerouslySetInnerHTML={{
-                        __html: item.description ?? "",
-                      }}
-                    />
-                    <ul>
-                      {item.places?.length > 0 && (
-                        <li>
-                          <span className="font-semibold">Places:</span>{" "}
-                          {item.place_names.join(",")}
-                        </li>
-                      )}
-                      {item.date && (
-                        <li>
-                          <span className="font-semibold">Date:</span>{" "}
-                          {item.date}
-                        </li>
-                      )}
-                    </ul>
-                    {children}
-                  </figcaption>
-                </figure>
-              </li>
-            ))}
-          </ol>
-          <Pagination
-            classNames={{
-              root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5",
-              list: "flex flex-row items-stretch justify-center",
-              pageItem:
-                "bg-county/20 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
-              selectedItem: "bg-county text-white",
-            }}
-            padding={2}
-          />
-        </>
-      ) : (
-        <div className="mt-6 mx-2 rounded-md overflow-hidden">
-          <ClientOnly>
-            {() => (
-              <Map className={`h-[calc(100vh-15rem)]`}>
-                <CollectionMapOverlay geojson={geojson} />
-              </Map>
-            )}
-          </ClientOnly>
-        </div>
-      )}
+    <div className={className}>
+      <ol
+        // className={`md:pe-6 md:grid md:grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 flex flex-col`}
+        className="flex flex-col md:flex-row flex-wrap items-center justify-center md:items-start mx-4 md:mx-auto"
+      >
+        {items.map((item) => (
+          <li key={item.objectID} className="w-56 md:w-44 lg:w-56 xl:w-64 mx-2">
+            <Link
+              to={`/collections/${collectionType.toLowerCase()}/${item.slug}`}
+              state={{ backTo: `Back to ${collectionType} Collection` }}
+            >
+              <div
+                className={`flex px-2 md:px-0 aspect-${aspect ?? "square"} w-56 md:w-44 lg:w-56 xl:w-64 md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start bg-cover bg-no-repeat bg-center rounded-md drop-shadow-md`}
+                style={{ backgroundImage: `url(${item.thumbnail_url})` }}
+              >
+                <div
+                  className="sr-only tracking-loose my-2 text-sm"
+                  dangerouslySetInnerHTML={{ __html: item.description ?? "" }}
+                />
+              </div>
+            </Link>
+            <h2 className="text-sm text-black mb-2 xl:my-2 truncate md:text-wrap">
+              {item.title ?? item.name}
+            </h2>
+            <ul className="hidden md:block text-xs w-56 md:w-44 lg:w-56 xl:w-64">
+              {item.places?.length > 0 && (
+                <li>
+                  <span className="font-semibold">Places:</span>{" "}
+                  {item.place_names.join(",")}
+                </li>
+              )}
+              {item.date && (
+                <li>
+                  <span className="font-semibold">Date:</span> {item.date}
+                </li>
+              )}
+              {item.publisher && (
+                <li>
+                  <span className="font-semibold">Publisher:</span>{" "}
+                  {item.publisher}
+                </li>
+              )}
+            </ul>
+          </li>
+        ))}
+      </ol>
+      <Pagination
+        classNames={{
+          root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5",
+          list: "flex flex-row items-stretch justify-center",
+          pageItem:
+            "bg-county text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+          selectedItem: "bg-activeCounty/50 text-white",
+        }}
+        padding={2}
+      />
     </div>
   );
 };

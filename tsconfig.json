@@ -2,11 +2,8 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "**/.server/**/*.ts",
-    "**/.server/**/*.tsx",
-    "**/.client/**/*.ts",
-    "**/.client/**/*.tsx",
-    "app/routes/islands.$id.bk"
+    "**/server/**/*.ts",
+    ".react-router/types/**/*"
   ],
   "compilerOptions": {
     "lib": [
@@ -15,7 +12,7 @@
       "ES2023"
     ],
     "types": [
-      "@remix-run/node",
+      "@react-router/node",
       "vite/client"
     ],
     "isolatedModules": true,
@@ -36,7 +33,16 @@
       ]
     },
     // Vite takes care of building everything, not tsc.
-    "noEmit": true,
-    "allowImportingTsExtensions": true
-  }
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
+  },
+  // "references": [
+  //   {
+  //     "path": "./tsconfig.node.json"
+  //   },
+  //   {
+  //     "path": "./tsconfig.vite.json"
+  //   }
+  // ]
 }

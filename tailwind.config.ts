@@ -32,20 +32,14 @@ export default {
         white: "#FDF9F6",
         "costal-green": "#4A5D41",
         island: landColors.island,
-        activeIsland: landColors.activeIsland,
         county: landColors.county,
+        activeIsland: landColors.activeIsland,
         activeCounty: landColors.activeCounty,
         water: landColors.water,
       },
-      height: {
-        topOffset: `calc(100vh - ${topBarHeight})`,
-      },
-      maxHeight: {
-        topOffset: `calc(100vh - ${topBarHeight})`,
-      },
-      top: {
-        topOffset: `calc(100vh - ${topBarHeight})`,
-      },
+      height: { topOffset: `calc(100vh - ${topBarHeight})` },
+      maxHeight: { topOffset: `calc(100vh - ${topBarHeight})` },
+      top: { topOffset: `calc(100vh - ${topBarHeight})` },
     },
   },
   future: {},
@@ -67,11 +61,10 @@ export default {
               fontWeight: "bold",
               padding: "1rem 0.75rem 0rem 0rem",
             },
-            ".bib": {
-              a: {
-                color: "#94c1e1",
-                fontWeight: "bold",
-              },
+            ".bib": { a: { color: "#94c1e1", fontWeight: "bold" } },
+
+            ".ais-Pagination-item--selected": {
+              backgroundColor: landColors.activeCounty,
             },
           },
           '[type="search"]::-webkit-search-decoration': { display: "none" },
@@ -119,37 +112,21 @@ export default {
           background: "black",
         },
         "[maplibregl-popup-tip-left], .tooltip.maplibregl-popup-anchor-left .maplibregl-popup-tip":
-          {
-            borderRightColor: "black",
-          },
+          { borderRightColor: "black" },
         "[maplibregl-popup-tip-right], .tooltip.maplibregl-popup-anchor-right .maplibregl-popup-tip":
-          {
-            borderLeftColor: "black",
-          },
+          { borderLeftColor: "black" },
         "[maplibregl-popup-tip-top], .tooltip.maplibregl-popup-anchor-top .maplibregl-popup-tip":
-          {
-            borderBottomColor: "black",
-          },
+          { borderBottomColor: "black" },
         "[maplibregl-popup-tip-bottom], .tooltip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip":
-          {
-            borderTopColor: "black",
-          },
+          { borderTopColor: "black" },
         "[maplibregl-popup-tip-bottom-right], .tooltip.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip":
-          {
-            borderTopColor: "black",
-          },
+          { borderTopColor: "black" },
         "[maplibregl-popup-tip-bottom-left], .tooltip.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip":
-          {
-            borderTopColor: "black",
-          },
+          { borderTopColor: "black" },
         "[maplibregl-popup-tip-top-right], .tooltip.maplibregl-popup-anchor-top-right .maplibregl-popup-tip":
-          {
-            borderBottomColor: "black",
-          },
+          { borderBottomColor: "black" },
         "[maplibregl-popup-tip-top-left], .tooltip.maplibregl-popup-anchor-top-left .maplibregl-popup-tip":
-          {
-            borderBottomColor: "black",
-          },
+          { borderBottomColor: "black" },
       });
     }),
   ],
@@ -161,7 +138,12 @@ export default {
     "text-6xl",
     "bg-red-100",
     "bg-county",
+    "bg-activeCounty",
     "bg-activeCounty/70",
+    "md:aspect-video",
+    "md:aspect-square",
+    "aspect-square",
+    "aspect-video",
     ...bgColors,
     ...textColors,
     ...textBgColors,

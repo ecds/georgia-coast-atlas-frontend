@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { indexCollection, PLACE_TYPES } from "~/config";
 import GeoToggle from "./GeoToggle.client";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 
 const CurrentRefinements = () => {
   const { items, refine } = useCurrentRefinements();
@@ -42,7 +42,9 @@ const CurrentRefinements = () => {
           ))}
         </select>
       </div>
-      <ClientOnly>{() => <GeoToggle />}</ClientOnly>
+      <ClientOnly>
+        <GeoToggle />
+      </ClientOnly>
       <ul className="col-span-12 list-none flex flex-wrap space-3 ps-4 mb-4">
         {items.map((item) => {
           return item.refinements.map((refinement) => {

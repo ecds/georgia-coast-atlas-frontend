@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { LngLatBounds } from "maplibre-gl";
-import { ClientOnly } from "remix-utils/client-only";
+import ClientOnly from "~/components/ClientOnly";
 import { MapContext, PlaceContext } from "~/contexts";
 import {
   cluster,
@@ -81,10 +81,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
           const zoom = await source.getClusterExpansionZoom(
             feature.properties.cluster_id
           );
-          map.easeTo({
-            center: lngLat,
-            zoom,
-          });
+          map.easeTo({ center: lngLat, zoom });
           return;
         }
 
@@ -190,49 +187,47 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
 
   return (
     <ClientOnly>
-      {() => (
-        <>
-          {children}
-          {hoveredPlace && (
-            <PlaceTooltip
-              location={hoveredPlace.location}
-              show={showTooltip}
-              onClose={() => setHoveredPlace(undefined)}
-              zoomToFeature={false}
-            >
-              <h4 className="text-white">{hoveredPlace.name}</h4>
-            </PlaceTooltip>
-          )}
-          {activePlace && (
-            <PlacePopup
-              location={activePlace.location}
-              show={Boolean(activePlace)}
-              onClose={() => setActivePlace(undefined)}
-              zoomToFeature={false}
-            >
-              {activePlace.featured_photograph && (
-                <img
-                  src={activePlace.featured_photograph.replace("max", "300,")}
-                  alt=""
-                />
-              )}
-              <h4 className="text-xl">{activePlace.name}</h4>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: activePlace.description ?? "",
-                }}
+      <>
+        {children}
+        {hoveredPlace && (
+          <PlaceTooltip
+            location={hoveredPlace.location}
+            show={showTooltip}
+            onClose={() => setHoveredPlace(undefined)}
+            zoomToFeature={false}
+          >
+            <h4 className="text-white">{hoveredPlace.name}</h4>
+          </PlaceTooltip>
+        )}
+        {activePlace && (
+          <PlacePopup
+            location={activePlace.location}
+            show={Boolean(activePlace)}
+            onClose={() => setActivePlace(undefined)}
+            zoomToFeature={false}
+          >
+            {activePlace.featured_photograph && (
+              <img
+                src={activePlace.featured_photograph.replace("max", "300,")}
+                alt=""
               />
-              <Link
-                to={`/places/${activePlace.slug}`}
-                state={{ slug: place?.slug, title: place?.name }}
-                className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
-              >
-                Read More
-              </Link>
-            </PlacePopup>
-          )}
-        </>
-      )}
+            )}
+            <h4 className="text-xl">{activePlace.name}</h4>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: activePlace.description ?? "",
+              }}
+            />
+            <Link
+              to={`/places/${activePlace.slug}`}
+              state={{ slug: place?.slug, title: place?.name }}
+              className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
+            >
+              Read More
+            </Link>
+          </PlacePopup>
+        )}
+      </>
     </ClientOnly>
   );
 };

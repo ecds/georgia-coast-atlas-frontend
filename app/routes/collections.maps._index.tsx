@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Configure,
   InstantSearch,
@@ -5,7 +6,7 @@ import {
   getServerState,
 } from "react-instantsearch";
 import { renderToString } from "react-dom/server";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import { mapIndexCollection, searchRouter } from "~/config";
 import { mapCollection } from "~/utils/elasticsearchAdapter";
 import { collectionMetadata } from "~/utils/collectionMetaTags";
@@ -13,32 +14,39 @@ import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import MenuSelect from "~/components/search/MenuSelect";
-import type { InstantSearchServerState } from "react-instantsearch";
-import type { LoaderFunction } from "@remix-run/node";
-
-type SearchProps = {
-  serverState?: InstantSearchServerState;
-  serverUrl?: string;
-  location?: Location;
-  modalOpen?: boolean;
-};
+import ViewToggle from "~/components/collections/ViewToggle";
+import CollectionMap from "~/components/collections/CollectionMap";
+import type { LoaderFunction } from "react-router";
+import type { ESSearchProps } from "~/esTypes";
+import CollectionContainer from "~/components/collections/CollectionContainer";
+import { indexTotal } from "~/data/coredata";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <MapCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
-  return {
-    serverState,
-    serverUrl,
-  };
+  const total = await indexTotal({ collection: mapIndexCollection });
+
+  return { serverState, serverUrl, total };
 };
 
-const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
+export const meta = () =>
+  collectionMetadata({
+    title: "Maps Collection",
+    description: "TODO: Add descriptive text about the maps collection here.",
+    image: "TODO: Add a valid og:image URL for the maps collection here.",
+    slug: "maps",
+  });
+
+const MapCollection = ({
+  serverState,
+  serverUrl,
+  children,
+  total,
+}: ESSearchProps) => {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -48,38 +56,49 @@ const MapCollection = ({ serverState, serverUrl }: SearchProps) => {
         routing={searchRouter(serverUrl)}
       >
         <Configure hitsPerPage={100} />
-        {/* <SortBy
-            items={[{ label: "Year", value: "instant_search_year_asc" }]}
-          /> */}
         <CollectionList>
-          <div className="h-full min-w-fit overflow-y-scroll">
-            <MenuSelect attribute="categories" />
+          <div className="h-full min-w-fit overflow-y-scroll pb-8">
+            <MenuSelect
+              attribute="categories"
+              attributeLabel="Category"
+              total={total}
+            />
             <PlaceFacets />
             <PlaceFacets attribute="date" sortBy="name" />
+            <PlaceFacets attribute="publisher" sortBy="name" />
           </div>
-          <Thumbnails collectionType="maps" />
+          {children}
         </CollectionList>
       </InstantSearch>
     </InstantSearchSSRProvider>
   );
 };
 
-const MapCollectionPage = () => {
-  const { serverState, serverUrl } = useLoaderData() as SearchProps;
+const MapCollectionIndex = () => {
+  const { serverState, serverUrl, total } = useLoaderData() as ESSearchProps;
+  const [viewMode, setViewMode] = useState<"grid" | "map" | undefined>();
 
   return (
     <div>
-      <MapCollection serverState={serverState} serverUrl={serverUrl} />
+      <MapCollection
+        serverState={serverState}
+        serverUrl={serverUrl}
+        total={total}
+      >
+        <CollectionContainer collectionType="maps">
+          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+          <Thumbnails
+            collectionType="maps"
+            className={viewMode === "grid" ? "block" : "hidden"}
+          />
+          <CollectionMap
+            collectionType="maps"
+            className={viewMode === "map" ? "block" : "hidden"}
+          />
+        </CollectionContainer>
+      </MapCollection>
     </div>
   );
 };
 
-export default MapCollectionPage;
-
-export const meta = () =>
-  collectionMetadata({
-    title: "Maps Collection",
-    description: "TODO: Add descriptive text about the maps collection here.",
-    image: "TODO: Add a valid og:image URL for the maps collection here.",
-    slug: "maps",
-  });
+export default MapCollectionIndex;

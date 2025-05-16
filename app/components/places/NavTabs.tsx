@@ -1,4 +1,4 @@
-import { NavLink } from "@remix-run/react";
+import { NavLink } from "react-router";
 
 const linkClassNames = ({ isActive }: { isActive: boolean }) => {
   return `text-center flex-grow py-3 px-3 text-lg tracking-wide font-semibold text-white focus:outline-none ${isActive ? "bg-county" : "bg-county/45"} hover:bg-county/75 focus:outline-1 focus:outline-black`;

@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
-} from "@remix-run/react";
+} from "react-router";
 import styles from "./index.css?url";
 import Navbar from "./components/layout/Navbar";
 import Loading from "./components/layout/Loading";
@@ -22,7 +22,7 @@ config.autoAddCss = false; /* eslint-disable import/first */
 import { placeMetaTags } from "~/utils/placeMetaTags";
 import { MapContext } from "./contexts";
 import { useState } from "react";
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "react-router";
 import type { Map as TMap } from "maplibre-gl";
 
 export const meta: MetaFunction = () => {
