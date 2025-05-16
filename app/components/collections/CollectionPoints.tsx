@@ -82,13 +82,8 @@ const CollectionPoints = ({ geojson, collectionType }: Props) => {
       map.off("mousemove", pointLayer.id, handleMouseEnter);
       map.off("mouseleave", pointLayer.id, handleMouseLeave);
       map.off("click", pointLayer.id, handleClick);
-
-      try {
-        if (map && map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
-        if (map && map.getSource(sourceId)) map.removeSource(sourceId);
-      } catch (error) {
-        console.error(error);
-      }
+      map.removeLayer(pointLayer.id);
+      map.removeSource(sourceId);
     };
   }, [map, geojson, navigate, items, collectionType]);
 

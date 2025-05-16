@@ -53,7 +53,6 @@ const Map = ({ children, className }: Props) => {
       try {
         setMap(undefined);
         setMapLoaded(false);
-        _map?.remove();
       } catch (error) {
         console.error(error);
       }
