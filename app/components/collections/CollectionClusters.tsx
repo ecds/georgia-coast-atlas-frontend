@@ -89,6 +89,11 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
       },
     };
 
+    // Removing in the return is unreliable. This is an ugly double check.
+    if (map && map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
+    if (map && map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+    if (map && map.getSource(sourceId)) map.removeSource(sourceId);
+
     map.addSource(sourceId, clusterSource);
     map.addLayer(clusterLayer);
     map.addLayer(countLayer);
@@ -106,9 +111,14 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
       map.off("mousemove", clusterLayer.id, handleMouseEnter);
       map.off("mouseleave", clusterLayer.id, handleMouseLeave);
       map.off("click", clusterLayer.id, handleClick);
-      map.removeLayer(clusterLayer.id);
-      map.removeLayer(countLayer.id);
-      map.removeSource(sourceId);
+      try {
+        if (map && map.getLayer(clusterLayer.id))
+          map.removeLayer(clusterLayer.id);
+        if (map && map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+        if (map && map.getSource(sourceId)) map.removeSource(sourceId);
+      } catch (error) {
+        console.error(error);
+      }
     };
   }, [map, geojson]);
 
