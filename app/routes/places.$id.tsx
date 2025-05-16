@@ -121,7 +121,8 @@ const PlacePage = () => {
           }}
         />
         <div className="px-4">
-          {place.types.includes("Barrier Island") ? (
+          {place.types.includes("Barrier Island") ||
+          place.types.includes("County") ? (
             <RelatedPlaces />
           ) : (
             <PlaceMap />

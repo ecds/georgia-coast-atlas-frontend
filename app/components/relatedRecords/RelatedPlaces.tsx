@@ -18,9 +18,9 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   const [geojson, setGeojson] = useState<FeatureCollection | undefined>();
 
   useEffect(() => {
-    if (!place) return;
+    if (!place || !place.places) return;
     if (
-      place.places.length == 0 ||
+      (place.places && place.places.length == 0) ||
       (!place.types.includes("Barrier Island") &&
         !place.types.includes("County"))
     ) {
@@ -36,25 +36,29 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
     if (!place?.other_places) setOtherPlaces([]);
   }, [place]);
 
-  if (!place) return null;
+  if (!place || !place.places) return null;
 
-  return (
-    <RelatedSection
-      title={title ?? "Related Places"}
-      collapsable={collapsable}
-      className={
-        place.places.length > 0 || place.other_places?.length > 0
-          ? ""
-          : "hidden"
-      }
-    >
-      <RelatedPlacesList
-        otherPlaces={otherPlaces}
-        setOtherPlaces={setOtherPlaces}
-      />
-      {geojson && <RelatedPlacesMap geojson={geojson} />}
-    </RelatedSection>
-  );
+  if (place.places) {
+    return (
+      <RelatedSection
+        title={title ?? "Related Places"}
+        collapsable={collapsable}
+        className={
+          place.places.length > 0 || place.other_places?.length > 0
+            ? ""
+            : "hidden"
+        }
+      >
+        <RelatedPlacesList
+          otherPlaces={otherPlaces}
+          setOtherPlaces={setOtherPlaces}
+        />
+        {geojson && <RelatedPlacesMap geojson={geojson} />}
+      </RelatedSection>
+    );
+  }
+
+  return null;
 };
 
 export default RelatedPlaces;
