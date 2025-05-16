@@ -16,22 +16,25 @@ import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import CollectionContainer from "~/components/collections/CollectionContainer";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import CollectionMap from "~/components/collections/CollectionMap";
 import type { ESSearchProps } from "~/esTypes";
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Panos Collection",
+    description: "TODO: Add descriptive text about the panos collection here.",
+    image: "TODO: Add a valid og:image URL for the panos collection here.",
+    slug: "panos",
+  });
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <PanoCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
-  return {
-    serverState,
-    serverUrl,
-  };
+  return { serverState, serverUrl };
 };
 
 const PanoCollection = ({
@@ -62,31 +65,21 @@ const PanoCollectionIndex = () => {
   const [viewMode, setViewMode] = useState<"grid" | "map" | undefined>();
 
   return (
-    <div>
-      <PanoCollection serverState={serverState} serverUrl={serverUrl}>
-        <CollectionContainer collectionType="panos">
-          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-          <Thumbnails
-            collectionType="panos"
-            className={viewMode === "grid" ? "block" : "hidden"}
-            aspect="video"
-          />
-          <CollectionMapOverlay
-            collectionType="panos"
-            className={viewMode === "map" ? "block" : "hidden"}
-          />
-        </CollectionContainer>
-      </PanoCollection>
-    </div>
+    <PanoCollection serverState={serverState} serverUrl={serverUrl}>
+      <CollectionContainer collectionType="panos">
+        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+        <Thumbnails
+          collectionType="panos"
+          className={viewMode === "grid" ? "block" : "hidden"}
+          aspect="video"
+        />
+        <CollectionMap
+          collectionType="panos"
+          className={viewMode === "map" ? "block" : "hidden"}
+        />
+      </CollectionContainer>
+    </PanoCollection>
   );
 };
 
 export default PanoCollectionIndex;
-
-export const meta = () =>
-  collectionMetadata({
-    title: "Panos Collection",
-    description: "TODO: Add descriptive text about the panos collection here.",
-    image: "TODO: Add a valid og:image URL for the panos collection here.",
-    slug: "panos",
-  });

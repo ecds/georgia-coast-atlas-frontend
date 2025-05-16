@@ -30,7 +30,7 @@
     "cross-env": "^7.0.3",
     "express": "^5.1.0",
     "isbot": "^5.1.8",
-    "maplibre-gl": "^4.3.2",
+    "maplibre-gl": "^5.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^7.0.0",

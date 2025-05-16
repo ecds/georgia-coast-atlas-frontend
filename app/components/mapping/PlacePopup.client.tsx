@@ -84,9 +84,10 @@ const PlacePopup = ({
       })
         .setLngLat(coordinates)
         .setDOMContent(popContainerRef.current)
-        .on("close", onClose || (() => {}));
+        .addTo(map);
 
-      popupRef.current?.addTo(map);
+      popupRef.current.on("close", onClose || (() => {}));
+
       if (zoomToFeature) {
         previousBounds.current = map.getBounds();
         map.flyTo({ center: coordinates, zoom: 15 });

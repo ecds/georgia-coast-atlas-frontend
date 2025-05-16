@@ -15,7 +15,7 @@ import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import MenuSelect from "~/components/search/MenuSelect";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import CollectionMap from "~/components/collections/CollectionMap";
 import type { LoaderFunction } from "react-router";
 import type { ESSearchProps } from "~/esTypes";
 import CollectionContainer from "~/components/collections/CollectionContainer";
@@ -25,19 +25,21 @@ export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <MapCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
   const total = await indexTotal({ collection: mapIndexCollection });
 
-  return {
-    serverState,
-    serverUrl,
-    total,
-  };
+  return { serverState, serverUrl, total };
 };
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Maps Collection",
+    description: "TODO: Add descriptive text about the maps collection here.",
+    image: "TODO: Add a valid og:image URL for the maps collection here.",
+    slug: "maps",
+  });
 
 const MapCollection = ({
   serverState,
@@ -72,7 +74,7 @@ const MapCollection = ({
   );
 };
 
-const MapCollectionPage = () => {
+const MapCollectionIndex = () => {
   const { serverState, serverUrl, total } = useLoaderData() as ESSearchProps;
   const [viewMode, setViewMode] = useState<"grid" | "map" | undefined>();
 
@@ -89,7 +91,7 @@ const MapCollectionPage = () => {
             collectionType="maps"
             className={viewMode === "grid" ? "block" : "hidden"}
           />
-          <CollectionMapOverlay
+          <CollectionMap
             collectionType="maps"
             className={viewMode === "map" ? "block" : "hidden"}
           />
@@ -99,12 +101,4 @@ const MapCollectionPage = () => {
   );
 };
 
-export default MapCollectionPage;
-
-export const meta = () =>
-  collectionMetadata({
-    title: "Maps Collection",
-    description: "TODO: Add descriptive text about the maps collection here.",
-    image: "TODO: Add a valid og:image URL for the maps collection here.",
-    slug: "maps",
-  });
+export default MapCollectionIndex;

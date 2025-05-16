@@ -18,7 +18,7 @@ import type { LoaderFunction } from "react-router";
 import type { ESSearchProps } from "~/esTypes";
 import CollectionContainer from "~/components/collections/CollectionContainer";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import CollectionMapOverlay from "~/components/collections/CollectionPoints";
 
 // type SearchProps = {
 //   serverState?: InstantSearchServerState;
@@ -31,15 +31,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <VideoCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
-  return {
-    serverState,
-    serverUrl,
-  };
+  return { serverState, serverUrl };
 };
 
 const VideoCollection = ({

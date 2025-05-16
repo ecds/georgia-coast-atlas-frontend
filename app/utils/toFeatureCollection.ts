@@ -80,10 +80,7 @@ export const locationToFeatureCollection = (place: ESPlace) => {
     features: [
       {
         type: "Feature",
-        properties: {
-          ...place,
-          hexColor: getColor(place.types[0]),
-        },
+        properties: { ...place, hexColor: getColor(place.types[0]) },
         geometry: {
           type: "Point",
           coordinates: [place.location.lon, place.location.lat],

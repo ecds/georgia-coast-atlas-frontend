@@ -29,9 +29,7 @@ const Thumbnails = ({ collectionType, className, aspect }: Props) => {
               >
                 <div
                   className="sr-only tracking-loose my-2 text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: item.description ?? "",
-                  }}
+                  dangerouslySetInnerHTML={{ __html: item.description ?? "" }}
                 />
               </div>
             </Link>
@@ -65,8 +63,8 @@ const Thumbnails = ({ collectionType, className, aspect }: Props) => {
           root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5",
           list: "flex flex-row items-stretch justify-center",
           pageItem:
-            "bg-county/20 text-white mx-4 text-center rounded-md min-w-6 max-w-8",
-          selectedItem: "bg-county text-white",
+            "bg-county text-white mx-4 text-center rounded-md min-w-6 max-w-8",
+          selectedItem: "bg-activeCounty/50 text-white",
         }}
         padding={2}
       />

@@ -13,34 +13,29 @@ import { collectionMetadata } from "~/utils/collectionMetaTags";
 import CollectionList from "~/components/collections/CollectionList";
 import PlaceFacets from "~/components/collections/PlaceFacets";
 import Thumbnails from "~/components/collections/Thumbnails";
-// import type { InstantSearchServerState } from "react-instantsearch";
-import type { LoaderFunction } from "react-router";
-import type { ESSearchProps } from "~/esTypes";
 import CollectionContainer from "~/components/collections/CollectionContainer";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
-
-// type SearchProps = {
-//   serverState?: InstantSearchServerState;
-//   serverUrl?: string;
-//   location?: Location;
-//   modalOpen?: boolean;
-// };
+import CollectionMap from "~/components/collections/CollectionMap";
+import type { LoaderFunction } from "react-router";
+import type { ESSearchProps } from "~/esTypes";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <VideoCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
-  return {
-    serverState,
-    serverUrl,
-  };
+  return { serverState, serverUrl };
 };
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Videos Collection",
+    description: "TODO: Add descriptive text about the videos collection here.",
+    image: "TODO: Add a valid og:image URL for the videos collection here.",
+    slug: "videos",
+  });
 
 const VideoCollection = ({
   serverState,
@@ -79,10 +74,12 @@ const VideoCollectionIndex = () => {
             className={viewMode === "grid" ? "block" : "hidden"}
             aspect="video"
           />
-          <CollectionMapOverlay
-            collectionType="videos"
-            className={viewMode === "map" ? "block" : "hidden"}
-          />
+          {viewMode === "map" && (
+            <CollectionMap
+              collectionType="videos"
+              className={viewMode === "map" ? "block" : "hidden"}
+            />
+          )}
         </CollectionContainer>
       </VideoCollection>
     </div>
@@ -90,11 +87,3 @@ const VideoCollectionIndex = () => {
 };
 
 export default VideoCollectionIndex;
-
-export const meta = () =>
-  collectionMetadata({
-    title: "Videos Collection",
-    description: "TODO: Add descriptive text about the videos collection here.",
-    image: "TODO: Add a valid og:image URL for the videos collection here.",
-    slug: "videos",
-  });

@@ -14,25 +14,31 @@ import PlaceFacets from "~/components/collections/PlaceFacets";
 import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import CollectionMap from "~/components/collections/CollectionMap";
+import CollectionContainer from "~/components/collections/CollectionContainer";
 import type { LoaderFunction } from "react-router";
 import type { ESSearchProps } from "~/esTypes";
-import CollectionContainer from "~/components/collections/CollectionContainer";
+
+const INITIAL_COUNT = 24;
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <PhotographCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
-  return {
-    serverState,
-    serverUrl,
-  };
+  return { serverState, serverUrl };
 };
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Photograph Collection",
+    description:
+      "TODO: Add descriptive text about the photograph collection here.",
+    image: "TODO: Add a valid og:image URL for the photograph collection here.",
+    slug: "photographs",
+  });
 
 const PhotographCollection = ({
   serverState,
@@ -47,7 +53,7 @@ const PhotographCollection = ({
         future={{ preserveSharedStateOnUnmount: true }}
         routing={searchRouter(serverUrl)}
       >
-        <Configure hitsPerPage={24} />
+        <Configure hitsPerPage={INITIAL_COUNT} />
         <CollectionList>
           <PlaceFacets />
           {children}
@@ -64,12 +70,16 @@ const PhotographCollectionIndex = () => {
   return (
     <PhotographCollection serverState={serverState} serverUrl={serverUrl}>
       <CollectionContainer collectionType="photographs">
-        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+        <ViewToggle
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          initialCount={INITIAL_COUNT}
+        />
         <Thumbnails
           collectionType="photographs"
           className={viewMode === "grid" ? "block" : "hidden"}
         />
-        <CollectionMapOverlay
+        <CollectionMap
           collectionType="photographs"
           className={viewMode === "map" ? "block" : "hidden"}
         />
@@ -79,11 +89,3 @@ const PhotographCollectionIndex = () => {
 };
 
 export default PhotographCollectionIndex;
-
-export const meta = () =>
-  collectionMetadata({
-    title: "Photograph Collection",
-    description: "TODO: Add descriptive text about the photograph collection here.",
-    image: "TODO: Add a valid og:image URL for the photograph collection here.",
-    slug: "photographs",
-  });

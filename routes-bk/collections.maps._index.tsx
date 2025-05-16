@@ -15,7 +15,7 @@ import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import MenuSelect from "~/components/search/MenuSelect";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import CollectionMapOverlay from "~/components/collections/CollectionPoints";
 import type { LoaderFunction } from "react-router";
 import type { ESSearchProps } from "~/esTypes";
 import CollectionContainer from "~/components/collections/CollectionContainer";
@@ -25,18 +25,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <MapCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
   const total = await indexTotal({ collection: mapIndexCollection });
 
-  return {
-    serverState,
-    serverUrl,
-    total,
-  };
+  return { serverState, serverUrl, total };
 };
 
 const MapCollection = ({

@@ -16,22 +16,17 @@ import CollectionList from "~/components/collections/CollectionList";
 import Thumbnails from "~/components/collections/Thumbnails";
 import CollectionContainer from "~/components/collections/CollectionContainer";
 import ViewToggle from "~/components/collections/ViewToggle";
-import CollectionMapOverlay from "~/components/collections/CollectionMapOverlay";
+import CollectionMapOverlay from "~/components/collections/CollectionPoints";
 import type { ESSearchProps } from "~/esTypes";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl: string = request.url;
   const serverState = await getServerState(
     <PanoCollection serverUrl={serverUrl} />,
-    {
-      renderToString,
-    }
+    { renderToString }
   );
 
-  return {
-    serverState,
-    serverUrl,
-  };
+  return { serverState, serverUrl };
 };
 
 const PanoCollection = ({
