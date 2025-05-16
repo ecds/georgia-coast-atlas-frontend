@@ -30,10 +30,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   const place: ESPlace = await fetchBySlug(params.id, indexCollection);
 
   if (!place) {
-    throw new Response(null, {
-      status: 404,
-      statusText: "Not found",
-    });
+    throw new Response(null, { status: 404, statusText: "Not found" });
   }
 
   const wpResponse = await fetch(
@@ -62,12 +59,12 @@ const PlacePage = () => {
   const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
   const [backTo, setBackTo] = useState<
     | {
-      slug: string;
-      title: string;
-      bounds?: LngLatBounds;
-      previous: string;
-      search?: string;
-    }
+        slug: string;
+        title: string;
+        bounds?: LngLatBounds;
+        previous: string;
+        search?: string;
+      }
     | undefined
   >(undefined);
   const topRef = useRef<HTMLDivElement>(null);
@@ -124,8 +121,7 @@ const PlacePage = () => {
           }}
         />
         <div className="px-4">
-          {place.types.includes("Barrier Island") ||
-            place.types.includes("County") ? (
+          {place.types.includes("Barrier Island") ? (
             <RelatedPlaces />
           ) : (
             <PlaceMap />
