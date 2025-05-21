@@ -87,3 +87,11 @@ const VideoCollectionIndex = () => {
 };
 
 export default VideoCollectionIndex;
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Videos Collection",
+    description: "TODO: Add descriptive text about the videos collection here.",
+    image: "TODO: Add a valid og:image URL for the videos collection here.",
+    slug: "videos",
+  });

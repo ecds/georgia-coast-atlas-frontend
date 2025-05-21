@@ -89,3 +89,11 @@ const PhotographCollectionIndex = () => {
 };
 
 export default PhotographCollectionIndex;
+
+export const meta = () =>
+  collectionMetadata({
+    title: "Photograph Collection",
+    description: "TODO: Add descriptive text about the photograph collection here.",
+    image: "TODO: Add a valid og:image URL for the photograph collection here.",
+    slug: "photographs",
+  });

@@ -14,7 +14,22 @@ import {
 import Heading from "~/components/layout/Heading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import type { LoaderFunctionArgs } from "react-router";
+import type { ESCollectionItem } from "~/esTypes";
+
+export const meta = ({ data }: { data: { video: ESCollectionItem } }) => {
+  const { video } = data;
+
+  const previewImage = video.thumbnail_url;
+
+  return collectionMetadata({
+    title: video.title ?? video.name,
+    description: video.description ?? "A video from the Georgia Coast Atlas.",
+    image: previewImage,
+    slug: `video/${video.slug}`,
+  });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const video = await fetchBySlug(params.video, videosIndexCollection);

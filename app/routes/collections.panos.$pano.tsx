@@ -6,7 +6,22 @@ import Map from "~/components/mapping/Map.client";
 import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
 import ClientOnly from "~/components/ClientOnly";
 import Item from "~/components/collections/Item";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import type { LoaderFunctionArgs } from "react-router";
+import type { ESCollectionItem } from "~/esTypes";
+
+export const meta = ({ data }: { data: { pano: ESCollectionItem } }) => {
+  const { pano } = data;
+
+  const previewImage = pano.thumbnail_url.replace("!250,250", "!1200,630");
+
+  return collectionMetadata({
+    title: pano.title ?? pano.name,
+    description: pano.description ?? "A panorama from the Georgia Coast Atlas.",
+    image: previewImage,
+    slug: `pano/${pano.slug}`,
+  });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const pano = await fetchBySlug(params.pano, panosIndexCollection);

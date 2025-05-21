@@ -10,8 +10,22 @@ import { LngLatBounds } from "maplibre-gl";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import LayerOpacity from "~/components/mapping/LayerOpacity";
 import Compass from "~/components/mapping/Compass";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import type { LoaderFunctionArgs } from "react-router";
-import type { ESMapItem } from "~/esTypes";
+import type { ESMapItem, ESCollectionItem } from "~/esTypes";
+
+export const meta = ({ data }: { data: { mapLayer: ESCollectionItem } }) => {
+  const { mapLayer } = data;
+
+  const previewImage = mapLayer.thumbnail_url.replace("!250,250", "!1200,630");
+
+  return collectionMetadata({
+    title: mapLayer.title ?? mapLayer.name,
+    description: mapLayer.description ?? "A map from the Georgia Coast Atlas.",
+    image: previewImage,
+    slug: `mapLayer/${mapLayer.slug}`,
+  });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const mapLayer: ESMapItem = await fetchBySlug(params.map, mapIndexCollection);

@@ -4,12 +4,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import ClientOnly from "~/components/ClientOnly";
 import IIIFViewer from "~/components/layout/IIIFViewer.client";
-import { photosIndexCollection } from "~/config";
-import { fetchBySlug } from "~/data/coredata";
 import Map from "~/components/mapping/Map.client";
 import SharedMapOverlay from "~/components/collections/SharedMapOverlay";
 import Item from "~/components/collections/Item";
+import { photosIndexCollection } from "~/config";
+import { fetchBySlug } from "~/data/coredata";
+import { collectionMetadata } from "~/utils/collectionMetaTags";
 import type { LoaderFunctionArgs } from "react-router";
+import type { ESCollectionItem } from "~/esTypes";
+
+
+export const meta = ({ data }: { data: { photograph: ESCollectionItem } }) => {
+  const { photograph } = data;
+
+  const previewImage = photograph.thumbnail_url.replace("!250,250", "!1200,630");
+
+  return collectionMetadata({
+    title: photograph.title ?? photograph.name,
+    description: photograph.description ?? "A photograph from the Georgia Coast Atlas.",
+    image: previewImage,
+    slug: `photographs/${photograph.slug}`,
+  });
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const photograph = await fetchBySlug(

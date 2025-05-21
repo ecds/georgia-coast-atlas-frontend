@@ -107,7 +107,7 @@ export type ESTopic = {
   wordpress_id: number | undefined;
 };
 
-type ESCollectionItem = {
+export type ESCollectionItem = {
   description: string;
   name: string;
   location: TLonLat;
