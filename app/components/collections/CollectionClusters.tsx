@@ -22,7 +22,7 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
   const { map } = useContext(MapContext);
   const [activeCluster, setActiveCluster] = useState<{
     location: { lat: number; lon: number };
-    list: { name: string; slug: string }[];
+    list: { name: string; slug: string; uuid: string }[];
   }>();
 
   useEffect(() => {
@@ -55,8 +55,9 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
       } else {
         const slugs = properties.slugs.split("|");
         const names = properties.names.split("|");
+        const uuids = properties.uuids.split("|");
         const list = names.map((name: string, index: number) => {
-          return { name, slug: slugs[index] };
+          return { name, slug: slugs[index], uuid: uuids[index] };
         });
         setActiveCluster({ location: { lon: lng, lat }, list });
       }
@@ -86,8 +87,14 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
         // Not sure why the double concat is needed.
         names: ["concat", ["concat", ["get", "name"], "|"]],
         slugs: ["concat", ["concat", ["get", "slug"], "|"]],
+        uuids: ["concat", ["concat", ["get", "uuid"], "|"]],
       },
     };
+
+    // Removing in the return is unreliable. This is an ugly double check.
+    if (map && map.getLayer(clusterLayer.id)) map.removeLayer(clusterLayer.id);
+    if (map && map.getLayer(countLayer.id)) map.removeLayer(countLayer.id);
+    if (map && map.getSource(sourceId)) map.removeSource(sourceId);
 
     map.addSource(sourceId, clusterSource);
     map.addLayer(clusterLayer);
@@ -106,6 +113,7 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
       map.off("mousemove", clusterLayer.id, handleMouseEnter);
       map.off("mouseleave", clusterLayer.id, handleMouseLeave);
       map.off("click", clusterLayer.id, handleClick);
+      map.getLayer(clusterLayer.id);
       map.removeLayer(clusterLayer.id);
       map.removeLayer(countLayer.id);
       map.removeSource(sourceId);
@@ -123,7 +131,7 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
         <ul>
           {activeCluster.list.map((item) => {
             return (
-              <li key={item.slug}>
+              <li key={item.uuid}>
                 <Link
                   to={`/collections/${collectionType}/${item.slug}`}
                   state={{ backTo: `Back to ${collectionType} Collection` }}

@@ -21,7 +21,6 @@ const CollectionPoints = ({ geojson, collectionType }: Props) => {
   const [activeItem, setActiveItem] = useState<Hit>();
 
   const { items } = useHits();
-  console.log("🚀 ~ CollectionPoints ~ items:", items);
 
   useEffect(() => {
     if (!map || !geojson?.features?.length) return;
@@ -62,6 +61,10 @@ const CollectionPoints = ({ geojson, collectionType }: Props) => {
       clusterRadius: 50,
       promoteId: "uuid",
     };
+
+    // Removing in the return is unreliable. This is an ugly double check.
+    if (map && map.getLayer(pointLayer.id)) map.removeLayer(pointLayer.id);
+    if (map && map.getSource(sourceId)) map.removeSource(sourceId);
 
     map.addSource(sourceId, placesSource);
     map.addLayer(pointLayer);
