@@ -25,8 +25,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   let wpData: TWordPressData | undefined = undefined;
 
   const data = await wpResponse.json();
-  if (wpResponse.status === 200 && data.length > 0) {
-    wpData = data[0];
+  if (wpResponse.status === 200) {
+    wpData = data;
   }
 
   return { topic, wpData };
