@@ -1,18 +1,18 @@
-import { dataHosts } from "~/config";
 import { useLoaderData } from "react-router";
-import { placeMetaDefaults } from "~/utils/placeMetaTags";
+import { dataHosts } from "~/config";
 import wpCssUrl from "~/styles/about.css?url";
-import type { TWordPressData } from "~/types";
 import type { LinksFunction, MetaFunction } from "react-router";
+import type { TWordPressData } from "~/types";
+import { placeMetaDefaults } from "~/utils/placeMetaTags";
 
 export const loader = async () => {
   const wpResponse = await fetch(
-    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/?slug=about-project`
+    `https://${dataHosts.wordPress}/wp-json/wp/v2/pages/674`
   );
 
-  const wpData: TWordPressData[] = await wpResponse.json();
+  const wpData: TWordPressData = await wpResponse.json();
 
-  return { wpData: wpData[0] };
+  return { wpData };
 };
 
 export const links: LinksFunction = () => {
@@ -23,14 +23,13 @@ export const meta: MetaFunction = () => {
   return [
     {
       ...placeMetaDefaults,
-      title: "About the Project: Georgia Coast Atlas",
+      title: "About the Team: Georgia Coast Atlas",
     },
   ];
 };
 
-const ProjectPage = () => {
+const TeamRoute = () => {
   const { wpData } = useLoaderData<{ wpData: TWordPressData }>();
-
   return (
     <div>
       <div
@@ -51,4 +50,4 @@ const ProjectPage = () => {
   );
 };
 
-export default ProjectPage;
+export default TeamRoute;
