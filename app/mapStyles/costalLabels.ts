@@ -46,13 +46,52 @@ const countySeats: FeatureCollection = {
         coordinates: [-81.116667, 32.016667],
       },
     },
-
+    {
+      type: "Feature",
+      properties: { name: "Folkston" },
+      geometry: {
+        type: "Point",
+        coordinates: [-82.00471932098085, 30.834253951497995],
+      },
+    },
     {
       type: "Feature",
       properties: { name: "Woodbine" },
       geometry: {
         type: "Point",
         coordinates: [-81.72, 30.961944],
+      },
+    },
+    {
+      type: "Feature",
+      properties: { name: "Nahunta" },
+      geometry: {
+        type: "Point",
+        coordinates: [-81.98213568529555, 31.204439768162597],
+      },
+    },
+    {
+      type: "Feature",
+      properties: { name: "Springfield" },
+      geometry: {
+        type: "Point",
+        coordinates: [-81.31014673753026, 32.36807484345289],
+      },
+    },
+    {
+      type: "Feature",
+      properties: { name: "Blackshear" },
+      geometry: {
+        type: "Point",
+        coordinates: [-82.24787386714371, 31.29892369824054],
+      },
+    },
+    {
+      type: "Feature",
+      properties: { name: "Waycross" },
+      geometry: {
+        type: "Point",
+        coordinates: [-82.35411617713, 31.21339478528128],
       },
     },
   ],
