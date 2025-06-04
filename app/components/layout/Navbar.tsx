@@ -10,7 +10,7 @@ const menuLinkClassName =
   "block rounded-lg text-white capitalize py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50 text-left";
 
 const collections = ["maps", "panos", "photographs", "videos"];
-const aboutPages = ["project", "bibliography", "contact"];
+const aboutPages = ["project", "team", "bibliography", "contact"];
 
 const Navbar = () => {
   return (

@@ -36,7 +36,7 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
     if (!place?.other_places) setOtherPlaces([]);
   }, [place]);
 
-  if (!place || !place.places) return null;
+  if (!place) return null;
 
   if (place.places) {
     return (
@@ -56,6 +56,10 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
         {geojson && <RelatedPlacesMap geojson={geojson} />}
       </RelatedSection>
     );
+  }
+
+  if (place.geojson) {
+    return <RelatedPlacesMap geojson={place.geojson} />;
   }
 
   return null;
