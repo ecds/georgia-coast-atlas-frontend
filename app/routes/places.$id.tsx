@@ -130,6 +130,37 @@ const PlacePage = () => {
           <RelatedMedia title="Videos" records={place.videos} />
           <RelatedMedia title="Photographs" records={place.photographs} />
           <RelatedMedia title="Panos" records={place.panos} />
+          {place.people && (
+            <RelatedSection title="People" defaultOpen={false}>
+              <dl className="p-4">
+                {place.people.map((person) => {
+                  return (
+                    <>
+                      <dt className="text-lg mb-2">{person.full_name}</dt>
+                      <dd className="mb-3 tracking-wide">{person.biography}</dd>
+                    </>
+                  );
+                })}
+              </dl>
+            </RelatedSection>
+          )}
+          {place.works && (
+            <RelatedSection title="Works" defaultOpen={false}>
+              <ul className="p-8">
+                {place.works.map((work) => {
+                  return (
+                    <li
+                      key={work.uuid}
+                      className="prose prose-xl prose-invert leading-loose tracking-wide -indent-6 my-6"
+                      dangerouslySetInnerHTML={{
+                        __html: work.citation,
+                      }}
+                    />
+                  );
+                })}
+              </ul>
+            </RelatedSection>
+          )}
           <RelatedMapLayers />
           <RelatedTopoQuads />
           {place.identifiers && place.identifiers.length > 0 && (
