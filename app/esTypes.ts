@@ -67,6 +67,16 @@ type TWebIdentifier = {
   identifier: string;
 };
 
+export type ESPerson = {
+  full_name: string;
+  biography: string;
+};
+
+export type TWork = {
+  citation: string;
+  uuid: string;
+};
+
 export type ESPlace = {
   bbox: [number, number, number, number];
   county: string;
@@ -85,6 +95,7 @@ export type ESPlace = {
   other_places: ESRelatedPlace[];
   panos?: ESRelatedMedium[];
   photographs?: ESRelatedMedium[];
+  people?: ESPerson[];
   places: ESRelatedPlace[];
   short_description: string;
   slug: string;
@@ -93,6 +104,7 @@ export type ESPlace = {
   types: string[];
   uuid: string;
   videos?: ESRelatedMedium[];
+  works?: TWork[];
 };
 
 export type ESTopic = {

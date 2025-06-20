@@ -1,11 +1,7 @@
 import { worksIndexCollection } from "~/config";
 import { useLoaderData } from "react-router";
 import { elasticSearchPost } from "~/data/coredata";
-
-type TWork = {
-  citation: string;
-  uuid: string;
-};
+import type { TWork } from "~/esTypes";
 
 export const loader = async () => {
   const works: TWork[] = await elasticSearchPost({
