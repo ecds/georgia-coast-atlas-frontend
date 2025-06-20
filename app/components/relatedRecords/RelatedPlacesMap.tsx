@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { LngLatBounds } from "maplibre-gl";
 import ClientOnly from "~/components/ClientOnly";
 import { MapContext, PlaceContext } from "~/contexts";
@@ -40,6 +40,7 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [placeBounds, setPlaceBounds] = useState<LngLatBounds | undefined>();
   const activePlaceRef = useRef(activePlace);
+  const location = useLocation();
 
   useEffect(() => {
     activePlaceRef.current = activePlace;
@@ -220,7 +221,11 @@ const RelatedPlacesMap = ({ geojson, children }: Props) => {
             />
             <Link
               to={`/places/${activePlace.slug}`}
-              state={{ slug: place?.slug, title: place?.name }}
+              state={{
+                slug: place?.slug,
+                title: place?.name,
+                previous: `${location.pathname}${location.search}`,
+              }}
               className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
             >
               Read More

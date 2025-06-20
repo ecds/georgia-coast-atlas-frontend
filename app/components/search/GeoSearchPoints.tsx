@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import ClientOnly from "~/components/ClientOnly";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { MapContext, SearchContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
@@ -25,6 +25,7 @@ const GeoSearchPoints = ({ geojson }: Props) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [popupTitle, setPopupTitle] = useState<string | undefined>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClick = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -40,7 +41,7 @@ const GeoSearchPoints = ({ geojson }: Props) => {
         },
       });
     },
-    [navigate, map]
+    [navigate, map, location]
   );
 
   useEffect(() => {
