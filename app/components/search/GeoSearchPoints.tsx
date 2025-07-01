@@ -29,17 +29,20 @@ const GeoSearchPoints = ({ geojson }: Props) => {
 
   const handleClick = useCallback(
     (event: MapLayerMouseEvent) => {
-      if (!event.features || !event.features.length) return;
-      const properties = event.features[0].properties;
-      navigate(`/places/${properties.slug}`, {
-        state: {
-          title: "Search Results",
-          slug: "search",
-          bounds: map?.getBounds(),
-          previous: `${location.pathname}${location.search}`,
-          search: location.search,
-        },
-      });
+      if (!event.features || !event.features.length || !window) {
+        navigate(-1);
+      } else {
+        const properties = event.features[0].properties;
+        navigate(`/places/${properties.slug}`, {
+          state: {
+            title: "Search Results",
+            slug: "search",
+            bounds: map?.getBounds(),
+            previous: `${location.pathname}${location.search}`,
+            search: window.location.search,
+          },
+        });
+      }
     },
     [navigate, map, location]
   );
