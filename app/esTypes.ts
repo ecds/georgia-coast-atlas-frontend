@@ -111,12 +111,14 @@ export type ESTopic = {
   map_layers?: ESMapItem[];
   name: string;
   panos?: ESRelatedMedium[];
+  people?: ESPerson[];
   photographs?: ESRelatedMedium[];
   places?: ESRelatedPlace[];
   slug: string;
   uuid: string;
   videos?: ESRelatedMedium[];
   wordpress_id: number | undefined;
+  works?: TWork[];
 };
 
 export type ESCollectionItem = {
