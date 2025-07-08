@@ -74,6 +74,10 @@ const PlacePage = () => {
     setBackTo(location.state);
   }, [location]);
 
+  useEffect(() => {
+    console.log("🚀 ~ PlacePage ~ backTo:", backTo);
+  }, [backTo]);
+
   return (
     <PlaceContext.Provider
       value={{
@@ -94,7 +98,7 @@ const PlacePage = () => {
         {backTo && (
           <nav className="w-full bg-white z-50 sticky top-0 py-2">
             <Link
-              to={`${backTo.previous}`}
+              to={`${backTo.previous}${backTo.search ?? ""}`}
               state={backTo}
               className="block bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-1 rounded-lg text-left w-max m-2 text-xs"
             >
