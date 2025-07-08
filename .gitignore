@@ -1,0 +1,13 @@
+node_modules
+
+/.cache
+/build
+.env
+
+.*.json
+/public/build/
+/public/robots.txt
+/public/sitemap.xml
+/counties
+.deployrc
+.react-router/
