@@ -74,10 +74,6 @@ const PlacePage = () => {
     setBackTo(location.state);
   }, [location]);
 
-  useEffect(() => {
-    console.log("🚀 ~ PlacePage ~ backTo:", backTo);
-  }, [backTo]);
-
   return (
     <PlaceContext.Provider
       value={{
