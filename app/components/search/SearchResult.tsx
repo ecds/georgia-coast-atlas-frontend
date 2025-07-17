@@ -1,11 +1,12 @@
 import { PLACE_TYPES } from "~/config";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useContext } from "react";
 import { SearchContext } from "~/contexts";
 import type { Hit } from "instantsearch.js";
 
 const SearchResult = ({ hit }: { hit: Hit }) => {
   const { setActiveResult } = useContext(SearchContext);
+  const location = useLocation();
   return (
     <div
       className="flex border-b-2 py-2 w-full px-4 items-center"
@@ -13,7 +14,11 @@ const SearchResult = ({ hit }: { hit: Hit }) => {
       onMouseLeave={() => setActiveResult(undefined)}
     >
       <Link
-        state={{ title: "Search Results", slug: "search" }}
+        state={{
+          title: "Search Results",
+          slug: "search",
+          previous: `${location.pathname}${location.search}`,
+        }}
         className="grow min-w-[75%] cursor-pointer"
         to={`/places/${hit.slug}`}
       >

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import ClientOnly from "~/components/ClientOnly";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { MapContext, SearchContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
 import PlacePopup from "~/components/mapping/PlacePopup.client";
@@ -25,22 +25,26 @@ const GeoSearchPoints = ({ geojson }: Props) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [popupTitle, setPopupTitle] = useState<string | undefined>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClick = useCallback(
     (event: MapLayerMouseEvent) => {
-      if (!event.features || !event.features.length) return;
-      const properties = event.features[0].properties;
-      navigate(`/places/${properties.slug}`, {
-        state: {
-          title: "Search Results",
-          slug: "search",
-          bounds: map?.getBounds(),
-          previous: `${location.pathname}${location.search}`,
-          search: location.search,
-        },
-      });
+      if (!event.features || !event.features.length || !window) {
+        navigate(-1);
+      } else {
+        const properties = event.features[0].properties;
+        navigate(`/places/${properties.slug}`, {
+          state: {
+            title: "Search Results",
+            slug: "search",
+            bounds: map?.getBounds(),
+            previous: `${location.pathname}${location.search}`,
+            search: window.location.search,
+          },
+        });
+      }
     },
-    [navigate, map]
+    [navigate, map, location]
   );
 
   useEffect(() => {

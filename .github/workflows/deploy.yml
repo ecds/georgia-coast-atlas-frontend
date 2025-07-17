@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - main
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -46,7 +47,9 @@ jobs:
           BRANCH: ${{ github.head_ref || github.ref_name }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+          REMOTE_PATH_DEV: ${{ secrets.REMOTE_PATH }}
+          REMOTE_PATH_PROD: ${{ secrets.REMOTE_PATH_PROD }}
           DH_SSH_KEY: ${{ secrets.DH_SSH_KEY }}
           DEV_RESTART_COMMAND: ${{ secrets.DEV_RESTART_COMMAND }}
+          PROD_RESTART_COMMAND: ${{ secrets.PROD_RESTART_COMMAND }}
         run: ./deploy.sh

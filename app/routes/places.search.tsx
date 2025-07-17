@@ -17,9 +17,12 @@ import { indexCollection } from "~/config";
 import { SearchContext } from "~/contexts";
 import SearchResult from "~/components/search/SearchResult";
 import { placeMetaDefaults } from "~/utils/placeMetaTags";
-// import SearchModal from "~/components/search/SearchModal";
-import type { LoaderFunction } from "react-router";
-import type { Navigation, Location, MetaFunction } from "react-router";
+import type {
+  Navigation,
+  LoaderFunction,
+  Location,
+  MetaFunction,
+} from "react-router";
 import type { InstantSearchServerState } from "react-instantsearch";
 
 type views = "search" | "explore";

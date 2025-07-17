@@ -94,7 +94,7 @@ const PlacePage = () => {
         {backTo && (
           <nav className="w-full bg-white z-50 sticky top-0 py-2">
             <Link
-              to={`/places/${backTo.slug}`}
+              to={`${backTo.previous}${backTo.search ?? ""}`}
               state={backTo}
               className="block bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-1 rounded-lg text-left w-max m-2 text-xs"
             >
@@ -130,6 +130,37 @@ const PlacePage = () => {
           <RelatedMedia title="Videos" records={place.videos} />
           <RelatedMedia title="Photographs" records={place.photographs} />
           <RelatedMedia title="Panos" records={place.panos} />
+          {place.people && (
+            <RelatedSection title="People" defaultOpen={false}>
+              <dl className="p-4">
+                {place.people.map((person) => {
+                  return (
+                    <>
+                      <dt className="text-lg mb-2">{person.full_name}</dt>
+                      <dd className="mb-3 tracking-wide">{person.biography}</dd>
+                    </>
+                  );
+                })}
+              </dl>
+            </RelatedSection>
+          )}
+          {place.works && (
+            <RelatedSection title="Works" defaultOpen={false}>
+              <ul className="p-8">
+                {place.works.map((work) => {
+                  return (
+                    <li
+                      key={work.uuid}
+                      className="prose prose-xl prose-invert leading-loose tracking-wide -indent-6 my-6"
+                      dangerouslySetInnerHTML={{
+                        __html: work.citation,
+                      }}
+                    />
+                  );
+                })}
+              </ul>
+            </RelatedSection>
+          )}
           <RelatedMapLayers />
           <RelatedTopoQuads />
           {place.identifiers && place.identifiers.length > 0 && (

@@ -31,7 +31,7 @@ const GeoSearch = ({ location }: { location?: Location }) => {
 
     const searchParams = new URLSearchParams(location?.search);
 
-    if (location?.state?.bounds && !location.search) {
+    if (location?.state?.bounds) {
       const bounds = new LngLatBounds(
         Object.values(location.state.bounds._sw) as [number, number],
         Object.values(location.state.bounds._ne) as [number, number]

@@ -2,6 +2,10 @@
 set -e
 echo "Running deploy script"
 
+REMOTE_PATH=$([ "$BRANCH" == "main" ] && echo $REMOTE_PATH_PROD || echo $REMOTE_PATH_DEV)
+RESTART_COMMAND=$([ "$BRANCH" == "main" ] && echo $PROD_RESTART_COMMAND || echo $DEV_RESTART_COMMAND)
+
+
 echo "Building"
 npm run build
 
@@ -12,4 +16,4 @@ for file in "${files[@]}"; do
 done
 
 echo "Running Remote Script"
-ssh ${REMOTE_USER}@${REMOTE_HOST} ${DEV_RESTART_COMMAND}
+ssh ${REMOTE_USER}@${REMOTE_HOST} ${RESTART_COMMAND}

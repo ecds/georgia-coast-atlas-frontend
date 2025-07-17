@@ -7,6 +7,7 @@ import RelatedPlaces from "~/components/topics/RelatedPlaces";
 import type { LoaderFunctionArgs } from "react-router";
 import type { TWordPressData } from "~/types";
 import type { ESTopic } from "~/esTypes";
+import RelatedSection from "~/components/relatedRecords/RelatedSection";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const topic: ESTopic = await fetchBySlug(params.topic, topicIndexCollection);
@@ -56,6 +57,45 @@ const TopicGroupPage = () => {
         mediaType="photographs"
       />
       <Thumbnails topic={topic.name} items={topic.panos} mediaType="panos" />
+      {topic.people && topic.people.length > 0 && (
+        <RelatedSection
+          title="People"
+          defaultOpen={false}
+          headerClassName="text-2xl"
+        >
+          <dl className="p-4">
+            {topic.people.map((person) => {
+              return (
+                <>
+                  <dt className="text-lg mb-2">{person.full_name}</dt>
+                  <dd className="mb-3 tracking-wide">{person.biography}</dd>
+                </>
+              );
+            })}
+          </dl>
+        </RelatedSection>
+      )}
+      {topic.works && topic.works.length > 0 && (
+        <RelatedSection
+          title="Works"
+          defaultOpen={false}
+          headerClassName="text-2xl"
+        >
+          <ul className="p-8">
+            {topic.works.map((work) => {
+              return (
+                <li
+                  key={work.uuid}
+                  className="prose prose-xl prose-invert leading-loose tracking-wide -indent-6 my-6"
+                  dangerouslySetInnerHTML={{
+                    __html: work.citation,
+                  }}
+                />
+              );
+            })}
+          </ul>
+        </RelatedSection>
+      )}
     </div>
   );
 };
