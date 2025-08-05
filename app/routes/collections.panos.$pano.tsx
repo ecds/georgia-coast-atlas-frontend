@@ -40,7 +40,7 @@ const PanoDetail = () => {
   const [backTo, setBackTo] = useState("Back to Panos Collectin");
 
   useEffect(() => {
-    if (!location.state.backTo) return;
+    if (!location.state?.backTo) return;
     setBackTo(location.state.backTo);
   }, [location]);
 
@@ -63,9 +63,9 @@ const PanoDetail = () => {
         <div dangerouslySetInnerHTML={{ __html: pano.description ?? "" }} />
       </div>
       {pano.places?.length > 0 && (
-        <div className="mt-8 h-[500px] w-full rounded-md overflow-hidden">
+        <div className="mt-8 h-96 w-full rounded-md overflow-hidden">
           <ClientOnly>
-            <Map className="w-96 h-96">
+            <Map className="w-full h-96">
               <SharedMapOverlay places={pano.places} />
             </Map>
           </ClientOnly>

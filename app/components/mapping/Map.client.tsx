@@ -8,11 +8,13 @@ import type { ReactNode } from "react";
 import type { Map as TMap } from "maplibre-gl";
 
 interface Props {
+  bearing?: number;
+  bounds?: LngLatBounds;
   children?: ReactNode;
   className?: string;
 }
 
-const Map = ({ children, className }: Props) => {
+const Map = ({ children, className, bearing, bounds }: Props) => {
   const { setMap, setMapLoaded } = useContext(MapContext);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +27,7 @@ const Map = ({ children, className }: Props) => {
       _map = new maplibregl.Map({
         container: mapContainerRef.current,
         style: combined,
-        center: [-81.40348956381558, 31.41113196761974],
+        center: bounds?.getCenter() ?? [-81.40348956381558, 31.41113196761974],
         zoom: 9,
         maxPitch: 0,
         canvasContextAttributes: {
@@ -35,6 +37,7 @@ const Map = ({ children, className }: Props) => {
         maxBounds: new LngLatBounds([
           -85.005165, 29.357851, -75.239729, 33.000659,
         ]),
+        bearing: bearing ?? 0,
       });
 
       if (!_map.getBounds()) _map.fitBounds(defaultBounds());
@@ -57,7 +60,7 @@ const Map = ({ children, className }: Props) => {
         console.error(error);
       }
     };
-  }, [setMap, setMapLoaded]);
+  }, [setMap, setMapLoaded, bearing, bounds]);
 
   return (
     <div className="relative bg-water">
