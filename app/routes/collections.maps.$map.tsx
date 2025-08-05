@@ -44,11 +44,16 @@ const MapDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [backTo, setBackTo] = useState("Back to Map Collection");
+  const [bounds, setBounds] = useState<LngLatBounds | undefined>(undefined);
 
   useEffect(() => {
-    if (!location.state.backTo) return;
+    if (!location.state?.backTo) return;
     setBackTo(location.state.backTo);
   }, [location]);
+
+  useEffect(() => {
+    setBounds(new LngLatBounds(mapLayer.bbox));
+  }, [mapLayer]);
 
   useEffect(() => {
     if (!map) return;
@@ -62,14 +67,12 @@ const MapDetail = () => {
 
       map.addSource(id, source);
       map.addLayer(layer);
+      map.once("styledata", () => map.moveLayer(layer.id));
     }
 
     const bounds = new LngLatBounds(mapLayer.bbox);
 
-    map.fitBounds(bounds, { padding: 50 });
-    if (mapLayer.bearing) {
-      map.once("moveend", () => map.rotateTo(mapLayer.bearing ?? 0));
-    }
+    map.fitBounds(bounds, { padding: 50, bearing: mapLayer.bearing ?? 0 });
 
     return () => {
       for (const index in mapLayer.wms_resources) {
@@ -109,15 +112,10 @@ const MapDetail = () => {
         />
         <hr className="my-2" />
         <p>{mapLayer.description ?? ""}</p>
-        {/* <ul>
-          {mapLayer.places.map((place) => {
-            return <li key={`map-layer-place-${place}`}>{place}</li>;
-          })}
-        </ul> */}
       </div>
       <div className="flex-grow">
         <ClientOnly>
-          <Map>
+          <Map bearing={mapLayer.bearing} bounds={bounds}>
             <StyleSwitcher />
             {mapLayer.bearing && <Compass />}
           </Map>

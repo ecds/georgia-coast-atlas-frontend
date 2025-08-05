@@ -12,6 +12,8 @@ const Compass = () => {
     const updateBearing = () => {
       setBearing(map.getBearing() * -1);
     };
+
+    updateBearing();
     map.on("rotate", updateBearing);
 
     return () => {
