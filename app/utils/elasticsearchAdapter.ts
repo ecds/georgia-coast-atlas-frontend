@@ -34,6 +34,7 @@ const searchConfig: SearchSettingsConfig = {
   ],
   facet_attributes: [
     { attribute: "categories", field: "categories", type: "string" },
+    { attribute: "category", field: "category", type: "string" },
     { attribute: "date", field: "date", type: "string" },
     { attribute: "place_names", field: "place_names", type: "string" },
     { attribute: "publisher", field: "publisher", type: "string" },
