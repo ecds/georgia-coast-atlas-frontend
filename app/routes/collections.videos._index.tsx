@@ -52,7 +52,10 @@ const VideoCollection = ({
       >
         <Configure hitsPerPage={100} filters="suppress:no" />
         <CollectionList>
-          <PlaceFacets />
+          <div className="h-full min-w-fit overflow-y-scroll pb-8">
+            <PlaceFacets />
+            <PlaceFacets attribute="category" sortBy="name" />
+          </div>
           {children}
         </CollectionList>
       </InstantSearch>
