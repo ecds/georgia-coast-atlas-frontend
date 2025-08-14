@@ -48,6 +48,8 @@ const VideoDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!location.state?.backTo) return;
+
     setBackTo(location.state.backTo);
   }, [location]);
 
@@ -100,9 +102,9 @@ const VideoDetail = () => {
       {video.places?.length > 0 && (
         <div className="mt-8 col-span-3">
           <div className=" mx-auto">
-            <div className="mt-8 h-[500px] w-full rounded-md overflow-hidden">
+            <div className="mt-8 h-96 w-full rounded-md overflow-hidden">
               <ClientOnly>
-                <Map className="w-96 h-96">
+                <Map className="w-full h-96">
                   <SharedMapOverlay places={video.places} />
                 </Map>
               </ClientOnly>

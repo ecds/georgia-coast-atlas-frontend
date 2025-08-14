@@ -13,15 +13,18 @@ import { collectionMetadata } from "~/utils/collectionMetaTags";
 import type { LoaderFunctionArgs } from "react-router";
 import type { ESCollectionItem } from "~/esTypes";
 
-
 export const meta = ({ data }: { data: { photograph: ESCollectionItem } }) => {
   const { photograph } = data;
 
-  const previewImage = photograph.thumbnail_url.replace("!250,250", "!1200,630");
+  const previewImage = photograph.thumbnail_url.replace(
+    "!250,250",
+    "!1200,630"
+  );
 
   return collectionMetadata({
     title: photograph.title ?? photograph.name,
-    description: photograph.description ?? "A photograph from the Georgia Coast Atlas.",
+    description:
+      photograph.description ?? "A photograph from the Georgia Coast Atlas.",
     image: previewImage,
     slug: `photographs/${photograph.slug}`,
   });
@@ -50,7 +53,7 @@ const PhotographDetail = () => {
   const [backTo, setBackTo] = useState("Back to Photograph Collection");
 
   useEffect(() => {
-    if (!location.state.backTo) return;
+    if (!location.state?.backTo) return;
     setBackTo(location.state.backTo);
   }, [location]);
 
@@ -89,9 +92,9 @@ const PhotographDetail = () => {
         />
       </div>
       {photograph.places?.length > 0 && (
-        <div className="mt-8 h-[500px] w-full rounded-md overflow-hidden">
+        <div className="mt-8 h-96 w-full rounded-md overflow-hidden">
           <ClientOnly>
-            <Map className="w-96 h-96">
+            <Map className="w-full h-96">
               <SharedMapOverlay places={photograph.places} />
             </Map>
           </ClientOnly>

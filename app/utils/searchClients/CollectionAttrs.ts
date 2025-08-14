@@ -24,5 +24,5 @@ export const photoAttrs = {
 };
 
 export const videoAttrs = {
-  result_attributes: [...baseAttrs, "embed_url"],
+  result_attributes: [...baseAttrs, "embed_url", "category"],
 };

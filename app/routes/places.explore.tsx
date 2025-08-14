@@ -87,7 +87,7 @@ const ExplorePage = () => {
                   }}
                   onMouseLeave={() => setHoveredPlace(undefined)}
                   to={`/places/${county.slug}`}
-                  state={{ title: "Explore", slug: "explore" }}
+                  state={{ title: "Explore", previous: "/places/explore" }}
                   className={`${
                     hoveredPlace === county
                       ? "text-white bg-activeCounty"
