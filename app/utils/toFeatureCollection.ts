@@ -54,7 +54,9 @@ export const hitsToFeatureCollection = (hits: Hit[]) => {
           description: hit.description,
           identifier: hit.identifier,
           hexColor,
-          preview: hit.featured_photograph?.replace("max", "600,"),
+          preview:
+            hit.featured_photograph?.replace("max", "600,") ??
+            hit.thumbnail_url,
           uuid: hit.uuid,
         },
         geometry: {

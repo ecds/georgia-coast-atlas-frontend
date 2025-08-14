@@ -38,8 +38,8 @@ const GeoSearchPoints = ({ geojson }: Props) => {
             title: "Search Results",
             slug: "search",
             bounds: map?.getBounds(),
-            previous: `${location.pathname}${location.search}`,
-            search: window.location.search,
+            previous: location.pathname,
+            search: location.search,
           },
         });
       }
