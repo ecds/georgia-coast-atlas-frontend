@@ -22,7 +22,7 @@ const GeoSearchClusters = ({ geojson }: Props) => {
   }>({ lat: 0, lon: 0 });
   const [showPopup, setShowPopup] = useState<boolean>(true);
   const [clusterList, setClusterList] =
-    useState<{ title: string; slug: string }[]>();
+    useState<{ title: string; slug: string; preview?: string }[]>();
 
   const mousemove = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -62,7 +62,6 @@ const GeoSearchClusters = ({ geojson }: Props) => {
 
   useEffect(() => {
     if (!mapLoaded || !map || !geojson) return;
-
     const layerSource: SourceSpecification = {
       type: "geojson",
       data: geojson,
@@ -128,9 +127,15 @@ const GeoSearchClusters = ({ geojson }: Props) => {
             return (
               <li key={place.slug}>
                 <Link
-                  state={{ title: "Search Results", slug: "search" }}
                   className="text-blue-600 underline underline-offset-2 hover:text-blue-900"
                   to={`/places/${place.slug}`}
+                  state={{
+                    title: "Search Results",
+                    slug: "search",
+                    bounds: map?.getBounds(),
+                    previous: location.pathname,
+                    search: location.search,
+                  }}
                 >
                   {place.title}
                 </Link>
