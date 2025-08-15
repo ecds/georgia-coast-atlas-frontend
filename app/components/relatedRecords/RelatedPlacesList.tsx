@@ -1,16 +1,17 @@
 import { useContext, useEffect, useState } from "react";
-import { indexCollection } from "~/config.ts";
-import { fetchBySlug } from "~/data/coredata";
 import { PlaceContext } from "~/contexts";
 import type { Dispatch, SetStateAction } from "react";
 import type { ESRelatedPlace } from "~/esTypes";
 
 interface Props {
-  otherPlaces?: ESRelatedPlace[];
-  setOtherPlaces?: Dispatch<SetStateAction<ESRelatedPlace[]>>;
+  showAllPlaces?: boolean;
+  setShowAllPlaces?: Dispatch<SetStateAction<boolean>>;
 }
 
-const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
+const RelatedPlacesList = ({
+  showAllPlaces = false,
+  setShowAllPlaces,
+}: Props) => {
   const {
     place,
     activePlace,
@@ -19,11 +20,10 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
     setActivePlace,
     setNoTrackMouse,
   } = useContext(PlaceContext);
+
   const [allPlaces, setAllPlaces] = useState<ESRelatedPlace[]>(
     place?.places ?? []
   );
-  const [loading, setLoading] = useState(false);
-  const [hasLoadedMore, setHasLoadedMore] = useState(false);
 
   const handleMouseEnter = (place: ESRelatedPlace) => {
     setActivePlace(undefined);
@@ -36,37 +36,14 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
     if (setNoTrackMouse) setNoTrackMouse(false);
   };
 
-  const loadMorePlaces = async () => {
-    if (!place || hasLoadedMore || !setOtherPlaces) return;
-    setLoading(true);
-
-    try {
-      const fetchedPlace = await fetchBySlug(place.slug, indexCollection);
-      if (fetchedPlace?.other_places?.length > 0) {
-        setOtherPlaces((prev) => [...prev, ...fetchedPlace.other_places]);
-        setHasLoadedMore(true);
-      }
-    } catch (error) {
-      console.error("Error loading more places:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const unloadMorePlaces = () => {
-    if (!setOtherPlaces) return;
-    setOtherPlaces([]);
-    setHasLoadedMore(false);
-  };
-
   useEffect(() => {
     if (!place) return;
-    if (otherPlaces && otherPlaces.length > 0) {
-      setAllPlaces([...place.places, ...otherPlaces]);
+    if (showAllPlaces) {
+      setAllPlaces([...place.places, ...place.other_places]);
     } else {
       setAllPlaces(place.places);
     }
-  }, [otherPlaces, place]);
+  }, [showAllPlaces, place]);
 
   if (allPlaces?.length > 0) {
     return (
@@ -93,28 +70,18 @@ const RelatedPlacesList = ({ otherPlaces, setOtherPlaces }: Props) => {
             );
           })}
         </div>
-
-        <>
-          {!hasLoadedMore && (
-            <button
-              onClick={loadMorePlaces}
-              className="mt-4 p-2 bg-island text-white rounded"
-              disabled={loading}
-            >
-              {loading ? "Loading..." : "Show More"}
-            </button>
+        <div className="mb-8">
+          {place && place.other_places.length > 0 && setShowAllPlaces && (
+            <>
+              <button
+                onClick={() => setShowAllPlaces(!showAllPlaces)}
+                className="mt-4 p-2 bg-island text-white rounded"
+              >
+                {showAllPlaces ? "Show Less" : "Show More"}
+              </button>
+            </>
           )}
-
-          {hasLoadedMore && (
-            <button
-              onClick={unloadMorePlaces}
-              className="mt-4 p-2 bg-island text-white rounded"
-              disabled={loading}
-            >
-              Show Less
-            </button>
-          )}
-        </>
+        </div>
       </>
     );
   }
