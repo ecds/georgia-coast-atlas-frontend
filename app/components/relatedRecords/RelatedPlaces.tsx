@@ -5,7 +5,6 @@ import { PlaceContext } from "~/contexts";
 import RelatedPlacesMap from "./RelatedPlacesMap";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
 import type { FeatureCollection } from "geojson";
-import type { ESRelatedPlace } from "~/esTypes";
 
 interface Props {
   title?: string;
@@ -14,7 +13,7 @@ interface Props {
 
 const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   const { place } = useContext(PlaceContext);
-  const [otherPlaces, setOtherPlaces] = useState<ESRelatedPlace[]>([]);
+  const [showAllPlaces, setShowAllPlaces] = useState<boolean>(false);
   const [geojson, setGeojson] = useState<FeatureCollection | undefined>();
 
   useEffect(() => {
@@ -25,16 +24,12 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
         !place.types.includes("County"))
     ) {
       setGeojson(toFeatureCollection([place]));
-    } else if (!place.other_places || otherPlaces.length === 0) {
+    } else if (!showAllPlaces) {
       setGeojson(toFeatureCollection(place.places));
     } else {
-      setGeojson(toFeatureCollection([...place.places, ...otherPlaces]));
+      setGeojson(toFeatureCollection([...place.places, ...place.other_places]));
     }
-  }, [place, otherPlaces]);
-
-  useEffect(() => {
-    if (!place?.other_places) setOtherPlaces([]);
-  }, [place]);
+  }, [place, showAllPlaces]);
 
   if (!place) return null;
 
@@ -50,8 +45,8 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
         }
       >
         <RelatedPlacesList
-          otherPlaces={otherPlaces}
-          setOtherPlaces={setOtherPlaces}
+          showAllPlaces={showAllPlaces}
+          setShowAllPlaces={setShowAllPlaces}
         />
         {geojson && <RelatedPlacesMap geojson={geojson} />}
       </RelatedSection>
