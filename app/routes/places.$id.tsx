@@ -71,8 +71,17 @@ const PlacePage = () => {
   const location = useLocation();
 
   useEffect(() => {
-    setBackTo(location.state);
-  }, [location]);
+    let stateCopy = location.state;
+    if (location.pathname == location.state.previous) {
+      stateCopy = {
+        ...stateCopy,
+        previous: "/places/explore",
+        slug: "explore",
+        title: "Explore",
+      };
+    }
+    setBackTo(stateCopy);
+  }, [location, place]);
 
   return (
     <PlaceContext.Provider

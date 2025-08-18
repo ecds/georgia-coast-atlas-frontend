@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { PlaceContext } from "~/contexts";
 import type { Dispatch, SetStateAction } from "react";
 import type { ESRelatedPlace } from "~/esTypes";
@@ -12,28 +13,32 @@ const RelatedPlacesList = ({
   showAllPlaces = false,
   setShowAllPlaces,
 }: Props) => {
-  const {
-    place,
-    activePlace,
-    setHoveredPlace,
-    hoveredPlace,
-    setActivePlace,
-    setNoTrackMouse,
-  } = useContext(PlaceContext);
+  const { place, activePlace, setActivePlace } = useContext(PlaceContext);
 
   const [allPlaces, setAllPlaces] = useState<ESRelatedPlace[]>(
     place?.places ?? []
   );
 
+  const navigate = useNavigate();
+
   const handleMouseEnter = (place: ESRelatedPlace) => {
-    setActivePlace(undefined);
-    setHoveredPlace(place);
-    if (setNoTrackMouse) setNoTrackMouse(true);
+    setActivePlace(place);
   };
 
   const handleMouseLeave = () => {
-    setHoveredPlace(undefined);
-    if (setNoTrackMouse) setNoTrackMouse(false);
+    setActivePlace(undefined);
+  };
+
+  const handleClick = (clickedPlace: ESRelatedPlace) => {
+    if (!place) return;
+    setActivePlace(undefined);
+    navigate(`/places/${clickedPlace.slug}`, {
+      state: {
+        title: place.name,
+        slug: place.slug,
+        previous: `/places/${place.slug}`,
+      },
+    });
   };
 
   useEffect(() => {
@@ -48,20 +53,16 @@ const RelatedPlacesList = ({
   if (allPlaces?.length > 0) {
     return (
       <>
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {allPlaces.map((relatedPlace) => {
             return (
               <div key={`related-place-list-${relatedPlace.uuid}`}>
                 <button
-                  className={`text-black/75 text-left md:py-1 ${
-                    hoveredPlace?.uuid === relatedPlace.uuid
-                      ? "bg-gray-200 font-bold"
-                      : ""
-                  } ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
-                  onMouseEnter={() => handleMouseEnter(relatedPlace)}
+                  className={`text-black/75 text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
+                  onMouseMove={() => handleMouseEnter(relatedPlace)}
                   onMouseLeave={handleMouseLeave}
                   onClick={() => {
-                    setActivePlace(relatedPlace);
+                    handleClick(relatedPlace);
                   }}
                 >
                   {relatedPlace.name}
