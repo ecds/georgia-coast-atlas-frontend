@@ -61,6 +61,7 @@ const Place = () => {
 
   useEffect(() => {
     if (!location.state) return;
+    if (!location.state) return;
     let stateCopy = location.state;
     if (location.pathname == location.state.previous) {
       stateCopy = {
@@ -111,7 +112,6 @@ const Place = () => {
           <RelatedMedia title="Photographs" records={place.photographs} />
           <RelatedMedia title="Panos" records={place.panos} />
           {place.people && place.people.length > 0 && (
-          {place.people && place.people.length > 0 && (
             <RelatedSection title="People" defaultOpen={false}>
               <dl className="p-4">
                 {place.people.map((person) => {
@@ -125,7 +125,6 @@ const Place = () => {
               </dl>
             </RelatedSection>
           )}
-          {place.works && place.works.length > 0 && (
           {place.works && place.works.length > 0 && (
             <RelatedSection title="Works" defaultOpen={false}>
               <ul className="p-8">
