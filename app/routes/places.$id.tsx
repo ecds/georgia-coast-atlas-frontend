@@ -139,7 +139,7 @@ const PlacePage = () => {
           <RelatedMedia title="Videos" records={place.videos} />
           <RelatedMedia title="Photographs" records={place.photographs} />
           <RelatedMedia title="Panos" records={place.panos} />
-          {place.people && (
+          {place.people && place.people.length > 0 && (
             <RelatedSection title="People" defaultOpen={false}>
               <dl className="p-4">
                 {place.people.map((person) => {
@@ -153,7 +153,7 @@ const PlacePage = () => {
               </dl>
             </RelatedSection>
           )}
-          {place.works && (
+          {place.works && place.works.length > 0 && (
             <RelatedSection title="Works" defaultOpen={false}>
               <ul className="p-8">
                 {place.works.map((work) => {
