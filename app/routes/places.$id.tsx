@@ -71,6 +71,7 @@ const PlacePage = () => {
   const location = useLocation();
 
   useEffect(() => {
+    if (!location.state) return;
     let stateCopy = location.state;
     if (location.pathname == location.state.previous) {
       stateCopy = {
