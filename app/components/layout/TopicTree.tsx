@@ -27,7 +27,9 @@ const TopicTree = ({ anchor, itemsClassName, linkClassName }: Props) => {
         `${dataHosts.elasticSearch}/georgia_coast_topic_tree/_search`,
         {
           method: "POST",
-          body: JSON.stringify({}),
+          body: JSON.stringify({
+            query: { ids: { values: "JcV1tZYBScXy9kOSVsBL" } },
+          }),
           headers: elasticSearchHeaders(),
         }
       );
