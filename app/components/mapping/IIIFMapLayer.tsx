@@ -39,8 +39,13 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
   }, [mapLoaded, map, layer]);
 
   useEffect(() => {
-    const addWarpedLayer = async () => {
+    const addWarpedLayer = async (beforeLayer: string | undefined) => {
       if (!layerRef.current || !layerRef.current.renderer || !map) return;
+      console.log(
+        "🚀 ~ addWarpedLayer ~ beforeLayer:",
+        beforeLayer,
+        layerRef.current.id
+      );
       await layerRef.current.addGeoreferenceAnnotationByUrl(
         `/iiif/annotation-geo/${year}/${layer.name?.replaceAll(" ", "_") ?? ""}`
       );
@@ -50,10 +55,13 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
           layerRef.current.id,
         ]);
 
+      if (beforeLayer) map.moveLayer(layerRef.current.id, beforeLayer);
       const currentBounds = map.getBounds();
       const imageBounds = layerRef.current.getBounds();
       if (imageBounds) map.fitBounds(currentBounds.extend(imageBounds));
     };
+
+    if (!place) return;
 
     const clearLayer = () => {
       if (mapRef.current && layerRef.current) {
@@ -63,12 +71,16 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
       }
     };
 
+    const beforeLayer = map?.getLayer(`clusters-${place.uuid}`)
+      ? `clusters-${place.uuid}`
+      : undefined;
+
     if (mapRef.current && show && layerRef.current && loaded.current) {
       if (!mapRef.current.getLayer(layerRef.current.id)) {
-        mapRef.current.addLayer(layerRef.current, `clusters-${place.uuid}`);
-        // mapRef.current.on("allrequestedtilesloaded", () => {});
+        // @ts-expect-error: WarpedMapLayer is a valid type.
+        mapRef.current.addLayer(layerRef.current, beforeLayer);
       }
-      addWarpedLayer();
+      addWarpedLayer(beforeLayer);
     }
 
     if (!show) clearLayer();
