@@ -24,6 +24,7 @@ import { MapContext } from "./contexts";
 import { useState } from "react";
 import type { LinksFunction, MetaFunction } from "react-router";
 import type { Map as TMap } from "maplibre-gl";
+import Analytics from "./components/Analytics";
 
 export const meta: MetaFunction = () => {
   return placeMetaTags();
@@ -64,6 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </main>
         <Loading />
         <ScrollRestoration />
+        <Analytics />
         <Scripts />
       </body>
     </html>
