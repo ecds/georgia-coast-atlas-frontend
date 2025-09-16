@@ -35,7 +35,7 @@ const PopupContent = ({ onClose, children, showCloseButton = true }: Props) => {
           </button>
         </div>
       )}
-      <div className="flex flex-col overflow-hidden max-h-48">
+      <div className="flex flex-col overflow-hidden max-h-96">
         <div className="overflow-auto">{children}</div>
       </div>
     </div>
