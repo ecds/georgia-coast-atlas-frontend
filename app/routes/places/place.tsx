@@ -82,22 +82,11 @@ const Place = () => {
         >
           {place.name}
         </Heading>
-        <button
-          role="link"
-          onClick={navigateTo}
-          className="self-center pe-2"
-          title="Close"
-        >
-          <FontAwesomeIcon icon={faXmarkCircle} />
-          <span className="sr-only">close</span>
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-scroll">
-        <div className="min-h-10">
+        <div ref={topRef} className="relative min-h-10">
           <FeaturedMedium record={place} />
         </div>
         <div
-          className={`px-4 pb-4 primary-content`}
+          className={`relative px-4 primary-content min-h-32`}
           dangerouslySetInnerHTML={{
             __html:
               wpData?.content.rendered ??
