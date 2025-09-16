@@ -46,13 +46,16 @@ const WMSLayer = ({ placeLayer }: Props) => {
 
   useEffect(() => {
     if (activeLayers?.includes(placeLayer.uuid) && map) {
+      map.fitBounds(new LngLatBounds(placeLayer.bbox), { padding: 50 });
+    }
+  }, [activeLayers, placeLayer, map]);
+
+  useEffect(() => {
+    if (activeLayers?.includes(placeLayer.uuid) && map) {
       for (const index in placeLayer.wms_resources) {
         const id = `${placeLayer.uuid}-${index}`;
         map.setPaintProperty(id, "raster-opacity", opacity * 0.01);
         map.setLayoutProperty(id, "visibility", "visible");
-        const bounds = new LngLatBounds(placeLayer.bbox);
-
-        map.fitBounds(bounds, { padding: 50 });
       }
     } else {
       for (const index in placeLayer.wms_resources) {
