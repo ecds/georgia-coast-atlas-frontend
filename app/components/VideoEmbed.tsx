@@ -1,7 +1,7 @@
-import type { ESVideo } from "~/esTypes";
+import type { ESRelatedMedium } from "~/esTypes";
 
 interface Props {
-  video: ESVideo;
+  video: ESRelatedMedium;
 }
 
 const VideoEmbed = ({ video }: Props) => {

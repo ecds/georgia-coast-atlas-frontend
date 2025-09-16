@@ -118,11 +118,11 @@ const PlacePage = () => {
         >
           {place.name}
         </Heading>
-        <div ref={topRef} className="relative -top-16 z-20 min-h-10">
+        <div ref={topRef} className="relative min-h-10">
           <FeaturedMedium record={place} />
         </div>
         <div
-          className={`relative px-4 ${place.featured_photograph || place.featured_video ? "-mt-16" : "-mt-8"} primary-content min-h-32`}
+          className={`relative px-4 primary-content min-h-32`}
           dangerouslySetInnerHTML={{
             __html:
               wpData?.content.rendered ??

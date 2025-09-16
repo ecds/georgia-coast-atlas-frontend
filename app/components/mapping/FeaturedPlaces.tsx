@@ -167,7 +167,11 @@ const FeaturedPlaces = ({ places }: Props) => {
                     }}
                   />
                   <Link
-                    state={{ title: "Explore", slug: "explore" }}
+                    state={{
+                      title: "Explore",
+                      slug: "explore",
+                      previous: "/places/explore",
+                    }}
                     to={`/places/${place.slug}`}
                     className="text-blue-700 underline underline-offset-2 text-l block mt-2"
                   >

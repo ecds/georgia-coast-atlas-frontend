@@ -21,8 +21,8 @@ export const combined: StyleSpecification = {
     ...base.sources,
     ...satellite.sources,
     ...usgs.sources,
-    ...costalLabels.sources,
     ...osm.sources,
+    ...costalLabels.sources,
   },
   layers: [
     {
@@ -46,9 +46,9 @@ export const combined: StyleSpecification = {
     ...base.layers,
     ...water,
     ...satellite.layers,
-    ...usgs.layers,
     // ...labels.layers,
-    ...costalLabels.layers,
     ...osm.layers,
+    ...usgs.layers,
+    ...costalLabels.layers,
   ],
 };

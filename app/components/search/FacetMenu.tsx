@@ -39,6 +39,8 @@ const refinementListClassNames = () => {
       "bg-activeCounty text-white text-xs font-medium mx-2 px-2.5 py-0.5 rounded",
     item: `py-2 font-light text-sm`,
     selectedItem: "font-semibold",
+    showMore:
+      "px-3 py-2 mt-2 text-xs capitalize font-medium text-center inline-flex items-center text-black hover:text-white bg-gray-200 rounded-lg hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300",
   };
   return classNames;
 };
@@ -146,6 +148,7 @@ const FacetMenu = () => {
             classNames={refinementListClassNames()}
             sortBy={["name:asc"]}
             operator="or"
+            limit={12}
           />
         </MenuSection>
         <MenuSeparator className="my-6 h-px bg-black m-4" />
@@ -157,6 +160,7 @@ const FacetMenu = () => {
             attribute="media_types"
             classNames={refinementListClassNames()}
             operator="or"
+            showMore
           />
         </MenuSection>
       </MenuItems>
