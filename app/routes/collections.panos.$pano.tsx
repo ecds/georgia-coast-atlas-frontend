@@ -60,6 +60,7 @@ const PanoDetail = () => {
       />
       <div>
         <h1 className="text-lg text-black/85">{pano.name}</h1>
+        <p>{pano.publisher}</p>
         <div dangerouslySetInnerHTML={{ __html: pano.description ?? "" }} />
       </div>
       {pano.places?.length > 0 && (

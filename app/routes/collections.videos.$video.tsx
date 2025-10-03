@@ -70,6 +70,25 @@ const VideoDetail = () => {
             className="w-full aspect-video bg-black/60"
           />
           <h1 className="text-lg text-black/85">{video.name}</h1>
+          <ul className="hidden md:block text-xs">
+            {video.places?.length > 0 && (
+              <li>
+                <span className="font-semibold">Places:</span>{" "}
+                {video.place_names.join(",")}
+              </li>
+            )}
+            {video.date && (
+              <li>
+                <span className="font-semibold">Date:</span> {video.date}
+              </li>
+            )}
+            {video.publisher && (
+              <li>
+                <span className="font-semibold">Publisher:</span>{" "}
+                {video.publisher}
+              </li>
+            )}
+          </ul>
         </div>
         <div dangerouslySetInnerHTML={{ __html: video.description ?? "" }} />
       </div>

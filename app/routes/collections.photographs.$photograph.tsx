@@ -71,21 +71,41 @@ const PhotographDetail = () => {
 
       <div>
         <h1 className="text-lg text-black/85">{photograph.name}</h1>
-
-        {photograph.full_url && (
-          <a
-            href={photograph.full_url.replace("/square/", "/full/")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 underline hover:text-blue-800 mt-1 w-fit flex items-center"
-          >
-            View Full Image
-            <FontAwesomeIcon
-              icon={faArrowUpRightFromSquare}
-              className="text-sm ms-2"
-            />
-          </a>
-        )}
+        <ul className="hidden md:block text-xs">
+          {photograph.full_url && (
+            <li>
+              <a
+                href={photograph.full_url.replace("/square/", "/full/")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-blue-600 underline hover:text-blue-800 mt-1 w-fit flex items-center"
+              >
+                View Full Image
+                <FontAwesomeIcon
+                  icon={faArrowUpRightFromSquare}
+                  className="text-sm ms-2"
+                />
+              </a>
+            </li>
+          )}
+          {photograph.places?.length > 0 && (
+            <li>
+              <span className="font-semibold">Places:</span>{" "}
+              {photograph.place_names.join(",")}
+            </li>
+          )}
+          {photograph.date && (
+            <li>
+              <span className="font-semibold">Date:</span> {photograph.date}
+            </li>
+          )}
+          {photograph.publisher && (
+            <li>
+              <span className="font-semibold">Publisher:</span>{" "}
+              {photograph.publisher}
+            </li>
+          )}
+        </ul>
 
         <div
           dangerouslySetInnerHTML={{ __html: photograph.description ?? "" }}

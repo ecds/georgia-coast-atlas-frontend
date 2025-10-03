@@ -111,6 +111,12 @@ const MapDetail = () => {
           disabled={false}
         />
         <hr className="my-2" />
+        {mapLayer.publisher && (
+          <cite className="text-sm">
+            <span className="font-bold">Published by:</span>{" "}
+            {mapLayer.publisher}
+          </cite>
+        )}
         <p>{mapLayer.description ?? ""}</p>
       </div>
       <div className="flex-grow">
