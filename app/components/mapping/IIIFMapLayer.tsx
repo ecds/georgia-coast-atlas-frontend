@@ -41,11 +41,6 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
   useEffect(() => {
     const addWarpedLayer = async (beforeLayer: string | undefined) => {
       if (!layerRef.current || !layerRef.current.renderer || !map) return;
-      console.log(
-        "🚀 ~ addWarpedLayer ~ beforeLayer:",
-        beforeLayer,
-        layerRef.current.id
-      );
       await layerRef.current.addGeoreferenceAnnotationByUrl(
         `/iiif/annotation-geo/${year}/${layer.name?.replaceAll(" ", "_") ?? ""}`
       );
@@ -103,7 +98,7 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
       <AddLayerButton
         onClick={onClick}
         // className="md:mx-8 w-32 drop-shadow-md h-auto md:h-32 mx-auto bg-cover flex items-end rounded-md"
-        image={`https://iip.readux.io/iiif/3/topos/${year}/${layer.name?.replaceAll(" ", "_")}.tiff/square/200,/0/default.jpg`}
+        image={`https://iip.ecds.io/iiif/3/topos/${year}/${layer.name?.replaceAll(" ", "_")}.tiff/square/200,/0/default.jpg`}
       >
         {show ? "remove" : "add"}
       </AddLayerButton>

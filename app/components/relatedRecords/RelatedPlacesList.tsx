@@ -1,8 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { PlaceContext } from "~/contexts";
+import { MapContext, PlaceContext } from "~/contexts";
 import type { Dispatch, SetStateAction } from "react";
 import type { ESRelatedPlace } from "~/esTypes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { Marker } from "maplibre-gl";
 
 interface Props {
   showAllPlaces?: boolean;
@@ -13,33 +16,38 @@ const RelatedPlacesList = ({
   showAllPlaces = false,
   setShowAllPlaces,
 }: Props) => {
-  const { place, activePlace, setActivePlace } = useContext(PlaceContext);
-
+  const { place, setHoveredPlace } = useContext(PlaceContext);
+  const { map } = useContext(MapContext);
+  const navigate = useNavigate();
   const [allPlaces, setAllPlaces] = useState<ESRelatedPlace[]>(
     place?.places ?? []
   );
+  const markerRef = useRef<Marker>();
+  const markerElementRef = useRef<HTMLDivElement>(null);
 
-  const navigate = useNavigate();
+  // useEffect(() => {
+  //   if (!map || !markerElementRef.current) return;
+  //   markerRef.current = new Marker({
+  //     anchor: "bottom",
+  //     element: markerElementRef.current,
+  //   });
+  // }, [map]);
 
-  const handleMouseEnter = (place: ESRelatedPlace) => {
-    setActivePlace(place);
-  };
+  // useEffect(() => {
+  //   if (!map || !markerRef.current) return;
 
-  const handleMouseLeave = () => {
-    setActivePlace(undefined);
-  };
+  //   if (hoveredPlace) {
+  //     markerRef.current
+  //       .setLngLat([hoveredPlace.location.lon, hoveredPlace.location.lat])
+  //       .addTo(map);
+  //   } else {
+  //     markerRef.current.remove();
+  //   }
 
-  const handleClick = (clickedPlace: ESRelatedPlace) => {
-    if (!place) return;
-    setActivePlace(undefined);
-    navigate(`/places/${clickedPlace.slug}`, {
-      state: {
-        title: place.name,
-        slug: place.slug,
-        previous: `/places/${place.slug}`,
-      },
-    });
-  };
+  //   return () => {
+  //     markerRef.current?.remove();
+  //   };
+  // }, [map, hoveredPlace]);
 
   useEffect(() => {
     if (!place) return;
@@ -58,14 +66,18 @@ const RelatedPlacesList = ({
             return (
               <div key={`related-place-list-${relatedPlace.uuid}`}>
                 <button
-                  className={`text-black/75 text-left md:py-1 ${activePlace === relatedPlace ? "underline font-bold" : ""}`}
-                  onMouseMove={() => handleMouseEnter(relatedPlace)}
-                  onMouseLeave={handleMouseLeave}
-                  onClick={() => {
-                    handleClick(relatedPlace);
+                  className={`text-black/75 text-left md:py-1 hover:underline hover:font-bold`}
+                  role="link"
+                  onClick={() => navigate(`/places/${relatedPlace.slug}`)}
+                  onMouseEnter={() => {
+                    if (setHoveredPlace) setHoveredPlace(relatedPlace);
+                  }}
+                  onMouseLeave={() => {
+                    if (setHoveredPlace) setHoveredPlace(undefined);
                   }}
                 >
                   {relatedPlace.name}
+                  onMouse
                 </button>
               </div>
             );
@@ -83,6 +95,15 @@ const RelatedPlacesList = ({
             </>
           )}
         </div>
+        {/* <div ref={markerElementRef} className="text-center">
+          <p className="bg-black text-white rounded-md p-1">
+            {hoveredPlace?.name}
+          </p>
+          <FontAwesomeIcon
+            icon={faLocationDot}
+            className="z-50 text-xl w-12 h-12 text-blue-500"
+          />
+        </div> */}
       </>
     );
   }

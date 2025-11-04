@@ -1,0 +1,73 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Heading component > renders children correctly 1`] = `
+<h2
+  class="text-xl"
+>
+  Hello World
+</h2>
+`;
+
+exports[`Heading component > renders default fallback when an invalid tag is passed 1`] = `
+<div
+  class="text-base"
+>
+  Test Heading
+</div>
+`;
+
+exports[`Heading component > uses custom className instead of default 1`] = `
+<h1
+  class="custom-class"
+>
+  Test Heading
+</h1>
+`;
+
+exports[`Heading component > when rendered as h1 > applies the correct tag and default class 1`] = `
+<h1
+  class="text-2xl"
+>
+  Test Heading
+</h1>
+`;
+
+exports[`Heading component > when rendered as h2 > applies the correct tag and default class 1`] = `
+<h2
+  class="text-xl"
+>
+  Test Heading
+</h2>
+`;
+
+exports[`Heading component > when rendered as h3 > applies the correct tag and default class 1`] = `
+<h3
+  class="text-lg"
+>
+  Test Heading
+</h3>
+`;
+
+exports[`Heading component > when rendered as h4 > applies the correct tag and default class 1`] = `
+<h4
+  class="text-lg"
+>
+  Test Heading
+</h4>
+`;
+
+exports[`Heading component > when rendered as h5 > applies the correct tag and default class 1`] = `
+<h5
+  class="text-lg"
+>
+  Test Heading
+</h5>
+`;
+
+exports[`Heading component > when rendered as h6 > applies the correct tag and default class 1`] = `
+<h6
+  class="text-lg"
+>
+  Test Heading
+</h6>
+`;

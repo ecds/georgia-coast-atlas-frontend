@@ -6,6 +6,10 @@ export const AllPlacesSearch: SearchSettingsConfig = {
       field: "names",
       weight: 10,
     },
+    {
+      field: "types",
+      weight: 2,
+    },
     "description",
   ],
   result_attributes: [
@@ -30,10 +34,6 @@ export const AllPlacesSearch: SearchSettingsConfig = {
   geo_attribute: "location",
   sorting: {
     default: {
-      field: "slug",
-      order: "asc",
-    },
-    _score: {
       field: "_score",
       order: "desc",
     },

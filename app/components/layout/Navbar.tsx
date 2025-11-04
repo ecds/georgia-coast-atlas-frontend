@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
-import TopicTree from "./TopicTree";
+// import TopicTree from "./TopicTree";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
@@ -29,8 +29,8 @@ const Navbar = () => {
 
       <div className="flex items-center space-x-12 text-white text-lg font-barlow">
         <Menu>
-          <MenuButton>Places</MenuButton>
-          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
+          <Link to={"/places"}>Places</Link>
+          {/* <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
             <MenuItem>
               <Link className={menuLinkClassName} to="/places/search">
                 Search
@@ -41,7 +41,7 @@ const Navbar = () => {
                 Explore
               </Link>
             </MenuItem>
-          </MenuItems>
+          </MenuItems> */}
         </Menu>
 
         <Menu>
@@ -62,11 +62,11 @@ const Navbar = () => {
           </MenuItems>
         </Menu>
 
-        <TopicTree
+        {/* <TopicTree
           anchor={itemsAnchor}
           itemsClassName={itemsClassName}
           linkClassName={menuLinkClassName}
-        />
+        /> */}
 
         <Menu>
           <MenuButton>About</MenuButton>

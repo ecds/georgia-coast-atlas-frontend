@@ -9,7 +9,9 @@ import type { TBaseStyleName } from "~/types";
 
 const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
   const { map } = useContext(MapContext);
-  const [activeStyle, setActiveStyle] = useState<TBaseStyleName>("default");
+  const [activeStyle, setActiveStyle] = useState<TBaseStyleName | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (!map) return;
@@ -49,6 +51,13 @@ const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
         unmount={false}
       >
         <span className="px-4 mt-2">Base Maps</span>
+        <button
+          onClick={() => setActiveStyle(undefined)}
+          role="menuitem"
+          className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${!activeStyle ? "bg-gray-200" : ""}`}
+        >
+          Default
+        </button>
         {mapLayers.map((layer) => (
           <button
             key={layer?.name?.replace(" ", "")}

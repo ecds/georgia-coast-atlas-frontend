@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GeoSearch component > renders clusters and points when geojson is created 1`] = `
+<div
+  data-testid="clusters"
+>
+  Clusters: 
+  {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[0,0]},"properties":{"id":"1"}}]}
+</div>
+`;

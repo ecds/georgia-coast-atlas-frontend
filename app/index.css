@@ -29,3 +29,9 @@
 li.ais-Pagination-item--selected.bg-countyActive {
   background-color: deeppink !important;
 }
+
+.preview p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

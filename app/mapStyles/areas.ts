@@ -44,6 +44,7 @@ export const areas: StyleSpecification = {
           landColors.activeCounty,
           landColors.county,
         ],
+        // "fill-outline-color": "white",
       },
     },
     {

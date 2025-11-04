@@ -12,17 +12,18 @@ type TMapContext = {
 
 type TPlaceContext = {
   activeLayers?: string[];
-  activePlace: ESRelatedPlace | ESPlace | undefined;
+  activePlace?: ESRelatedPlace | ESPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  hoveredPlace: ESRelatedPlace | ESPlace | undefined;
+  hoveredPlace?: ESRelatedPlace | ESPlace | undefined;
   noTrackMouse?: boolean;
   place: ESPlace | undefined;
   relatedClosed?: boolean;
   setActiveLayers?: Dispatch<SetStateAction<string[]>>;
-  setActivePlace: Dispatch<
+  setActivePlace?: Dispatch<
     SetStateAction<ESRelatedPlace | ESPlace | undefined>
   >;
+  setPlace?: Dispatch<SetStateAction<ESPlace | ESPlace | undefined>>;
   setHoveredPlace: Dispatch<
     SetStateAction<ESRelatedPlace | ESPlace | undefined>
   >;
@@ -70,7 +71,7 @@ export const PlaceContext = createContext<TPlaceContext>({
     );
   },
   activePlace: undefined,
-  setActivePlace: (_: SetStateAction<ESRelatedPlace | ESPlace | undefined>) => {
+  setPlace: (_: SetStateAction<ESPlace | ESPlace | undefined>) => {
     console.error(
       "setActivePlace not implemented. Did you pass it to context?"
     );

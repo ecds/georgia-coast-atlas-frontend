@@ -160,7 +160,6 @@ const FacetMenu = () => {
             attribute="media_types"
             classNames={refinementListClassNames()}
             operator="or"
-            showMore
           />
         </MenuSection>
       </MenuItems>

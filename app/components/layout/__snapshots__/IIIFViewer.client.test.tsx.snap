@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`IIIFViewer component > passes the openSeadragonConfig to CloverImage 1`] = `
+<div
+  data-label="Test Photo"
+  data-src="https://example.com/iiif/image"
+  data-testid="clover-image"
+>
+  Mock CloverImage
+  <pre>
+    {"showNavigator":false,"showRotationControl":false,"gestureSettingsMouse":{"scrollToZoom":true},"navigatorPosition":"TOP_LEFT","homeFillsViewer":true,"minZoomImageRatio":0.3}
+  </pre>
+</div>
+`;
