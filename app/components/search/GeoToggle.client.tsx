@@ -60,9 +60,9 @@ const GeoToggle = () => {
   };
 
   return (
-    <div className="flex flex-col xl:flex-row w-full space-x-4 px-4 mb-2">
+    <div className="flex flex-col md:flex-row w-full space-x-4 px-4 mb-2">
       <div className="flex flex-row">
-        <div className="me-0 xl:me-2 text-sm text-gray-700">Search Area:</div>
+        <div className="me-1 md:me-2 text-sm text-gray-700">Search Area:</div>
         <Checkbox
           checked={enabled}
           onChange={toggleSearch}
