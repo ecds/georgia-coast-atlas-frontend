@@ -20,7 +20,7 @@ const RelatedPlaces = ({ title, collapsable = true }: Props) => {
   ) {
     return (
       <RelatedSection
-        title={title ?? "Related Places"}
+        title={title ?? "Featured Places"}
         collapsable={collapsable}
         className={
           place.places.length > 0 || place.other_places?.length > 0

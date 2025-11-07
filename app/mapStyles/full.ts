@@ -133,7 +133,7 @@ const gcaLayer = (layer: { sourceLayer: string; icon?: string }) => {
     type: "symbol",
     source: "gca",
     "source-layer": layer.sourceLayer,
-    minzoom: ["barrierisland", "county"].includes(layer.sourceLayer) ? 8 : 9,
+    minzoom: ["barrierisland", "county"].includes(layer.sourceLayer) ? 5 : 9,
     filter: ["==", "$type", "Point"],
     layout: gcaLayout(layer),
     paint: gcaPaint(),
@@ -217,7 +217,10 @@ export const full: StyleSpecification = {
       encoding: "terrarium",
       maxzoom: 12,
       tileSize: 256,
-      url: "https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
+      tiles: [
+        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+      ],
+      // url: "https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
     },
     georgia: {
       type: "vector",
@@ -243,7 +246,10 @@ export const full: StyleSpecification = {
     ...satellite.sources,
     ...usgs.sources,
   },
-  sprite: "https://test.georgiacoastatlas.org/images/sprite",
+  sprite:
+    typeof window !== "undefined"
+      ? `${window.location.protocol}//${window.location.host}/images/sprite`
+      : "",
   version: 8,
   zoom: 13.348999,
   glyphs:

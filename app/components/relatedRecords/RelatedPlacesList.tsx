@@ -3,9 +3,9 @@ import { useNavigate } from "react-router";
 import { MapContext, PlaceContext } from "~/contexts";
 import type { Dispatch, SetStateAction } from "react";
 import type { ESRelatedPlace } from "~/esTypes";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { Marker } from "maplibre-gl";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import type { Marker } from "maplibre-gl";
 
 interface Props {
   showAllPlaces?: boolean;
@@ -77,13 +77,12 @@ const RelatedPlacesList = ({
                   }}
                 >
                   {relatedPlace.name}
-                  onMouse
                 </button>
               </div>
             );
           })}
         </div>
-        <div className="mb-8">
+        {/* <div className="mb-8">
           {place && place.other_places.length > 0 && setShowAllPlaces && (
             <>
               <button
@@ -94,7 +93,7 @@ const RelatedPlacesList = ({
               </button>
             </>
           )}
-        </div>
+        </div> */}
         {/* <div ref={markerElementRef} className="text-center">
           <p className="bg-black text-white rounded-md p-1">
             {hoveredPlace?.name}
