@@ -243,7 +243,7 @@ export const full: StyleSpecification = {
     ...satellite.sources,
     ...usgs.sources,
   },
-  sprite: "http://localhost:3000/images/sprite",
+  sprite: "https://test.georgiacoastatlas.org/images/sprite",
   version: 8,
   zoom: 13.348999,
   glyphs:
