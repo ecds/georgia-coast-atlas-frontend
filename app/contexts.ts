@@ -19,10 +19,13 @@ type TPlaceContext = {
   noTrackMouse?: boolean;
   place: ESPlace | undefined;
   relatedClosed?: boolean;
+  searchParams?: string | undefined;
+  setSearchParams?: Dispatch<SetStateAction<string | undefined>>;
   setActiveLayers?: Dispatch<SetStateAction<string[]>>;
   setActivePlace?: Dispatch<
     SetStateAction<ESRelatedPlace | ESPlace | undefined>
   >;
+  setClickedPlace: Dispatch<SetStateAction<string | undefined>>;
   setPlace?: Dispatch<SetStateAction<ESPlace | ESPlace | undefined>>;
   setHoveredPlace: Dispatch<
     SetStateAction<ESRelatedPlace | ESPlace | undefined>
@@ -83,6 +86,9 @@ export const PlaceContext = createContext<TPlaceContext>({
     console.error(
       "setActiveHovered not implemented. Did you pass it to context?"
     );
+  },
+  setClickedPlace: (_: SetStateAction<string | undefined>) => {
+    console.error("setClicked not implemented. Did you pass it to context?");
   },
 });
 

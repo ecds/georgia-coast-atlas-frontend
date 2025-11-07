@@ -1,12 +1,6 @@
 const Contact = () => {
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex flex-col items-center"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(64, 62, 62, 0.8), rgba(73, 103, 76, 0.7)), url(/images/ossabaw.jpeg)",
-      }}
-    >
+    <>
       <h2
         className="text-white text-3xl font-bold mt-12 mb-8"
         style={{ fontFamily: "'Barlow', sans-serif" }}
@@ -61,7 +55,7 @@ const Contact = () => {
           </button>
         </form>
       </div>
-    </div>
+    </>
   );
 };
 

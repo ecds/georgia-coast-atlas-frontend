@@ -1,26 +1,31 @@
 import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { MapContext, PlaceContext } from "~/contexts";
 import { full } from "~/mapStyles/full";
 import type { MapLayerMouseEvent } from "maplibre-gl";
+import type { ESPlace } from "~/esTypes";
 
 const MapInteractions = () => {
-  const { map } = useContext(MapContext);
-  const { place, setHoveredPlace } = useContext(PlaceContext);
+  const { map, mapLoaded } = useContext(MapContext);
+  const { place, setHoveredPlace, setClickedPlace } = useContext(PlaceContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !mapLoaded) return;
+
     const handleMouseEnter = async ({
       features,
       lngLat,
     }: MapLayerMouseEvent) => {
-      console.log("🚀 ~ handleMouseEnter ~ lngLat:", lngLat);
+      if (!features) return;
+
       map.getCanvas().style.cursor = "pointer";
+
       setHoveredPlace({
         ...features[0].properties,
         location: { lon: lngLat.lng, lat: lngLat.lat },
-      });
+      } as ESPlace);
     };
 
     const handleMouseLeave = () => {
@@ -28,23 +33,14 @@ const MapInteractions = () => {
       setHoveredPlace(undefined);
     };
 
-    const handleClick = ({ features, lngLat }: MapLayerMouseEvent) => {
-      if (!features) return;
+    const handleClick = ({ features }: MapLayerMouseEvent) => {
+      if (!features || !features[0].properties.slug) return;
 
-      for (const feature of features) {
-        console.log("🚀 ~ handleClick ~ feature:", feature);
-        // map.setFilter(feature.layer.id, [
-        //   "all",
-        //   ["!=", "uuid", feature.properties.uuid],
-        //   ["==", "type", "Point"],
-        // ]);
-      }
-
-      navigate(`/places/${features[0].properties.slug}`);
+      setClickedPlace(features[0].properties.slug);
     };
 
     const layers = full.layers
-      .filter((layer) => layer.source === "gca")
+      .filter((layer) => layer.id.startsWith("gca-"))
       .map((layer) => layer.id);
 
     for (const layer of layers) {
@@ -60,7 +56,7 @@ const MapInteractions = () => {
         map.off("mouseleave", layer, handleMouseLeave);
       }
     };
-  }, [map, navigate]);
+  }, [map, navigate, setHoveredPlace, mapLoaded, location, setClickedPlace]);
 
   useEffect(() => {
     if (!place || !map) return;

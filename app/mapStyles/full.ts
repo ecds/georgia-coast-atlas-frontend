@@ -11,6 +11,20 @@ import { usgs } from "./usgs";
 type SymbolLayout = Pick<SymbolLayerSpecification, "layout">;
 type SymbolPaint = Pick<SymbolLayerSpecification, "paint">;
 
+const counties = [
+  "Brantley County",
+  "Bryan County",
+  "Camden County",
+  "Charlton County",
+  "Chatham County",
+  "Effingham County",
+  "Glynn County",
+  "Liberty County",
+  "McIntosh County",
+  "Pierce County",
+  "Ware County",
+];
+
 const textSize = (layer: string) => {
   let sizeProp: DataDrivenPropertyValueSpecification<number> = [
     "interpolate",
@@ -35,7 +49,7 @@ const textSize = (layer: string) => {
   return sizeProp;
 };
 
-export const gcaLayout = (layer: string) => {
+export const gcaLayout = (layer: { sourceLayer: string; icon?: string }) => {
   const layout: SymbolLayout = {
     layout: {
       "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
@@ -45,9 +59,51 @@ export const gcaLayout = (layer: string) => {
       "text-line-height": 1.1,
       "text-max-width": 6,
       "text-radial-offset": ["step", ["zoom"], 0.4, 8, 0],
-      "text-size": textSize(layer),
+      "text-size": textSize(layer.sourceLayer),
     },
   };
+  if (layer.icon && layout.layout) {
+    // layout.layout = {
+    //   "text-field": ["get", "name"],
+    // "text-variable-anchor-offset": [
+    //   "top",
+    //   [0, 1],
+    //   "bottom",
+    //   [0, -1],
+    //   "left",
+    //   [1, 0],
+    //   "right",
+    //   [-1, 0],
+    // ],
+    // "text-justify": "auto",
+    // "icon-image": layer.icon,
+    // "icon-size": 1.25,
+    // "text-size": textSize(layer.sourceLayer),
+    // };
+    layout.layout["icon-image"] = layer.icon;
+    // layout.layout["icon-rotation-alignment"] = "viewport";
+    layout.layout["icon-offset"] = [0, -5];
+    // layout.layout["text-variable-anchor-offset"] = [
+    //   "top",
+    //   [0, 1],
+    //   "bottom",
+    //   [0, -2],
+    // ];
+    // layout.layout["text-radial-offset"] = 0;
+    // layout.layout["icon-text-fit"] = "height";
+    layout.layout["text-anchor"] = "top";
+
+    // layout.layout["symbol-placement"] = "line";
+    // layout.layout["symbol-spacing"] = [
+    //   "interpolate",
+    //   ["linear"],
+    //   ["zoom"],
+    //   11,
+    //   400,
+    //   14,
+    //   600,
+    // ];
+  }
   return layout.layout;
 };
 
@@ -71,13 +127,13 @@ export const gcaPaint = (color = "hsl(0, 2%, 16%)") => {
   return paint.paint;
 };
 
-const gcaLayer = (layer: string) => {
+const gcaLayer = (layer: { sourceLayer: string; icon?: string }) => {
   const layerObj: SymbolLayerSpecification = {
-    id: `gca-${layer}`,
+    id: `gca-${layer.sourceLayer}`,
     type: "symbol",
     source: "gca",
-    "source-layer": layer,
-    minzoom: ["barrierisland", "county"].includes(layer) ? 8 : 9,
+    "source-layer": layer.sourceLayer,
+    minzoom: ["barrierisland", "county"].includes(layer.sourceLayer) ? 8 : 9,
     filter: ["==", "$type", "Point"],
     layout: gcaLayout(layer),
     paint: gcaPaint(),
@@ -86,7 +142,7 @@ const gcaLayer = (layer: string) => {
 };
 
 const gcaLayers = () => {
-  return pointLayers.map((layer) => gcaLayer(layer.sourceLayer));
+  return pointLayers.map((layer) => gcaLayer(layer));
 };
 
 const gcaWaterWayLabels = waterWays.map((layer) => {
@@ -104,10 +160,10 @@ const gcaWaterWayLabels = waterWays.map((layer) => {
       "text-max-angle": 30,
       "text-offset": [0, -0.5],
       "text-pitch-alignment": "viewport",
-      "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
+      "text-size": ["interpolate", ["linear"], ["zoom"], 13, 10, 18, 12],
     },
     paint: {
-      "text-color": "hsl(209, 33%, 45%)",
+      "text-color": "white",
       "text-halo-color": "hsl(209, 33%, 70%)",
       "text-halo-width": 1.5,
     },
@@ -127,7 +183,17 @@ const gcaWaterWayLines = waterWays.map((layer) => {
       "line-join": ["step", ["zoom"], "miter", 11, "round"],
     },
     paint: {
-      "line-color": "hsl(209, 33%, 70%)",
+      // "line-color": "hsl(209, 33%, 70%)",
+      "line-color": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        13,
+        "hsl(209, 33%, 70%)",
+        20,
+        "hsl(209, 86%, 56%)",
+      ],
+
       "line-width": [
         "interpolate",
         ["exponential", 1.3],
@@ -151,7 +217,7 @@ export const full: StyleSpecification = {
       encoding: "terrarium",
       maxzoom: 12,
       tileSize: 256,
-      url: "https://tiles.stadiamaps.com/data/terrarium.json",
+      url: "https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
     },
     georgia: {
       type: "vector",
@@ -164,14 +230,20 @@ export const full: StyleSpecification = {
       url: "https://d3j4mgzjrheeg2.cloudfront.net/gca.json",
       promoteId: "id",
     },
-    world: {
+    neighbors: {
       type: "vector",
-      url: "https://geoserveis.icgc.cat/contextmaps/basemap.json",
+      scheme: "xyz",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/neighbors.json",
+      promoteId: "id",
     },
+    // world: {
+    //   type: "vector",
+    //   url: "https://geoserveis.icgc.cat/contextmaps/basemap.json",
+    // },
     ...satellite.sources,
     ...usgs.sources,
   },
-  sprite: "https://tiles.stadiamaps.com/styles/stamen-terrain/sprite",
+  sprite: "http://localhost:3000/images/sprite",
   version: 8,
   zoom: 13.348999,
   glyphs:
@@ -856,7 +928,7 @@ export const full: StyleSpecification = {
     {
       id: "water",
       type: "fill",
-      source: "world",
+      source: "georgia",
       "source-layer": "water",
       layout: {},
       paint: {
@@ -3176,62 +3248,46 @@ export const full: StyleSpecification = {
     //     "line-width": 1.5,
     //   },
     // },
-    {
-      id: "maritime-boundary",
-      type: "line",
-      source: "georgia",
-      "source-layer": "boundary",
-      minzoom: 8,
-      filter: [
-        "all",
-        ["==", ["get", "admin_level"], 4],
-        ["==", ["get", "maritime"], 1],
-      ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
-      paint: {
-        "line-color": "darkgray",
-        "line-width": 4,
-      },
-    },
-    {
-      id: "county-boundary",
-      type: "line",
-      source: "georgia",
-      "source-layer": "boundary",
-      minzoom: 8,
-      filter: ["==", ["get", "admin_level"], 6],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
-      paint: {
-        "line-color": "darkgray",
-        "line-width": 4,
-      },
-    },
-    {
-      id: "state-boundary",
-      type: "line",
-      source: "world",
-      "source-layer": "boundary",
-      minzoom: 6,
-      filter: [
-        "all",
-        ["==", ["get", "admin_level"], 4],
-        ["==", ["get", "maritime"], 0],
-      ],
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
-      paint: {
-        "line-color": "darkgray",
-        "line-width": 4,
-      },
-    },
+    // {
+    //   id: "maritime-boundary",
+    //   type: "line",
+    //   source: "georgia",
+    //   "source-layer": "boundary",
+    //   minzoom: 8,
+    //   filter: [
+    //     "all",
+    //     ["==", ["get", "admin_level"], 4],
+    //     ["==", ["get", "maritime"], 1],
+    //   ],
+    //   layout: {
+    //     "line-cap": "round",
+    //     "line-join": "round",
+    //   },
+    //   paint: {
+    //     "line-color": "darkgray",
+    //     "line-width": 4,
+    //   },
+    // },
+    // {
+    //   id: "state-boundary",
+    //   type: "line",
+    //   source: "georgia",
+    //   "source-layer": "boundary",
+    //   minzoom: 6,
+    //   filter: [
+    //     "all",
+    //     ["==", ["get", "admin_level"], 4],
+    //     ["==", ["get", "maritime"], 0],
+    //   ],
+    //   layout: {
+    //     "line-cap": "round",
+    //     "line-join": "round",
+    //   },
+    //   paint: {
+    //     "line-color": "darkgray",
+    //     "line-width": 4,
+    //   },
+    // },
     // {
     //   id: "national-boundary",
     //   type: "line",
@@ -3394,20 +3450,14 @@ export const full: StyleSpecification = {
         "icon-image": [
           "match",
           ["get", "network"],
-          ["us-interstate", "us-highway"],
+          ["us-interstate", "us-highway", "us-state"],
           [
             "concat",
-            "shield-",
             ["get", "network"],
-            "-",
+            "_",
             ["to-string", ["get", "ref_length"]],
           ],
-          [
-            "concat",
-            "shield-rectangle-white",
-            "-",
-            ["to-string", ["get", "ref_length"]],
-          ],
+          ["concat", "us-highway", "-", ["to-string", ["get", "ref_length"]]],
         ],
         "icon-rotation-alignment": "viewport",
         "symbol-placement": "line",
@@ -3431,8 +3481,8 @@ export const full: StyleSpecification = {
         "text-color": [
           "case",
           ["match", ["get", "network"], ["us-interstate"], true, false],
-          "hsl(0, 0%, 100%)",
-          "hsl(230, 11%, 13%)",
+          "hsl(0, 2%, 16%)",
+          "hsl(0, 2%, 16%)",
         ],
       },
     },
@@ -3698,79 +3748,79 @@ export const full: StyleSpecification = {
     //     "text-halo-width": 1.5,
     //   },
     // },
-    {
-      id: "airport-label",
-      type: "symbol",
-      source: "georgia",
-      "source-layer": "aerodrome_label",
-      minzoom: 10.5,
-      filter: [
-        "all",
-        [
-          "match",
-          ["get", "class"],
-          ["military", "international", "other", "regional", "public"],
-          true,
-          false,
-        ],
-        [
-          "step",
-          ["zoom"],
-          [
-            "all",
-            ["has", "icao"],
-            [
-              "match",
-              ["get", "class"],
-              ["international", "military"],
-              true,
-              false,
-            ],
-          ],
-          12,
-          [
-            "all",
-            ["has", "icao"],
-            [
-              "match",
-              ["get", "class"],
-              ["international", "military", "other", "regional"],
-              true,
-              false,
-            ],
-          ],
-          14,
-          true,
-        ],
-      ],
-      layout: {
-        "icon-image": [
-          "case",
-          ["match", ["get", "icao"], ["KXMR", "KMHV"], true, false],
-          "terrain-airport-intergalactic",
-          "terrain-airport",
-        ],
-        "text-anchor": "top",
-        "text-field": [
-          "step",
-          ["zoom"],
-          ["get", "iata"],
-          12,
-          ["coalesce", ["get", "name:en"], ["get", "name"]],
-        ],
-        "text-font": ["PT Sans Narrow Regular,Inter Regular"],
-        "text-letter-spacing": 0.01,
-        "text-line-height": 1.1,
-        "text-max-width": 9,
-        "text-offset": [0, 0.8],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
-      },
-      paint: {
-        "text-color": "hsl(60, 2%, 40%)",
-        "text-halo-color": "hsl(0, 0%, 94%)",
-        "text-halo-width": 1,
-      },
-    },
+    // {
+    //   id: "airport-label",
+    //   type: "symbol",
+    //   source: "georgia",
+    //   "source-layer": "aerodrome_label",
+    //   minzoom: 10.5,
+    //   filter: [
+    //     "all",
+    //     [
+    //       "match",
+    //       ["get", "class"],
+    //       ["military", "international", "other", "regional", "public"],
+    //       true,
+    //       false,
+    //     ],
+    //     [
+    //       "step",
+    //       ["zoom"],
+    //       [
+    //         "all",
+    //         ["has", "icao"],
+    //         [
+    //           "match",
+    //           ["get", "class"],
+    //           ["international", "military"],
+    //           true,
+    //           false,
+    //         ],
+    //       ],
+    //       12,
+    //       [
+    //         "all",
+    //         ["has", "icao"],
+    //         [
+    //           "match",
+    //           ["get", "class"],
+    //           ["international", "military", "other", "regional"],
+    //           true,
+    //           false,
+    //         ],
+    //       ],
+    //       14,
+    //       true,
+    //     ],
+    //   ],
+    //   layout: {
+    //     "icon-image": [
+    //       "case",
+    //       ["match", ["get", "icao"], ["KXMR", "KMHV"], true, false],
+    //       "terrain-airport-intergalactic",
+    //       "terrain-airport",
+    //     ],
+    //     "text-anchor": "top",
+    //     "text-field": [
+    //       "step",
+    //       ["zoom"],
+    //       ["get", "iata"],
+    //       12,
+    //       ["coalesce", ["get", "name:en"], ["get", "name"]],
+    //     ],
+    //     "text-font": ["PT Sans Narrow Regular,Inter Regular"],
+    //     "text-letter-spacing": 0.01,
+    //     "text-line-height": 1.1,
+    //     "text-max-width": 9,
+    //     "text-offset": [0, 0.8],
+    //     "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
+    //   },
+    //   paint: {
+    //     "text-color": "hsl(60, 2%, 40%)",
+    //     "text-halo-color": "hsl(0, 0%, 94%)",
+    //     "text-halo-width": 1,
+    //   },
+    // },
     {
       id: "neighborhood-label",
       type: "symbol",
@@ -3931,6 +3981,88 @@ export const full: StyleSpecification = {
     // },
     ...usgs.layers,
     ...satellite.layers,
+    {
+      id: "county-boundary-label",
+      type: "symbol",
+      source: "gca",
+      "source-layer": "countyshapes",
+      filter: ["in", ["get", "NAMELSAD10"], ["literal", counties]],
+      layout: {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          13,
+          400,
+          18,
+          600,
+        ],
+        "text-field": ["coalesce", ["get", "name:en"], ["get", "NAMELSAD10"]],
+        "text-font": ["PT Sans Italic,Inter Italic"],
+        "text-max-angle": 30,
+        "text-offset": [0, 0.5],
+        "text-pitch-alignment": "viewport",
+        "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
+      },
+      paint: gcaPaint(),
+    },
+    {
+      id: "neighbors",
+      source: "neighbors",
+      "source-layer": "neighbors",
+      type: "fill",
+      paint: {
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          11,
+          "hsl(0, 0%, 91%)",
+          12,
+          "hsl(65, 36%, 81%)",
+        ],
+        "fill-opacity": 1,
+      },
+    },
+    {
+      id: "county-mask",
+      type: "fill",
+      source: "gca",
+      "source-layer": "countyshapes",
+      // minzoom: 8,
+      filter: ["!", ["in", ["get", "NAMELSAD10"], ["literal", counties]]],
+      paint: {
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          11,
+          "hsl(0, 0%, 91%)",
+          12,
+          "hsl(65, 36%, 81%)",
+        ],
+        "fill-opacity": 0.8,
+      },
+    },
+    {
+      id: "county-boundary",
+      type: "line",
+      source: "gca",
+      "source-layer": "countyshapes",
+      minzoom: 7,
+      filter: ["in", ["get", "NAMELSAD10"], ["literal", counties]],
+      // layout: {
+      //   "line-cap": "round",
+      //   "line-join": "round",
+      // },
+      paint: {
+        "line-color": "darkgray",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 7, 2, 10, 4],
+        "line-offset": 0,
+      },
+    },
+
     ...gcaLayers(),
     // {
     //   id: "park-label",

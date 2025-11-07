@@ -23,13 +23,7 @@ const Bibliography = () => {
   const { works } = useLoaderData<typeof loader>();
 
   return (
-    <div
-      className="bg-cover bg-top flex flex-col items-center bg-fixed"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.8)), url(/images/ossabaw.jpeg)",
-      }}
-    >
+    <>
       <h2 className="text-white text-5xl font-extrabold mt-10 tracking-wide font-barlow uppercase">
         Bibliography
       </h2>
@@ -46,7 +40,7 @@ const Bibliography = () => {
           );
         })}
       </div>
-    </div>
+    </>
   );
 };
 

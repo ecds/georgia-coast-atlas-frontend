@@ -35,7 +35,7 @@ export const links: LinksFunction = () => [
   { rel: "icon", href: "/images/gca_favicon.jpg" },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export const Layout = ({ children }: { children: React.ReactNode }) => {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   return (
@@ -70,13 +70,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
-}
+};
 
-export default function App() {
+const App = () => {
   return <Outlet />;
-}
+};
 
-export function ErrorBoundary() {
+export const ErrorBoundary = () => {
   const error = useRouteError();
 
   if (isRouteErrorResponse(error)) {
@@ -86,4 +86,6 @@ export function ErrorBoundary() {
   } else {
     return <h1>Unknown Error</h1>;
   }
-}
+};
+
+export default App;

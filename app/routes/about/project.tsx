@@ -32,22 +32,12 @@ const ProjectPage = () => {
   const { wpData } = useLoaderData<{ wpData: TWordPressData }>();
 
   return (
-    <div>
-      <div
-        className="bg-cover bg-center h-screen w-screen overflow-y-scroll"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(64, 62, 62, 0.9),rgba(73, 103, 76, 0.6)), url(/images/ossabaw.jpeg)",
-        }}
-      >
-        <div
-          className="elementor-kit-40" // Class for WordPress CSS
-          dangerouslySetInnerHTML={{
-            __html: wpData?.content.rendered,
-          }}
-        />
-      </div>
-    </div>
+    <div
+      className="elementor-kit-40" // Class for WordPress CSS
+      dangerouslySetInnerHTML={{
+        __html: wpData?.content.rendered,
+      }}
+    />
   );
 };
 

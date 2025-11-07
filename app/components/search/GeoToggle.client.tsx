@@ -1,7 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { Checkbox } from "@headlessui/react";
 import { MapContext } from "~/contexts";
-import { useGeoSearch } from "react-instantsearch";
+import {
+  useCurrentRefinements,
+  useGeoSearch,
+  useSearchBox,
+} from "react-instantsearch";
 import type { MapLibreEvent } from "maplibre-gl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -11,13 +15,24 @@ const GeoToggle = () => {
   const [enabled, setEnabled] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState<boolean>(false);
   const { map } = useContext(MapContext);
-  const { refine, clearMapRefinement, currentRefinement } = useGeoSearch();
+  const {
+    refine,
+    clearMapRefinement,
+    currentRefinement: geoRefinement,
+  } = useGeoSearch();
+  const { items: currentRefinements } = useCurrentRefinements();
+  const { query } = useSearchBox();
 
   useEffect(() => {
     if (!map) return;
     const handelBoundsChange = ({ originalEvent }: MapLibreEvent) => {
       if (!map) return;
-      setShowSearchButton(Boolean(originalEvent));
+      setShowSearchButton(
+        Boolean(
+          originalEvent &&
+            (geoRefinement || currentRefinements.length > 0 || query)
+        )
+      );
     };
 
     map.on("moveend", handelBoundsChange);
@@ -25,15 +40,22 @@ const GeoToggle = () => {
     return () => {
       map.off("moveend", handelBoundsChange);
     };
-  }, [map, currentRefinement]);
+  }, [map, geoRefinement, currentRefinements, query]);
 
   useEffect(() => {
-    if (currentRefinement) {
+    setShowSearchButton(
+      Boolean(geoRefinement || currentRefinements.length > 0 || query)
+    );
+  }, [geoRefinement, currentRefinements, query]);
+
+  useEffect(() => {
+    if (geoRefinement) {
       setEnabled(true);
     } else {
       setEnabled(false);
+      setShowSearchButton(false);
     }
-  }, [currentRefinement]);
+  }, [geoRefinement]);
 
   const searchArea = () => {
     if (!map) return;
@@ -46,7 +68,7 @@ const GeoToggle = () => {
 
   const toggleSearch = () => {
     if (map) {
-      if (currentRefinement) {
+      if (geoRefinement) {
         clearMapRefinement();
       } else {
         searchArea();
@@ -58,6 +80,10 @@ const GeoToggle = () => {
     searchArea();
     setShowSearchButton(false);
   };
+
+  if (!window) {
+    return <></>;
+  }
 
   return (
     <div className="flex flex-col md:flex-row w-full space-x-4 px-4 mb-2">
@@ -86,7 +112,7 @@ const GeoToggle = () => {
       </button>
       {createPortal(
         <div
-          className={`fixed top-24 left-3/4 -translate-x-3/4 ${showSearchButton ? "block" : "hidden"}`}
+          className={`fixed top-24 left-2/3 -translate-x-3/4 ${showSearchButton ? "block" : "hidden"}`}
         >
           <button
             className="flex items-center px-3 py-2 text-sm bg-white rounded-full shadow-md hover:bg-gray-100"

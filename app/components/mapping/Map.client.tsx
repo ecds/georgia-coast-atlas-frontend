@@ -2,10 +2,10 @@ import maplibregl, { AttributionControl, LngLatBounds } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
 import { defaultBounds } from "~/config";
-import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
 import type { StyleSpecification, Map as TMap } from "maplibre-gl";
+import { full } from "~/mapStyles/full";
 
 interface Props {
   bearing?: number;
@@ -27,7 +27,7 @@ const Map = ({ children, className, bearing, bounds, style }: Props) => {
     try {
       _map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: style ?? combined,
+        style: full,
         center: bounds?.getCenter() ?? [-81.40348956381558, 31.41113196761974],
         zoom: 9,
         maxPitch: 0,
@@ -64,6 +64,10 @@ const Map = ({ children, className, bearing, bounds, style }: Props) => {
       }
     };
   }, [setMap, setMapLoaded, bearing, bounds, style]);
+
+  if (!window) {
+    return <></>;
+  }
 
   return (
     <div className="relative bg-water">

@@ -58,11 +58,13 @@ const PlacesRootPage = () => {
         </div>
       </div>
       <div className="hidden md:block flex-grow">
-        <ClientOnly>
-          <Map>
-            <StyleSwitcher />
-          </Map>
-        </ClientOnly>
+        {typeof window !== "undefined" && (
+          <ClientOnly>
+            <Map>
+              <StyleSwitcher />
+            </Map>
+          </ClientOnly>
+        )}
       </div>
     </div>
   );

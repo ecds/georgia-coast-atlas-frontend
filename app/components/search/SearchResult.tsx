@@ -1,32 +1,29 @@
 import { PLACE_TYPES } from "~/config";
-import { Link, useLocation } from "react-router";
 import { useContext } from "react";
-import { SearchContext } from "~/contexts";
+import { PlaceContext, SearchContext } from "~/contexts";
 import type { Hit } from "instantsearch.js";
 
 const SearchResult = ({ hit }: { hit: Hit }) => {
   const { setActiveResult } = useContext(SearchContext);
-  const location = useLocation();
+  const { setClickedPlace } = useContext(PlaceContext);
 
   return (
     <div
-      className="flex flex-col border-b-2 pb-2 px-4 focus:bg-red-400"
+      className="flex flex-col border-b-2 pb-2 px-4 hover:bg-gray-200 focus:bg-red-400"
       onMouseEnter={() => setActiveResult(hit.identifier)}
       onMouseLeave={() => setActiveResult(undefined)}
     >
-      <Link
-        state={{
-          title: "Search Results",
-          slug: "search",
-          previous: `${location.pathname}${location.search}`,
-        }}
-        className="grow min-w-[75%] cursor-pointer py-0.5"
-        to={`/places/${hit.slug}`}
-      >
-        <h4 className="">{hit.name}</h4>
-      </Link>
-      <div className="flex flex-row text-xs">
-        <div className="grow">{hit.county}</div>
+      <div className="grow top-0">
+        <button
+          role="link"
+          onClick={() => setClickedPlace(hit.slug)}
+          className="grow min-w-[75%] cursor-pointer py-0.5 text-start"
+        >
+          <h4 className="">{hit.name}</h4>
+        </button>
+      </div>
+      <div className="flex flex-row text-xs items-stretch">
+        <div className="grow self-end">{hit.county ?? "Georgia"}</div>
         {hit.types?.map((type: string) => {
           return (
             <div

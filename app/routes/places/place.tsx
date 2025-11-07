@@ -1,7 +1,7 @@
 import { placeMetaTags } from "~/utils/placeMetaTags";
 import { fetchBySlug } from "~/data/coredata";
 import { dataHosts, indexCollection } from "~/config";
-import { Link, useLoaderData } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import type { ESPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
@@ -17,7 +17,7 @@ import {
   faArrowUpRightFromSquare,
   faXmarkCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import PlaceHighlight from "~/components/mapping/PlaceHighlight";
 
@@ -50,7 +50,14 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const Place = () => {
   const { place, wpData } = useLoaderData<typeof loader>();
   const { map } = useContext(MapContext);
-  const { setPlace } = useContext(PlaceContext);
+  const { setPlace, searchParams } = useContext(PlaceContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [useBack, setUseBack] = useState<boolean>(false);
+
+  useEffect(() => {
+    setUseBack(Boolean(location.state?.fromIndex));
+  }, [location, searchParams]);
 
   useEffect(() => {
     if (!place || !map) return;
@@ -64,6 +71,11 @@ const Place = () => {
     }
   }, [place, map, setPlace]);
 
+  const navigateTo = () => {
+    if (useBack) navigate(-1);
+    if (!useBack) navigate({ pathname: "/places", search: searchParams });
+  };
+
   return (
     <>
       <div className="flex flex-row w-full shadow-md">
@@ -73,10 +85,15 @@ const Place = () => {
         >
           {place.name}
         </Heading>
-        <Link to="/places" className="self-center pe-2" title="Close">
+        <button
+          role="link"
+          onClick={navigateTo}
+          className="self-center pe-2"
+          title="Close"
+        >
           <FontAwesomeIcon icon={faXmarkCircle} />
           <span className="sr-only">close</span>
-        </Link>
+        </button>
       </div>
       <div className="flex-1 overflow-y-scroll">
         <div className="min-h-10">

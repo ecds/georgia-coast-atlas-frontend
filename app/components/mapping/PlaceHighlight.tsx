@@ -23,9 +23,8 @@ const PlaceHighlight = () => {
 
     let marker = undefined;
 
-    const location = new LngLat(place.location.lon, place.location.lat);
-
     if (markerRef.current) {
+      const location = new LngLat(place.location.lon, place.location.lat);
       marker = new Marker({ element: markerRef.current })
         .setLngLat(location)
         .addTo(map);
@@ -57,7 +56,7 @@ const PlaceHighlight = () => {
               "line-cap": "round",
             },
             paint: {
-              "line-color": "blue",
+              "line-color": "hsl(209, 86%, 56%)",
               "line-width": [
                 "interpolate",
                 ["exponential", 1.2],
@@ -78,7 +77,7 @@ const PlaceHighlight = () => {
             source: "place-source",
             layout: {},
             paint: {
-              "fill-outline-color": "blue",
+              "fill-outline-color": "hsl(357, 96%, 58%)",
               "fill-opacity": 0,
             },
           });
@@ -88,7 +87,7 @@ const PlaceHighlight = () => {
             source: "place-source",
             layout: {},
             paint: {
-              "line-color": "blue",
+              "line-color": "hsl(357, 96%, 58%)",
               "line-width": [
                 "interpolate",
                 ["exponential", 1.2],
@@ -105,7 +104,7 @@ const PlaceHighlight = () => {
     });
 
     for (const layer of layers) {
-      map.addLayer(layer as AddLayerObject);
+      map.addLayer(layer as AddLayerObject, "road-label-simple");
     }
 
     map.addLayer(placePoint);

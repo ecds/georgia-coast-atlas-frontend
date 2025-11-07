@@ -8,7 +8,7 @@ import {
 } from "react-instantsearch";
 import SearchResult from "./SearchResult";
 import { useContext, useEffect, useState } from "react";
-import { MapContext } from "~/contexts";
+import { MapContext, PlaceContext } from "~/contexts";
 import { gcaLayout, gcaPaint } from "~/mapStyles/full";
 import { pointLayers } from "~/data/layers";
 import type { FeatureCollection } from "geojson";
@@ -19,6 +19,7 @@ const SearchResults = () => {
   const { items: refinements } = useCurrentRefinements();
   const { currentRefinement: geoRefinement } = useGeoSearch();
   const { items } = useHits();
+  const { setClickedPlace } = useContext(PlaceContext);
   const { map } = useContext(MapContext);
   const [isRefined, setIsRefined] = useState<boolean>(false);
 
@@ -40,15 +41,9 @@ const SearchResults = () => {
     };
 
     const handleClick = ({ features }: MapLayerMouseEvent) => {
-      if (!features) return;
+      if (!features || !setClickedPlace) return;
 
-      for (const feature of features) {
-        map.setFilter(feature.layer.id, [
-          "all",
-          ["!=", "uuid", feature.properties.uuid],
-          ["==", "type", "Point"],
-        ]);
-      }
+      setClickedPlace(features[0].properties.slug);
     };
 
     for (const pointLayer of pointLayers) {
@@ -117,7 +112,7 @@ const SearchResults = () => {
       type: "symbol",
       filter: ["==", "$type", "Point"],
       paint: gcaPaint("red"),
-      layout: gcaLayout("counties"),
+      layout: gcaLayout({ sourceLayer: "county" }),
     });
 
     map.on("click", "results", handleClick);
@@ -134,7 +129,7 @@ const SearchResults = () => {
         }
       }
     };
-  }, [items, query, map, isRefined]);
+  }, [items, query, map, isRefined, setClickedPlace]);
 
   if (isRefined) {
     return (

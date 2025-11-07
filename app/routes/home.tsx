@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import ClientOnly from "~/components/ClientOnly";
 import LoopVideoGB from "~/components/layout/LoopVideoBG.client";
 
-export default function Index() {
+const Index = () => {
   useEffect(() => {
     document.body.classList.add("no-scroll");
     return () => {
@@ -13,9 +13,11 @@ export default function Index() {
 
   return (
     <div className="relative w-full h-screen">
-      <ClientOnly>
-        <LoopVideoGB />
-      </ClientOnly>
+      {typeof window !== "undefined" && (
+        <ClientOnly>
+          <LoopVideoGB />
+        </ClientOnly>
+      )}
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-1"></div>
 
       <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
@@ -77,4 +79,6 @@ export default function Index() {
       </div>
     </div>
   );
-}
+};
+
+export default Index;
