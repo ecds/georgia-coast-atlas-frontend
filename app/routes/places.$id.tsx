@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useLoaderData, useLocation } from "react-router";
+import { useRef } from "react";
+import { useLoaderData } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faArrowUpRightFromSquare,
-} from "@fortawesome/free-solid-svg-icons";
-import { PlaceContext } from "~/contexts";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { fetchBySlug } from "~/data/coredata";
 import Heading from "~/components/layout/Heading";
 import FeaturedMedium from "~/components/FeaturedMedium";
@@ -18,9 +14,8 @@ import RelatedSection from "~/components/relatedRecords/RelatedSection";
 import RelatedMedia from "~/components/relatedRecords/RelatedMedia";
 import PlaceMap from "~/components/places/PlaceMap";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import type { ESPlace, ESRelatedPlace } from "~/esTypes";
+import type { ESPlace } from "~/esTypes";
 import type { TWordPressData } from "~/types";
-import type { LngLatBounds } from "maplibre-gl";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return placeMetaTags(data?.place as ESPlace);
@@ -49,154 +44,130 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const PlacePage = () => {
   const { place, wpData } = useLoaderData<typeof loader>();
-  const [activeLayers, setActiveLayers] = useState<string[]>([]);
-  const [activePlace, setActivePlace] = useState<
-    ESRelatedPlace | ESPlace | undefined
-  >();
-  const [hoveredPlace, setHoveredPlace] = useState<
-    ESRelatedPlace | ESPlace | undefined
-  >();
-  const [noTrackMouse, setNoTrackMouse] = useState<boolean>(false);
-  const [backTo, setBackTo] = useState<
-    | {
-        slug: string;
-        title: string;
-        bounds?: LngLatBounds;
-        previous: string;
-        search?: string;
-      }
-    | undefined
-  >(undefined);
+  // const [backTo, setBackTo] = useState<
+  //   | {
+  //       slug: string;
+  //       title: string;
+  //       bounds?: LngLatBounds;
+  //       previous: string;
+  //       search?: string;
+  //     }
+  //   | undefined
+  // >(undefined);
   const topRef = useRef<HTMLDivElement>(null);
-  const location = useLocation();
+  // const location = useLocation();
 
-  useEffect(() => {
-    if (!location.state) return;
-    let stateCopy = location.state;
-    if (location.pathname == location.state.previous) {
-      stateCopy = {
-        ...stateCopy,
-        previous: "/places/explore",
-        slug: "explore",
-        title: "Explore",
-      };
-    }
-    setBackTo(stateCopy);
-  }, [location, place]);
+  // useEffect(() => {
+  //   if (!location.state) return;
+  //   let stateCopy = location.state;
+  //   if (location.pathname == location.state.previous) {
+  //     stateCopy = {
+  //       ...stateCopy,
+  //       previous: "/places/explore",
+  //       slug: "explore",
+  //       title: "Explore",
+  //     };
+  //   }
+  //   setBackTo(stateCopy);
+  // }, [location, place]);
 
   return (
-    <PlaceContext.Provider
-      value={{
-        place,
-        activeLayers,
-        setActiveLayers,
-        activePlace,
-        setActivePlace,
-        hoveredPlace,
-        setHoveredPlace,
-        noTrackMouse,
-        setNoTrackMouse,
-        clusterFillColor: "#ea580c",
-        clusterTextColor: "black",
-      }}
-    >
-      <>
-        {backTo && (
-          <nav className="w-full bg-white z-50 sticky top-0 py-2">
-            <Link
-              to={`${backTo.previous}${backTo.search ?? ""}`}
-              state={backTo}
-              className="block bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-1 rounded-lg text-left w-max m-2 text-xs"
-            >
-              <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo.title}
-            </Link>
-          </nav>
+    <>
+      {/* {backTo && (
+        <nav className="w-full bg-white z-50 sticky top-0 py-2">
+          <Link
+            to={`${backTo.previous}${backTo.search ?? ""}`}
+            state={backTo}
+            className="block bg-gray-300 hover:bg-gray-400 border-spacing-1 drop-shadow-sm px-6 py-1 rounded-lg text-left w-max m-2 text-xs"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} /> Back to {backTo.title}
+          </Link>
+        </nav>
+      )} */}
+      <Heading
+        as="h1"
+        className={`text-2xl px-4 py-1 pb-1 sticky top-0 z-10 bg-white shadow-md`}
+      >
+        {place.name}
+      </Heading>
+      <div ref={topRef} className="relative min-h-10">
+        <FeaturedMedium record={place} />
+      </div>
+      <div
+        className={`relative px-4 primary-content min-h-32`}
+        dangerouslySetInnerHTML={{
+          __html:
+            wpData?.content.rendered ??
+            place.description ??
+            place.short_description,
+        }}
+      />
+      <div className="px-4">
+        {place.types.includes("Barrier Island") ||
+        place.types.includes("County") ? (
+          <RelatedPlaces />
+        ) : (
+          <PlaceMap />
         )}
-        <Heading
-          as="h1"
-          className={`text-2xl px-4 py-1 pb-1 sticky ${backTo ? "top-[3.25rem]" : "top-0"} z-10 bg-white shadow-md`}
-        >
-          {place.name}
-        </Heading>
-        <div ref={topRef} className="relative min-h-10">
-          <FeaturedMedium record={place} />
-        </div>
-        <div
-          className={`relative px-4 primary-content min-h-32`}
-          dangerouslySetInnerHTML={{
-            __html:
-              wpData?.content.rendered ??
-              place.description ??
-              place.short_description,
-          }}
-        />
-        <div className="px-4">
-          {place.types.includes("Barrier Island") ||
-          place.types.includes("County") ? (
-            <RelatedPlaces />
-          ) : (
-            <PlaceMap />
-          )}
-          <RelatedMedia title="Videos" records={place.videos} />
-          <RelatedMedia title="Photographs" records={place.photographs} />
-          <RelatedMedia title="Panos" records={place.panos} />
-          {place.people && place.people.length > 0 && (
-            <RelatedSection title="People" defaultOpen={false}>
-              <dl className="p-4">
-                {place.people.map((person) => {
-                  return (
-                    <>
-                      <dt className="text-lg mb-2">{person.full_name}</dt>
-                      <dd className="mb-3 tracking-wide">{person.biography}</dd>
-                    </>
-                  );
-                })}
-              </dl>
-            </RelatedSection>
-          )}
-          {place.works && place.works.length > 0 && (
-            <RelatedSection title="Works" defaultOpen={false}>
-              <ul className="p-8">
-                {place.works.map((work) => {
-                  return (
-                    <li
-                      key={work.uuid}
-                      className="prose prose-xl prose-invert leading-loose tracking-wide -indent-6 my-6"
-                      dangerouslySetInnerHTML={{
-                        __html: work.citation,
-                      }}
-                    />
-                  );
-                })}
-              </ul>
-            </RelatedSection>
-          )}
-          <RelatedMapLayers />
-          <RelatedTopoQuads />
-          {place.identifiers && place.identifiers.length > 0 && (
-            <RelatedSection title="See Also">
-              {place.identifiers?.map((identifier) => {
+        <RelatedMedia title="Videos" records={place.videos} />
+        <RelatedMedia title="Photographs" records={place.photographs} />
+        <RelatedMedia title="Panos" records={place.panos} />
+        {place.people && place.people.length > 0 && (
+          <RelatedSection title="People" defaultOpen={false}>
+            <dl className="p-4">
+              {place.people.map((person) => {
                 return (
-                  <a
-                    key={identifier.authority}
-                    href={identifier.identifier}
-                    className="block my-2 uppercase text-county hover:text-activeCounty underline"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {identifier.authority}{" "}
-                    <FontAwesomeIcon
-                      icon={faArrowUpRightFromSquare}
-                      className="text-sm"
-                    />
-                  </a>
+                  <>
+                    <dt className="text-lg mb-2">{person.full_name}</dt>
+                    <dd className="mb-3 tracking-wide">{person.biography}</dd>
+                  </>
                 );
               })}
-            </RelatedSection>
-          )}
-        </div>
-      </>
-    </PlaceContext.Provider>
+            </dl>
+          </RelatedSection>
+        )}
+        {place.works && place.works.length > 0 && (
+          <RelatedSection title="Works" defaultOpen={false}>
+            <ul className="p-8">
+              {place.works.map((work) => {
+                return (
+                  <li
+                    key={work.uuid}
+                    className="prose prose-xl prose-invert leading-loose tracking-wide -indent-6 my-6"
+                    dangerouslySetInnerHTML={{
+                      __html: work.citation,
+                    }}
+                  />
+                );
+              })}
+            </ul>
+          </RelatedSection>
+        )}
+        <RelatedMapLayers />
+        <RelatedTopoQuads />
+        {place.identifiers && place.identifiers.length > 0 && (
+          <RelatedSection title="See Also">
+            {place.identifiers?.map((identifier) => {
+              return (
+                <a
+                  key={identifier.authority}
+                  href={identifier.identifier}
+                  className="block my-2 uppercase text-county hover:text-activeCounty underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {identifier.authority}{" "}
+                  <FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    className="text-sm"
+                  />
+                </a>
+              );
+            })}
+          </RelatedSection>
+        )}
+      </div>
+    </>
   );
 };
 

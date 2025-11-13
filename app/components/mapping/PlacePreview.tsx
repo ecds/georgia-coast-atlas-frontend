@@ -1,37 +1,13 @@
-import { Marker } from "maplibre-gl";
+import { Popup } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { MapContext, PlaceContext } from "~/contexts";
 
-const PlacePreview = () => {
+const PopupContent = () => {
   const { hoveredPlace } = useContext(PlaceContext);
-  const { map } = useContext(MapContext);
-  const markerRef = useRef<Marker>();
-  const previewPanelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!map) return;
-
-    if (hoveredPlace && previewPanelRef.current) {
-      markerRef.current = new Marker({
-        anchor: "bottom",
-        element: previewPanelRef.current,
-      })
-        .setLngLat([hoveredPlace.location.lon, hoveredPlace.location.lat])
-        .addTo(map);
-    } else {
-      markerRef.current?.remove();
-    }
-
-    return () => {
-      markerRef.current?.remove();
-    };
-  }, [hoveredPlace, map]);
 
   return (
-    <div
-      ref={previewPanelRef}
-      className="bg-white w-32 md:w-64 rounded-md drop-shadow-lg"
-    >
+    <>
       {hoveredPlace?.featured_photograph && (
         <img
           src={hoveredPlace.featured_photograph.replace("max", "768,")}
@@ -39,15 +15,50 @@ const PlacePreview = () => {
           className="w-full h-24 object-cover"
         />
       )}
-      <h4 className="text-xl mt-1 px-2">{hoveredPlace?.name}</h4>
+      <h4 className="mt-1 px-2 text-lg">{hoveredPlace?.name}</h4>
       <div
-        className="tracking-loose my-1 max-h-16 truncate preview p-2"
+        className="tracking-loose my-1 max-h-16 truncate px-2 text-xs"
         dangerouslySetInnerHTML={{
           __html: hoveredPlace?.description ?? "",
         }}
       />
-    </div>
+    </>
   );
+};
+
+const PlacePreview = () => {
+  const { map } = useContext(MapContext);
+  const { hoveredPlace } = useContext(PlaceContext);
+  const popupRef = useRef<Popup | null>(null);
+  const popContainerRef = useRef<HTMLDivElement>(document.createElement("div"));
+
+  useEffect(() => {
+    if (!map) return;
+
+    if (hoveredPlace && popContainerRef.current) {
+      popupRef.current = new Popup({
+        closeButton: false,
+        className: "min-w-32 md:max-w-64 rounded-md drop-shadow-lg preview",
+      })
+        .setLngLat([hoveredPlace.location.lon, hoveredPlace.location.lat])
+        .setDOMContent(popContainerRef.current);
+
+      if (hoveredPlace.featured_photograph || hoveredPlace.description)
+        popupRef.current.addTo(map);
+    } else {
+      popupRef.current?.remove();
+    }
+
+    return () => {
+      popupRef.current?.remove();
+    };
+  }, [hoveredPlace, map]);
+
+  if (map && popContainerRef.current && hoveredPlace) {
+    return <>{createPortal(<PopupContent />, popContainerRef.current)}</>;
+  }
+
+  return <></>;
 };
 
 export default PlacePreview;

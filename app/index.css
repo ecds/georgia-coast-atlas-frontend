@@ -35,3 +35,7 @@ li.ais-Pagination-item--selected.bg-countyActive {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.preview .maplibregl-popup-content {
+  padding: 0 !important;
+}

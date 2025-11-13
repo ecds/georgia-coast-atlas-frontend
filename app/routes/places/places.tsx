@@ -88,8 +88,8 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
         }}
       >
         <Configure hitsPerPage={100} />
-        <div className="flex flex-row ">
-          <div className="grid grid-cols-5 sticky top-0">
+        <div className="flex ">
+          <div className="grid grow grid-cols-5 sticky top-0">
             <div className="col-span-4">
               <Autocomplete />
             </div>

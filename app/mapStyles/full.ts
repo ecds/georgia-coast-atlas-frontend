@@ -77,12 +77,12 @@ export const gcaLayout = (layer: { sourceLayer: string; icon?: string }) => {
     // ],
     // "text-justify": "auto",
     // "icon-image": layer.icon,
-    // "icon-size": 1.25,
+    layout.layout["icon-size"] = 0.5;
     // "text-size": textSize(layer.sourceLayer),
     // };
     layout.layout["icon-image"] = layer.icon;
     // layout.layout["icon-rotation-alignment"] = "viewport";
-    layout.layout["icon-offset"] = [0, -5];
+    layout.layout["icon-offset"] = [0, -10];
     // layout.layout["text-variable-anchor-offset"] = [
     //   "top",
     //   [0, 1],
@@ -110,6 +110,10 @@ export const gcaLayout = (layer: { sourceLayer: string; icon?: string }) => {
 export const gcaPaint = (color = "hsl(0, 2%, 16%)") => {
   const paint: SymbolPaint = {
     paint: {
+      // "icon-color": "deeppink",
+      "icon-halo-width": 0.25,
+      "icon-halo-color": "black",
+      "icon-opacity": 0.5,
       "text-color": color,
       "text-halo-blur": 1,
       "text-halo-color": [
@@ -248,7 +252,7 @@ export const full: StyleSpecification = {
   },
   sprite:
     typeof window !== "undefined"
-      ? `${window.location.protocol}//${window.location.host}/images/sprite`
+      ? `${window.location.protocol}//${window.location.host}/images/map-icons`
       : "",
   version: 8,
   zoom: 13.348999,
@@ -3490,6 +3494,9 @@ export const full: StyleSpecification = {
           "hsl(0, 2%, 16%)",
           "hsl(0, 2%, 16%)",
         ],
+        "icon-color": "white",
+        "icon-halo-width": 0.25,
+        "icon-halo-color": "black",
       },
     },
     {
