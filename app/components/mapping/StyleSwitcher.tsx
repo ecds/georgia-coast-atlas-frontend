@@ -1,17 +1,14 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { MapContext } from "~/contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { mapLayers } from "~/config";
+import { full } from "~/mapStyles/full";
 import type { ReactNode } from "react";
-import type { TBaseStyleName } from "~/types";
 
 const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
-  const { map } = useContext(MapContext);
-  const [activeStyle, setActiveStyle] = useState<TBaseStyleName | undefined>(
-    undefined
-  );
+  const { map, activeStyle, setActiveStyle } = useContext(MapContext);
 
   useEffect(() => {
     if (!map) return;
@@ -28,14 +25,58 @@ const StyleSwitcher = ({ children }: { children?: ReactNode }) => {
     }
   }, [map, activeStyle]);
 
+  // "icon-halo-color": "black",
+  //     "icon-opacity": 0.8,
+  //     "text-color": color,
+  //     "text-halo-blur": 1,
+  //     "text-halo-color": [
+  //       "interpolate",
+  //       ["linear"],
+  //       ["zoom"],
+  //       3,
+  //       "hsla(0, 0%, 0%, 0.85)",
+  //       5,
+  //       "hsla(0, 0%, 0%, 1.0)",
+
   useEffect(() => {
     if (!map) return;
-    if (activeStyle === "satellite") {
+
+    const layers = full.layers.filter(
+      (layer) => layer.id.startsWith("gca-") && layer.type === "symbol"
+    );
+
+    if (activeStyle && ["satellite", "usgs"].includes(activeStyle)) {
       const currentZoom = map.getZoom();
       if (currentZoom > 15.5) map.setZoom(15.5);
       map.setMaxZoom(15.5);
+      for (const layer of layers) {
+        map.setPaintProperty(layer.id, "text-color", "hsl(0, 0%, 100%)");
+        map.setPaintProperty(layer.id, "text-halo-width", 1);
+        map.setPaintProperty(layer.id, "text-halo-color", [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          3,
+          "hsla(0, 2%, 16%, 0.85)",
+          5,
+          "hsla(0, 2%, 16%, 1.0)",
+        ]);
+      }
     } else {
       map.setMaxZoom(22);
+      for (const layer of layers) {
+        map.setPaintProperty(layer.id, "text-color", "hsl(0, 2%, 16%)");
+        map.setPaintProperty(layer.id, "text-halo-width", 1.5);
+        map.setPaintProperty(layer.id, "text-halo-color", [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          3,
+          "hsla(0, 0%, 100%, 0.85)",
+          5,
+          "hsla(0, 0%, 100%, 1.0)",
+        ]);
+      }
     }
   }, [map, activeStyle]);
 

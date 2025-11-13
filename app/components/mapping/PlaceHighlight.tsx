@@ -8,7 +8,7 @@ import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
 
 const PlaceHighlight = () => {
   const { place } = useContext(PlaceContext);
-  const { map } = useContext(MapContext);
+  const { map, activeStyle } = useContext(MapContext);
   const markerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -104,7 +104,10 @@ const PlaceHighlight = () => {
     });
 
     for (const layer of layers) {
-      map.addLayer(layer as AddLayerObject, "road-label-simple");
+      map.addLayer(
+        layer as AddLayerObject,
+        activeStyle ? "county-boundary-label" : "road-label-simple"
+      );
     }
 
     map.addLayer(placePoint);
@@ -118,7 +121,7 @@ const PlaceHighlight = () => {
       }
       if (map.getSource("place-source")) map.removeSource("place-source");
     };
-  }, [place, map]);
+  }, [place, map, activeStyle]);
 
   return (
     <span ref={markerRef}>

@@ -2,12 +2,15 @@ import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
 import type { ESPlace, ESRelatedMedium, ESRelatedPlace } from "./esTypes";
+import type { TBaseStyleName } from "./types";
 
 type TMapContext = {
   map: Map | undefined;
   setMap: Dispatch<SetStateAction<Map | undefined>>;
   mapLoaded: boolean;
   setMapLoaded: Dispatch<SetStateAction<boolean>>;
+  activeStyle: TBaseStyleName | undefined;
+  setActiveStyle: Dispatch<SetStateAction<TBaseStyleName | undefined>>;
 };
 
 type TPlaceContext = {
@@ -41,6 +44,12 @@ export const MapContext = createContext<TMapContext>({
   mapLoaded: false,
   setMapLoaded: (_: SetStateAction<boolean>) => {
     console.error("setMapLoaded not implemented. Did you pass it to context?");
+  },
+  activeStyle: undefined,
+  setActiveStyle: (_: SetStateAction<TBaseStyleName | undefined>) => {
+    console.error(
+      "setActiveStyle not implemented. Did you pass it to context?"
+    );
   },
 });
 

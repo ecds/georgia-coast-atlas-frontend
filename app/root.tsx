@@ -22,9 +22,10 @@ config.autoAddCss = false; /* eslint-disable import/first */
 import { placeMetaTags } from "~/utils/placeMetaTags";
 import { MapContext } from "./contexts";
 import { useState } from "react";
+import Analytics from "./components/Analytics";
 import type { LinksFunction, MetaFunction } from "react-router";
 import type { Map as TMap } from "maplibre-gl";
-import Analytics from "./components/Analytics";
+import type { TBaseStyleName } from "./types";
 
 export const meta: MetaFunction = () => {
   return placeMetaTags();
@@ -38,6 +39,9 @@ export const links: LinksFunction = () => [
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [activeStyle, setActiveStyle] = useState<TBaseStyleName | undefined>(
+    undefined
+  );
   return (
     <html lang="en">
       <head>
@@ -59,7 +63,16 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
           className={`mx-auto relative mt-20 bg-white overflow-hidden`}
           id="main"
         >
-          <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
+          <MapContext.Provider
+            value={{
+              map,
+              setMap,
+              mapLoaded,
+              setMapLoaded,
+              activeStyle,
+              setActiveStyle,
+            }}
+          >
             {children}
           </MapContext.Provider>
         </main>
