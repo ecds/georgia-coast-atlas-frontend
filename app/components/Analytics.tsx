@@ -5,6 +5,11 @@ const Analytics = () => {
   const location = useLocation();
   const trackerRef = useRef<HTMLImageElement>(null);
   const [key, setKey] = useState<string | undefined>(undefined);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
@@ -15,7 +20,7 @@ const Analytics = () => {
     );
   }, [location]);
 
-  if (process.env.NODE_ENV == "production") {
+  if (process.env.NODE_ENV == "production" && isMounted) {
     return (
       <img
         ref={trackerRef}
