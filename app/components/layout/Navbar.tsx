@@ -17,6 +17,8 @@ const topics = [
   "environmental-history",
   "gullah-geechee-culture",
   "plantations",
+  "sea-level-rise",
+  "slavery",
 ];
 
 const Navbar = () => {
