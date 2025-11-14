@@ -13,13 +13,14 @@ import { gcaLayout, gcaPaint } from "~/mapStyles/full";
 import { pointLayers } from "~/data/layers";
 import type { FeatureCollection } from "geojson";
 import type { MapLayerMouseEvent } from "maplibre-gl";
+import type { ESPlace } from "~/esTypes";
 
 const SearchResults = () => {
   const { query } = useSearchBox();
   const { items: refinements } = useCurrentRefinements();
   const { currentRefinement: geoRefinement } = useGeoSearch();
   const { items } = useHits();
-  const { setClickedPlace } = useContext(PlaceContext);
+  const { setClickedPlace, setHoveredPlace } = useContext(PlaceContext);
   const { map } = useContext(MapContext);
   const [isRefined, setIsRefined] = useState<boolean>(false);
 
@@ -32,12 +33,18 @@ const SearchResults = () => {
   useEffect(() => {
     if (!map) return;
 
-    const handleMouseEnter = async () => {
+    const handleMouseEnter = ({ features, lngLat }: MapLayerMouseEvent) => {
+      if (!features) return;
       map.getCanvas().style.cursor = "pointer";
+      setHoveredPlace({
+        ...features[0].properties,
+        location: { lon: lngLat.lng, lat: lngLat.lat },
+      } as ESPlace);
     };
 
     const handleMouseLeave = () => {
       map.getCanvas().style.cursor = "";
+      setHoveredPlace(undefined);
     };
 
     const handleClick = ({ features }: MapLayerMouseEvent) => {
@@ -129,7 +136,7 @@ const SearchResults = () => {
         }
       }
     };
-  }, [items, query, map, isRefined, setClickedPlace]);
+  }, [items, query, map, isRefined, setClickedPlace, setHoveredPlace]);
 
   if (isRefined) {
     return (

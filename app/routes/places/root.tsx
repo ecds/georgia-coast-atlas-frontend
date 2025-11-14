@@ -9,6 +9,7 @@ import MapInteractions from "~/components/MapInteractions";
 import PlacePreview from "~/components/mapping/PlacePreview";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import type { ESRelatedPlace, ESPlace } from "~/esTypes";
+import type { Hit } from "instantsearch.js";
 
 const PlaceRoot = () => {
   const { map } = useContext(MapContext);
@@ -17,7 +18,7 @@ const PlaceRoot = () => {
   const [place, setPlace] = useState<ESPlace | undefined>(undefined);
   const [clickedPlace, setClickedPlace] = useState<string | undefined>();
   const [hoveredPlace, setHoveredPlace] = useState<
-    ESPlace | ESRelatedPlace | undefined
+    ESPlace | ESRelatedPlace | Hit | undefined
   >(undefined);
   const [activeLayers, setActiveLayers] = useState<string[]>([]);
   const [searchParams, setSearchParams] = useState<string | undefined>(

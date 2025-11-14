@@ -1,17 +1,16 @@
 import { PLACE_TYPES } from "~/config";
 import { useContext } from "react";
-import { PlaceContext, SearchContext } from "~/contexts";
+import { PlaceContext } from "~/contexts";
 import type { Hit } from "instantsearch.js";
 
 const SearchResult = ({ hit }: { hit: Hit }) => {
-  const { setActiveResult } = useContext(SearchContext);
-  const { setClickedPlace } = useContext(PlaceContext);
+  const { setClickedPlace, setHoveredPlace } = useContext(PlaceContext);
 
   return (
     <div
       className="flex flex-col border-b-2 pb-2 px-4 hover:bg-gray-200 focus:bg-red-400"
-      onMouseEnter={() => setActiveResult(hit.identifier)}
-      onMouseLeave={() => setActiveResult(undefined)}
+      onMouseEnter={() => setHoveredPlace(hit)}
+      onMouseLeave={() => setHoveredPlace(undefined)}
     >
       <div className="grow top-0">
         <button

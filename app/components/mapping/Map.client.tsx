@@ -70,8 +70,11 @@ const Map = ({ children, className, bearing, bounds, style }: Props) => {
   }
 
   return (
-    <div className="relative bg-water">
-      <div ref={mapContainerRef} className={className ?? "h-topOffset"}></div>
+    <div className="relative">
+      <div
+        ref={mapContainerRef}
+        className={`${className ?? "h-topOffset"} bg-water`}
+      ></div>
       {children}
     </div>
   );

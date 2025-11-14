@@ -54,7 +54,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         <Links />
         <Meta />
       </head>
-      <body className="font-inter bg-white">
+      <body className="font-inter bg-wite">
         <a href="#main" className="sr-only">
           skip to main content
         </a>

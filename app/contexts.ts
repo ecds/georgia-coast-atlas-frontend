@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
 import type { ESPlace, ESRelatedMedium, ESRelatedPlace } from "./esTypes";
 import type { TBaseStyleName } from "./types";
+import type { Hit } from "instantsearch.js";
 
 type TMapContext = {
   map: Map | undefined;
@@ -18,7 +19,7 @@ type TPlaceContext = {
   activePlace?: ESRelatedPlace | ESPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  hoveredPlace?: ESRelatedPlace | ESPlace | undefined;
+  hoveredPlace?: ESRelatedPlace | ESPlace | Hit | undefined;
   noTrackMouse?: boolean;
   place: ESPlace | undefined;
   relatedClosed?: boolean;
@@ -31,7 +32,7 @@ type TPlaceContext = {
   setClickedPlace: Dispatch<SetStateAction<string | undefined>>;
   setPlace?: Dispatch<SetStateAction<ESPlace | ESPlace | undefined>>;
   setHoveredPlace: Dispatch<
-    SetStateAction<ESRelatedPlace | ESPlace | undefined>
+    SetStateAction<ESRelatedPlace | ESPlace | Hit | undefined>
   >;
   setNoTrackMouse?: Dispatch<SetStateAction<boolean>>;
 };
@@ -90,7 +91,7 @@ export const PlaceContext = createContext<TPlaceContext>({
   },
   hoveredPlace: undefined,
   setHoveredPlace: (
-    _: SetStateAction<ESRelatedPlace | ESPlace | undefined>
+    _: SetStateAction<ESRelatedPlace | ESPlace | Hit | undefined>
   ) => {
     console.error(
       "setActiveHovered not implemented. Did you pass it to context?"

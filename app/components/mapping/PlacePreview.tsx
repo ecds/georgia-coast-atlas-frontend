@@ -43,6 +43,12 @@ const PlacePreview = () => {
         .setLngLat([hoveredPlace.location.lon, hoveredPlace.location.lat])
         .setDOMContent(popContainerRef.current);
 
+      map.fitBounds(
+        map
+          .getBounds()
+          .extend([hoveredPlace.location.lon, hoveredPlace.location.lat])
+      );
+
       if (hoveredPlace.featured_photograph || hoveredPlace.description)
         popupRef.current.addTo(map);
     } else {
