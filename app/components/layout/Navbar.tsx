@@ -11,6 +11,13 @@ const menuLinkClassName =
 
 const collections = ["maps", "panos", "photographs", "videos"];
 const aboutPages = ["project", "team", "bibliography", "contact"];
+const topics = [
+  "agricultural",
+  "cartography",
+  "environmental-history",
+  "gullah-geechee-culture",
+  "plantations",
+];
 
 const Navbar = () => {
   return (
@@ -30,18 +37,6 @@ const Navbar = () => {
       <div className="flex items-center space-x-12 text-white text-lg font-barlow">
         <Menu>
           <Link to={"/places"}>Places</Link>
-          {/* <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
-            <MenuItem>
-              <Link className={menuLinkClassName} to="/places/search">
-                Search
-              </Link>
-            </MenuItem>
-            <MenuItem>
-              <Link className={menuLinkClassName} to="/places/explore">
-                Explore
-              </Link>
-            </MenuItem>
-          </MenuItems> */}
         </Menu>
 
         <Menu>
@@ -62,11 +57,20 @@ const Navbar = () => {
           </MenuItems>
         </Menu>
 
-        {/* <TopicTree
-          anchor={itemsAnchor}
-          itemsClassName={itemsClassName}
-          linkClassName={menuLinkClassName}
-        /> */}
+        <Menu>
+          <MenuButton>Topics</MenuButton>
+          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
+            {topics.map((topic) => {
+              return (
+                <MenuItem key={topic}>
+                  <Link className={menuLinkClassName} to={`/topics/${topic}`}>
+                    {topic}
+                  </Link>
+                </MenuItem>
+              );
+            })}
+          </MenuItems>
+        </Menu>
 
         <Menu>
           <MenuButton>About</MenuButton>

@@ -24,5 +24,9 @@ export default [
     route("videos", "./routes/collections/videos.tsx"),
     route("videos/:video", "./routes/collections/video.tsx"),
   ]),
+  route("topics", "./routes/topics/root.tsx", [
+    index("./routes/topics/topics.tsx"),
+    route(":topic", "./routes/topics/topic.tsx"),
+  ]),
   route("iiif/:type/:year/:id", "./routes/iiif.tsx"),
 ] satisfies RouteConfig;
