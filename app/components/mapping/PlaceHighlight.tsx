@@ -1,10 +1,11 @@
 import { useContext, useEffect, useRef } from "react";
 import { MapContext, PlaceContext } from "~/contexts";
 import { singlePoint } from "~/mapStyles/geoJSON";
-import { LngLat, Marker } from "maplibre-gl";
+import { LngLat, LngLatBounds, Marker } from "maplibre-gl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
+import { bbox } from "@turf/turf";
 
 const PlaceHighlight = () => {
   const { place } = useContext(PlaceContext);
@@ -29,7 +30,22 @@ const PlaceHighlight = () => {
         .setLngLat(location)
         .addTo(map);
 
-      map.easeTo({ center: location });
+      const lineOrPoly = place.geojson.features
+        .map((feature) => feature.geometry.type.toLowerCase())
+        .some((type) => type.includes("poly") || type.includes("line"));
+
+      if (lineOrPoly) {
+        const bounds = new LngLatBounds(
+          bbox(place.geojson) as [number, number, number, number]
+        );
+        map.fitBounds(bounds, {
+          padding: 50,
+          maxZoom: 13,
+          offset: [window.innerWidth / 8, 0],
+        });
+      } else {
+        map.easeTo({ center: location });
+      }
 
       const iconElement = markerRef.current.firstChild as HTMLElement;
 
