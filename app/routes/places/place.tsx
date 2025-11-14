@@ -60,18 +60,21 @@ const Place = () => {
   }, [location, searchParams]);
 
   useEffect(() => {
-    if (!location.state) return;
-    let stateCopy = location.state;
-    if (location.pathname == location.state.previous) {
-      stateCopy = {
-        ...stateCopy,
-        previous: "/places/explore",
-        slug: "explore",
-        title: "Explore",
-      };
+    if (!place || !map) return;
+
+    if (setPlace) setPlace(place);
+
+    for (const type of place.types) {
+      const layer = type.toLowerCase().replaceAll(" ", "");
+      if (map.getLayer(layer))
+        map.setFilter(layer, ["!=", ["get", "uuid"], place.uuid]);
     }
-    setBackTo(stateCopy);
-  }, [location, place]);
+  }, [place, map, setPlace]);
+
+  const navigateTo = () => {
+    if (useBack) navigate(-1);
+    if (!useBack) navigate({ pathname: "/places", search: searchParams });
+  };
 
   return (
     <>
@@ -82,11 +85,22 @@ const Place = () => {
         >
           {place.name}
         </Heading>
-        <div ref={topRef} className="relative min-h-10">
+        <button
+          role="link"
+          onClick={navigateTo}
+          className="self-center pe-2"
+          title="Close"
+        >
+          <FontAwesomeIcon icon={faXmarkCircle} />
+          <span className="sr-only">close</span>
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-scroll">
+        <div className="min-h-10">
           <FeaturedMedium record={place} />
         </div>
         <div
-          className={`relative px-4 primary-content min-h-32`}
+          className={`px-4 pb-4 primary-content`}
           dangerouslySetInnerHTML={{
             __html:
               wpData?.content.rendered ??
@@ -99,7 +113,6 @@ const Place = () => {
           <RelatedMedia title="Videos" records={place.videos} />
           <RelatedMedia title="Photographs" records={place.photographs} />
           <RelatedMedia title="Panos" records={place.panos} />
-          {place.people && place.people.length > 0 && (
           {place.people && place.people.length > 0 && (
             <RelatedSection title="People" defaultOpen={false}>
               <dl className="p-4">
@@ -114,7 +127,6 @@ const Place = () => {
               </dl>
             </RelatedSection>
           )}
-          {place.works && place.works.length > 0 && (
           {place.works && place.works.length > 0 && (
             <RelatedSection title="Works" defaultOpen={false}>
               <ul className="p-8">
