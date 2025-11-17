@@ -73,7 +73,7 @@ const GeoSearchPoints = ({ geojson }: Props) => {
     map.addSource(sourceId, layerSource);
 
     // Add the point on top of the labels.
-    map.addLayer(singlePoint(layerId, sourceId), "countySeats");
+    map.addLayer(singlePoint(layerId, sourceId));
 
     map.on("click", layerId, handleClick);
     map.on("mousemove", layerId, mouseMove);

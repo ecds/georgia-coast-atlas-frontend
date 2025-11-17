@@ -10,7 +10,6 @@ import type { ESTopic } from "~/esTypes";
 import RelatedSection from "~/components/relatedRecords/RelatedSection";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  console.log("🚀 ~ loader ~ params:", params);
   const topic: ESTopic = await fetchBySlug(params.topic, topicIndexCollection);
 
   if (!topic || !topic.wordpress_id) {

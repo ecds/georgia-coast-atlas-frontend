@@ -4,7 +4,6 @@ import Map from "../mapping/Map.client";
 import ClientOnly from "~/components/ClientOnly";
 import { bbox } from "@turf/turf";
 import { LngLatBounds } from "maplibre-gl";
-import { costalLabels } from "~/mapStyles";
 import { cluster, clusterCount, singlePoint } from "~/mapStyles/geoJSON";
 import PlaceTooltip from "../mapping/PlaceTooltip";
 import { toFeatureCollection } from "~/utils/toFeatureCollection";
@@ -135,7 +134,7 @@ const TopicMap = ({
     map.addSource(sourceId, placesSource);
     map.addLayer(clusterLayer);
     map.addLayer(countLayer);
-    map.addLayer(pointLayer, costalLabels.layers[0].id);
+    map.addLayer(pointLayer);
 
     map.on("mousemove", pointLayer.id, handleMouseEnter);
     map.on("mouseleave", pointLayer.id, handleMouseLeave);
@@ -162,10 +161,21 @@ const TopicMap = ({
   useEffect(() => {
     setTooltipPlace(clickedPlace);
     if (map && clickedPlace) {
-      const bounds = map.getBounds().extend(clickedPlace.location);
-      map.fitBounds(bounds, { padding: 100 });
+      map.fitBounds(
+        map
+          .getBounds()
+          .extend([clickedPlace.location.lon, clickedPlace.location.lat])
+      );
     }
-  }, [clickedPlace, map]);
+
+    if (map && hoveredPlace) {
+      map.fitBounds(
+        map
+          .getBounds()
+          .extend([hoveredPlace.location.lon, hoveredPlace.location.lat])
+      );
+    }
+  }, [clickedPlace, hoveredPlace, map]);
 
   useEffect(() => {
     setTooltipPlace(hoveredPlace);
@@ -180,10 +190,6 @@ const TopicMap = ({
       setShowTooltip(false);
     }
   }, [map, tooltipPlace, topic]);
-
-  // useEffect(() => {
-  //   setActivePlace(clickedPlace);
-  // }, [setActivePlace, clickedPlace]);
 
   if (topic.places) {
     return (

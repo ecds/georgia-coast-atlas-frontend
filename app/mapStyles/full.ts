@@ -243,6 +243,11 @@ export const full: StyleSpecification = {
       url: "https://d3j4mgzjrheeg2.cloudfront.net/neighbors.json",
       promoteId: "id",
     },
+    // contours: {
+    //   type: "vector",
+    //   scheme: "xyz",
+    //   url: "https://tiles.openstreetmap.us/vector/contours-feet.json",
+    // },
     // world: {
     //   type: "vector",
     //   url: "https://geoserveis.icgc.cat/contextmaps/basemap.json",
@@ -3374,7 +3379,12 @@ export const full: StyleSpecification = {
     //     "line-width": 3,
     //   },
     // },
-
+    // {
+    //   id: "contours",
+    //   type: "line",
+    //   source: "contours",
+    //   "source-layer": "contours",
+    // },
     {
       id: "road-label-simple",
       type: "symbol",
