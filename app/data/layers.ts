@@ -81,7 +81,7 @@ export const pointLayers = [
   { sourceLayer: "stormdamage" },
   { sourceLayer: "stream", icon: "water-flow" },
   { sourceLayer: "summit", icon: "mountain" },
-  // { sourceLayer: "sunkenvessel" },
+  { sourceLayer: "sunkenvessel", icon: "sinking-ship" },
   { sourceLayer: "swamp" },
   // { sourceLayer: "tiderip" },
   { sourceLayer: "trail" },

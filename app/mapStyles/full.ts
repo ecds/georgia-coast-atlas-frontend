@@ -243,6 +243,11 @@ export const full: StyleSpecification = {
       url: "https://d3j4mgzjrheeg2.cloudfront.net/neighbors.json",
       promoteId: "id",
     },
+    counties: {
+      type: "vector",
+      scheme: "xyz",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/counties.json",
+    },
     // contours: {
     //   type: "vector",
     //   scheme: "xyz",
@@ -4005,32 +4010,6 @@ export const full: StyleSpecification = {
     ...usgs.layers,
     ...satellite.layers,
     {
-      id: "county-boundary-label",
-      type: "symbol",
-      source: "gca",
-      "source-layer": "countyshapes",
-      filter: ["in", ["get", "NAMELSAD10"], ["literal", counties]],
-      layout: {
-        "symbol-placement": "line",
-        "symbol-spacing": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          13,
-          400,
-          18,
-          600,
-        ],
-        "text-field": ["coalesce", ["get", "name:en"], ["get", "NAMELSAD10"]],
-        "text-font": ["PT Sans Italic,Inter Italic"],
-        "text-max-angle": 30,
-        "text-offset": [0, 0.5],
-        "text-pitch-alignment": "viewport",
-        "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
-      },
-      paint: gcaPaint(),
-    },
-    {
       id: "neighbors",
       source: "neighbors",
       "source-layer": "neighbors",
@@ -4051,10 +4030,9 @@ export const full: StyleSpecification = {
     {
       id: "county-mask",
       type: "fill",
-      source: "gca",
+      source: "counties",
       "source-layer": "countyshapes",
-      // minzoom: 8,
-      filter: ["!", ["in", ["get", "NAMELSAD10"], ["literal", counties]]],
+      filter: ["!", ["in", ["get", "name"], ["literal", counties]]],
       paint: {
         "fill-color": [
           "interpolate",
@@ -4072,9 +4050,8 @@ export const full: StyleSpecification = {
       id: "county-boundary",
       type: "line",
       source: "gca",
-      "source-layer": "countyshapes",
+      "source-layer": "county",
       minzoom: 7,
-      filter: ["in", ["get", "NAMELSAD10"], ["literal", counties]],
       // layout: {
       //   "line-cap": "round",
       //   "line-join": "round",
@@ -4085,7 +4062,31 @@ export const full: StyleSpecification = {
         "line-offset": 0,
       },
     },
-
+    {
+      id: "county-boundary-label",
+      type: "symbol",
+      source: "gca",
+      "source-layer": "county",
+      layout: {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          13,
+          400,
+          18,
+          600,
+        ],
+        "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+        "text-font": ["PT Sans Italic,Inter Italic"],
+        "text-max-angle": 30,
+        "text-offset": [0, 0.5],
+        "text-pitch-alignment": "viewport",
+        "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
+      },
+      paint: gcaPaint(),
+    },
     ...gcaLayers(),
     // {
     //   id: "park-label",
@@ -4236,5 +4237,5 @@ export const full: StyleSpecification = {
     //   },
     // },
   ],
-  name: "Terrain (vector on Stadia)",
+  name: "Georgia Coast Atlas",
 };
