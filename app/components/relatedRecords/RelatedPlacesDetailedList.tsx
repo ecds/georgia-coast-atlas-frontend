@@ -63,14 +63,13 @@ const RelatedPlacesDetailedList = ({
                 >
                   <div className={`text-black/75 text-left md:py-1`}>
                     <div className="p-4 w-full">
-                      <img
-                        src={
-                          place.featured_photograph ??
-                          "https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"
-                        }
-                        className="max-w-48 max-h-48 mx-auto mb-4"
-                        alt=""
-                      />
+                      {place.featured_photograph && (
+                        <img
+                          src={place.featured_photograph}
+                          className="max-w-48 max-h-48 mx-auto mb-4"
+                          alt=""
+                        />
+                      )}
                       <div
                         className="my-2 line-clamp-3"
                         dangerouslySetInnerHTML={{

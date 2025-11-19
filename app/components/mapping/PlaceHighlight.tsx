@@ -120,10 +120,7 @@ const PlaceHighlight = () => {
     });
 
     for (const layer of layers) {
-      map.addLayer(
-        layer as AddLayerObject,
-        activeStyle ? "county-boundary-label" : "road-label-simple"
-      );
+      map.addLayer(layer as AddLayerObject, "county-boundary-label");
     }
 
     map.addLayer(placePoint);
