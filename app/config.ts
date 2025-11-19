@@ -138,7 +138,7 @@ export const PLACE_TYPES: TTypeColors = {
     bgColor: "emerald-100",
     textColor: "emerald-800",
   },
-  "Bike path": {
+  "Bike Path": {
     bgColor: "green-100",
     textColor: "green-800",
   },

@@ -21,6 +21,7 @@ export const getColor = (type: string) => {
 };
 
 export const toFeatureCollection = (places: ESRelatedPlace[] | ESPlace[]) => {
+  console.log("🚀 ~ toFeatureCollection ~ places:", places);
   return featureCollection(
     places.map((place) => {
       if (place.types) {
