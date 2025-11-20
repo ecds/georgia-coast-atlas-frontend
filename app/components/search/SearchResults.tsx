@@ -12,8 +12,9 @@ import { MapContext, PlaceContext } from "~/contexts";
 import { gcaLayout, gcaPaint } from "~/mapStyles/full";
 import { pointLayers } from "~/data/layers";
 import type { FeatureCollection } from "geojson";
-import type { MapLayerMouseEvent } from "maplibre-gl";
+import { LngLatBounds, type MapLayerMouseEvent } from "maplibre-gl";
 import type { ESPlace } from "~/esTypes";
+import { bbox } from "@turf/turf";
 
 const SearchResults = () => {
   const { query } = useSearchBox();
@@ -103,10 +104,10 @@ const SearchResults = () => {
       }),
     };
 
-    // const bounds = new LngLatBounds(
-    //   bbox(geojson) as [number, number, number, number]
-    // );
-    // map.fitBounds(bounds, { padding: 50, maxZoom: 13 });
+    const bounds = new LngLatBounds(
+      bbox(geojson) as [number, number, number, number]
+    );
+    map.fitBounds(bounds, { padding: 50, maxZoom: 13 });
 
     map.addSource("results", {
       type: "geojson",
@@ -118,7 +119,7 @@ const SearchResults = () => {
       source: "results",
       type: "symbol",
       filter: ["==", "$type", "Point"],
-      paint: gcaPaint("red"),
+      paint: gcaPaint({ color: "red" }),
       layout: gcaLayout({ sourceLayer: "county" }),
     });
 
@@ -145,7 +146,7 @@ const SearchResults = () => {
           <Hits hitComponent={SearchResult} />
           <Pagination
             classNames={{
-              root: "px-2 py-4 bg-white w-full",
+              root: "px-2 py-4 w-full",
               list: "flex flex-row items-stretch justify-center",
               pageItem:
                 "bg-county/70 text-white mx-4 text-center rounded-md min-w-6 max-w-8",

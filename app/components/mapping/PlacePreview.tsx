@@ -17,7 +17,7 @@ const PopupContent = () => {
       )}
       <h4 className="mt-1 px-2 text-lg">{hoveredPlace?.name}</h4>
       <div
-        className="tracking-loose my-1 max-h-16 truncate px-2 text-xs"
+        className="tracking-loose my-1 max-h-16 md:max-w-64 truncate px-2 text-xs"
         dangerouslySetInnerHTML={{
           __html: hoveredPlace?.description ?? "",
         }}
@@ -43,13 +43,17 @@ const PlacePreview = () => {
         .setLngLat([hoveredPlace.location.lon, hoveredPlace.location.lat])
         .setDOMContent(popContainerRef.current);
 
-      map.fitBounds(
-        map
-          .getBounds()
-          .extend([hoveredPlace.location.lon, hoveredPlace.location.lat])
-      );
+      // map.fitBounds(
+      //   map
+      //     .getBounds()
+      //     .extend([hoveredPlace.location.lon, hoveredPlace.location.lat])
+      // );
 
-      if (hoveredPlace.featured_photograph || hoveredPlace.description)
+      if (
+        hoveredPlace.featured_photograph ||
+        hoveredPlace.description ||
+        map.getZoom() < 12
+      )
         popupRef.current.addTo(map);
     } else {
       popupRef.current?.remove();

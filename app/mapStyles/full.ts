@@ -10,6 +10,7 @@ import { usgs } from "./usgs";
 
 type SymbolLayout = Pick<SymbolLayerSpecification, "layout">;
 type SymbolPaint = Pick<SymbolLayerSpecification, "paint">;
+type TLayer = { sourceLayer: string; icon?: string; color?: string };
 
 const counties = [
   "Brantley County",
@@ -27,11 +28,11 @@ const counties = [
 
 const textSize = (layer: string) => {
   let sizeProp: DataDrivenPropertyValueSpecification<number> = [
-    "interpolate",
-    ["cubic-bezier", 0.2, 0, 0.9, 1],
+    "step",
     ["zoom"],
+    1,
     8,
-    8,
+    0,
     12,
     16,
   ];
@@ -49,7 +50,7 @@ const textSize = (layer: string) => {
   return sizeProp;
 };
 
-export const gcaLayout = (layer: { sourceLayer: string; icon?: string }) => {
+export const gcaLayout = (layer: TLayer) => {
   const layout: SymbolLayout = {
     layout: {
       "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
@@ -63,57 +64,43 @@ export const gcaLayout = (layer: { sourceLayer: string; icon?: string }) => {
     },
   };
   if (layer.icon && layout.layout) {
-    // layout.layout = {
-    //   "text-field": ["get", "name"],
-    // "text-variable-anchor-offset": [
-    //   "top",
-    //   [0, 1],
-    //   "bottom",
-    //   [0, -1],
-    //   "left",
-    //   [1, 0],
-    //   "right",
-    //   [-1, 0],
-    // ],
-    // "text-justify": "auto",
-    // "icon-image": layer.icon,
-    layout.layout["icon-size"] = 0.5;
-    // "text-size": textSize(layer.sourceLayer),
-    // };
+    layout.layout["icon-size"] = [
+      "interpolate",
+      ["cubic-bezier", 0.9, 1, 0.2, 0],
+      ["zoom"],
+      8,
+      1,
+      12,
+      0.75,
+    ];
     layout.layout["icon-image"] = layer.icon;
-    // layout.layout["icon-rotation-alignment"] = "viewport";
     layout.layout["icon-offset"] = [0, -10];
-    // layout.layout["text-variable-anchor-offset"] = [
-    //   "top",
-    //   [0, 1],
-    //   "bottom",
-    //   [0, -2],
-    // ];
-    // layout.layout["text-radial-offset"] = 0;
-    // layout.layout["icon-text-fit"] = "height";
     layout.layout["text-anchor"] = "top";
-
-    // layout.layout["symbol-placement"] = "line";
-    // layout.layout["symbol-spacing"] = [
-    //   "interpolate",
-    //   ["linear"],
-    //   ["zoom"],
-    //   11,
-    //   400,
-    //   14,
-    //   600,
-    // ];
   }
   return layout.layout;
 };
 
-export const gcaPaint = (color = "hsl(0, 2%, 16%)") => {
+export const gcaPaint = ({
+  layer,
+  color = "#374151",
+}: {
+  layer?: TLayer;
+  color?: string;
+}) => {
   const paint: SymbolPaint = {
     paint: {
-      // "icon-color": "deeppink",
+      "icon-color": layer?.color ?? "#16a34a",
       "icon-halo-width": 0.25,
       "icon-halo-color": "black",
-      "icon-opacity": 0.5,
+      "icon-opacity": [
+        "interpolate",
+        ["cubic-bezier", 0.9, 1, 0.2, 0],
+        ["zoom"],
+        8,
+        1,
+        12,
+        0.75,
+      ],
       "text-color": color,
       "text-halo-blur": 1,
       "text-halo-color": [
@@ -140,7 +127,7 @@ const gcaLayer = (layer: { sourceLayer: string; icon?: string }) => {
     minzoom: ["barrierisland", "county"].includes(layer.sourceLayer) ? 5 : 9,
     filter: ["==", "$type", "Point"],
     layout: gcaLayout(layer),
-    paint: gcaPaint(),
+    paint: gcaPaint({ layer }),
   };
   return layerObj;
 };
@@ -247,6 +234,11 @@ export const full: StyleSpecification = {
       type: "vector",
       scheme: "xyz",
       url: "https://d3j4mgzjrheeg2.cloudfront.net/counties.json",
+    },
+    riversStreams: {
+      type: "vector",
+      scheme: "xyz",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/rivers_streams.json",
     },
     // contours: {
     //   type: "vector",
@@ -883,10 +875,67 @@ export const full: StyleSpecification = {
       },
     },
     {
+      id: "ga-waterway-shadow",
+      type: "line",
+      source: "riversStreams",
+      "source-layer": "rivers_streams",
+      minzoom: 6,
+      layout: {
+        "line-cap": ["step", ["zoom"], "butt", 11, "round"],
+        "line-join": ["step", ["zoom"], "miter", 11, "round"],
+      },
+      paint: {
+        "line-color": "hsl(229, 37%, 69%)",
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 6, 0.6, 9, 1],
+        "line-translate": [
+          "interpolate",
+          ["exponential", 1.2],
+          ["zoom"],
+          7,
+          ["literal", [0, 0]],
+          16,
+          ["literal", [-1, -1]],
+        ],
+        "line-translate-anchor": "viewport",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.3],
+          ["zoom"],
+          8,
+          0.5,
+          9,
+          1,
+          20,
+          3,
+        ],
+      },
+    },
+    {
       id: "water-shadow",
       type: "fill",
       source: "georgia",
       "source-layer": "water",
+      minzoom: 7,
+      layout: {},
+      paint: {
+        "fill-color": "hsl(229, 37%, 69%)",
+        "fill-translate": [
+          "interpolate",
+          ["exponential", 1.2],
+          ["zoom"],
+          7,
+          ["literal", [0, 0]],
+          16,
+          ["literal", [-1, -1]],
+        ],
+        "fill-translate-anchor": "viewport",
+      },
+    },
+    {
+      id: "ga-water-shadow",
+      type: "fill",
+      source: "riversStreams",
+      "source-layer": "water_bodies",
       minzoom: 7,
       layout: {},
       paint: {
@@ -946,16 +995,6 @@ export const full: StyleSpecification = {
       },
     },
     {
-      id: "water",
-      type: "fill",
-      source: "georgia",
-      "source-layer": "water",
-      layout: {},
-      paint: {
-        "fill-color": "hsl(209, 33%, 70%)",
-      },
-    },
-    {
       id: "wetland",
       type: "fill",
       source: "georgia",
@@ -1010,6 +1049,69 @@ export const full: StyleSpecification = {
           0,
         ],
         "line-width": 6,
+      },
+    },
+
+    {
+      id: "water",
+      type: "fill",
+      source: "georgia",
+      "source-layer": "water",
+      layout: {},
+      paint: {
+        "fill-color": "hsl(209, 33%, 70%)",
+      },
+    },
+    {
+      id: "ga-waterway",
+      type: "line",
+      source: "riversStreams",
+      "source-layer": "rivers_streams",
+      minzoom: 3,
+      layout: {
+        "line-cap": ["step", ["zoom"], "butt", 11, "round"],
+        "line-join": ["step", ["zoom"], "miter", 11, "round"],
+      },
+      paint: {
+        "line-color": "hsl(209, 33%, 70%)",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.3],
+          ["zoom"],
+          8,
+          0.5,
+          9,
+          1,
+          20,
+          3,
+        ],
+      },
+    },
+    {
+      id: "ga-waterway_outer_glow",
+      type: "line",
+      source: "riversStreams",
+      "source-layer": "rivers_streams",
+      minzoom: 4,
+      layout: {
+        "line-cap": ["step", ["zoom"], "butt", 11, "round"],
+        "line-join": ["step", ["zoom"], "miter", 11, "round"],
+      },
+      paint: {
+        "line-blur": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 10],
+        "line-color": "hsl(209, 33%, 70%)",
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 6, 0.2, 7, 0.4],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 10],
+      },
+    },
+    {
+      id: "ga-water",
+      type: "fill",
+      source: "riversStreams",
+      "source-layer": "water_bodies",
+      layout: {},
+      paint: {
+        "fill-color": "hsl(209, 33%, 70%)",
       },
     },
     ...gcaWaterWayLines,
@@ -1591,7 +1693,7 @@ export const full: StyleSpecification = {
       type: "fill",
       source: "georgia",
       "source-layer": "building",
-      minzoom: 13,
+      minzoom: 11,
       maxzoom: 16,
       paint: {
         "fill-color": "hsl(35, 8%, 85%)",
@@ -4085,7 +4187,7 @@ export const full: StyleSpecification = {
         "text-pitch-alignment": "viewport",
         "text-size": ["interpolate", ["linear"], ["zoom"], 13, 15, 18, 17],
       },
-      paint: gcaPaint(),
+      paint: gcaPaint({}),
     },
     ...gcaLayers(),
     // {

@@ -49,7 +49,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const Place = () => {
   const { place, wpData } = useLoaderData<typeof loader>();
-  console.log("🚀 ~ Place ~ place:", place.geojson);
   const { map } = useContext(MapContext);
   const { setPlace, searchParams } = useContext(PlaceContext);
   const navigate = useNavigate();
@@ -79,7 +78,7 @@ const Place = () => {
 
   return (
     <>
-      <div className="flex flex-row w-full shadow-md">
+      <div className="flex flex-row w-full shadow-md bg-white">
         <Heading
           as="h1"
           className={`grow text-2xl px-4 py-1 pb-1 sticky top-0 z-10 bg-white rounded-t-md`}
@@ -96,7 +95,7 @@ const Place = () => {
           <span className="sr-only">close</span>
         </button>
       </div>
-      <div className="flex-1 overflow-y-scroll">
+      <div className="flex-1 overflow-y-scroll bg-white">
         <div className="min-h-10">
           <FeaturedMedium record={place} />
         </div>

@@ -5,7 +5,7 @@ import { LngLat, LngLatBounds, Marker } from "maplibre-gl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
-import { bbox } from "@turf/turf";
+import { bbox, destination, distance } from "@turf/turf";
 
 const PlaceHighlight = () => {
   const { place } = useContext(PlaceContext);
@@ -34,18 +34,49 @@ const PlaceHighlight = () => {
         .map((feature) => feature.geometry.type.toLowerCase())
         .some((type) => type.includes("poly") || type.includes("line"));
 
-      if (lineOrPoly) {
-        const bounds = new LngLatBounds(
-          bbox(place.geojson) as [number, number, number, number]
-        );
-        map.fitBounds(bounds, {
-          padding: 50,
-          maxZoom: 13,
-          offset: [window.innerWidth / 8, 0],
-        });
-      } else {
-        map.easeTo({ center: location });
-      }
+      // if (lineOrPoly) {
+      const bounds = new LngLatBounds(
+        bbox(place.geojson) as [number, number, number, number]
+      );
+
+      const se = bounds.getSouthEast();
+      const sw = bounds.getSouthWest();
+      console.log(
+        "🚀 ~ PlaceHighlight ~ bounds.getSouthWest();:",
+        bounds.getSouthWest()
+      );
+      const width = distance([se.lng, se.lat], [sw.lng, sw.lat]);
+      const offset = destination([sw.lng, sw.lat], width / 2, -90);
+      bounds.extend(offset.geometry.coordinates as [number, number]);
+      console.log(
+        "🚀 ~ PlaceHighlight ~ bounds.getSouthWest();:",
+        bounds.getSouthWest()
+      );
+      console.log(
+        "🚀 ~ PlaceHighlight ~ offset:",
+        [sw.lng, sw.lat],
+        width,
+        offset.geometry.coordinates
+      );
+
+      // Extend bounds to offset for content pane.
+      // map.once("moveend", () =>
+      //   map.fitBounds(bounds.extend(map.unproject([0, 0])), {
+      //     padding: 50,
+      //     speed: 0.5,
+      //   })
+      // );
+
+      map.fitBounds(bounds, {
+        padding: 50,
+        maxZoom: 13,
+        speed: 0.5,
+        offset: [16, 0],
+      });
+      // } else {
+      //   map.easeTo({ center: location });
+      //   console.log("🚀 ~ PlaceHighlight ~ location:", location);
+      // }
 
       const iconElement = markerRef.current.firstChild as HTMLElement;
 
