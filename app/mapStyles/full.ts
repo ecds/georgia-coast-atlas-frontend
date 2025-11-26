@@ -27,13 +27,22 @@ const counties = [
 ];
 
 const textSize = (layer: string) => {
+  // let sizeProp: DataDrivenPropertyValueSpecification<number> = [
+  //   "step",
+  //   ["zoom"],
+  //   1,
+  //   8,
+  //   0,
+  //   12,
+  //   16,
+  // ];
   let sizeProp: DataDrivenPropertyValueSpecification<number> = [
-    "step",
+    "interpolate",
+    ["cubic-bezier", 0.2, 0, 0.9, 1],
     ["zoom"],
-    1,
-    8,
-    0,
     12,
+    14,
+    18,
     16,
   ];
   if (layer === "barrierisland" || layer === "county") {
@@ -42,7 +51,7 @@ const textSize = (layer: string) => {
       ["cubic-bezier", 0.2, 0, 0.9, 1],
       ["zoom"],
       7,
-      14,
+      16,
       12,
       24,
     ];
@@ -63,20 +72,20 @@ export const gcaLayout = (layer: TLayer) => {
       "text-size": textSize(layer.sourceLayer),
     },
   };
-  if (layer.icon && layout.layout) {
-    layout.layout["icon-size"] = [
-      "interpolate",
-      ["cubic-bezier", 0.9, 1, 0.2, 0],
-      ["zoom"],
-      8,
-      1,
-      12,
-      0.75,
-    ];
-    layout.layout["icon-image"] = layer.icon;
-    layout.layout["icon-offset"] = [0, -10];
-    layout.layout["text-anchor"] = "top";
-  }
+  // if (layer.icon && layout.layout) {
+  //   layout.layout["icon-size"] = [
+  //     "interpolate",
+  //     ["cubic-bezier", 0.9, 1, 0.2, 0],
+  //     ["zoom"],
+  //     8,
+  //     1,
+  //     12,
+  //     0.75,
+  //   ];
+  //   layout.layout["icon-image"] = layer.icon;
+  //   layout.layout["icon-offset"] = [0, -10];
+  //   layout.layout["text-anchor"] = "top";
+  // }
   return layout.layout;
 };
 
@@ -125,6 +134,9 @@ const gcaLayer = (layer: { sourceLayer: string; icon?: string }) => {
     source: "gca",
     "source-layer": layer.sourceLayer,
     minzoom: ["barrierisland", "county"].includes(layer.sourceLayer) ? 5 : 9,
+    maxzoom: ["barrierisland", "county"].includes(layer.sourceLayer)
+      ? 14.5
+      : 22,
     filter: ["==", "$type", "Point"],
     layout: gcaLayout(layer),
     paint: gcaPaint({ layer }),
@@ -235,10 +247,19 @@ export const full: StyleSpecification = {
       scheme: "xyz",
       url: "https://d3j4mgzjrheeg2.cloudfront.net/counties.json",
     },
-    riversStreams: {
+    gaWater: {
       type: "vector",
       scheme: "xyz",
       url: "https://d3j4mgzjrheeg2.cloudfront.net/rivers_streams.json",
+    },
+    conservationLands: {
+      type: "vector",
+      scheme: "xyz",
+      url: "https://d3j4mgzjrheeg2.cloudfront.net/conservation_lands.json",
+    },
+    openmaptiles: {
+      type: "vector",
+      url: "https://tiles.openfreemap.org/planet",
     },
     // contours: {
     //   type: "vector",
@@ -275,6 +296,16 @@ export const full: StyleSpecification = {
           12,
           "hsl(65, 36%, 81%)",
         ],
+      },
+    },
+    {
+      id: "ocean",
+      type: "fill",
+      source: "openmaptiles",
+      "source-layer": "water",
+      filter: ["==", "class", "ocean"],
+      paint: {
+        "fill-color": "#99b3cc",
       },
     },
     // {
@@ -493,7 +524,7 @@ export const full: StyleSpecification = {
         "fill-antialias": false,
         "fill-color": [
           "interpolate",
-          ["linear"],
+          ["exponential", 1.5],
           ["zoom"],
           15,
           [
@@ -516,12 +547,13 @@ export const full: StyleSpecification = {
             "hsl(60, 2%, 82%)",
             ["==", ["get", "class"], "residential"],
             "hsl(0, 0%, 93%)",
+            ["==", ["get", "class"], "industrial"],
+            "hsla(311, 13%, 41%, 0.8)",
             [
               "match",
               ["get", "class"],
               [
                 "facility",
-                "industrial",
                 "railway",
                 "garages",
                 "bus_station",
@@ -553,9 +585,9 @@ export const full: StyleSpecification = {
               "hsl(90, 17%, 72%)",
             ],
             "grass",
-            "hsla(90, 11%, 82%, 0.6)",
+            "hsl(90, 11%, 82%)",
             "cemetery",
-            "hsl(88, 13%, 77%)",
+            "hsl(90, 17%, 72%)",
             "glacier",
             "hsl(240, 4%, 95%)",
             "sand",
@@ -564,28 +596,56 @@ export const full: StyleSpecification = {
             "hsla(0, 0%, 95%, 0.5)",
             "commercial_area",
             "hsla(60, 2%, 82%, 0.5)",
-            [
-              "facility",
-              "industrial",
-              "railway",
-              "garages",
-              "bus_station",
-              "dam",
-              "quarry",
-            ],
+            "industrial",
+            "hsla(311.11, 12.92%, 40.98%, 1)",
+
+            ["facility", "railway", "garages", "bus_station", "dam", "quarry"],
             "hsl(0, 0%, 83%)",
             "hsl(60, 2%, 80%)",
           ],
         ],
         "fill-opacity": [
           "interpolate",
-          ["linear"],
+          ["exponential", 1.5],
           ["zoom"],
           8,
           ["match", ["get", "class"], "residential", 0.8, 0.2],
-          10,
+          16,
           ["match", ["get", "class"], "residential", 0, 1],
         ],
+      },
+    },
+    {
+      id: "dod",
+      source: "conservationLands",
+      "source-layer": "conservationlands",
+      type: "fill",
+      filter: ["==", ["get", "owner_code"], 1500],
+      paint: {
+        "fill-opacity": 0.8,
+        "fill-color": "#C0C685",
+      },
+    },
+    {
+      id: "privateEasements",
+      source: "conservationLands",
+      "source-layer": "conservationlands",
+      type: "fill",
+      filter: ["==", ["get", "owner_code"], 8000],
+      paint: {
+        "fill-opacity": 0.8,
+        "fill-color": "#C0C685",
+      },
+    },
+    {
+      id: "fishAndWildlife",
+      source: "conservationLands",
+      "source-layer": "conservationlands",
+      type: "fill",
+      filter: ["==", ["get", "owner_code"], 1300],
+      paint: {
+        "fill-opacity": 0.8,
+        "fill-color": "hsl(68, 39%, 76%)",
       },
     },
     {
@@ -696,63 +756,6 @@ export const full: StyleSpecification = {
         ],
       },
     },
-    // {
-    //   id: "landuse-greenspace",
-    //   type: "fill",
-    //   source: "gca",
-    //   "source-layer": "park",
-    //   minzoom: 9,
-    //   maxzoom: 22,
-    //   filter: ["==", "$type", "Polygon"],
-    //   // filter: [
-    //   //   "match",
-    //   //   ["get", "subclass"],
-    //   //   ["park", "golf_course", "allotments", "garden"],
-    //   //   true,
-    //   //   false,
-    //   // ],
-    //   layout: {},
-    //   paint: {
-    //     "fill-antialias": false,
-    //     "fill-color": "hsl(85, 28%, 70%)",
-    //   },
-    // },
-    // {
-    //   id: "landuse-greenspace-outline",
-    //   type: "line",
-    //   source: "gca",
-    //   "source-layer": "park",
-    //   minzoom: 9,
-    //   // filter: [
-    //   //   "match",
-    //   //   ["get", "subclass"],
-    //   //   ["park", "golf_course", "allotments", "garden"],
-    //   //   true,
-    //   //   false,
-    //   // ],
-    //   layout: {},
-    //   paint: {
-    //     "line-blur": [
-    //       "interpolate",
-    //       ["exponential", 1.5],
-    //       ["zoom"],
-    //       9,
-    //       1,
-    //       18,
-    //       10,
-    //     ],
-    //     "line-color": "hsl(85, 28%, 70%)",
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.5],
-    //       ["zoom"],
-    //       9,
-    //       1,
-    //       18,
-    //       30,
-    //     ],
-    //   },
-    // },
     {
       id: "landuse-greenspace",
       type: "fill",
@@ -877,7 +880,7 @@ export const full: StyleSpecification = {
     {
       id: "ga-waterway-shadow",
       type: "line",
-      source: "riversStreams",
+      source: "gaWater",
       "source-layer": "rivers_streams",
       minzoom: 6,
       layout: {
@@ -934,7 +937,7 @@ export const full: StyleSpecification = {
     {
       id: "ga-water-shadow",
       type: "fill",
-      source: "riversStreams",
+      source: "gaWater",
       "source-layer": "water_bodies",
       minzoom: 7,
       layout: {},
@@ -1065,7 +1068,7 @@ export const full: StyleSpecification = {
     {
       id: "ga-waterway",
       type: "line",
-      source: "riversStreams",
+      source: "gaWater",
       "source-layer": "rivers_streams",
       minzoom: 3,
       layout: {
@@ -1090,7 +1093,7 @@ export const full: StyleSpecification = {
     {
       id: "ga-waterway_outer_glow",
       type: "line",
-      source: "riversStreams",
+      source: "gaWater",
       "source-layer": "rivers_streams",
       minzoom: 4,
       layout: {
@@ -1107,7 +1110,7 @@ export const full: StyleSpecification = {
     {
       id: "ga-water",
       type: "fill",
-      source: "riversStreams",
+      source: "gaWater",
       "source-layer": "water_bodies",
       layout: {},
       paint: {
@@ -3951,48 +3954,48 @@ export const full: StyleSpecification = {
     //     "text-halo-width": 1,
     //   },
     // },
-    {
-      id: "neighborhood-label",
-      type: "symbol",
-      source: "gca",
-      "source-layer": "populatedplace",
-      minzoom: 10,
-      maxzoom: 14,
-      filter: ["match", ["get", "class"], ["neighbourhood"], true, false],
-      layout: {
-        "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-        "text-font": ["PT Sans Narrow Regular,Inter Regular"],
-        "text-justify": "auto",
-        "text-line-height": 1.1,
-        "text-max-width": 7,
-        "text-padding": 5,
-        "text-size": [
-          "interpolate",
-          ["cubic-bezier", 0.2, 0, 0.9, 1],
-          ["zoom"],
-          10,
-          12,
-          11,
-          16,
-          14,
-          18,
-        ],
-      },
-      paint: {
-        "text-color": "hsl(0, 2%, 16%)",
-        "text-halo-blur": 1,
-        "text-halo-color": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          3,
-          "hsla(0, 0%, 100%, 0.85)",
-          5,
-          "hsla(0, 0%, 100%, 1.0)",
-        ],
-        "text-halo-width": 1.5,
-      },
-    },
+    // {
+    //   id: "neighborhood-label",
+    //   type: "symbol",
+    //   source: "gca",
+    //   "source-layer": "populatedplace",
+    //   minzoom: 10,
+    //   maxzoom: 14,
+    //   filter: ["match", ["get", "class"], ["neighbourhood"], true, false],
+    //   layout: {
+    //     "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+    //     "text-font": ["PT Sans Narrow Regular,Inter Regular"],
+    //     "text-justify": "auto",
+    //     "text-line-height": 1.1,
+    //     "text-max-width": 7,
+    //     "text-padding": 5,
+    //     "text-size": [
+    //       "interpolate",
+    //       ["cubic-bezier", 0.2, 0, 0.9, 1],
+    //       ["zoom"],
+    //       10,
+    //       12,
+    //       11,
+    //       16,
+    //       14,
+    //       18,
+    //     ],
+    //   },
+    //   paint: {
+    //     "text-color": "hsl(0, 2%, 16%)",
+    //     "text-halo-blur": 1,
+    //     "text-halo-color": [
+    //       "interpolate",
+    //       ["linear"],
+    //       ["zoom"],
+    //       3,
+    //       "hsla(0, 0%, 100%, 0.85)",
+    //       5,
+    //       "hsla(0, 0%, 100%, 1.0)",
+    //     ],
+    //     "text-halo-width": 1.5,
+    //   },
+    // },
     // {
     //   id: "settlement-minor-label",
     //   type: "symbol",
@@ -4043,55 +4046,6 @@ export const full: StyleSpecification = {
     //       ["step", ["get", "rank"], 16, 12, 14],
     //       13,
     //       ["step", ["get", "rank"], 18, 12, 16, 15, 14],
-    //     ],
-    //   },
-    //   paint: {
-    //     "text-color": "hsl(0, 2%, 16%)",
-    //     "text-halo-blur": 1,
-    //     "text-halo-color": [
-    //       "interpolate",
-    //       ["linear"],
-    //       ["zoom"],
-    //       3,
-    //       "hsla(0, 0%, 100%, 0.85)",
-    //       5,
-    //       "hsla(0, 0%, 100%, 1.0)",
-    //     ],
-    //     "text-halo-width": 1.5,
-    //   },
-    // },
-    // {
-    //   id: "settlement-major-label",
-    //   type: "symbol",
-    //   source: "gca",
-    //   "source-layer": "populatedplaces",
-    //   minzoom: 9,
-    //   // maxzoom: 16,
-    //   filter: [
-    //     "any",
-    //     ["match", ["get", "class"], "locality", true, false],
-    //     ["match", ["get", "class"], "village", true, false],
-    //     ["match", ["get", "class"], "hamlet", true, false],
-    //     ["match", ["get", "class"], "populated-place", true, false],
-    //     ["match", ["get", "class"], "hammock", true, false],
-    //   ],
-    //   layout: {
-    //     "icon-image": "dot-10",
-    //     "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
-    //     "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-    //     "text-font": ["PT Sans Narrow Regular,Inter Regular"],
-    //     "text-justify": "auto",
-    //     "text-line-height": 1.1,
-    //     "text-max-width": 6,
-    //     "text-radial-offset": ["step", ["zoom"], 0.4, 8, 0],
-    //     "text-size": [
-    //       "interpolate",
-    //       ["cubic-bezier", 0.2, 0, 0.9, 1],
-    //       ["zoom"],
-    //       8,
-    //       12,
-    //       12,
-    //       16,
     //     ],
     //   },
     //   paint: {
@@ -4162,6 +4116,13 @@ export const full: StyleSpecification = {
         "line-color": "darkgray",
         "line-width": ["interpolate", ["linear"], ["zoom"], 7, 2, 10, 4],
         "line-offset": 0,
+        "line-dasharray": [
+          "step",
+          ["zoom"],
+          ["literal", [2, 0]],
+          14,
+          ["literal", [4, 2]],
+        ],
       },
     },
     {
@@ -4190,6 +4151,48 @@ export const full: StyleSpecification = {
       paint: gcaPaint({}),
     },
     ...gcaLayers(),
+    {
+      id: "settlement-major-label",
+      type: "symbol",
+      source: "gca",
+      "source-layer": "populatedplace",
+      minzoom: 7,
+      maxzoom: 16,
+      // filter: ["==", ["to-string", ["typeof", ["get", "place"]]], "string"],
+      filter: ["all", ["==", "capital", "6"], ["==", "$type", "Point"]],
+      layout: {
+        "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
+        "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+        "text-font": ["PT Sans Narrow Regular,Inter Regular"],
+        "text-justify": "auto",
+        "text-line-height": 1.1,
+        "text-max-width": 6,
+        "text-radial-offset": ["step", ["zoom"], 0.4, 8, 0],
+        "text-size": [
+          "interpolate",
+          ["cubic-bezier", 0.2, 0, 0.9, 1],
+          ["zoom"],
+          7,
+          18,
+          12,
+          22,
+        ],
+      },
+      paint: {
+        "text-color": "hsl(0, 0%, 15%)",
+        "text-halo-blur": 1,
+        "text-halo-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          3,
+          "hsla(0, 0%, 100%, 0.85)",
+          5,
+          "hsla(0, 0%, 100%, 1.0)",
+        ],
+        "text-halo-width": 1.5,
+      },
+    },
     // {
     //   id: "park-label",
     //   type: "symbol",

@@ -34,49 +34,31 @@ const PlaceHighlight = () => {
         .map((feature) => feature.geometry.type.toLowerCase())
         .some((type) => type.includes("poly") || type.includes("line"));
 
-      // if (lineOrPoly) {
-      const bounds = new LngLatBounds(
-        bbox(place.geojson) as [number, number, number, number]
-      );
+      if (lineOrPoly) {
+        const bounds = new LngLatBounds(
+          bbox(place.geojson) as [number, number, number, number]
+        );
 
-      const se = bounds.getSouthEast();
-      const sw = bounds.getSouthWest();
-      console.log(
-        "🚀 ~ PlaceHighlight ~ bounds.getSouthWest();:",
-        bounds.getSouthWest()
-      );
-      const width = distance([se.lng, se.lat], [sw.lng, sw.lat]);
-      const offset = destination([sw.lng, sw.lat], width / 2, -90);
-      bounds.extend(offset.geometry.coordinates as [number, number]);
-      console.log(
-        "🚀 ~ PlaceHighlight ~ bounds.getSouthWest();:",
-        bounds.getSouthWest()
-      );
-      console.log(
-        "🚀 ~ PlaceHighlight ~ offset:",
-        [sw.lng, sw.lat],
-        width,
-        offset.geometry.coordinates
-      );
+        const se = bounds.getSouthEast();
+        const sw = bounds.getSouthWest();
+        const width = distance([se.lng, se.lat], [sw.lng, sw.lat]);
+        const offset = destination([sw.lng, sw.lat], width / 1.5, -90);
+        bounds.extend(offset.geometry.coordinates as [number, number]);
 
-      // Extend bounds to offset for content pane.
-      // map.once("moveend", () =>
-      //   map.fitBounds(bounds.extend(map.unproject([0, 0])), {
-      //     padding: 50,
-      //     speed: 0.5,
-      //   })
-      // );
-
-      map.fitBounds(bounds, {
-        padding: 50,
-        maxZoom: 13,
-        speed: 0.5,
-        offset: [16, 0],
-      });
-      // } else {
-      //   map.easeTo({ center: location });
-      //   console.log("🚀 ~ PlaceHighlight ~ location:", location);
-      // }
+        map.fitBounds(bounds, {
+          padding: 50,
+          maxZoom: 13,
+          speed: 0.5,
+        });
+      } else {
+        const currentZoom = map.getZoom();
+        map.easeTo({
+          center: location,
+          zoom: currentZoom > 13 ? currentZoom : 13,
+          offset: [window.innerWidth / 6, 0],
+          duration: 1000,
+        });
+      }
 
       const iconElement = markerRef.current.firstChild as HTMLElement;
 
@@ -124,8 +106,9 @@ const PlaceHighlight = () => {
             source: "place-source",
             layout: {},
             paint: {
-              "fill-outline-color": "hsl(357, 96%, 58%)",
+              "fill-outline-color": "hsl(346.33, 44.13%, 35.1%)",
               "fill-opacity": 0,
+              "line-dasharray": [2, 0.5],
             },
           });
           layers.push({
@@ -134,7 +117,7 @@ const PlaceHighlight = () => {
             source: "place-source",
             layout: {},
             paint: {
-              "line-color": "hsl(357, 96%, 58%)",
+              "line-color": "hsl(346.33, 44.13%, 35.1%)",
               "line-width": [
                 "interpolate",
                 ["exponential", 1.2],
@@ -142,8 +125,9 @@ const PlaceHighlight = () => {
                 5,
                 1,
                 17,
-                4,
+                2,
               ],
+              "line-dasharray": [2, 0.5],
             },
           });
           break;

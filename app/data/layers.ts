@@ -73,7 +73,7 @@ export const pointLayers = [
   { sourceLayer: "plantation" },
   { sourceLayer: "pointbar" },
   { sourceLayer: "pond" },
-  { sourceLayer: "populatedplace" },
+  // { sourceLayer: "populatedplace" },
   { sourceLayer: "postoffice" },
   { sourceLayer: "railstation", icon: "train", color: colors.purple[700] },
   { sourceLayer: "reservoir" },

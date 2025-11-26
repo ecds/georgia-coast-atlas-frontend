@@ -1,6 +1,6 @@
 import { placeMetaTags } from "~/utils/placeMetaTags";
 import { fetchBySlug } from "~/data/coredata";
-import { dataHosts, indexCollection } from "~/config";
+import { dataHosts, indexCollection, PLACE_TYPES } from "~/config";
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import type { ESPlace } from "~/esTypes";
@@ -79,16 +79,27 @@ const Place = () => {
   return (
     <>
       <div className="flex flex-row w-full shadow-md bg-white">
-        <Heading
-          as="h1"
-          className={`grow text-2xl px-4 py-1 pb-1 sticky top-0 z-10 bg-white rounded-t-md`}
+        <div
+          className={`flex flex-col grow text-2xl px-4 py-1 pb-1 sticky top-0 z-10 bg-white rounded-t-md`}
         >
-          {place.name}
-        </Heading>
+          <Heading as="h1">{place.name}</Heading>
+          <div>
+            {place.types.map((type) => {
+              return (
+                <span
+                  key={type}
+                  className={`p-1 text-xs font-medium me-2 mt-2 px-2 py-0.5 rounded-lg h-min w-max bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} border-2 border-${PLACE_TYPES[type]?.textColor ?? "green-800"}`}
+                >
+                  {type}
+                </span>
+              );
+            })}
+          </div>
+        </div>
         <button
           role="link"
           onClick={navigateTo}
-          className="self-center pe-2"
+          className="self-start pt-1 pe-2"
           title="Close"
         >
           <FontAwesomeIcon icon={faXmarkCircle} />

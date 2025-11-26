@@ -104,10 +104,12 @@ const SearchResults = () => {
       }),
     };
 
-    const bounds = new LngLatBounds(
-      bbox(geojson) as [number, number, number, number]
-    );
-    map.fitBounds(bounds, { padding: 50, maxZoom: 13 });
+    if (geojson.features.length > 0) {
+      const bounds = new LngLatBounds(
+        bbox(geojson) as [number, number, number, number]
+      );
+      map.fitBounds(bounds, { padding: 50, maxZoom: 13 });
+    }
 
     map.addSource("results", {
       type: "geojson",
@@ -119,7 +121,7 @@ const SearchResults = () => {
       source: "results",
       type: "symbol",
       filter: ["==", "$type", "Point"],
-      paint: gcaPaint({ color: "red" }),
+      paint: gcaPaint({ color: "hsl(346.33, 44.13%, 35.1%)" }),
       layout: gcaLayout({ sourceLayer: "county" }),
     });
 
