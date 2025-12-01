@@ -27,15 +27,6 @@ const counties = [
 ];
 
 const textSize = (layer: string) => {
-  // let sizeProp: DataDrivenPropertyValueSpecification<number> = [
-  //   "step",
-  //   ["zoom"],
-  //   1,
-  //   8,
-  //   0,
-  //   12,
-  //   16,
-  // ];
   let sizeProp: DataDrivenPropertyValueSpecification<number> = [
     "interpolate",
     ["cubic-bezier", 0.2, 0, 0.9, 1],
@@ -59,6 +50,27 @@ const textSize = (layer: string) => {
   return sizeProp;
 };
 
+const minZoom = (layer: string) => {
+  switch (layer) {
+    case "barrierisland":
+    case "county":
+      return 5;
+    default:
+      return 10;
+  }
+};
+
+const maxZoom = (layer: string) => {
+  switch (layer) {
+    case "barrierisland":
+      return 14.5;
+    case "county":
+      return 11;
+    default:
+      return 22;
+  }
+};
+
 export const gcaLayout = (layer: TLayer) => {
   const layout: SymbolLayout = {
     layout: {
@@ -72,20 +84,6 @@ export const gcaLayout = (layer: TLayer) => {
       "text-size": textSize(layer.sourceLayer),
     },
   };
-  // if (layer.icon && layout.layout) {
-  //   layout.layout["icon-size"] = [
-  //     "interpolate",
-  //     ["cubic-bezier", 0.9, 1, 0.2, 0],
-  //     ["zoom"],
-  //     8,
-  //     1,
-  //     12,
-  //     0.75,
-  //   ];
-  //   layout.layout["icon-image"] = layer.icon;
-  //   layout.layout["icon-offset"] = [0, -10];
-  //   layout.layout["text-anchor"] = "top";
-  // }
   return layout.layout;
 };
 
@@ -133,10 +131,8 @@ const gcaLayer = (layer: { sourceLayer: string; icon?: string }) => {
     type: "symbol",
     source: "gca",
     "source-layer": layer.sourceLayer,
-    minzoom: ["barrierisland", "county"].includes(layer.sourceLayer) ? 5 : 9,
-    maxzoom: ["barrierisland", "county"].includes(layer.sourceLayer)
-      ? 14.5
-      : 22,
+    minzoom: minZoom(layer.sourceLayer),
+    maxzoom: maxZoom(layer.sourceLayer),
     filter: ["==", "$type", "Point"],
     layout: gcaLayout(layer),
     paint: gcaPaint({ layer }),
@@ -146,6 +142,41 @@ const gcaLayer = (layer: { sourceLayer: string; icon?: string }) => {
 
 const gcaLayers = () => {
   return pointLayers.map((layer) => gcaLayer(layer));
+};
+
+const placePaint = () => {
+  const paint: SymbolPaint = {
+    paint: {
+      "text-color": "hsl(0, 0%, 15%)",
+      "text-halo-blur": 1,
+      "text-halo-color": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        3,
+        "hsla(0, 0%, 100%, 0.85)",
+        5,
+        "hsla(0, 0%, 100%, 1.0)",
+      ],
+      "text-halo-width": 1.5,
+    },
+  };
+  return paint.paint;
+};
+
+const placeLayout = () => {
+  const layout: SymbolLayout = {
+    layout: {
+      "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
+      "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+      "text-font": ["PT Sans Narrow Regular,Inter Regular"],
+      "text-justify": "auto",
+      "text-line-height": 1.1,
+      "text-max-width": 6,
+      "text-radial-offset": ["step", ["zoom"], 0.4, 8, 0],
+    },
+  };
+  return layout.layout;
 };
 
 const gcaWaterWayLabels = waterWays.map((layer) => {
@@ -4152,22 +4183,69 @@ export const full: StyleSpecification = {
     },
     ...gcaLayers(),
     {
-      id: "settlement-major-label",
+      id: "smallPlace",
+      type: "symbol",
+      source: "gca",
+      "source-layer": "populatedplace",
+      minzoom: 9,
+      maxzoom: 22,
+      filter: [
+        "all",
+        ["!=", "capital", 6],
+        ["==", "$type", "Point"],
+        // ["<", "population", 5000],
+      ],
+      layout: {
+        ...placeLayout(),
+        "text-size": [
+          "interpolate",
+          ["cubic-bezier", 0.2, 0, 0.9, 1],
+          ["zoom"],
+          12,
+          14,
+          18,
+          16,
+        ],
+      },
+      paint: placePaint(),
+    },
+    {
+      id: "settlement",
       type: "symbol",
       source: "gca",
       "source-layer": "populatedplace",
       minzoom: 7,
       maxzoom: 16,
-      // filter: ["==", ["to-string", ["typeof", ["get", "place"]]], "string"],
-      filter: ["all", ["==", "capital", "6"], ["==", "$type", "Point"]],
+      filter: [
+        "all",
+        ["!=", "capital", 6],
+        ["==", "$type", "Point"],
+        [">=", "population", 5000],
+      ],
       layout: {
-        "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
-        "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-        "text-font": ["PT Sans Narrow Regular,Inter Regular"],
-        "text-justify": "auto",
-        "text-line-height": 1.1,
-        "text-max-width": 6,
-        "text-radial-offset": ["step", ["zoom"], 0.4, 8, 0],
+        ...placeLayout(),
+        "text-size": [
+          "interpolate",
+          ["cubic-bezier", 0.2, 0, 0.9, 1],
+          ["zoom"],
+          7,
+          12,
+          18,
+          18,
+        ],
+      },
+      paint: placePaint(),
+    },
+    {
+      id: "countySeat",
+      type: "symbol",
+      source: "gca",
+      "source-layer": "populatedplace",
+      minzoom: 7,
+      maxzoom: 16,
+      filter: ["all", ["==", "capital", 6], ["==", "$type", "Point"]],
+      layout: {
+        ...placeLayout(),
         "text-size": [
           "interpolate",
           ["cubic-bezier", 0.2, 0, 0.9, 1],
@@ -4178,169 +4256,10 @@ export const full: StyleSpecification = {
           22,
         ],
       },
-      paint: {
-        "text-color": "hsl(0, 0%, 15%)",
-        "text-halo-blur": 1,
-        "text-halo-color": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          3,
-          "hsla(0, 0%, 100%, 0.85)",
-          5,
-          "hsla(0, 0%, 100%, 1.0)",
-        ],
-        "text-halo-width": 1.5,
-      },
+      paint: placePaint(),
     },
-    // {
-    //   id: "park-label",
-    //   type: "symbol",
-    //   source: "gca",
-    //   "source-layer": "park",
-    //   minzoom: 12.5,
-    //   filter: ["==", "$type", "Point"],
-    //   // filter: [
-    //   //   "all",
-    //   //   ["==", ["get", "subclass"], "park"],
-    //   //   [
-    //   //     "step",
-    //   //     ["zoom"],
-    //   //     ["any", ["has", "name:ru"], ["has", "name:zh"], ["has", "name:kn"]],
-    //   //     16,
-    //   //     true,
-    //   //   ],
-    //   // ],
-    //   layout: {
-    //     "text-anchor": ["step", ["zoom"], "top-left", 8, "center"],
-    //     "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-    //     "text-font": ["PT Sans Narrow Regular,Inter Regular"],
-    //     "text-justify": "auto",
-    //     "text-line-height": 1.1,
-    //     "text-max-width": 6,
-    //     "text-radial-offset": ["step", ["zoom"], 0.4, 8, 0],
-    //     "text-size": [
-    //       "interpolate",
-    //       ["cubic-bezier", 0.2, 0, 0.9, 1],
-    //       ["zoom"],
-    //       8,
-    //       12,
-    //       12,
-    //       16,
-    //     ],
-    //   },
-    //   paint: {
-    //     "text-color": "hsl(90, 13%, 40%)",
-    //     "text-halo-color": "hsl(64, 32%, 79%)",
-    //     "text-halo-width": 2,
-    //   },
-    // },
-    // {
-    //   id: "continent-label",
-    //   type: "symbol",
-    //   source: "gca",
-    //   "source-layer": "place",
-    //   minzoom: 0,
-    //   maxzoom: 1.5,
-    //   filter: ["match", ["get", "class"], ["continent"], true, false],
-    //   layout: {
-    //     "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-    //     "text-font": ["PT Sans Bold,Inter Bold"],
-    //     "text-letter-spacing": 0.2,
-    //     "text-line-height": 1,
-    //     "text-max-width": 6,
-    //     "text-radial-offset": ["step", ["zoom"], 0.6, 8, 0],
-    //     "text-size": 20,
-    //     "text-transform": "uppercase",
-    //   },
-    //   paint: {
-    //     "text-color": "hsl(0, 0%, 15%)",
-    //     "text-halo-color": "hsla(0, 0%, 100%, 0.5)",
-    //     "text-halo-width": 1.5,
-    //   },
-    // },
-    // {
-    //   id: "country-label",
-    //   type: "symbol",
-    //   source: "place",
-    //   "source-layer": "populatedplaces",
-    //   minzoom: 1.5,
-    //   maxzoom: 5.5,
-    //   filter: [
-    //     "match",
-    //     ["get", "class"],
-    //     ["country", "disputed_country"],
-    //     true,
-    //     false,
-    //   ],
-    //   layout: {
-    //     "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-    //     "text-font": ["PT Sans Bold,Inter Bold"],
-    //     "text-letter-spacing": 0.2,
-    //     "text-line-height": 1,
-    //     "text-max-width": 6,
-    //     "text-radial-offset": ["step", ["zoom"], 0.6, 8, 0],
-    //     "text-size": ["interpolate", ["linear"], ["zoom"], 1.5, 12, 5.5, 20],
-    //     "text-transform": "uppercase",
-    //   },
-    //   paint: {
-    //     "text-color": "hsl(0, 0%, 15%)",
-    //     "text-halo-color": "hsla(0, 0%, 100%, 0.5)",
-    //     "text-halo-width": 1.5,
-    //   },
-    // },
-    // {
-    //   id: "subnational-label",
-    //   type: "symbol",
-    //   source: "georgia",
-    //   "source-layer": "place",
-    //   minzoom: 3,
-    //   maxzoom: 7,
-    //   filter: [
-    //     "match",
-    //     ["get", "class"],
-    //     ["state", "disputed_state"],
-    //     true,
-    //     false,
-    //   ],
-    //   layout: {
-    //     "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-    //     "text-font": ["PT Sans Bold,Inter Bold"],
-    //     "text-letter-spacing": 0.15,
-    //     "text-max-width": 6,
-    //     "text-size": [
-    //       "interpolate",
-    //       ["cubic-bezier", 0.85, 0.7, 0.65, 1],
-    //       ["zoom"],
-    //       4,
-    //       ["step", ["get", "rank"], 9, 6, 8, 7, 7],
-    //       7,
-    //       ["step", ["get", "rank"], 21, 6, 16, 7, 14],
-    //     ],
-    //     "text-transform": "uppercase",
-    //   },
-    //   paint: {
-    //     "text-color": [
-    //       "interpolate",
-    //       ["linear"],
-    //       ["zoom"],
-    //       3,
-    //       "hsl(0, 2%, 0%)",
-    //       5,
-    //       "hsl(0, 2%, 25%)",
-    //     ],
-    //     "text-halo-color": "hsla(0, 0%, 100%, 0.85)",
-    //     "text-halo-width": [
-    //       "interpolate",
-    //       ["linear"],
-    //       ["zoom"],
-    //       4,
-    //       0.75,
-    //       5,
-    //       1.75,
-    //     ],
-    //   },
-    // },
+    gcaLayer({ sourceLayer: "county" }),
+    gcaLayer({ sourceLayer: "barrierisland" }),
   ],
   name: "Georgia Coast Atlas",
 };

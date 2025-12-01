@@ -99,8 +99,8 @@ export const pointLayers = [
   { sourceLayer: "tree", icon: "tree", color: colors.teal[950] },
   { sourceLayer: "treeboneyard" },
   { sourceLayer: "wildlife" },
-  { sourceLayer: "county" },
-  { sourceLayer: "barrierisland" },
+  // { sourceLayer: "county" },
+  // { sourceLayer: "barrierisland" },
 ];
 
 export const areas = [
