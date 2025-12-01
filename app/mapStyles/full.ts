@@ -4183,7 +4183,7 @@ export const full: StyleSpecification = {
     },
     ...gcaLayers(),
     {
-      id: "smallPlace",
+      id: "gca-smallPlace",
       type: "symbol",
       source: "gca",
       "source-layer": "populatedplace",
@@ -4210,7 +4210,7 @@ export const full: StyleSpecification = {
       paint: placePaint(),
     },
     {
-      id: "settlement",
+      id: "gca-settlement",
       type: "symbol",
       source: "gca",
       "source-layer": "populatedplace",
@@ -4237,7 +4237,7 @@ export const full: StyleSpecification = {
       paint: placePaint(),
     },
     {
-      id: "countySeat",
+      id: "gca-countySeat",
       type: "symbol",
       source: "gca",
       "source-layer": "populatedplace",
