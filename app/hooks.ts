@@ -1,5 +1,15 @@
 // import { useEffect, useState } from "react";
 
+// export const useIsMounted = () => {
+//   const [isMounted, setIsMounted] = useState<boolean>(false);
+
+//   useEffect(() => {
+//     setIsMounted(true);
+//   }, []);
+
+//   return isMounted;
+// };
+
 // export const useFetcher = async (url: string) => {
 //   const [data, setData] = useState<any>({});
 

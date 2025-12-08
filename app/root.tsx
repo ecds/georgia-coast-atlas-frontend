@@ -22,8 +22,10 @@ config.autoAddCss = false; /* eslint-disable import/first */
 import { placeMetaTags } from "~/utils/placeMetaTags";
 import { MapContext } from "./contexts";
 import { useState } from "react";
+import Analytics from "./components/Analytics";
 import type { LinksFunction, MetaFunction } from "react-router";
 import type { Map as TMap } from "maplibre-gl";
+import type { TBaseStyleName } from "./types";
 
 export const meta: MetaFunction = () => {
   return placeMetaTags();
@@ -34,9 +36,12 @@ export const links: LinksFunction = () => [
   { rel: "icon", href: "/images/gca_favicon.jpg" },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export const Layout = ({ children }: { children: React.ReactNode }) => {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [activeStyle, setActiveStyle] = useState<TBaseStyleName | undefined>(
+    undefined
+  );
   return (
     <html lang="en">
       <head>
@@ -49,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
         <Meta />
       </head>
-      <body className="font-inter bg-white">
+      <body className="font-inter bg-wite">
         <a href="#main" className="sr-only">
           skip to main content
         </a>
@@ -58,23 +63,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
           className={`mx-auto relative mt-20 bg-white overflow-hidden`}
           id="main"
         >
-          <MapContext.Provider value={{ map, setMap, mapLoaded, setMapLoaded }}>
+          <MapContext.Provider
+            value={{
+              map,
+              setMap,
+              mapLoaded,
+              setMapLoaded,
+              activeStyle,
+              setActiveStyle,
+            }}
+          >
             {children}
           </MapContext.Provider>
         </main>
         <Loading />
         <ScrollRestoration />
+        <Analytics />
         <Scripts />
       </body>
     </html>
   );
-}
+};
 
-export default function App() {
+const App = () => {
   return <Outlet />;
-}
+};
 
-export function ErrorBoundary() {
+export const ErrorBoundary = () => {
   const error = useRouteError();
 
   if (isRouteErrorResponse(error)) {
@@ -84,4 +99,6 @@ export function ErrorBoundary() {
   } else {
     return <h1>Unknown Error</h1>;
   }
-}
+};
+
+export default App;

@@ -2,19 +2,20 @@ import maplibregl, { AttributionControl, LngLatBounds } from "maplibre-gl";
 import { useContext, useEffect, useRef } from "react";
 import { MapContext } from "~/contexts";
 import { defaultBounds } from "~/config";
-import { combined } from "~/mapStyles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { ReactNode } from "react";
-import type { Map as TMap } from "maplibre-gl";
+import type { StyleSpecification, Map as TMap } from "maplibre-gl";
+import { full } from "~/mapStyles/full";
 
 interface Props {
   bearing?: number;
   bounds?: LngLatBounds;
   children?: ReactNode;
   className?: string;
+  style?: StyleSpecification;
 }
 
-const Map = ({ children, className, bearing, bounds }: Props) => {
+const Map = ({ children, className, bearing, bounds, style }: Props) => {
   const { setMap, setMapLoaded } = useContext(MapContext);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +27,7 @@ const Map = ({ children, className, bearing, bounds }: Props) => {
     try {
       _map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: combined,
+        style: full,
         center: bounds?.getCenter() ?? [-81.40348956381558, 31.41113196761974],
         zoom: 9,
         maxPitch: 0,
@@ -35,7 +36,8 @@ const Map = ({ children, className, bearing, bounds }: Props) => {
         },
         attributionControl: false,
         maxBounds: new LngLatBounds([
-          -85.005165, 29.357851, -75.239729, 33.000659,
+          -85.60674924999249, 30.35909162440624, -79.8375612136121,
+          35.000591132701324,
         ]),
         bearing: bearing ?? 0,
       });
@@ -45,6 +47,7 @@ const Map = ({ children, className, bearing, bounds }: Props) => {
       _map.once("load", () => {
         setMap(_map);
         setMapLoaded(true);
+        // _map?.setProjection({ type: "globe" });
       });
 
       _map.addControl(new AttributionControl({ compact: true }));
@@ -60,11 +63,18 @@ const Map = ({ children, className, bearing, bounds }: Props) => {
         console.error(error);
       }
     };
-  }, [setMap, setMapLoaded, bearing, bounds]);
+  }, [setMap, setMapLoaded, bearing, bounds, style]);
+
+  if (!window) {
+    return <></>;
+  }
 
   return (
-    <div className="relative bg-water">
-      <div ref={mapContainerRef} className={className ?? "h-topOffset"}></div>
+    <div className="relative">
+      <div
+        ref={mapContainerRef}
+        className={`${className ?? "h-topOffset"} bg-water`}
+      ></div>
       {children}
     </div>
   );

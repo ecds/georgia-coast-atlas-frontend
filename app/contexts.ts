@@ -2,29 +2,37 @@ import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Map } from "maplibre-gl";
 import type { ESPlace, ESRelatedMedium, ESRelatedPlace } from "./esTypes";
+import type { TBaseStyleName } from "./types";
+import type { Hit } from "instantsearch.js";
 
 type TMapContext = {
   map: Map | undefined;
   setMap: Dispatch<SetStateAction<Map | undefined>>;
   mapLoaded: boolean;
   setMapLoaded: Dispatch<SetStateAction<boolean>>;
+  activeStyle: TBaseStyleName | undefined;
+  setActiveStyle: Dispatch<SetStateAction<TBaseStyleName | undefined>>;
 };
 
 type TPlaceContext = {
   activeLayers?: string[];
-  activePlace: ESRelatedPlace | ESPlace | undefined;
+  activePlace?: ESRelatedPlace | ESPlace | undefined;
   clusterFillColor?: string;
   clusterTextColor?: string;
-  hoveredPlace: ESRelatedPlace | ESPlace | undefined;
+  hoveredPlace?: ESRelatedPlace | ESPlace | Hit | undefined;
   noTrackMouse?: boolean;
   place: ESPlace | undefined;
   relatedClosed?: boolean;
+  searchParams?: string | undefined;
+  setSearchParams?: Dispatch<SetStateAction<string | undefined>>;
   setActiveLayers?: Dispatch<SetStateAction<string[]>>;
-  setActivePlace: Dispatch<
+  setActivePlace?: Dispatch<
     SetStateAction<ESRelatedPlace | ESPlace | undefined>
   >;
+  setClickedPlace: Dispatch<SetStateAction<string | undefined>>;
+  setPlace?: Dispatch<SetStateAction<ESPlace | ESPlace | undefined>>;
   setHoveredPlace: Dispatch<
-    SetStateAction<ESRelatedPlace | ESPlace | undefined>
+    SetStateAction<ESRelatedPlace | ESPlace | Hit | undefined>
   >;
   setNoTrackMouse?: Dispatch<SetStateAction<boolean>>;
 };
@@ -37,6 +45,12 @@ export const MapContext = createContext<TMapContext>({
   mapLoaded: false,
   setMapLoaded: (_: SetStateAction<boolean>) => {
     console.error("setMapLoaded not implemented. Did you pass it to context?");
+  },
+  activeStyle: undefined,
+  setActiveStyle: (_: SetStateAction<TBaseStyleName | undefined>) => {
+    console.error(
+      "setActiveStyle not implemented. Did you pass it to context?"
+    );
   },
 });
 
@@ -70,18 +84,21 @@ export const PlaceContext = createContext<TPlaceContext>({
     );
   },
   activePlace: undefined,
-  setActivePlace: (_: SetStateAction<ESRelatedPlace | ESPlace | undefined>) => {
+  setPlace: (_: SetStateAction<ESPlace | ESPlace | undefined>) => {
     console.error(
       "setActivePlace not implemented. Did you pass it to context?"
     );
   },
   hoveredPlace: undefined,
   setHoveredPlace: (
-    _: SetStateAction<ESRelatedPlace | ESPlace | undefined>
+    _: SetStateAction<ESRelatedPlace | ESPlace | Hit | undefined>
   ) => {
     console.error(
       "setActiveHovered not implemented. Did you pass it to context?"
     );
+  },
+  setClickedPlace: (_: SetStateAction<string | undefined>) => {
+    console.error("setClicked not implemented. Did you pass it to context?");
   },
 });
 

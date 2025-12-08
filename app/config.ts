@@ -1,6 +1,6 @@
 import { history } from "instantsearch.js/es/lib/routers";
 import maplibregl from "maplibre-gl";
-import { base, osm, satellite, usgs } from "./mapStyles";
+import { satellite, usgs } from "./mapStyles";
 import type { TBaseStyle, TTypeColors } from "./types";
 
 export const islands = [
@@ -89,11 +89,11 @@ export const keys = {
 };
 
 export const mapLayers: TBaseStyle[] = [
-  {
-    name: "default",
-    label: "Default",
-    layers: base.layers.map((layer) => layer.id),
-  },
+  // {
+  //   name: "default",
+  //   label: "Default",
+  //   layers: base.layers.map((layer) => layer.id),
+  // },
   {
     name: "satellite",
     label: "Satellite",
@@ -104,11 +104,11 @@ export const mapLayers: TBaseStyle[] = [
     label: "USGS",
     layers: usgs.layers.map((layer) => layer.id),
   },
-  {
-    name: "osm",
-    label: "OpenStreetMap",
-    layers: osm.layers.map((layer) => layer.id),
-  },
+  // {
+  //   name: "osm",
+  //   label: "OpenStreetMap",
+  //   layers: osm.layers.map((layer) => layer.id),
+  // },
 ];
 
 export const topBarHeight = "5rem";
@@ -138,7 +138,7 @@ export const PLACE_TYPES: TTypeColors = {
     bgColor: "emerald-100",
     textColor: "emerald-800",
   },
-  "Bike path": {
+  "Bike Path": {
     bgColor: "green-100",
     textColor: "green-800",
   },

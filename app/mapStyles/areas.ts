@@ -5,7 +5,7 @@ export const landColors = {
   activeIsland: "#4A5D41",
   county: "#797B77",
   activeCounty: "#565855",
-  water: "#8191B2",
+  water: "#99b3cc",
   road: "#C3C8C1",
   accent: "#5D414A",
 };
@@ -44,6 +44,7 @@ export const areas: StyleSpecification = {
           landColors.activeCounty,
           landColors.county,
         ],
+        // "fill-outline-color": "white",
       },
     },
     {

@@ -22,7 +22,7 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
   const { map } = useContext(MapContext);
   const [activeCluster, setActiveCluster] = useState<{
     location: { lat: number; lon: number };
-    list: { name: string; slug: string; uuid: string }[];
+    list: { name: string; slug: string; uuid: string; preview: string }[];
   }>();
 
   useEffect(() => {
@@ -45,19 +45,24 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
       const points = await source.getClusterChildren(properties.cluster_id);
       // @ts-expect-error: coordinates totally exists on type Geometry
       const [lng, lat] = points[0].geometry.coordinates;
+      const zoom = await source.getClusterExpansionZoom(
+        feature.properties.cluster_id
+      );
 
-      if (map.getZoom() < 15) {
-        if (!source) return;
-        const zoom = await source.getClusterExpansionZoom(
-          feature.properties.cluster_id
-        );
-        map.easeTo({ center: { lng, lat }, zoom: zoom < 15 ? zoom : 15 });
-      } else {
+      map.easeTo({ center: { lng, lat }, zoom: zoom < 15 ? zoom : 15 });
+
+      if (zoom >= map.getMaxZoom()) {
         const slugs = properties.slugs.split("|");
         const names = properties.names.split("|");
         const uuids = properties.uuids.split("|");
+        const previews = properties.previews.split("|");
         const list = names.map((name: string, index: number) => {
-          return { name, slug: slugs[index], uuid: uuids[index] };
+          return {
+            name,
+            slug: slugs[index],
+            uuid: uuids[index],
+            preview: previews[index],
+          };
         });
         setActiveCluster({ location: { lon: lng, lat }, list });
       }
@@ -87,6 +92,7 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
         // Not sure why the double concat is needed.
         names: ["concat", ["concat", ["get", "name"], "|"]],
         slugs: ["concat", ["concat", ["get", "slug"], "|"]],
+        previews: ["concat", ["concat", ["get", "preview"], "|"]],
         uuids: ["concat", ["concat", ["get", "uuid"], "|"]],
       },
     };
@@ -128,20 +134,38 @@ const CollectionClusters = ({ geojson, collectionType }: Props) => {
         onClose={() => setActiveCluster(undefined)}
         zoomToFeature={false}
       >
-        <ul>
+        <div className="flex">
           {activeCluster.list.map((item) => {
+            if (item.preview) {
+              return (
+                <div className="flex flex-col mx-4 w-32" key={item.uuid}>
+                  <img
+                    src={item.preview}
+                    alt=""
+                    className="h-32 w-32 drop-shadow-md rounded-md"
+                  />
+                  <Link
+                    className="block w-32 text-blue-600 underline underline-offset-2 hover:text-blue-900"
+                    to={`/collections/${collectionType}/${item.slug}`}
+                    state={{ backTo: `Back to ${collectionType} Collection` }}
+                  >
+                    {item.name}
+                  </Link>
+                </div>
+              );
+            }
             return (
-              <li key={item.uuid}>
+              <div key={item.uuid}>
                 <Link
                   to={`/collections/${collectionType}/${item.slug}`}
                   state={{ backTo: `Back to ${collectionType} Collection` }}
                 >
                   {item.name}
                 </Link>
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </PlacePopup>
     );
   }

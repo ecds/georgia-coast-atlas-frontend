@@ -123,6 +123,18 @@ export const base: StyleSpecification = {
       },
     },
     {
+      id: "counties-boundaries",
+      type: "line",
+      source: "georgia",
+      "source-layer": "boundary",
+      minzoom: 0,
+      maxzoom: 20,
+      filter: ["==", ["get", "admin_level"], 6],
+      paint: {
+        "line-color": "white",
+      },
+    },
+    {
       id: "road_area_pier",
       type: "fill",
       metadata: {},

@@ -10,10 +10,14 @@ interface Props {
   fallback?: ReactNode;
 }
 
-const ClientOnly = ({ children, fallback = null }: Props) => {
+const ClientOnly = ({ children, fallback = "fallback" }: Props) => {
   const isHydrated = useIsHydrated;
 
-  return isHydrated() ? <>{children}</> : <>{fallback}</>;
+  if (typeof window !== "undefined" && isHydrated()) {
+    return <>{children}</>;
+  }
+
+  return <span>{fallback}</span>;
 };
 
 export default ClientOnly;

@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
-import TopicTree from "./TopicTree";
+// import TopicTree from "./TopicTree";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
@@ -11,6 +11,15 @@ const menuLinkClassName =
 
 const collections = ["maps", "panos", "photographs", "videos"];
 const aboutPages = ["project", "team", "bibliography", "contact"];
+const topics = [
+  "agricultural",
+  "cartography",
+  "environmental-history",
+  "gullah-geechee-culture",
+  "plantations",
+  "sea-level-rise",
+  "slavery",
+];
 
 const Navbar = () => {
   return (
@@ -29,19 +38,7 @@ const Navbar = () => {
 
       <div className="flex items-center space-x-12 text-white text-lg font-barlow">
         <Menu>
-          <MenuButton>Places</MenuButton>
-          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
-            <MenuItem>
-              <Link className={menuLinkClassName} to="/places/search">
-                Search
-              </Link>
-            </MenuItem>
-            <MenuItem>
-              <Link className={menuLinkClassName} to="/places/explore">
-                Explore
-              </Link>
-            </MenuItem>
-          </MenuItems>
+          <Link to={"/places"}>Places</Link>
         </Menu>
 
         <Menu>
@@ -62,11 +59,20 @@ const Navbar = () => {
           </MenuItems>
         </Menu>
 
-        <TopicTree
-          anchor={itemsAnchor}
-          itemsClassName={itemsClassName}
-          linkClassName={menuLinkClassName}
-        />
+        <Menu>
+          <MenuButton>Topics</MenuButton>
+          <MenuItems anchor={itemsAnchor} className={itemsClassName} transition>
+            {topics.map((topic) => {
+              return (
+                <MenuItem key={topic}>
+                  <Link className={menuLinkClassName} to={`/topics/${topic}`}>
+                    {topic}
+                  </Link>
+                </MenuItem>
+              );
+            })}
+          </MenuItems>
+        </Menu>
 
         <Menu>
           <MenuButton>About</MenuButton>

@@ -82,7 +82,7 @@ export const singlePoint = (id: string, source: string, size?: number) => {
     id,
     type: "circle",
     source,
-    filter: ["!", ["has", "point_count"]],
+    filter: ["all", ["==", "$type", "Point"], ["!has", "point_count"]],
     paint: {
       "circle-radius": size ?? 6,
       "circle-color": ["string", ["get", "hexColor"]],

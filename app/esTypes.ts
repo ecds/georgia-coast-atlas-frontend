@@ -126,6 +126,7 @@ export type ESCollectionItem = {
   name: string;
   location: TLonLat;
   places: string[];
+  publisher?: string;
   slug: string;
   thumbnail_url: string;
   title?: string;
@@ -153,6 +154,7 @@ export type ESSearchProps = {
 export type ESPhotographItem = ESCollectionItem & {
   alt?: string;
   manifest: string;
+  full_url: string;
 };
 
 export type CollectionType = "maps" | "photographs" | "panos" | "videos";
