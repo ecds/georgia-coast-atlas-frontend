@@ -49,6 +49,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 const Place = () => {
   const { place, wpData } = useLoaderData<typeof loader>();
+  console.log("🚀 ~ Place ~ place:", place.geojson);
   const { map } = useContext(MapContext);
   const { setPlace, searchParams } = useContext(PlaceContext);
   const navigate = useNavigate();
