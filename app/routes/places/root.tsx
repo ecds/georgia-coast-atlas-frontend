@@ -5,7 +5,7 @@ import { MapContext, PlaceContext } from "~/contexts";
 import { full } from "~/mapStyles/full";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { pointLayers } from "~/data/layers";
-import MapInteractions from "~/components/MapInteractions";
+import MapInteractions from "~/components/mapping/MapInteractions";
 import PlacePreview from "~/components/mapping/PlacePreview";
 import StyleSwitcher from "~/components/mapping/StyleSwitcher";
 import type { ESRelatedPlace, ESPlace } from "~/esTypes";
@@ -69,7 +69,7 @@ const PlaceRoot = () => {
       <ClientOnly>
         <Map style={full}>
           <StyleSwitcher />
-          <div className="absolute top-4 left-4 flex flex-col max-h-[calc(100vh-8rem)] w-[33vw] bg-white rounded-md drop-shadow-md overflow-hidden">
+          <div className="absolute top-4 left-4 flex flex-col max-h-[calc(100vh-8rem)] w-[33vw] rounded-md drop-shadow-md overflow-hidden">
             <Outlet />
           </div>
           <MapInteractions />

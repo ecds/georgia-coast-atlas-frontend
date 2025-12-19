@@ -88,7 +88,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
         }}
       >
         <Configure hitsPerPage={100} />
-        <div className="flex ">
+        <div className="flex bg-white">
           <div className="grid grow grid-cols-5 sticky top-0">
             <div className="col-span-4">
               <Autocomplete />
@@ -106,7 +106,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
             </div>
           </div>
         </div>
-        <div className="col-span-5 flex-1 overflow-y-scroll">
+        <div className="col-span-5 flex-1 overflow-y-scroll bg-white/80">
           <SearchResults />
         </div>
       </InstantSearch>

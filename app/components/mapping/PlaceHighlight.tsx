@@ -5,7 +5,7 @@ import { LngLat, LngLatBounds, Marker } from "maplibre-gl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import type { AddLayerObject, SourceSpecification } from "maplibre-gl";
-import { bbox } from "@turf/turf";
+import { bbox, destination, distance } from "@turf/turf";
 
 const PlaceHighlight = () => {
   const { place } = useContext(PlaceContext);
@@ -38,13 +38,26 @@ const PlaceHighlight = () => {
         const bounds = new LngLatBounds(
           bbox(place.geojson) as [number, number, number, number]
         );
+
+        const se = bounds.getSouthEast();
+        const sw = bounds.getSouthWest();
+        const width = distance([se.lng, se.lat], [sw.lng, sw.lat]);
+        const offset = destination([sw.lng, sw.lat], width / 1.5, -90);
+        bounds.extend(offset.geometry.coordinates as [number, number]);
+
         map.fitBounds(bounds, {
           padding: 50,
           maxZoom: 13,
-          offset: [window.innerWidth / 8, 0],
+          speed: 0.5,
         });
       } else {
-        map.easeTo({ center: location });
+        const currentZoom = map.getZoom();
+        map.easeTo({
+          center: location,
+          zoom: currentZoom > 13 ? currentZoom : 13,
+          offset: [window.innerWidth / 6, 0],
+          duration: 1000,
+        });
       }
 
       const iconElement = markerRef.current.firstChild as HTMLElement;
@@ -93,8 +106,9 @@ const PlaceHighlight = () => {
             source: "place-source",
             layout: {},
             paint: {
-              "fill-outline-color": "hsl(357, 96%, 58%)",
+              "fill-outline-color": "hsl(346.33, 44.13%, 35.1%)",
               "fill-opacity": 0,
+              "line-dasharray": [2, 0.5],
             },
           });
           layers.push({
@@ -103,7 +117,7 @@ const PlaceHighlight = () => {
             source: "place-source",
             layout: {},
             paint: {
-              "line-color": "hsl(357, 96%, 58%)",
+              "line-color": "hsl(346.33, 44.13%, 35.1%)",
               "line-width": [
                 "interpolate",
                 ["exponential", 1.2],
@@ -111,8 +125,9 @@ const PlaceHighlight = () => {
                 5,
                 1,
                 17,
-                4,
+                2,
               ],
+              "line-dasharray": [2, 0.5],
             },
           });
           break;

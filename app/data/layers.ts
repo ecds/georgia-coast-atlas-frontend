@@ -73,7 +73,7 @@ export const pointLayers = [
   { sourceLayer: "plantation" },
   { sourceLayer: "pointbar" },
   { sourceLayer: "pond" },
-  { sourceLayer: "populatedplace" },
+  // { sourceLayer: "populatedplace" },
   { sourceLayer: "postoffice" },
   { sourceLayer: "railstation", icon: "train", color: colors.purple[700] },
   { sourceLayer: "reservoir" },
@@ -99,8 +99,8 @@ export const pointLayers = [
   { sourceLayer: "tree", icon: "tree", color: colors.teal[950] },
   { sourceLayer: "treeboneyard" },
   { sourceLayer: "wildlife" },
-  { sourceLayer: "county" },
-  { sourceLayer: "barrierisland" },
+  // { sourceLayer: "county" },
+  // { sourceLayer: "barrierisland" },
 ];
 
 export const areas = [
