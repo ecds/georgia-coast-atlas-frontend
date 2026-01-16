@@ -89,3 +89,4 @@ const PhotographCollectionIndex = () => {
 };
 
 export default PhotographCollectionIndex;
+
