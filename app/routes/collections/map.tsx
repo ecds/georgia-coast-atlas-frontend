@@ -117,7 +117,10 @@ const MapDetail = () => {
             {mapLayer.publisher}
           </cite>
         )}
-        <p>{mapLayer.description ?? ""}</p>
+        <div
+          className="mt-4"
+          dangerouslySetInnerHTML={{ __html: mapLayer.description ?? "" }}
+        />
       </div>
       <div className="flex-grow">
         <ClientOnly>
