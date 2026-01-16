@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import gcaLogo from "app/images/gca-logo.png";
 // import TopicTree from "./TopicTree";
 
@@ -24,14 +26,19 @@ const topics = [
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const closeMobile = () => setMobileOpen(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 bg-costal-green drop-shadow-md">
       {/* Shell / container */}
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center">
-          <NavLink to="/" onClick={closeMobile} className="flex items-center">
+          <NavLink to="/" className="flex items-center">
             <img
               src={gcaLogo}
               alt="Georgia Coast Atlas Logo"
@@ -131,49 +138,16 @@ const Navbar = () => {
           aria-expanded={mobileOpen}
           onClick={() => setMobileOpen((prev) => !prev)}
         >
-          {mobileOpen ? (
-            // X icon
-            <svg
-              className="h-6 w-6"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 6l12 12M18 6L6 18"
-              />
-            </svg>
-          ) : (
-            // Hamburger icon
-            <svg
-              className="h-6 w-6"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              stroke="currentColor"
-              fill="none"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          )}
+          <FontAwesomeIcon icon={mobileOpen ? faXmark : faBars} className="h-6 w-6" />
         </button>
       </div>
 
       {/* Mobile panel */}
       {mobileOpen && (
-        <div className="border-t border-white/10 bg-costal-green md:hidden">
+        <div className="border-t border-white/10 bg-costal-green md:hidden h-[calc(100vh-80px)] overflow-y-auto">
           <div className="space-y-4 px-4 py-4 text-base font-barlow text-white">
             <Link
               to="/places"
-              onClick={closeMobile}
               className="block rounded-md py-2 px-2 hover:bg-costal-green/70"
             >
               Places
@@ -188,7 +162,6 @@ const Navbar = () => {
                   <Link
                     key={collection}
                     to={`/collections/${collection}`}
-                    onClick={closeMobile}
                     className="block rounded-md py-1.5 px-2 capitalize hover:bg-costal-green/70"
                   >
                     {collection}
@@ -206,7 +179,6 @@ const Navbar = () => {
                   <Link
                     key={topic}
                     to={`/topics/${topic}`}
-                    onClick={closeMobile}
                     className="block rounded-md py-1.5 px-2 capitalize hover:bg-costal-green/70"
                   >
                     {topic}
@@ -224,7 +196,6 @@ const Navbar = () => {
                   <Link
                     key={aboutPage}
                     to={`/about/${aboutPage}`}
-                    onClick={closeMobile}
                     className="block rounded-md py-1.5 px-2 capitalize hover:bg-costal-green/70"
                   >
                     {aboutPage}

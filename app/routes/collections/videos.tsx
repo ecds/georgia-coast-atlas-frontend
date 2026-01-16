@@ -90,5 +90,3 @@ const VideoCollectionIndex = () => {
 };
 
 export default VideoCollectionIndex;
-
-
