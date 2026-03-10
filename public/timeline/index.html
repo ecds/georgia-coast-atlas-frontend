@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Georgia Coast Atlas Timeline</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #16213e;
+            border-bottom: 2px solid #0f3460;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #e8d5b7;
+            white-space: nowrap;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            padding: 6px 12px;
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            font-size: 14px;
+            width: 200px;
+            font-family: inherit;
+        }
+
+        .search-box::placeholder { color: #666; }
+        .search-box:focus { outline: none; border-color: #e94560; }
+
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .entry-count {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .zoom-btn {
+            padding: 4px 10px;
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            background: #16213e;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: monospace;
+            line-height: 1;
+        }
+
+        .zoom-btn:hover { background: #0f3460; }
+
+        /* Era nav */
+        .era-nav {
+            background: #16213e;
+            border-bottom: 1px solid #0f3460;
+            padding: 6px 24px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .era-btn {
+            padding: 4px 12px;
+            border: 1px solid #0f3460;
+            border-radius: 12px;
+            background: transparent;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .era-btn:hover, .era-btn.active {
+            background: #0f3460;
+            color: #e8d5b7;
+            border-color: #e94560;
+        }
+
+        /* Main timeline area */
+        .timeline-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            height: calc(100vh - 110px);
+            cursor: grab;
+        }
+
+        .timeline-container:active { cursor: grabbing; }
+
+        .timeline-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transition: none;
+        }
+
+        /* Year markers */
+        .year-marker {
+            position: absolute;
+            bottom: 0;
+            height: 100%;
+            border-left: 1px solid #2a2a4a;
+            pointer-events: none;
+        }
+
+        .year-label {
+            position: absolute;
+            bottom: 8px;
+            left: 4px;
+            font-size: 12px;
+            color: #555;
+            white-space: nowrap;
+            font-family: 'Georgia', serif;
+        }
+
+        .year-marker.decade .year-label { color: #888; font-weight: bold; }
+        .year-marker.century { border-left: 2px solid #3a3a5a; }
+        .year-marker.century .year-label { color: #aaa; font-size: 14px; font-weight: bold; }
+
+        /* Event markers */
+        .event-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            z-index: 2;
+        }
+
+        .event-dot:hover {
+            transform: translate(-50%, -50%) scale(1.8);
+            box-shadow: 0 0 12px rgba(233, 69, 96, 0.6);
+            z-index: 100;
+        }
+
+        .event-dot.has-range {
+            border-radius: 3px;
+            height: 8px;
+            min-width: 10px;
+            transform: translate(0, -50%);
+        }
+
+        .event-dot.has-range:hover {
+            transform: translate(0, -50%) scaleY(1.8);
+        }
+
+        .event-dot.filtered-out {
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .event-dot.search-hit {
+            box-shadow: 0 0 8px 2px #e94560;
+            z-index: 50;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            background: #16213e;
+            border: 1px solid #0f3460;
+            border-radius: 6px;
+            padding: 12px 16px;
+            max-width: 350px;
+            min-width: 200px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .tooltip.visible { opacity: 1; }
+
+        .tooltip-date {
+            font-size: 12px;
+            color: #e94560;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .tooltip-title {
+            font-size: 15px;
+            color: #e8d5b7;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .tooltip-desc {
+            font-size: 13px;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        .tooltip-group {
+            font-size: 11px;
+            color: #888;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Scrollbar hint */
+        .scroll-hint {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #555;
+            pointer-events: none;
+            animation: fadeOut 3s forwards 2s;
+        }
+
+        @keyframes fadeOut { to { opacity: 0; } }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-size: 18px;
+            color: #888;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #333;
+            border-top-color: #e94560;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Detail panel (click to pin) */
+        .detail-panel {
+            position: fixed;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #16213e;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            padding: 20px 24px;
+            max-width: 400px;
+            min-width: 280px;
+            z-index: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            display: none;
+        }
+
+        .detail-panel.visible { display: block; }
+
+        .detail-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .detail-close:hover { color: #e94560; }
+
+        .detail-date {
+            font-size: 14px;
+            color: #e94560;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .detail-title {
+            font-size: 18px;
+            color: #e8d5b7;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .detail-desc {
+            font-size: 14px;
+            color: #bbb;
+            line-height: 1.5;
+        }
+
+        .detail-group {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        Loading timeline data...
+    </div>
+
+    <div id="app" style="display:none; height:100vh; display:flex; flex-direction:column;">
+        <div class="header">
+            <h1>Georgia Coast Atlas Timeline</h1>
+            <div class="header-controls">
+                <input type="text" class="search-box" id="search" placeholder="Search events...">
+                <select class="filter-select" id="groupFilter">
+                    <option value="">All Locations</option>
+                </select>
+                <span class="entry-count" id="entryCount"></span>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomOut" title="Zoom out">−</button>
+                    <button class="zoom-btn" id="zoomIn" title="Zoom in">+</button>
+                    <button class="zoom-btn" id="zoomFit" title="Fit all">⊡</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="era-nav" id="eraNav"></div>
+
+        <div class="timeline-container" id="timelineContainer">
+            <div class="timeline-canvas" id="timelineCanvas"></div>
+            <div class="scroll-hint">← Drag or scroll to navigate →</div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-date" id="tooltipDate"></div>
+        <div class="tooltip-title" id="tooltipTitle"></div>
+        <div class="tooltip-desc" id="tooltipDesc"></div>
+        <div class="tooltip-group" id="tooltipGroup"></div>
+    </div>
+
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" id="detailClose">✕</button>
+        <div class="detail-date" id="detailDate"></div>
+        <div class="detail-title" id="detailTitle"></div>
+        <div class="detail-desc" id="detailDesc"></div>
+        <div class="detail-group" id="detailGroup"></div>
+    </div>
+
+    <script>
+    const SHEET_ID = '1uBMF8W35E173eGoSCT_GzfIogULp_YLLdVytwByylcw';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+
+    // Color palette for groups
+    const GROUP_COLORS = [
+        '#e94560', '#53a8b6', '#e8a87c', '#85cdca', '#d4a5a5',
+        '#c38d9e', '#41b3a3', '#e27d60', '#659dbd', '#daad86',
+        '#5d5c61', '#7395ae', '#b1a296', '#557a95', '#5b8c5a',
+        '#a2d5c6', '#b8860b', '#cd853f', '#daa520', '#8fbc8f'
+    ];
+
+    const ERAS = [
+        { label: 'Pre-Colonial', start: -600, end: 1730 },
+        { label: 'Colonial (1730–1775)', start: 1730, end: 1775 },
+        { label: 'Revolution (1775–1800)', start: 1775, end: 1800 },
+        { label: 'Antebellum (1800–1860)', start: 1800, end: 1860 },
+        { label: 'Civil War (1860–1865)', start: 1860, end: 1865 },
+        { label: 'Reconstruction (1865–1900)', start: 1865, end: 1900 },
+        { label: '20th Century (1900–1970)', start: 1900, end: 1970 },
+    ];
+
+    // The "main" range for the All view (most events live here)
+    const MAIN_RANGE = { start: 1690, end: 1980 };
+
+    let events = [];
+    let groups = [];
+    let groupColorMap = {};
+    let pixelsPerYear = 8;
+    let minYear = 1730;
+    let maxYear = 1975;
+    let offsetX = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartOffset = 0;
+
+    // Parse CSV
+    function parseCSV(text) {
+        const rows = [];
+        let current = '';
+        let inQuotes = false;
+        let row = [];
+
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            if (inQuotes) {
+                if (ch === '"' && text[i + 1] === '"') {
+                    current += '"';
+                    i++;
+                } else if (ch === '"') {
+                    inQuotes = false;
+                } else {
+                    current += ch;
+                }
+            } else {
+                if (ch === '"') {
+                    inQuotes = true;
+                } else if (ch === ',') {
+                    row.push(current.trim());
+                    current = '';
+                } else if (ch === '\n' || ch === '\r') {
+                    if (ch === '\r' && text[i + 1] === '\n') i++;
+                    row.push(current.trim());
+                    if (row.some(c => c !== '')) rows.push(row);
+                    row = [];
+                    current = '';
+                } else {
+                    current += ch;
+                }
+            }
+        }
+        row.push(current.trim());
+        if (row.some(c => c !== '')) rows.push(row);
+        return rows;
+    }
+
+    // Parse spreadsheet rows into event objects
+    function parseEvents(rows) {
+        const parsed = [];
+        for (const row of rows) {
+            const startYear = parseInt(row[0]);
+            if (isNaN(startYear)) continue;
+
+            const startMonth = parseInt(row[1]) || 0;
+            const startDay = parseInt(row[2]) || 0;
+            const endYear = parseInt(row[3]) || startYear;
+            const endMonth = parseInt(row[4]) || 0;
+            const endDay = parseInt(row[5]) || 0;
+            const displayDate = row[6] || '';
+            // row[7] is empty in this dataset
+            const headline = row[8] || '';
+            const text = row[9] || '';
+            const group = row[16] || '';
+
+            if (!headline) continue;
+
+            // Compute fractional year for positioning
+            const startFrac = startYear + (startMonth ? (startMonth - 1) / 12 : 0) + (startDay ? (startDay - 1) / 365 : 0);
+            const endFrac = endYear + (endMonth ? (endMonth - 1) / 12 : 0) + (endDay ? (endDay - 1) / 365 : 0);
+            const hasRange = endFrac > startFrac + 0.1;
+
+            // Format date string
+            let dateStr = '';
+            if (displayDate) {
+                dateStr = displayDate;
+            } else {
+                const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                dateStr = startYear.toString();
+                if (startMonth) dateStr = months[startMonth] + ' ' + dateStr;
+                if (startDay) dateStr = months[startMonth] + ' ' + startDay + ', ' + startYear;
+                if (hasRange) {
+                    let endStr = endYear.toString();
+                    if (endMonth) endStr = months[endMonth] + ' ' + endStr;
+                    if (endDay) endStr = months[endMonth] + ' ' + endDay + ', ' + endYear;
+                    if (endYear !== startYear) dateStr += ' – ' + endStr;
+                }
+            }
+
+            parsed.push({
+                startYear: startFrac,
+                endYear: hasRange ? endFrac : startFrac,
+                hasRange,
+                headline,
+                text,
+                dateStr,
+                group,
+                searchText: (headline + ' ' + text + ' ' + group + ' ' + dateStr).toLowerCase()
+            });
+        }
+
+        return parsed.sort((a, b) => a.startYear - b.startYear);
+    }
+
+    // Assign vertical lanes to avoid overlap
+    function assignLanes(events) {
+        // Simple lane packing
+        const lanes = []; // each lane tracks its last endX
+        for (const evt of events) {
+            let placed = false;
+            for (let i = 0; i < lanes.length; i++) {
+                if (evt.startYear > lanes[i] + 0.5) {
+                    lanes[i] = evt.hasRange ? evt.endYear : evt.startYear;
+                    evt.lane = i;
+                    placed = true;
+                    break;
+                }
+            }
+            if (!placed) {
+                evt.lane = lanes.length;
+                lanes.push(evt.hasRange ? evt.endYear : evt.startYear);
+            }
+        }
+        return lanes.length;
+    }
+
+    // Render
+    function render() {
+        const container = document.getElementById('timelineContainer');
+        const canvas = document.getElementById('timelineCanvas');
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        const totalWidth = (maxYear - minYear) * pixelsPerYear;
+        canvas.style.width = totalWidth + 'px';
+
+        // Clamp offset
+        offsetX = Math.max(-(totalWidth - containerWidth), Math.min(0, offsetX));
+        canvas.style.transform = `translateX(${offsetX}px)`;
+
+        canvas.innerHTML = '';
+
+        // Year grid lines
+        const yearStart = Math.floor(minYear);
+        const yearEnd = Math.ceil(maxYear);
+        // Choose year step based on how many pixels per year we have
+        // Ensure labels don't overlap (each label ~40px wide)
+        const pxPerStep = 50; // minimum pixels between labels
+        let yearStep;
+        if (pixelsPerYear * 100 > pxPerStep) yearStep = pixelsPerYear * 50 > pxPerStep ? (pixelsPerYear * 10 > pxPerStep ? (pixelsPerYear * 5 > pxPerStep ? (pixelsPerYear > pxPerStep ? 1 : 5) : 5) : 10) : 50;
+        else yearStep = 100;
+
+        for (let y = yearStart; y <= yearEnd; y++) {
+            if (y % yearStep !== 0) continue;
+            const x = (y - minYear) * pixelsPerYear;
+            const isCentury = y % 100 === 0;
+            const isDecade = y % 10 === 0;
+
+            const marker = document.createElement('div');
+            marker.className = 'year-marker' + (isCentury ? ' century' : isDecade ? ' decade' : '');
+            marker.style.left = x + 'px';
+
+            const label = document.createElement('div');
+            label.className = 'year-label';
+            label.textContent = y;
+            marker.appendChild(label);
+            canvas.appendChild(marker);
+        }
+
+        // Compute lanes
+        const visibleEvents = events.filter(e => !e._hidden);
+        const totalLanes = assignLanes(visibleEvents);
+        const laneHeight = Math.min(24, Math.max(12, (containerHeight - 60) / (totalLanes + 1)));
+        const topPadding = 20;
+
+        // Search state
+        const searchTerm = document.getElementById('search').value.toLowerCase().trim();
+        const activeGroup = document.getElementById('groupFilter').value;
+
+        // Event dots
+        for (const evt of events) {
+            const x = (evt.startYear - minYear) * pixelsPerYear;
+            const y = topPadding + (evt.lane || 0) * laneHeight + laneHeight / 2;
+
+            const dot = document.createElement('div');
+            dot.className = 'event-dot';
+            const color = groupColorMap[evt.group] || '#e94560';
+
+            if (evt.hasRange) {
+                const width = Math.max(10, (evt.endYear - evt.startYear) * pixelsPerYear);
+                dot.classList.add('has-range');
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+                dot.style.width = width + 'px';
+                dot.style.background = color;
+                dot.style.opacity = '0.7';
+            } else {
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+                dot.style.background = color;
+            }
+
+            // Filter states
+            if (activeGroup && evt.group !== activeGroup) {
+                dot.classList.add('filtered-out');
+            }
+            if (searchTerm && evt.searchText.includes(searchTerm)) {
+                dot.classList.add('search-hit');
+            }
+            if (searchTerm && !evt.searchText.includes(searchTerm)) {
+                dot.classList.add('filtered-out');
+            }
+
+            // Hover
+            dot.addEventListener('mouseenter', (e) => showTooltip(e, evt));
+            dot.addEventListener('mousemove', (e) => moveTooltip(e));
+            dot.addEventListener('mouseleave', hideTooltip);
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showDetail(evt);
+            });
+
+            canvas.appendChild(dot);
+        }
+
+        // Update count
+        const shown = events.filter(e => {
+            if (activeGroup && e.group !== activeGroup) return false;
+            if (searchTerm && !e.searchText.includes(searchTerm)) return false;
+            return true;
+        }).length;
+        document.getElementById('entryCount').textContent = `${shown} / ${events.length} events`;
+    }
+
+    // Tooltip
+    function showTooltip(e, evt) {
+        const tt = document.getElementById('tooltip');
+        document.getElementById('tooltipDate').textContent = evt.dateStr;
+        document.getElementById('tooltipTitle').textContent = evt.headline;
+        document.getElementById('tooltipDesc').textContent = evt.text;
+        document.getElementById('tooltipGroup').textContent = evt.group;
+        tt.classList.add('visible');
+        moveTooltip(e);
+    }
+
+    function moveTooltip(e) {
+        const tt = document.getElementById('tooltip');
+        let x = e.clientX + 16;
+        let y = e.clientY - 10;
+        // Keep on screen
+        const rect = tt.getBoundingClientRect();
+        if (x + 360 > window.innerWidth) x = e.clientX - 370;
+        if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 10;
+        if (y < 10) y = 10;
+        tt.style.left = x + 'px';
+        tt.style.top = y + 'px';
+    }
+
+    function hideTooltip() {
+        document.getElementById('tooltip').classList.remove('visible');
+    }
+
+    // Detail panel
+    function showDetail(evt) {
+        const panel = document.getElementById('detailPanel');
+        document.getElementById('detailDate').textContent = evt.dateStr;
+        document.getElementById('detailTitle').textContent = evt.headline;
+        document.getElementById('detailDesc').textContent = evt.text;
+        document.getElementById('detailGroup').textContent = evt.group;
+        panel.classList.add('visible');
+    }
+
+    document.getElementById('detailClose').addEventListener('click', () => {
+        document.getElementById('detailPanel').classList.remove('visible');
+    });
+
+    // Drag to pan
+    const container = document.getElementById('timelineContainer');
+
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragStartOffset = offsetX;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        offsetX = dragStartOffset + (e.clientX - dragStartX);
+        requestAnimationFrame(render);
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    // Scroll to zoom
+    container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const worldX = (mouseX - offsetX) / pixelsPerYear + minYear;
+
+        const zoomFactor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        pixelsPerYear = Math.max(1, Math.min(100, pixelsPerYear * zoomFactor));
+
+        // Keep mouse position stable
+        offsetX = mouseX - (worldX - minYear) * pixelsPerYear;
+        requestAnimationFrame(render);
+    }, { passive: false });
+
+    // Touch support
+    let lastTouchX = 0;
+    let touchStartDist = 0;
+    let touchStartPPY = 0;
+
+    container.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            isDragging = true;
+            lastTouchX = e.touches[0].clientX;
+            dragStartOffset = offsetX;
+            dragStartX = lastTouchX;
+        } else if (e.touches.length === 2) {
+            isDragging = false;
+            touchStartDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            touchStartPPY = pixelsPerYear;
+        }
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (e.touches.length === 1 && isDragging) {
+            offsetX = dragStartOffset + (e.touches[0].clientX - dragStartX);
+            requestAnimationFrame(render);
+        } else if (e.touches.length === 2) {
+            const dist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            pixelsPerYear = Math.max(1, Math.min(100, touchStartPPY * (dist / touchStartDist)));
+            requestAnimationFrame(render);
+        }
+    }, { passive: false });
+
+    container.addEventListener('touchend', () => { isDragging = false; });
+
+    // Zoom buttons
+    document.getElementById('zoomIn').addEventListener('click', () => {
+        pixelsPerYear = Math.min(100, pixelsPerYear * 1.5);
+        render();
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', () => {
+        pixelsPerYear = Math.max(1, pixelsPerYear / 1.5);
+        render();
+    });
+
+    document.getElementById('zoomFit').addEventListener('click', () => {
+        const containerWidth = container.clientWidth;
+        pixelsPerYear = containerWidth / (maxYear - minYear);
+        offsetX = 0;
+        render();
+    });
+
+    // Search
+    document.getElementById('search').addEventListener('input', () => {
+        requestAnimationFrame(render);
+    });
+
+    // Group filter
+    document.getElementById('groupFilter').addEventListener('change', () => {
+        render();
+    });
+
+    // Era nav
+    function buildEraNav() {
+        const nav = document.getElementById('eraNav');
+        // Add "All" button
+        const allBtn = document.createElement('button');
+        allBtn.className = 'era-btn active';
+        allBtn.textContent = 'All';
+        allBtn.addEventListener('click', () => {
+            document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
+            allBtn.classList.add('active');
+            const containerWidth = container.clientWidth;
+            const span = MAIN_RANGE.end - MAIN_RANGE.start;
+            pixelsPerYear = containerWidth / span;
+            offsetX = -(MAIN_RANGE.start - minYear) * pixelsPerYear;
+            render();
+        });
+        nav.appendChild(allBtn);
+
+        for (const era of ERAS) {
+            const btn = document.createElement('button');
+            btn.className = 'era-btn';
+            btn.textContent = era.label;
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const containerWidth = container.clientWidth;
+                const span = era.end - era.start;
+                pixelsPerYear = containerWidth / (span + 10); // small padding
+                offsetX = -(era.start - minYear - 5) * pixelsPerYear;
+                render();
+            });
+            nav.appendChild(btn);
+        }
+    }
+
+    // Load data
+    async function init() {
+        try {
+            const resp = await fetch(SHEET_URL);
+            const text = await resp.text();
+            const rows = parseCSV(text);
+            events = parseEvents(rows);
+
+            if (events.length === 0) {
+                document.getElementById('loading').innerHTML = 'No events found in spreadsheet.';
+                return;
+            }
+
+            // Compute year range
+            minYear = Math.floor(Math.min(...events.map(e => e.startYear))) - 2;
+            maxYear = Math.ceil(Math.max(...events.map(e => e.endYear || e.startYear))) + 2;
+
+            // Extract groups
+            const groupSet = new Set(events.map(e => e.group).filter(Boolean));
+            groups = [...groupSet].sort();
+            groups.forEach((g, i) => { groupColorMap[g] = GROUP_COLORS[i % GROUP_COLORS.length]; });
+
+            // Populate filter
+            const select = document.getElementById('groupFilter');
+            for (const g of groups) {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                select.appendChild(opt);
+            }
+
+            // Show app
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+
+            buildEraNav();
+
+            // Initial zoom to fit the main data range
+            const containerWidth = container.clientWidth;
+            const span = MAIN_RANGE.end - MAIN_RANGE.start;
+            pixelsPerYear = containerWidth / span;
+            offsetX = -(MAIN_RANGE.start - minYear) * pixelsPerYear;
+
+            render();
+        } catch (err) {
+            document.getElementById('loading').innerHTML =
+                'Error loading data: ' + err.message + '<br><br>Make sure the spreadsheet is publicly shared.';
+        }
+    }
+
+    // Handle resize
+    window.addEventListener('resize', () => requestAnimationFrame(render));
+
+    // Close detail on click outside
+    document.addEventListener('click', (e) => {
+        const panel = document.getElementById('detailPanel');
+        if (panel.classList.contains('visible') && !panel.contains(e.target)) {
+            panel.classList.remove('visible');
+        }
+    });
+
+    // Keyboard nav
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.key === 'ArrowLeft') { offsetX += 100; render(); }
+        if (e.key === 'ArrowRight') { offsetX -= 100; render(); }
+        if (e.key === '+' || e.key === '=') { pixelsPerYear = Math.min(100, pixelsPerYear * 1.3); render(); }
+        if (e.key === '-') { pixelsPerYear = Math.max(1, pixelsPerYear / 1.3); render(); }
+        if (e.key === 'Escape') {
+            document.getElementById('detailPanel').classList.remove('visible');
+        }
+    });
+
+    init();
+    </script>
+</body>
+</html>
