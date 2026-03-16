@@ -63,8 +63,8 @@ const TourCollection = ({
 const TourList = () => {
   const { items } = useHits();
   return (
-    <div className="mx-4 md:mx-12 lg:mx-32 mt-4 mb-32">
-      <ul className="flex flex-col md:flex-row flex-wrap items-center justify-center md:items-start mx-4 md:mx-auto pb-32">
+    <div className="my-4 h-full overflow-auto">
+      <ul className="mx-4 md:mx-12 lg:mx-32 flex grow flex-col md:flex-row flex-wrap items-center justify-center md:items-start">
         <li className="basis-full grow self-stretch w-full">
           <h1 className="text-3xl text-black/80 m-4 ps-4 md:m-auto md:ms-2 capitalize">
             Tours
@@ -109,7 +109,7 @@ const TourList = () => {
       {/* {items.length > 24 && ( */}
       <Pagination
         classNames={{
-          root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5",
+          root: "justify-self-center px-2 py-4 bg-white w-full md:w-2/3 lg:w-2/5 my-4",
           list: "flex flex-row items-stretch justify-center",
           pageItem:
             "bg-county text-white mx-4 text-center rounded-md min-w-6 max-w-8",

@@ -40,7 +40,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   const [map, setMap] = useState<TMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [activeStyle, setActiveStyle] = useState<TBaseStyleName | undefined>(
-    undefined
+    undefined,
   );
   return (
     <html lang="en">
@@ -59,10 +59,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
           skip to main content
         </a>
         <Navbar />
-        <main
-          className={`mx-auto relative mt-20 bg-white overflow-hidden`}
-          id="main"
-        >
+        <main className={`mx-auto relative bg-white overflow-hidden`} id="main">
           <MapContext.Provider
             value={{
               map,
@@ -73,7 +70,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
               setActiveStyle,
             }}
           >
-            {children}
+            <div className="mt-20">{children}</div>
           </MapContext.Provider>
         </main>
         <Loading />
