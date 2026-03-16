@@ -157,4 +157,9 @@ export type ESPhotographItem = ESCollectionItem & {
   full_url: string;
 };
 
-export type CollectionType = "maps" | "photographs" | "panos" | "videos";
+export type CollectionType =
+  | "maps"
+  | "photographs"
+  | "panos"
+  | "videos"
+  | "tours";

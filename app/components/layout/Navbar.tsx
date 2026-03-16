@@ -1,7 +1,6 @@
 import { Link, NavLink } from "react-router";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import gcaLogo from "app/images/gca-logo.png";
-// import TopicTree from "./TopicTree";
 
 const itemsAnchor = "bottom";
 const itemsClassName =
@@ -9,7 +8,7 @@ const itemsClassName =
 const menuLinkClassName =
   "block rounded-lg text-white capitalize py-1.5 px-3 data-[focus]:bg-costal-green/50 hover:bg-costal-green/50 text-left";
 
-const collections = ["maps", "panos", "photographs", "videos"];
+const collections = ["maps", "panos", "photographs", "tours", "videos"];
 const aboutPages = ["project", "team", "bibliography", "contact"];
 const topics = [
   "agricultural",

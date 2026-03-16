@@ -398,11 +398,12 @@ export const panosIndexCollection = `${collectionPrefix}_panos`;
 export const videosIndexCollection = `${collectionPrefix}_videos`;
 export const photosIndexCollection = `${collectionPrefix}_photographs`;
 export const topicTreeIndexCollection = `${collectionPrefix}_topic_tree`;
+export const toursIndexCollection = `${collectionPrefix}_tours`;
 
 export const defaultBounds = () => {
   return new maplibregl.LngLatBounds(
     new maplibregl.LngLat(-82.70105718813312, 30.3557685071232),
-    new maplibregl.LngLat(-80.83780307387659, 32.59542857268996)
+    new maplibregl.LngLat(-80.83780307387659, 32.59542857268996),
   );
 };
 

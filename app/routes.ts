@@ -21,6 +21,7 @@ export default [
     route("panos/:pano", "./routes/collections/pano.tsx"),
     route("photographs", "./routes/collections/photographs.tsx"),
     route("photographs/:photograph", "./routes/collections/photograph.tsx"),
+    route("tours", "./routes/collections/tours.tsx"),
     route("videos", "./routes/collections/videos.tsx"),
     route("videos/:video", "./routes/collections/video.tsx"),
   ]),

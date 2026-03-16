@@ -26,3 +26,7 @@ export const photoAttrs = {
 export const videoAttrs = {
   result_attributes: [...baseAttrs, "embed_url", "category"],
 };
+
+export const tourAttrs = {
+  result_attributes: [...baseAttrs, "link"],
+};

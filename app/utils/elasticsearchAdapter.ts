@@ -6,6 +6,7 @@ import {
   mapAttrs,
   panoAttrs,
   photoAttrs,
+  tourAttrs,
   videoAttrs,
 } from "./searchClients/CollectionAttrs";
 import type { SearchSettingsConfig } from "searchkit";
@@ -46,33 +47,40 @@ export const allPlacesSearchClient = Client(
   new Searchkit({
     connection,
     search_settings: AllPlacesSearch,
-  })
+  }),
 );
 
 export const mapCollection = Client(
   new Searchkit({
     connection,
     search_settings: { ...searchConfig, ...mapAttrs },
-  })
+  }),
 );
 
 export const panoCollection = Client(
   new Searchkit({
     connection,
     search_settings: { ...searchConfig, ...panoAttrs },
-  })
+  }),
 );
 
 export const videoCollection = Client(
   new Searchkit({
     connection,
     search_settings: { ...searchConfig, ...videoAttrs },
-  })
+  }),
 );
 
 export const photoCollection = Client(
   new Searchkit({
     connection,
     search_settings: { ...searchConfig, ...photoAttrs },
-  })
+  }),
+);
+
+export const toursCollection = Client(
+  new Searchkit({
+    connection,
+    search_settings: { ...searchConfig, ...tourAttrs },
+  }),
 );
