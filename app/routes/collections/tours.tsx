@@ -66,7 +66,7 @@ const TourList = () => {
     <div className="mx-4 md:mx-12 lg:mx-32 mt-4 mb-32">
       <ul className="flex flex-col md:flex-row flex-wrap items-center justify-center md:items-start mx-4 md:mx-auto pb-32">
         <li className="basis-full grow self-stretch w-full">
-          <h1 className="text-3xl text-black/80 m-4 md:m-auto md:ms-2 capitalize">
+          <h1 className="text-3xl text-black/80 m-4 ps-4 md:m-auto md:ms-2 capitalize">
             Tours
           </h1>
         </li>
