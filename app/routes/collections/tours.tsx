@@ -64,45 +64,67 @@ const TourList = () => {
   const { items } = useHits();
   return (
     <div className="my-4 h-full overflow-auto">
-      <ul className="mx-4 md:mx-12 lg:mx-32 flex grow flex-col md:flex-row flex-wrap items-center justify-center md:items-start">
-        <li className="basis-full grow self-stretch w-full">
-          <h1 className="text-3xl text-black/80 m-4 ps-4 md:m-auto md:ms-2 capitalize">
-            Tours
-          </h1>
-        </li>
+      <div className="mx-auto w-3/4 md:w-[39rem] lg:w-[48rem] xl:w-[54rem] 2xl:w-[72rem] text-black/80">
+        <h1 className="text-3xl md:m-auto capitalize">Tours</h1>
+        <p className="text-sm tracking-wider my-2">
+          These tours were all produced with OpenTour Builder, an open-source
+          platform developed at Emory for building geospatial tours optimized
+          for mobile devices. Using their smartphone&apos;s GPS and built-in
+          Google Maps navigation, visitors can follow each tour on location. At
+          each stop, designers can include images, video, audio, interactive
+          elements, text, and external links — tying historical and cultural
+          context directly to the physical space. Visit{" "}
+          <a
+            href="opentour.site"
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-500 hover:text-blue-700 underline underline-offset-2"
+          >
+            OpenTour.site{" "}
+            <FontAwesomeIcon className="text-xs" icon={faExternalLink} />
+          </a>{" "}
+          if you&apos;re interested in building your own site.
+        </p>
+      </div>
+      <ul className="mx-auto w-full md:w-auto md:mx-12 lg:mx-32 flex grow flex-col md:flex-row flex-wrap justify-center items-center md:items-stretch">
         {items.map((item) => (
-          <li key={item.objectID} className="w-56 md:w-44 lg:w-56 xl:w-64 mx-2">
+          <li
+            key={item.objectID}
+            className="max-w-sm rounded overflow-hidden shadow-lg w-3/4 md:w-44 lg:w-56 xl:w-64 mx-6"
+          >
             <a href={item.link} target="_blank" rel="noreferrer" className="">
               <div
-                className={`flex px-2 md:px-0 aspect-video w-56 md:w-44 lg:w-56 xl:w-64 md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start bg-cover bg-no-repeat bg-center rounded-md drop-shadow-md`}
+                className={`flex px-2 md:px-0 aspect-video w-full md:mb-auto mt-6 md:mt-12 lg:mt-6 flex-col md:flex-row lg:flex-col items-center md:items-start bg-cover bg-no-repeat bg-center rounded-md drop-shadow-md`}
                 style={{
                   backgroundImage: `url(${item.thumbnail_url})`,
                 }}
               ></div>
-              <h2 className="text-sm mb-2 xl:my-2 truncate md:text-wrap text-blue-700 hover:text-blue-800 underline">
-                {item.title ?? item.name}{" "}
-                <FontAwesomeIcon icon={faExternalLink} />
-              </h2>
+              <div className="px-2 md:px-4 py-1 md:py-2">
+                <p className="text-base mb-auto md:mb-2 xl:my-2 truncate md:text-wrap text-blue-700 hover:text-blue-800 underline">
+                  {item.title ?? item.name}{" "}
+                  <FontAwesomeIcon className="text-xs" icon={faExternalLink} />
+                </p>
+                <ul className="block text-base md:text-xs w-full md:w-44 lg:w-56 xl:w-64 text-wrap">
+                  {item.places?.length > 0 && (
+                    <li>
+                      <span className="font-semibold">Places:</span>{" "}
+                      {item.place_names.join(",")}
+                    </li>
+                  )}
+                  {item.date && (
+                    <li>
+                      <span className="font-semibold">Date:</span> {item.date}
+                    </li>
+                  )}
+                  {item.publisher && (
+                    <li className="text-wrap pe-4">
+                      <span className="font-semibold">Publisher:</span>{" "}
+                      {item.publisher}
+                    </li>
+                  )}
+                </ul>
+              </div>
             </a>
-            <ul className="hidden md:block text-xs w-56 md:w-44 lg:w-56 xl:w-64">
-              {item.places?.length > 0 && (
-                <li>
-                  <span className="font-semibold">Places:</span>{" "}
-                  {item.place_names.join(",")}
-                </li>
-              )}
-              {item.date && (
-                <li>
-                  <span className="font-semibold">Date:</span> {item.date}
-                </li>
-              )}
-              {item.publisher && (
-                <li>
-                  <span className="font-semibold">Publisher:</span>{" "}
-                  {item.publisher}
-                </li>
-              )}
-            </ul>
           </li>
         ))}
       </ul>
