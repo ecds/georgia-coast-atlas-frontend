@@ -75,7 +75,7 @@ const TourList = () => {
           elements, text, and external links — tying historical and cultural
           context directly to the physical space. Visit{" "}
           <a
-            href="opentour.site"
+            href="https://opentour.site"
             target="_blank"
             rel="noreferrer"
             className="text-blue-500 hover:text-blue-700 underline underline-offset-2"
