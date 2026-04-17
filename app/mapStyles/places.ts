@@ -10,7 +10,7 @@ export const places: StyleSpecification = {
   sources: {
     places: {
       type: "vector",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/places.json",
+      url: "https://pmtiles.ecds.io/places.json",
       promoteId: "uuid",
     },
   },

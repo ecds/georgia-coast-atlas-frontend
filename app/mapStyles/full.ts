@@ -246,47 +246,49 @@ const gcaWaterWayLines = waterWays.map((layer) => {
 
 export const full: StyleSpecification = {
   sources: {
-    terrarium: {
+    terrainSource: {
       type: "raster-dem",
-      encoding: "terrarium",
-      maxzoom: 12,
+      // maxzoom: 12,
       tileSize: 256,
-      tiles: [
-        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
-      ],
+      tiles: ["https://tiles.mapterhorn.com/tilejson.json"],
       // url: "https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=uXfXuebPlkoPXiY3TPcv",
+    },
+    hillshadeSource: {
+      type: "raster-dem",
+      url: "https://tiles.mapterhorn.com/tilejson.json",
+      tileSize: 256,
     },
     georgia: {
       type: "vector",
       scheme: "xyz",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/georgia.json",
+      url: "https://pmtiles.ecds.io/georgia.json",
     },
     gca: {
       type: "vector",
       scheme: "xyz",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/gca.json",
+      url: "https://pmtiles.ecds.io/gca.json",
       promoteId: "id",
     },
     neighbors: {
       type: "vector",
       scheme: "xyz",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/neighbors.json",
+      url: "https://pmtiles.ecds.io/neighbors.json",
       promoteId: "id",
     },
     counties: {
       type: "vector",
       scheme: "xyz",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/counties.json",
+      url: "https://pmtiles.ecds.io/counties.json",
     },
     gaWater: {
       type: "vector",
       scheme: "xyz",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/rivers_streams.json",
+      url: "https://pmtiles.ecds.io/rivers_streams.json",
     },
     conservationLands: {
       type: "vector",
       scheme: "xyz",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/conservation_lands.json",
+      url: "https://pmtiles.ecds.io/conservation_lands.json",
     },
     openmaptiles: {
       type: "vector",
@@ -862,15 +864,9 @@ export const full: StyleSpecification = {
     {
       id: "hillshade",
       type: "hillshade",
-      source: "terrarium",
-      layout: {},
-      paint: {
-        "hillshade-accent-color": "hsla(0, 0%, 0%, 0)",
-        "hillshade-exaggeration": 0.6,
-        "hillshade-highlight-color": "hsla(0, 0%, 0%, 0)",
-        "hillshade-illumination-direction": 300,
-        "hillshade-shadow-color": "hsl(115, 0%, 25%)",
-      },
+      source: "hillshadeSource",
+      layout: { visibility: "visible" },
+      paint: { "hillshade-shadow-color": "#473B24" },
     },
     {
       id: "waterway-shadow",
@@ -4261,5 +4257,10 @@ export const full: StyleSpecification = {
     gcaLayer({ sourceLayer: "county" }),
     gcaLayer({ sourceLayer: "barrierisland" }),
   ],
+  terrain: {
+    source: "terrainSource",
+    exaggeration: 1,
+  },
+  sky: {},
   name: "Georgia Coast Atlas",
 };
