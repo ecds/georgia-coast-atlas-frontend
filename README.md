@@ -6,4 +6,5 @@ Download icons from [Free SVG Icons](https://freesvgicons.com/). Be sure to set 
 
 ```bash
 spreet --sdf ./icons ./public/images/map-icons
+spreet --ratio 2 --sdf ./icons ./public/images/map-icons@2x # For retina
 ```

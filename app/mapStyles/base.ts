@@ -12,19 +12,19 @@ export const base: StyleSpecification = {
   sources: {
     georgia: {
       type: "vector",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/us_south.json",
+      url: "https://pmtiles.ecds.io/us_south.json",
       promoteId: "id",
       attribution:
         '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     },
     florida: {
       type: "vector",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/florida.json",
+      url: "https://pmtiles.ecds.io/florida.json",
       promoteId: "id",
     },
     southCarolina: {
       type: "vector",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/south_carolina.json",
+      url: "https://pmtiles.ecds.io/south_carolina.json",
       promoteId: "id",
     },
   },

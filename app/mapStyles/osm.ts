@@ -13,7 +13,7 @@ export const osm: StyleSpecification = {
     },
     openmaptiles: {
       type: "vector",
-      url: "https://d3j4mgzjrheeg2.cloudfront.net/us_south.json",
+      url: "https://pmtiles.ecds.io/us_south.json",
     },
   },
   sprite: "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
