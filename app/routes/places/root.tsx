@@ -107,7 +107,7 @@ const PlaceRoot = () => {
                   <div className="h-1.5 w-12 rounded-full bg-white/80 backdrop-blur-sm" />
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-hidden rounded-t-2xl bg-white shadow-2xl">
+                <div className="min-h-0 flex-1 flex flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl">
                   <Outlet />
                 </div>
               </div>
@@ -118,7 +118,9 @@ const PlaceRoot = () => {
             )
           ) : (
             <div className="absolute top-4 left-4 z-20 flex max-h-[calc(100dvh-8rem)] w-[min(420px,33vw)] min-w-[320px] flex-col overflow-hidden rounded-md bg-white shadow-xl">
-              <Outlet />
+              <div className="min-h-0 flex-1 flex flex-col overflow-hidden">
+               <Outlet />
+              </div>
             </div>
           )}
 

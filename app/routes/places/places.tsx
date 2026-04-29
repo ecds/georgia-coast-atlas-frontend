@@ -79,7 +79,7 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
 
         <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
           <div className="shrink-0 border-b border-black/10 bg-white">
-            <div className="grid grid-cols-5 items-start gap-0 p-3 pb-2">
+            <div className="grid grid-cols-5 items-center gap-2 px-2 pt-2 pb-1">
               <div className="col-span-4">
                 <Autocomplete />
               </div>
