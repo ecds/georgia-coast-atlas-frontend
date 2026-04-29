@@ -6,7 +6,7 @@ import {
   InstantSearchSSRProvider,
   getServerState,
 } from "react-instantsearch";
-import { useLoaderData, useLocation, useNavigation } from "react-router";
+import { useLoaderData } from "react-router";
 import { history as searchHistory } from "instantsearch.js/es/lib/routers";
 import { allPlacesSearchClient } from "~/utils/elasticsearchAdapter";
 import { indexCollection } from "~/config";
@@ -19,25 +19,15 @@ import CurrentRefinements from "~/components/search/CurrentRefinements";
 import GeoToggle from "~/components/search/GeoToggle.client";
 import ClientOnly from "~/components/ClientOnly";
 import type { InstantSearchServerState } from "react-instantsearch";
-import type {
-  Navigation,
-  LoaderFunction,
-  Location,
-  MetaFunction,
-} from "react-router";
+import type { LoaderFunction, MetaFunction } from "react-router";
 
 type views = "search" | "explore";
 
 type SearchProps = {
   serverState?: InstantSearchServerState;
   serverUrl?: string;
-  location?: Location;
-  modalOpen?: boolean;
-  navigation?: Navigation;
-  view?: views;
+  view?: views | null;
 };
-
-const views: views[] = ["search", "explore"];
 
 export const loader: LoaderFunction = async ({ request }) => {
   const serverUrl = request.url;
@@ -46,7 +36,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 
   const url = new URL(request.url);
-  const view = url.searchParams.get("view");
+  const view = url.searchParams.get("view") as views | null;
 
   return {
     serverState,
@@ -75,39 +65,44 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
           router: searchHistory({
             /* @ts-expect-error This seems to be a bug in */
             getLocation() {
-              let urlToReturn = undefined;
               if (typeof window === "undefined" && serverUrl) {
-                urlToReturn = new URL(serverUrl);
-              } else {
-                urlToReturn = new URL(window.location.toString());
+                return new URL(serverUrl);
               }
-              return urlToReturn;
+
+              return new URL(window.location.toString());
             },
             cleanUrlOnDispose: false,
           }),
         }}
       >
         <Configure hitsPerPage={100} />
-        <div className="flex bg-white">
-          <div className="grid grow grid-cols-5 sticky top-0">
-            <div className="col-span-4">
-              <Autocomplete />
-            </div>
-            <div className="col-span-1 py-4 pe-4">
-              <FacetMenu />
-            </div>
-            <div className="col-span-5">
-              <ClientOnly>
-                <GeoToggle />
-              </ClientOnly>
-            </div>
-            <div className="col-span-5 border-b-2">
-              <CurrentRefinements />
+
+        <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+          <div className="shrink-0 border-b border-black/10 bg-white">
+            <div className="grid grid-cols-5 items-center gap-2 px-2 pt-2 pb-1">
+              <div className="col-span-4">
+                <Autocomplete />
+              </div>
+
+              <div className="col-span-1 ps-2">
+                <FacetMenu />
+              </div>
+
+              <div className="col-span-5 pt-2">
+                <ClientOnly>
+                  <GeoToggle />
+                </ClientOnly>
+              </div>
+
+              <div className="col-span-5 border-t border-black/10 pt-2">
+                <CurrentRefinements />
+              </div>
             </div>
           </div>
-        </div>
-        <div className="col-span-5 flex-1 overflow-y-scroll bg-white/80">
-          <SearchResults />
+
+          <div className="min-h-0 flex-1 overflow-y-auto bg-white/95">
+            <SearchResults />
+          </div>
         </div>
       </InstantSearch>
     </InstantSearchSSRProvider>
@@ -117,16 +112,12 @@ const Search = ({ serverState, serverUrl }: SearchProps) => {
 const PlacesIndex = () => {
   const { serverState, serverUrl, view } = useLoaderData() as SearchProps;
   const [activeResult, setActiveResult] = useState<string | undefined>();
-  const location = useLocation();
-  const navigation = useNavigation();
 
   return (
     <SearchContext.Provider value={{ activeResult, setActiveResult }}>
       <Search
         serverState={serverState}
         serverUrl={serverUrl}
-        location={location}
-        navigation={navigation}
         view={view}
       />
     </SearchContext.Provider>

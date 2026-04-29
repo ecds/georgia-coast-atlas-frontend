@@ -43,7 +43,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     wpData = data[0];
   }
 
-  // const wpData = { content: { rendered: "" } };
   return { place, wpData };
 };
 
@@ -58,7 +57,7 @@ const Place = () => {
 
   useEffect(() => {
     setUseBack(Boolean(location.state?.fromIndex));
-  }, [location, searchParams]);
+  }, [location.state]);
 
   useEffect(() => {
     if (!place || !map) return;
@@ -67,29 +66,35 @@ const Place = () => {
 
     for (const type of place.types) {
       const layer = type.toLowerCase().replaceAll(" ", "");
-      if (map.getLayer(layer))
+      if (map.getLayer(layer)) {
         map.setFilter(layer, ["!=", ["get", "uuid"], place.uuid]);
+      }
     }
   }, [place, map, setPlace]);
 
   const navigateTo = () => {
-    if (useBack) navigate(-1);
-    if (!useBack) navigate({ pathname: "/places", search: searchParams });
+    if (useBack) {
+      navigate(-1);
+      return;
+    }
+
+    navigate({
+      pathname: location.state?.pathname ?? "/places",
+      search: location.state?.search ?? searchParams,
+    });
   };
 
   return (
-    <>
-      <div className="flex flex-row w-full shadow-md bg-white">
-        <div
-          className={`flex flex-col grow text-2xl px-4 py-1 pb-1 sticky top-0 z-10 bg-white rounded-t-md`}
-        >
+    <div className="flex h-full flex-col bg-white">
+      <div className="flex w-full flex-row bg-white shadow-md">
+        <div className="sticky top-0 z-10 flex grow flex-col rounded-t-md bg-white px-4 py-1 pb-1 text-2xl">
           <Heading as="h1">{place.name}</Heading>
           <div>
             {place.types.map((type) => {
               return (
                 <span
                   key={type}
-                  className={`p-1 text-xs font-medium me-2 mt-2 px-2 py-0.5 rounded-lg h-min w-max bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} border-2 border-${PLACE_TYPES[type]?.textColor ?? "green-800"}`}
+                  className={`me-2 mt-2 h-min w-max rounded-lg border-2 p-1 px-2 py-0.5 text-xs font-medium bg-${PLACE_TYPES[type]?.bgColor ?? "green-100"} text-${PLACE_TYPES[type]?.textColor ?? "green-800"} border-${PLACE_TYPES[type]?.textColor ?? "green-800"}`}
                 >
                   {type}
                 </span>
@@ -100,19 +105,20 @@ const Place = () => {
         <button
           role="link"
           onClick={navigateTo}
-          className="self-start pt-1 pe-2"
+          className="self-start pe-2 pt-1"
           title="Close"
         >
           <FontAwesomeIcon icon={faXmarkCircle} />
           <span className="sr-only">close</span>
         </button>
       </div>
-      <div className="flex-1 overflow-y-scroll bg-white">
+
+      <div className="min-h-0 flex-1 overflow-y-auto bg-white">
         <div className="min-h-10">
           <FeaturedMedium record={place} />
         </div>
         <div
-          className={`px-4 pb-4 primary-content`}
+          className="primary-content px-4 pb-4"
           dangerouslySetInnerHTML={{
             __html:
               wpData?.content.rendered ??
@@ -131,7 +137,7 @@ const Place = () => {
                 {place.people.map((person) => {
                   return (
                     <>
-                      <dt className="text-lg mb-2">{person.full_name}</dt>
+                      <dt className="mb-2 text-lg">{person.full_name}</dt>
                       <dd className="mb-3 tracking-wide">{person.biography}</dd>
                     </>
                   );
@@ -146,7 +152,7 @@ const Place = () => {
                   return (
                     <li
                       key={work.uuid}
-                      className="prose prose-xl prose-invert leading-loose tracking-wide -indent-6 my-6"
+                      className="prose prose-xl prose-invert my-6 -indent-6 leading-loose tracking-wide"
                       dangerouslySetInnerHTML={{
                         __html: work.citation,
                       }}
@@ -165,7 +171,7 @@ const Place = () => {
                   <a
                     key={identifier.identifier}
                     href={identifier.identifier}
-                    className="block my-2 uppercase text-county hover:text-activeCounty underline"
+                    className="my-2 block uppercase text-county underline hover:text-activeCounty"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -182,7 +188,7 @@ const Place = () => {
         </div>
         <PlaceHighlight />
       </div>
-    </>
+    </div>
   );
 };
 
