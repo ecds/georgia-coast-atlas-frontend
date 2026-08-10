@@ -41,13 +41,8 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
   useEffect(() => {
     const addWarpedLayer = async (beforeLayer: string | undefined) => {
       if (!layerRef.current || !layerRef.current.renderer || !map) return;
-      console.log(
-        "🚀 ~ addWarpedLayer ~ beforeLayer:",
-        beforeLayer,
-        layerRef.current.id
-      );
       await layerRef.current.addGeoreferenceAnnotationByUrl(
-        `/iiif/annotation-geo/${year}/${layer.name?.replaceAll(" ", "_") ?? ""}`
+        `/iiif/annotation-geo/${year}/${layer.name?.replaceAll(" ", "_") ?? ""}`,
       );
       if (setActiveLayers)
         setActiveLayers((activeLayers) => [
