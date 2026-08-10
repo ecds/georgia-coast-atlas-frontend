@@ -98,7 +98,7 @@ const IIIFMapLayer = ({ layer, year, show, onClick }: Props) => {
       <AddLayerButton
         onClick={onClick}
         // className="md:mx-8 w-32 drop-shadow-md h-auto md:h-32 mx-auto bg-cover flex items-end rounded-md"
-        image={`https://iip.ecds.io/iiif/3/topos/${year}/${layer.name?.replaceAll(" ", "_")}.tiff/square/200,/0/default.jpg`}
+        image={`https://iip.ecds.io/iiif/3/topos|${year}|${layer.name?.replaceAll(" ", "_")}.tiff/square/200,/0/default.jpg`}
       >
         {show ? "remove" : "add"}
       </AddLayerButton>

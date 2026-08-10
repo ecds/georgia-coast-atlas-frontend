@@ -21,7 +21,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     year as TTopoYear
   ];
   const imageService = await fetch(
-    `https://iiif.ecds.io/iiif/3/topos_${year}_${id}.tiff/info.json`,
+    `https://iiif.ecds.io/iiif/3/topos|${year}|${id}.tiff/info.json`,
   );
   const imageData = await imageService.json();
   const { url } = request;
