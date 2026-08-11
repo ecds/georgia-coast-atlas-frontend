@@ -38,7 +38,7 @@ export const manifest = ({
         id,
         host,
         protocol,
-        url: `${protocol}//${host}/iiif/canvas/${year}/${id}`,
+        url: `${protocol}//${host}/iiif/canvas/${year}_${id}`,
         year,
         data,
       }),
@@ -48,7 +48,7 @@ export const manifest = ({
 
 export const thumbnail = ({ id, year }: { id?: string; year: string }) => {
   return {
-    id: `${IIIF_SERVER}/${year}/${id}.tiff/square/200,/0/default.jpg`,
+    id: `${IIIF_SERVER}_${year}_${id}.tiff/square/200,/0/default.jpg`,
     type: "Image",
     format: "image/jpg",
     width: 200,
@@ -76,7 +76,7 @@ export const canvas = ({
         id,
         host,
         protocol,
-        url: `${protocol}//${host}/iiif/annotation-page/${year}/${id}`,
+        url: `${protocol}//${host}/iiif/annotation-page/${year}_${id}`,
         year,
         data,
       }),
@@ -102,7 +102,7 @@ export const annotationPage = ({
         id,
         host,
         protocol,
-        url: `${protocol}//${host}/iiif/annotation-geo/${year}/${id}`,
+        url: `${protocol}//${host}/iiif/annotation-geo/${year}_${id}`,
         year,
         data,
       }),
@@ -168,7 +168,7 @@ export const annotationGeo = ({
     target: {
       type: "SpecificResource",
       source: {
-        id: `${IIIF_SERVER}/${year}/${id}.tiff`,
+        id: `${IIIF_SERVER}_${year}_${id}.tiff`,
         width: imageData.width,
         height: imageData.height,
         format: "image/jpg",

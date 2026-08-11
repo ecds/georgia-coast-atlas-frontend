@@ -79,13 +79,13 @@ export const dataHosts = {
   coreData: "coredata.ecdsdev.org",
   wordPress: "wp.georgiacoastatlas.org",
   typesense: "coredata.ecds.io",
-  elasticSearch: "https://search.ecds.io",
+  elasticSearch: "https://search.ecdsdev.org",
 };
 
 export const keys = {
   typesense: "67d9b8d2810cc3a174eb949067",
   coreDataProject: 1,
-  elasticsearch: "MEh2X0twTUIwRnd0Nl9rNEhMY2o6azRpbG8zZXlTU1dHYzJXOTNzQnMxQQ==",
+  elasticsearch: "NW5kNWs1NEJNRlpFRXU0OWxaQ2M6NmRndXRrOWtUbG1BZWQySUgwb3p0Zw==",
 };
 
 export const mapLayers: TBaseStyle[] = [
